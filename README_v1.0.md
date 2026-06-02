@@ -21,3 +21,8 @@ Open `index.html` in Safari or host the folder using any static web server. Add 
 ## Version
 
 Current version: 1.0
+
+
+## GitHub Pages Upload Note
+
+For this fixed package, upload the files directly to the repository root. The icon files are intentionally located beside `index.html`, `manifest.webmanifest`, and `service-worker.js` so iPhone Home Screen icon paths resolve correctly.
