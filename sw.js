@@ -1,5 +1,5 @@
 
-const CACHE = "rgb-mileage-tracker-v2-0-2";
+const CACHE = "rgb-mileage-tracker-v2-0-3-flat";
 const FILES = [
   "./",
   "./index.html",
@@ -9,7 +9,9 @@ const FILES = [
   "./icon.png",
   "./apple-touch-icon.png",
   "./favicon-32x32.png",
-  "./favicon-16x16.png"
+  "./favicon-16x16.png",
+  "./icon-192x192.png",
+  "./icon-512x512.png"
 ];
 
 self.addEventListener("install", event => {

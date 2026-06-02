@@ -1,31 +1,21 @@
-# RGB Mileage Tracker v2.0.2
+# RGB Mileage Tracker v2.0.3 Flat Build
 
-Corrected build with the new RGB Mileage icon included.
+This version is designed for iPhone-to-GitHub uploads.
 
 ## Important
-This ZIP has the app files at the root level:
-- index.html
-- styles.css
-- app.js
-- manifest.json
-- sw.js
+There are no required folders in this build.
+
+All icon files are in the root directory:
 - icon.png
 - apple-touch-icon.png
-- favicon files
-- icons folder
+- favicon-16x16.png
+- favicon-32x32.png
+- icon-192x192.png
+- icon-512x512.png
+- and other icon sizes
 
-Upload these files directly to the GitHub Pages repository root.
+The manifest references root-level icon files only.
 
-## Included
-- New RGB Mileage icon
-- PWA icon sizes
-- Apple touch icon
-- Fuel price per gallon at 2 decimals
-- Total fuel cost
-- Fuel cost source
-- Record ID
-- Entry Sequence
-- Optional Date
-- Entry Type
-- Data Quality
-- Historical Marker support
+## Upload
+Upload every file in this ZIP directly into your GitHub repository root.
+Do not create or upload an icons folder.

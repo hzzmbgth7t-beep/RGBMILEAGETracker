@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>RGB Mileage Tracker</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="icon" href="favicon-32x32.png" type="image/png">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <link rel="icon" href="./favicon-32x32.png" type="image/png">
   <meta name="theme-color" content="#1f4e78">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
   <header>
-    <img src="icon.png" alt="RGB Mileage Tracker icon">
+    <img src="./icon.png" alt="RGB Mileage Tracker icon">
     <div>
       <h1>RGB Mileage Tracker</h1>
       <p>Fuel • Maintenance • Historical Import</p>
@@ -21,19 +21,8 @@
 
   <main>
     <section class="card">
-      <h2>Import-Ready Build v2.0.2</h2>
-      <p>This build includes the corrected RGB Mileage app icon package and import-ready fields.</p>
-      <ul>
-        <li>Record ID</li>
-        <li>Entry Sequence</li>
-        <li>Optional Date</li>
-        <li>Entry Type: Fuel, Maintenance, Historical Marker</li>
-        <li>Data Quality: Verified, Review, Estimated, Historical</li>
-        <li>Fuel Price Per Gallon formatted to 2 decimals</li>
-        <li>Total Fuel Cost</li>
-        <li>Fuel Cost Source</li>
-        <li>Ethanol Free stored as Yes/No</li>
-      </ul>
+      <h2>RGB Mileage Tracker v2.0.3</h2>
+      <p>This flat-file build is designed for iPhone-to-GitHub uploads. All icons and app files are in the main directory.</p>
     </section>
 
     <section class="card">
@@ -44,7 +33,7 @@
     </section>
 
     <section class="card">
-      <h2>Fuel Entry</h2>
+      <h2>Fuel / Historical Entry</h2>
       <div class="grid">
         <label>Record ID <input id="recordId" placeholder="CJ7-0001"></label>
         <label>Entry Sequence <input id="entrySequence" type="number"></label>
@@ -86,6 +75,8 @@
             <option>Entered Manually</option>
           </select>
         </label>
+        <label>Fuel Station <input id="fuelStation"></label>
+        <label>Fuel Brand <input id="fuelBrand"></label>
         <label>Data Quality
           <select id="dataQuality">
             <option>Verified</option>
@@ -100,18 +91,32 @@
     </section>
 
     <section class="card">
+      <h2>Import CSV</h2>
+      <input id="csvFile" type="file" accept=".csv">
+      <button onclick="previewImport()">Preview Import</button>
+      <button id="saveImportBtn" onclick="saveImport()" disabled>Save Previewed Rows</button>
+      <pre id="importStatus"></pre>
+      <div class="table-wrap"><table id="previewTable"></table></div>
+    </section>
+
+    <section class="card">
       <h2>Saved Entries</h2>
-      <table id="entryTable">
-        <thead>
-          <tr>
-            <th>Seq</th><th>Record ID</th><th>Type</th><th>Odometer</th><th>Gallons</th><th>MPG</th><th>Quality</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <label><input type="checkbox" id="includeReview" onchange="render()"> Include Review entries in stats</label>
+      <label><input type="checkbox" id="includeHistorical" onchange="render()"> Include Historical entries in stats</label>
+      <p id="summary"></p>
+      <div class="table-wrap">
+        <table id="entryTable">
+          <thead>
+            <tr>
+              <th>Seq</th><th>Record ID</th><th>Type</th><th>Odometer</th><th>Miles</th><th>Gallons</th><th>MPG</th><th>Quality</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </section>
   </main>
 
-  <script src="app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
