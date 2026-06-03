@@ -1,184 +1,101 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>RGB Mileage</title>
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-  <link rel="icon" href="./favicon.png">
-  <meta name="theme-color" content="#8b6f47">
-  <link rel="stylesheet" href="./styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RGB Mileage</title>
+<link rel="manifest" href="./manifest.json?v=206">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png?v=206">
+<link rel="icon" href="./favicon.png?v=206">
+<meta name="theme-color" content="#102435">
+<link rel="stylesheet" href="./styles.css?v=206">
 </head>
 <body>
-  <main id="app">
-    <section id="homeScreen" class="screen active">
-      <header class="brand">
-        <div class="chrome-title">RGB</div>
-        <div class="mileage-title">Mileage</div>
-      </header>
+<main>
+<section id="homeScreen" class="screen active">
+  <header class="brand"><div class="chrome-title">RGB</div><div class="mileage-title">Mileage</div></header>
+  <section class="vehicle-stack">
+    <button id="slot0" class="vehicle-circle"></button><div id="slot0Label" class="vehicle-label"></div>
+    <button id="slot1" class="vehicle-circle"></button><div id="slot1Label" class="vehicle-label"></div>
+  </section>
+  <nav class="bottom-icons">
+    <button onclick="showScreen('reportsScreen')">📊<span>Reports</span></button>
+    <button onclick="showScreen('importScreen')">☁︎<span>Import</span></button>
+    <button onclick="showScreen('backupScreen')">💾<span>Backup</span></button>
+    <button onclick="showScreen('settingsScreen')">⚙️<span>Settings</span></button>
+    <button onclick="showScreen('aboutScreen')">ⓘ<span>About</span></button>
+  </nav>
+  <footer class="version">Version 2.0.6</footer>
+</section>
 
-      <section class="vehicle-stack">
-        <button id="slot0" class="vehicle-circle" data-slot="0" aria-label="Vehicle Slot 1"></button>
-        <div id="slot0Label" class="vehicle-label"></div>
-
-        <button id="slot1" class="vehicle-circle" data-slot="1" aria-label="Vehicle Slot 2"></button>
-        <div id="slot1Label" class="vehicle-label"></div>
-      </section>
-
-      <nav class="bottom-icons" aria-label="Main navigation">
-        <button onclick="showScreen('reportsScreen')" title="Reports">📊<span>Reports</span></button>
-        <button onclick="showScreen('importScreen')" title="Import">⇪<span>Import</span></button>
-        <button onclick="showScreen('backupScreen')" title="Backup">💾<span>Backup</span></button>
-        <button onclick="showScreen('settingsScreen')" title="Settings">⚙️<span>Settings</span></button>
-        <button onclick="showScreen('aboutScreen')" title="About">ⓘ<span>About</span></button>
-      </nav>
-
-      <footer class="version">Version 2.0.5</footer>
-    </section>
-
-    <section id="addVehicleScreen" class="screen">
-      <button class="back" onclick="showScreen('homeScreen')">← Home</button>
-      <h1>Add Vehicle</h1>
-      <div class="card form-grid">
-        <label>Nickname<input id="vehicleNickname"></label>
-        <label>Year<input id="vehicleYear" inputmode="numeric"></label>
-        <label>Make<input id="vehicleMake"></label>
-        <label>Model<input id="vehicleModel"></label>
-        <label>VIN<input id="vehicleVin"></label>
-        <label>License Plate<input id="vehiclePlate"></label>
-        <label>Plate State<input id="vehiclePlateState"></label>
-        <label>Acquisition Date<input id="vehicleAcqDate" type="date"></label>
-        <label>Starting Odometer<input id="vehicleStartingOdo" type="number" step="0.01"></label>
-        <label>Purchase Date<input id="vehiclePurchaseDate" type="date"></label>
-        <label>Purchase Cost<input id="vehiclePurchaseCost" type="number" step="0.01"></label>
-        <label>Seller<input id="vehicleSeller"></label>
-        <label>Insurance Value<input id="vehicleInsuranceValue" type="number" step="0.01"></label>
-        <label>Agreed Value<input id="vehicleAgreedValue" type="number" step="0.01"></label>
-        <label>Primary Photo<input id="vehiclePhoto" type="file" accept="image/*"></label>
-        <label class="wide">Notes<textarea id="vehicleNotes"></textarea></label>
-        <button class="primary wide" onclick="saveVehicle()">Save Vehicle</button>
+<section id="addVehicleScreen" class="screen">
+  <button class="back" onclick="showScreen('homeScreen')">← Home</button>
+  <h1>Add Vehicle</h1>
+  <div class="card form-grid">
+    <label>Nickname<input id="vehicleNickname"></label>
+    <label>Year<input id="vehicleYear" inputmode="numeric"></label>
+    <label>Make<input id="vehicleMake"></label>
+    <label>Model<input id="vehicleModel"></label>
+    <label>VIN<input id="vehicleVin"></label>
+    <label>License Plate<input id="vehiclePlate"></label>
+    <label>Plate State<input id="vehiclePlateState"></label>
+    <label>Acquisition Date<input id="vehicleAcqDate" type="date"></label>
+    <label>Starting Odometer<input id="vehicleStartingOdo" type="number" step="0.01"></label>
+    <label>Purchase Date<input id="vehiclePurchaseDate" type="date"></label>
+    <label>Purchase Cost<input id="vehiclePurchaseCost" type="number" step="0.01"></label>
+    <label>Seller<input id="vehicleSeller"></label>
+    <label>Insurance Value<input id="vehicleInsuranceValue" type="number" step="0.01"></label>
+    <label>Agreed Value<input id="vehicleAgreedValue" type="number" step="0.01"></label>
+    <div class="wide image-picker">
+      <label>Primary Vehicle Photo<input id="vehiclePhoto" type="file" accept="image/*" onchange="loadVehiclePhotoPreview(event)"></label>
+      <div class="preview-row">
+        <div class="crop-preview" id="vehiclePhotoPreview"><span>Preview</span></div>
+        <div class="zoom-panel">
+          <label>Zoom <input id="vehiclePhotoZoom" type="range" min="1" max="2.6" step="0.05" value="1.25" oninput="updatePhotoPreview()"></label>
+          <p class="small">The Home Screen circle uses this preview. The original photo angle is preserved.</p>
+        </div>
       </div>
-    </section>
+    </div>
+    <label class="wide">Notes<textarea id="vehicleNotes"></textarea></label>
+    <button class="primary wide" onclick="saveVehicle()">Save Vehicle</button>
+  </div>
+</section>
 
-    <section id="quickFuelScreen" class="screen">
-      <button class="back" onclick="showScreen('homeScreen')">← Home</button>
-      <h1 id="fuelVehicleTitle">Quick Fuel Entry</h1>
+<section id="quickFuelScreen" class="screen">
+  <button class="back" onclick="showScreen('homeScreen')">← Home</button>
+  <h1 id="fuelVehicleTitle">Quick Fuel Entry</h1>
+  <div class="card form-grid">
+    <label>Odometer<input id="fuelOdometer" type="number" step="0.01"></label>
+    <label>Gallons<input id="fuelGallons" type="number" step="0.001"></label>
+    <label>Fuel Grade<select id="fuelGrade"><option></option><option>87</option><option>89</option><option>90</option><option>91</option><option>93</option><option>Other</option></select></label>
+    <label>Ethanol Free<select id="fuelEthanolFree"><option></option><option>No</option><option>Yes</option></select></label>
+    <label>Station<select id="fuelStation"></select></label>
+    <label>Fuel Price Per Gallon<input id="fuelPrice" type="number" step="0.01"></label>
+    <label>Total Fuel Cost<input id="fuelCost" type="number" step="0.01"></label>
+    <label>Fuel Cost Source<select id="fuelCostSource"><option></option><option>Calculated</option><option>Entered Manually</option></select></label>
+    <label>Receipt / Attachment<input id="fuelReceipt" type="file" accept="image/*,.pdf" multiple></label>
+    <label class="wide">Notes<textarea id="fuelNotes"></textarea></label>
+    <button class="primary wide" onclick="saveFuelEntry()">Save Entry</button>
+  </div>
+  <div class="card"><h2>Recent Entries</h2><div class="table-wrap"><table id="recentFuelTable"></table></div></div>
+</section>
 
-      <div class="card form-grid">
-        <label>Odometer<input id="fuelOdometer" type="number" step="0.01"></label>
-        <label>Gallons<input id="fuelGallons" type="number" step="0.001"></label>
-        <label>Fuel Grade
-          <select id="fuelGrade">
-            <option></option><option>87</option><option>89</option><option>90</option><option>91</option><option>93</option><option>Other</option>
-          </select>
-        </label>
-        <label>Ethanol Free
-          <select id="fuelEthanolFree">
-            <option></option><option>No</option><option>Yes</option>
-          </select>
-        </label>
-        <label>Station
-          <select id="fuelStation"></select>
-        </label>
-        <label>Fuel Price Per Gallon<input id="fuelPrice" type="number" step="0.01"></label>
-        <label>Total Fuel Cost<input id="fuelCost" type="number" step="0.01"></label>
-        <label>Fuel Cost Source
-          <select id="fuelCostSource"><option></option><option>Calculated</option><option>Entered Manually</option></select>
-        </label>
-        <label>Receipt / Attachment<input id="fuelReceipt" type="file" accept="image/*,.pdf" multiple></label>
-        <label class="wide">Notes<textarea id="fuelNotes"></textarea></label>
-        <button class="primary wide" onclick="saveFuelEntry()">Save Entry</button>
-      </div>
+<section id="vehicleDetailsScreen" class="screen">
+  <button class="back" onclick="showScreen('homeScreen')">← Home</button>
+  <div id="vehicleDetailsHeader" class="details-header"></div>
+  <nav class="tabs">
+    <button onclick="setTab('info')" class="active">Info</button><button onclick="setTab('stats')">Stats</button>
+    <button onclick="setTab('maint')">Maint</button><button onclick="setTab('ins')">Ins</button>
+    <button onclick="setTab('photos')">Photos</button><button onclick="setTab('docs')">Docs</button><button onclick="setTab('history')">History</button>
+  </nav>
+  <section id="tabContent" class="card"></section>
+</section>
 
-      <div class="card">
-        <h2>Recent Entries</h2>
-        <div class="table-wrap"><table id="recentFuelTable"></table></div>
-      </div>
-    </section>
-
-    <section id="vehicleDetailsScreen" class="screen">
-      <button class="back" onclick="showScreen('homeScreen')">← Home</button>
-      <div id="vehicleDetailsHeader" class="details-header"></div>
-      <nav class="tabs">
-        <button onclick="setTab('info')" class="active">Info</button>
-        <button onclick="setTab('stats')">Stats</button>
-        <button onclick="setTab('maint')">Maint</button>
-        <button onclick="setTab('ins')">Ins</button>
-        <button onclick="setTab('photos')">Photos</button>
-        <button onclick="setTab('docs')">Docs</button>
-        <button onclick="setTab('history')">History</button>
-      </nav>
-      <section id="tabContent" class="card"></section>
-    </section>
-
-    <section id="reportsScreen" class="screen">
-      <button class="back" onclick="showScreen('homeScreen')">← Home</button>
-      <h1>Reports Dashboard</h1>
-      <div class="card" id="reportsDashboard"></div>
-      <div class="card">
-        <h2>Report Controls</h2>
-        <label class="inline"><input type="checkbox" id="includeReview"> Include Review Entries</label>
-        <label class="inline"><input type="checkbox" id="includeHistorical"> Include Historical Entries</label>
-        <button onclick="renderReports()">Refresh Reports</button>
-        <button onclick="exportCSV()">Export CSV</button>
-        <button onclick="window.print()">Export / Print PDF</button>
-      </div>
-    </section>
-
-    <section id="importScreen" class="screen">
-      <button class="back" onclick="showScreen('homeScreen')">← Home</button>
-      <h1>Import</h1>
-      <div class="card">
-        <p>Supports CSV and JSON import in this local build. XLSX is included in the specification and can be added with a spreadsheet parser in a later code update.</p>
-        <input id="importFile" type="file" accept=".csv,.json">
-        <button onclick="previewImport()">Preview Import</button>
-        <button id="commitImportButton" onclick="commitImport()" disabled>Save Previewed Rows</button>
-        <pre id="importStatus"></pre>
-        <div class="table-wrap"><table id="importPreviewTable"></table></div>
-      </div>
-    </section>
-
-    <section id="backupScreen" class="screen">
-      <button class="back" onclick="showScreen('homeScreen')">← Home</button>
-      <h1>Backup & Restore</h1>
-      <div class="card">
-        <button onclick="downloadDataBackup()">Download Data-Only JSON Backup</button>
-        <label>Restore JSON Backup<input id="restoreFile" type="file" accept=".json"></label>
-        <button onclick="restoreBackup()">Restore / Merge Backup</button>
-        <p id="backupMeta"></p>
-      </div>
-    </section>
-
-    <section id="settingsScreen" class="screen">
-      <button class="back" onclick="showScreen('homeScreen')">← Home</button>
-      <h1>Settings</h1>
-      <div class="card form-grid">
-        <label>Default Duplicate Handling
-          <select id="duplicateSetting"><option>Ask Every Time</option><option>Skip Existing</option><option>Replace Existing</option></select>
-        </label>
-        <label>Backup Reminder
-          <select id="backupReminder"><option>Never</option><option>Monthly</option><option>Every 25 Records</option><option>Every 50 Records</option></select>
-        </label>
-        <label class="inline"><input type="checkbox" id="showArchived"> Show Archived Vehicles</label>
-        <button class="primary wide" onclick="saveSettings()">Save Settings</button>
-        <button onclick="validateDatabase()">Validate Database</button>
-        <button onclick="rebuildStatistics()">Rebuild Statistics</button>
-        <button onclick="removeOrphanAttachments()">Remove Orphan Attachments</button>
-      </div>
-    </section>
-
-    <section id="aboutScreen" class="screen">
-      <button class="back" onclick="showScreen('homeScreen')">← Home</button>
-      <h1>About RGB Mileage</h1>
-      <div class="card">
-        <p><strong>Version:</strong> 2.0.5</p>
-        <p><strong>Build Date:</strong> 2026-06-02</p>
-        <p>RGB Mileage is a vehicle-first mileage, fuel, maintenance, insurance, and history tracker.</p>
-      </div>
-    </section>
-  </main>
-
-  <script src="./app.js"></script>
-</body>
-</html>
+<section id="reportsScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>Reports Dashboard</h1><div class="card" id="reportsDashboard"></div><div class="card"><label class="inline"><input type="checkbox" id="includeReview"> Include Review Entries</label><label class="inline"><input type="checkbox" id="includeHistorical"> Include Historical Entries</label><button onclick="renderReports()">Refresh Reports</button><button onclick="exportCSV()">Export CSV</button><button onclick="window.print()">Export / Print PDF</button></div></section>
+<section id="importScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>Import</h1><div class="card"><p>Supports CSV and JSON import in this local build. XLSX remains part of the specification.</p><input id="importFile" type="file" accept=".csv,.json"><button onclick="previewImport()">Preview Import</button><button id="commitImportButton" onclick="commitImport()" disabled>Save Previewed Rows</button><pre id="importStatus"></pre><div class="table-wrap"><table id="importPreviewTable"></table></div></div></section>
+<section id="backupScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>Backup & Restore</h1><div class="card"><button onclick="downloadDataBackup()">Download Data-Only JSON Backup</button><label>Restore JSON Backup<input id="restoreFile" type="file" accept=".json"></label><button onclick="restoreBackup()">Restore / Merge Backup</button><p id="backupMeta"></p></div></section>
+<section id="settingsScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>Settings</h1><div class="card form-grid"><label>Default Duplicate Handling<select id="duplicateSetting"><option>Ask Every Time</option><option>Skip Existing</option><option>Replace Existing</option></select></label><label>Backup Reminder<select id="backupReminder"><option>Never</option><option>Monthly</option><option>Every 25 Records</option><option>Every 50 Records</option></select></label><label class="inline"><input type="checkbox" id="showArchived"> Show Archived Vehicles</label><button class="primary wide" onclick="saveSettings()">Save Settings</button><button onclick="validateDatabase()">Validate Database</button><button onclick="rebuildStatistics()">Rebuild Statistics</button><button onclick="removeOrphanAttachments()">Remove Orphan Attachments</button></div></section>
+<section id="aboutScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>About RGB Mileage</h1><div class="card"><p><strong>Version:</strong> 2.0.6</p><p><strong>Build Date:</strong> 2026-06-02</p><p>RGB Mileage is a vehicle-first mileage, fuel, maintenance, insurance, and history tracker.</p></div></section>
+</main>
+<script src="./app.js?v=206"></script>
+</body></html>
