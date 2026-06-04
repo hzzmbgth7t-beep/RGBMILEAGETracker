@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RGB Mileage</title>
-<link rel="manifest" href="./manifest.json?v=206">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png?v=206">
-<link rel="icon" href="./favicon.png?v=206">
+<link rel="manifest" href="./manifest.json?v=207">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png?v=207">
+<link rel="icon" href="./favicon.png?v=207">
 <meta name="theme-color" content="#102435">
-<link rel="stylesheet" href="./styles.css?v=206">
+<link rel="stylesheet" href="./styles.css?v=207">
 </head>
 <body>
 <main>
@@ -25,12 +25,12 @@
     <button onclick="showScreen('settingsScreen')">⚙️<span>Settings</span></button>
     <button onclick="showScreen('aboutScreen')">ⓘ<span>About</span></button>
   </nav>
-  <footer class="version">Version 2.0.6</footer>
+  <footer class="version">Version 2.0.7</footer>
 </section>
 
 <section id="addVehicleScreen" class="screen">
   <button class="back" onclick="showScreen('homeScreen')">← Home</button>
-  <h1>Add Vehicle</h1>
+  <h1 id="vehicleFormTitle">Add Vehicle</h1>
   <div class="card form-grid">
     <label>Nickname<input id="vehicleNickname"></label>
     <label>Year<input id="vehicleYear" inputmode="numeric"></label>
@@ -51,7 +51,7 @@
       <div class="preview-row">
         <div class="crop-preview" id="vehiclePhotoPreview"><span>Preview</span></div>
         <div class="zoom-panel">
-          <label>Zoom <input id="vehiclePhotoZoom" type="range" min="1" max="2.6" step="0.05" value="1.25" oninput="updatePhotoPreview()"></label>
+          <label>Zoom <input id="vehiclePhotoZoom" type="range" min="0.35" max="2.6" step="0.05" value="1.25" oninput="updatePhotoPreview()"></label>
           <p class="small">The Home Screen circle uses this preview. The original photo angle is preserved.</p>
         </div>
       </div>
@@ -94,8 +94,14 @@
 <section id="reportsScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>Reports Dashboard</h1><div class="card" id="reportsDashboard"></div><div class="card"><label class="inline"><input type="checkbox" id="includeReview"> Include Review Entries</label><label class="inline"><input type="checkbox" id="includeHistorical"> Include Historical Entries</label><button onclick="renderReports()">Refresh Reports</button><button onclick="exportCSV()">Export CSV</button><button onclick="window.print()">Export / Print PDF</button></div></section>
 <section id="importScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>Import</h1><div class="card"><p>Supports CSV and JSON import in this local build. XLSX remains part of the specification.</p><input id="importFile" type="file" accept=".csv,.json"><button onclick="previewImport()">Preview Import</button><button id="commitImportButton" onclick="commitImport()" disabled>Save Previewed Rows</button><pre id="importStatus"></pre><div class="table-wrap"><table id="importPreviewTable"></table></div></div></section>
 <section id="backupScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>Backup & Restore</h1><div class="card"><button onclick="downloadDataBackup()">Download Data-Only JSON Backup</button><label>Restore JSON Backup<input id="restoreFile" type="file" accept=".json"></label><button onclick="restoreBackup()">Restore / Merge Backup</button><p id="backupMeta"></p></div></section>
-<section id="settingsScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>Settings</h1><div class="card form-grid"><label>Default Duplicate Handling<select id="duplicateSetting"><option>Ask Every Time</option><option>Skip Existing</option><option>Replace Existing</option></select></label><label>Backup Reminder<select id="backupReminder"><option>Never</option><option>Monthly</option><option>Every 25 Records</option><option>Every 50 Records</option></select></label><label class="inline"><input type="checkbox" id="showArchived"> Show Archived Vehicles</label><button class="primary wide" onclick="saveSettings()">Save Settings</button><button onclick="validateDatabase()">Validate Database</button><button onclick="rebuildStatistics()">Rebuild Statistics</button><button onclick="removeOrphanAttachments()">Remove Orphan Attachments</button></div></section>
-<section id="aboutScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>About RGB Mileage</h1><div class="card"><p><strong>Version:</strong> 2.0.6</p><p><strong>Build Date:</strong> 2026-06-02</p><p>RGB Mileage is a vehicle-first mileage, fuel, maintenance, insurance, and history tracker.</p></div></section>
+<section id="settingsScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>Settings</h1><div class="card form-grid"><label>Default Duplicate Handling<select id="duplicateSetting"><option>Ask Every Time</option><option>Skip Existing</option><option>Replace Existing</option></select></label><label>Backup Reminder<select id="backupReminder"><option>Never</option><option>Monthly</option><option>Every 25 Records</option><option>Every 50 Records</option></select></label><label class="inline"><input type="checkbox" id="showArchived"> Show Archived Vehicles</label><button class="primary wide" onclick="saveSettings()">Save Settings</button><button onclick="validateDatabase()">Validate Database</button><button onclick="rebuildStatistics()">Rebuild Statistics</button><button onclick="removeOrphanAttachments()">Remove Orphan Attachments</button></div>
+<div class="card">
+  <h2>Manage Vehicle Order</h2>
+  <p>Swap the two Home Screen vehicle circles. This moves the complete vehicle record and all related data.</p>
+  <button onclick="swapVehiclePositions()">Swap Vehicle Positions</button>
+</div>
+</section>
+<section id="aboutScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>About RGB Mileage</h1><div class="card"><p><strong>Version:</strong> 2.0.7</p><p><strong>Build Date:</strong> 2026-06-04</p><p>RGB Mileage is a vehicle-first mileage, fuel, maintenance, insurance, and history tracker.</p></div></section>
 </main>
-<script src="./app.js?v=206"></script>
+<script src="./app.js?v=207"></script>
 </body></html>
