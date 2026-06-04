@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RGB Mileage</title>
-<link rel="manifest" href="./manifest.json?v=207">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png?v=207">
-<link rel="icon" href="./favicon.png?v=207">
+<link rel="manifest" href="./manifest.json?v=208">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png?v=208">
+<link rel="icon" href="./favicon.png?v=208">
 <meta name="theme-color" content="#102435">
-<link rel="stylesheet" href="./styles.css?v=207">
+<link rel="stylesheet" href="./styles.css?v=208">
 </head>
 <body>
 <main>
@@ -20,12 +20,11 @@
   </section>
   <nav class="bottom-icons">
     <button onclick="showScreen('reportsScreen')">📊<span>Reports</span></button>
-    <button onclick="showScreen('importScreen')">☁︎<span>Import</span></button>
-    <button onclick="showScreen('backupScreen')">💾<span>Backup</span></button>
+    <button onclick="showScreen('dataScreen')">💾<span>Data</span></button>
     <button onclick="showScreen('settingsScreen')">⚙️<span>Settings</span></button>
     <button onclick="showScreen('aboutScreen')">ⓘ<span>About</span></button>
   </nav>
-  <footer class="version">Version 2.0.7</footer>
+  <footer class="version">Version 2.0.8</footer>
 </section>
 
 <section id="addVehicleScreen" class="screen">
@@ -92,8 +91,40 @@
 </section>
 
 <section id="reportsScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>Reports Dashboard</h1><div class="card" id="reportsDashboard"></div><div class="card"><label class="inline"><input type="checkbox" id="includeReview"> Include Review Entries</label><label class="inline"><input type="checkbox" id="includeHistorical"> Include Historical Entries</label><button onclick="renderReports()">Refresh Reports</button><button onclick="exportCSV()">Export CSV</button><button onclick="window.print()">Export / Print PDF</button></div></section>
-<section id="importScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>Import</h1><div class="card"><p>Supports CSV and JSON import in this local build. XLSX remains part of the specification.</p><input id="importFile" type="file" accept=".csv,.json"><button onclick="previewImport()">Preview Import</button><button id="commitImportButton" onclick="commitImport()" disabled>Save Previewed Rows</button><pre id="importStatus"></pre><div class="table-wrap"><table id="importPreviewTable"></table></div></div></section>
-<section id="backupScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>Backup & Restore</h1><div class="card"><button onclick="downloadDataBackup()">Download Data-Only JSON Backup</button><label>Restore JSON Backup<input id="restoreFile" type="file" accept=".json"></label><button onclick="restoreBackup()">Restore / Merge Backup</button><p id="backupMeta"></p></div></section>
+<section id="dataScreen" class="screen">
+  <button class="back" onclick="showScreen('homeScreen')">← Home</button>
+  <h1>Data Management</h1>
+
+  <div class="card">
+    <h2>Backup & Restore</h2>
+    <p class="small">JSON is the full app backup format. It preserves vehicles, photos, settings, stations, fuel entries, maintenance, insurance, attachments, Record IDs, and Entry Sequence.</p>
+    <button class="primary" onclick="downloadDataBackup()">Create JSON Backup</button>
+    <label>Restore JSON Backup<input id="restoreFile" type="file" accept=".json"></label>
+    <button onclick="restoreBackup()">Restore JSON Backup</button>
+    <p id="backupMeta"></p>
+    <pre id="restoreStatus"></pre>
+  </div>
+
+  <div class="card">
+    <h2>Fuel Data</h2>
+    <p class="small">CSV is for fuel records only. CSV is not a full app backup.</p>
+    <button onclick="exportCSV()">Export Fuel CSV</button>
+    <button onclick="downloadFuelTemplate()">Download CSV Template</button>
+    <label>Import Into Vehicle<select id="csvImportVehicle"></select></label>
+    <label>Import Fuel CSV<input id="importFile" type="file" accept=".csv"></label>
+    <button onclick="previewImport()">Preview Fuel CSV Import</button>
+    <button id="commitImportButton" onclick="commitImport()" disabled>Import Records</button>
+    <pre id="importStatus"></pre>
+    <div class="table-wrap"><table id="importPreviewTable"></table></div>
+  </div>
+
+  <div class="card">
+    <h2>Future Features</h2>
+    <p>XLSX Import: Coming Soon</p>
+    <p>Supabase Sync: Coming Soon</p>
+    <p>Receipt Scanning: Coming Soon</p>
+  </div>
+</section>
 <section id="settingsScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>Settings</h1><div class="card form-grid"><label>Default Duplicate Handling<select id="duplicateSetting"><option>Ask Every Time</option><option>Skip Existing</option><option>Replace Existing</option></select></label><label>Backup Reminder<select id="backupReminder"><option>Never</option><option>Monthly</option><option>Every 25 Records</option><option>Every 50 Records</option></select></label><label class="inline"><input type="checkbox" id="showArchived"> Show Archived Vehicles</label><button class="primary wide" onclick="saveSettings()">Save Settings</button><button onclick="validateDatabase()">Validate Database</button><button onclick="rebuildStatistics()">Rebuild Statistics</button><button onclick="removeOrphanAttachments()">Remove Orphan Attachments</button></div>
 <div class="card">
   <h2>Manage Vehicle Order</h2>
@@ -101,7 +132,7 @@
   <button onclick="swapVehiclePositions()">Swap Vehicle Positions</button>
 </div>
 </section>
-<section id="aboutScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>About RGB Mileage</h1><div class="card"><p><strong>Version:</strong> 2.0.7</p><p><strong>Build Date:</strong> 2026-06-04</p><p>RGB Mileage is a vehicle-first mileage, fuel, maintenance, insurance, and history tracker.</p></div></section>
+<section id="aboutScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>About RGB Mileage</h1><div class="card"><p><strong>Version:</strong> 2.0.8</p><p><strong>Build Date:</strong> 2026-06-04</p><p>RGB Mileage is a vehicle-first mileage, fuel, maintenance, insurance, and history tracker.</p></div></section>
 </main>
-<script src="./app.js?v=207"></script>
+<script src="./app.js?v=208"></script>
 </body></html>

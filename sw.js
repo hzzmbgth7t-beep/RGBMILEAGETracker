@@ -1,9 +1,9 @@
-const CACHE="rgbm-v2.0.7-2026-06-04";
+const CACHE="rgbm-v2.0.8-2026-06-04";
 const FILES=[
-  "./index.html?v=207",
-  "./styles.css?v=207",
-  "./app.js?v=207",
-  "./manifest.json?v=207",
+  "./index.html?v=208",
+  "./styles.css?v=208",
+  "./app.js?v=208",
+  "./manifest.json?v=208",
   "./icon.png",
   "./apple-touch-icon.png",
   "./favicon.png",
@@ -38,7 +38,7 @@ self.addEventListener("fetch",e=>{
       const copy=r.clone();
       caches.open(CACHE).then(c=>c.put(e.request,copy));
       return r;
-    }).catch(()=>caches.match(e.request).then(r=>r||caches.match("./index.html?v=207"))));
+    }).catch(()=>caches.match(e.request).then(r=>r||caches.match("./index.html?v=208"))));
     return;
   }
   e.respondWith(caches.match(e.request).then(cached=>cached||fetch(e.request).then(r=>{
