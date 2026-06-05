@@ -1,49 +1,5 @@
-const CACHE="rgbm-v2.0.11-2026-06-04";
-const FILES=[
-  "./index.html?v=211",
-  "./styles.css?v=211",
-  "./app.js?v=211",
-  "./manifest.json?v=211",
-  "./icon.png",
-  "./apple-touch-icon.png",
-  "./favicon.png",
-  "./icon-180x180.png",
-  "./icon-192x192.png",
-  "./icon-512x512.png",
-  "./icon-1024x1024.jpg"
-];
-
-self.addEventListener("install",e=>{
-  self.skipWaiting();
-  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)));
-});
-
-self.addEventListener("activate",e=>{
-  e.waitUntil(
-    caches.keys()
-      .then(keys=>Promise.all(keys
-        .filter(k=>k.startsWith("rgb")||k.startsWith("RGB")||k.includes("mileage"))
-        .filter(k=>k!==CACHE)
-        .map(k=>caches.delete(k))
-      ))
-      .then(()=>self.clients.claim())
-  );
-});
-
-self.addEventListener("fetch",e=>{
-  const url=new URL(e.request.url);
-  const isCritical=e.request.mode==="navigate" || url.pathname.endsWith("/index.html") || url.pathname.endsWith("/app.js") || url.pathname.endsWith("/styles.css") || url.pathname.endsWith("/manifest.json");
-  if(isCritical){
-    e.respondWith(fetch(e.request).then(r=>{
-      const copy=r.clone();
-      caches.open(CACHE).then(c=>c.put(e.request,copy));
-      return r;
-    }).catch(()=>caches.match(e.request).then(r=>r||caches.match("./index.html?v=211"))));
-    return;
-  }
-  e.respondWith(caches.match(e.request).then(cached=>cached||fetch(e.request).then(r=>{
-    const copy=r.clone();
-    caches.open(CACHE).then(c=>c.put(e.request,copy));
-    return r;
-  })));
-});
+const CACHE="rgbm-v2.1.0-2026-06-05";
+const ASSETS=["./","index.html","styles.css?v=210","app.js?v=210","manifest.json","apple-touch-icon.png","icon-192x192.png","icon-512x512.png","favicon.png"];
+self.addEventListener("install",e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});
+self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+self.addEventListener("fetch",e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});

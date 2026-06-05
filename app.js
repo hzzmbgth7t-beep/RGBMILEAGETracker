@@ -1,792 +1,106 @@
+/* RGB Mileage v2.1.0 - app.js
+ * FUNCTION INDEX:
+ * 1 Constants/State
+ * 2 Storage/Migration
+ * 3 UI helpers
+ * 4 Vehicle module
+ * 5 Universal record helpers
+ * 6 Fuel module
+ * 7 Maintenance module
+ * 8 Insurance module
+ * 9 Data/Backup/Import
+ * 10 Reports/Settings
+ */
+const VERSION="2.1.0", BUILD_DATE="2026-06-05", KEY="RGBM_DATA_v210";
+const LEGACY_KEYS=["rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
+const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"];
+const DATA_QUALITIES=["Verified","Review","Estimated"];
+const TAGS=["Imported","Historical","Archived"];
+const FUEL_GRADES=["","87","89","90","91","93","Other"];
+let state, route={screen:"home"}, longPressTimer=null, suppressTap=false;
 
-const VERSION="2.0.11", BUILD_DATE="2026-06-04", KEY="rgbMileage", LEGACY_KEYS=["rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11","rgbm_data_v110"];
-let activeSlot=0, activeTab="info", previewRows=[], selectedVehiclePhotoData="", selectedVehiclePhotoZoom=1.25, selectedVehiclePhotoOffsetX=0, selectedVehiclePhotoOffsetY=0, photoDrag=null, longPressTriggered=false, milesManuallyEdited=false, editingFuelRecordId=null;
-const DEFAULT_STATIONS=["Murphy USA","Circle K","refuel","BP","Shell","Other"];
-function blankData(){return{version:VERSION,settings:{duplicateHandling:"Ask Every Time",backupReminder:"Never",showArchived:false,lastDataBackupDate:"",lastCompleteBackupDate:""},stations:[...DEFAULT_STATIONS],maintenanceCategories:["Oil Change","Tire Rotation","Brakes","Suspension","Engine","Cooling System","Electrical","Transmission","Inspection","Cleaning / Detailing","Repair","Upgrade / Modification","Other"],maintenanceStatus:["Planned","Fix","Other"],performedBy:["Shop","Self","Friend","Other"],vehicles:[null,null],entries:[],maintenance:[],insurance:[],documents:[],photos:[]}}
+function nowISO(){return new Date().toISOString()}
+function uid(prefix="ID"){return prefix+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)}
+function blankData(){return {app:"RGB Mileage",schemaVersion:"2.1.0",appVersion:VERSION,createdAt:nowISO(),modifiedAt:nowISO(),settings:{lastBackupDate:"",lastBackupFilename:"",showArchived:false},nextEntrySequence:1,stations:[...STATIONS_DEFAULT],vehicles:[null,null],vehicleAcquisitionRecords:[],fuelRecords:[],maintenanceRecords:[],insuranceRecords:[],attachments:[],metadata:{}}}
+function loadData(){let raw=localStorage.getItem(KEY); if(raw){try{return normalizeData(JSON.parse(raw))}catch(e){console.warn(e)}} for(const k of LEGACY_KEYS){raw=localStorage.getItem(k); if(raw){try{const d=normalizeData(JSON.parse(raw)); saveData(d); return d}catch(e){console.warn(e)}}} const d=blankData(); saveData(d); return d}
+function saveData(d=state){d.modifiedAt=nowISO();d.schemaVersion="2.1.0";d.appVersion=VERSION;localStorage.setItem(KEY,JSON.stringify(d));state=d}
+function seq(){const n=state.nextEntrySequence||1; state.nextEntrySequence=n+1; return n}
+function arr(v){return Array.isArray(v)?v:[]}
+function tags(v){return Array.isArray(v)?v:(v?[String(v)]:[])}
+function hasTag(r,t){return tags(r.classificationTags).includes(t)}
+function addTag(r,t){r.classificationTags=tags(r.classificationTags); if(!r.classificationTags.includes(t))r.classificationTags.push(t)}
+function remTag(r,t){r.classificationTags=tags(r.classificationTags).filter(x=>x!==t)}
+function numVal(v){if(v===null||v===undefined||v==="")return ""; const n=Number(String(v).replace(/[$,]/g,"")); return Number.isFinite(n)?n:""}
+function baseRecord(type,vehicleId,source="Manual Entry"){return {recordId:uid(type.toUpperCase()),entrySequence:seq(),recordType:type,vehicleId,source,classificationTags:[],dataQuality:source==="Manual Entry"?"Verified":"Review",createdAt:nowISO(),modifiedAt:nowISO(),notes:""}}
+function normalizeData(input){const d=blankData(); if(!input||typeof input!=="object")return d; d.settings={...d.settings,...(input.settings||{})}; d.stations=Array.isArray(input.stations)&&input.stations.length?input.stations:[...STATIONS_DEFAULT]; if(!d.stations.includes("Other"))d.stations.push("Other"); d.nextEntrySequence=Number(input.nextEntrySequence)||1; d.vehicles=(input.vehicles||[]).slice(0,2).map((v,i)=>v?normVehicle(v,i):null); while(d.vehicles.length<2)d.vehicles.push(null); d.vehicleAcquisitionRecords=arr(input.vehicleAcquisitionRecords).map(r=>normRecord(r,"VehicleAcquisition",r.vehicleId)); d.fuelRecords=arr(input.fuelRecords||input.entries).map(r=>normFuel(r,r.vehicleId)); d.maintenanceRecords=arr(input.maintenanceRecords||input.maintenance).map(r=>normMaint(r,r.vehicleId)); d.insuranceRecords=arr(input.insuranceRecords||input.insurance).map(r=>normIns(r,r.vehicleId)); if(input.vehicles&&!input.fuelRecords&&!input.maintenanceRecords&&!input.insuranceRecords){d.vehicles=(input.vehicles||[]).slice(0,2).map((v,i)=>v?normVehicle(v,i):null); while(d.vehicles.length<2)d.vehicles.push(null); input.vehicles.slice(0,2).forEach((v,i)=>{if(!v)return; const vid=d.vehicles[i].vehicleId; if(v.acquisitionDate||v.startingOdometer||v.purchaseCost||v.purchaseDate||v.seller){d.vehicleAcquisitionRecords.push(normRecord({acquisitionDate:v.acquisitionDate||v.purchaseDate||"",startingOdometer:v.startingOdometer||"",purchasePrice:v.purchaseCost||"",seller:v.seller||"",source:"JSON Restore",dataQuality:"Review",classificationTags:["Imported"]},"VehicleAcquisition",vid))} arr(v.fuel).forEach(r=>d.fuelRecords.push(normFuel({...r,source:"JSON Restore",classificationTags:["Imported"]},vid))); arr(v.maintenance).forEach(r=>d.maintenanceRecords.push(normMaint({...r,source:"JSON Restore",classificationTags:["Imported"]},vid))); if(v.insCompany||v.policyNumber||v.insurance?.company){d.insuranceRecords.push(normIns({company:v.insCompany||v.insurance?.company||"",policyNumber:v.policyNumber||v.insurance?.policy||"",effectiveDate:v.effectiveDate||v.insurance?.effective||"",expirationDate:v.expirationDate||v.insurance?.expiration||"",coverageValue:v.insuranceValue||v.insurance?.value||"",source:"JSON Restore",classificationTags:["Imported"],dataQuality:"Review"},vid))}})} let m=0; [...d.vehicleAcquisitionRecords,...d.fuelRecords,...d.maintenanceRecords,...d.insuranceRecords].forEach(r=>m=Math.max(m,Number(r.entrySequence)||0)); d.nextEntrySequence=Math.max(d.nextEntrySequence||1,m+1); return d}
+function normVehicle(v,i){return {vehicleId:v.vehicleId||v.id||uid("VEH"),slot:Number.isFinite(+v.slot)?+v.slot:i,displayName:v.displayName||[v.year,v.make,v.model].filter(Boolean).join(" ")||v.nickname||"Vehicle",nickname:v.nickname||"",year:v.year||"",make:v.make||"",model:v.model||"",badge:v.badge||"",status:v.status||"Active",primaryPhoto:v.primaryPhoto||v.photo||"",primaryPhotoZoom:Number(v.primaryPhotoZoom||v.photoZoom||1),primaryPhotoOffsetX:Number(v.primaryPhotoOffsetX||0),primaryPhotoOffsetY:Number(v.primaryPhotoOffsetY||0),createdAt:v.createdAt||nowISO(),modifiedAt:v.modifiedAt||nowISO()}}
+function normRecord(r,type,vid){const rec={...r}; rec.recordType=rec.recordType||type; rec.vehicleId=rec.vehicleId||vid||""; rec.recordId=rec.recordId||rec.id||uid(type.toUpperCase()); rec.entrySequence=Number(rec.entrySequence)||seq(); rec.source=rec.source||"JSON Restore"; rec.classificationTags=tags(rec.classificationTags); rec.dataQuality=DATA_QUALITIES.includes(rec.dataQuality)?rec.dataQuality:"Review"; rec.createdAt=rec.createdAt||nowISO(); rec.modifiedAt=rec.modifiedAt||nowISO(); rec.notes=rec.notes||""; return rec}
+function normFuel(r,vid){const rec=normRecord(r,"Fuel",vid); Object.assign(rec,{date:r.date||"",time:r.time||"",odometer:numVal(r.odometer),miles:numVal(r.miles||r.totalMiles),gallons:numVal(r.gallons),mpg:numVal(r.mpg),fuelGrade:r.fuelGrade||r.grade||"",ethanolFree:r.ethanolFree||"",station:r.station||"",fuelPricePerGallon:numVal(r.fuelPricePerGallon||r.price),totalFuelCost:numVal(r.totalFuelCost||r.cost),fuelCostSource:r.fuelCostSource||"",attachments:arr(r.attachments)}); if((rec.odometer!==""&&rec.miles==="")||(rec.mpg!==""&&(+rec.mpg>18||+rec.mpg<6)))addTag(rec,"Historical"); return rec}
+function normMaint(r,vid){const rec=normRecord(r,"Maintenance",vid); Object.assign(rec,{dropOffDate:r.dropOffDate||r.drop||r.date||"",pickUpDate:r.pickUpDate||r.pick||"",category:r.category||r.service||"Maintenance",status:r.status||"",odometer:numVal(r.odometer),location:r.location||"",serviceProvider:r.serviceProvider||"",performedBy:r.performedBy||"",totalCost:numVal(r.totalCost||r.cost),attachments:arr(r.attachments)}); return rec}
+function normIns(r,vid){const rec=normRecord(r,"Insurance",vid); Object.assign(rec,{company:r.company||"",policyNumber:r.policyNumber||r.policy||"",effectiveDate:r.effectiveDate||"",expirationDate:r.expirationDate||"",coverageValue:numVal(r.coverageValue||r.insuranceValue),agreedValue:numVal(r.agreedValue),premium:numVal(r.premium),agentName:r.agentName||"",agency:r.agency||"",phone:r.phone||"",email:r.email||"",coverageNotes:r.coverageNotes||"",attachments:arr(r.attachments)}); return rec}
 
-function isLegacyBackup(d){
-  return d && String(d.version||"").startsWith("2.0.6") && Array.isArray(d.vehicles);
-}
-function convertLegacyBackup(d){
-  const converted=blankData();
-  converted.version=VERSION;
-  converted.settings.lastDataBackupDate=d.backupDate||d.exportDate||"";
-  converted.stations=Array.isArray(d.stations)&&d.stations.length?[...d.stations]:[...DEFAULT_STATIONS];
-  if(!converted.stations.includes("Other")) converted.stations.push("Other");
-  converted.vehicles=[null,null];
-  converted.entries=[];
-  converted.maintenance=[];
-  converted.insurance=[];
-  converted.documents=[];
-  converted.photos=[];
-  (d.vehicles||[]).slice(0,2).forEach((oldV,i)=>{
-    if(!oldV)return;
-    const vehicleId=oldV.id||`vehicle-${i+1}`;
-    const photo=oldV.primaryPhoto||oldV.photo||"";
-    const zoom=Number(oldV.primaryPhotoZoom||oldV.photoZoom||1.25);
-    const v={
-      id:vehicleId,
-      slot:i,
-      nickname:oldV.nickname||"",
-      year:oldV.year||"",
-      make:oldV.make||"",
-      model:oldV.model||"",
-      badge:oldV.badge||"",
-      vin:oldV.vin||"",
-      plate:oldV.plate||"",
-      plateState:oldV.plateState||"",
-      acquisitionDate:oldV.acquisitionDate||oldV.purchaseDate||"",
-      startingOdometer:oldV.startingOdometer||oldV.startingOdo||"",
-      purchaseDate:oldV.purchaseDate||"",
-      purchaseCost:oldV.purchaseCost||"",
-      seller:oldV.seller||"",
-      insuranceValue:oldV.insuranceValue||"",
-      agreedValue:oldV.agreedValue||"",
-      insCompany:oldV.insCompany||oldV.insuranceCompany||"",
-      policyNumber:oldV.policyNumber||oldV.policy||"",
-      effectiveDate:oldV.effectiveDate||"",
-      expirationDate:oldV.expirationDate||"",
-      notes:oldV.notes||"",
-      primaryPhoto:photo,
-      primaryPhotoZoom:zoom,
-      primaryPhotoOffsetX:Number(oldV.primaryPhotoOffsetX||0),
-      primaryPhotoOffsetY:Number(oldV.primaryPhotoOffsetY||0),
-      photos:photo?[{id:uid("photo"),data:photo,caption:"Primary Photo",primary:true,zoom}]:[],
-      status:oldV.status||"Active",
-      defaultFuelGrade:(oldV.lastFuel&&oldV.lastFuel.grade)||oldV.defaultFuelGrade||"",
-      registration:{}
-    };
-    converted.vehicles[i]=v;
-    if(v.photos.length) converted.photos.push({vehicleId:vehicleId,...v.photos[0]});
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function fmt(v,d=2){return v!==""&&v!=null&&Number.isFinite(+v)?(+v).toFixed(d):""}
+function money(v){return v!==""&&v!=null&&Number.isFinite(+v)?"$"+(+v).toFixed(2):""}
+function nav(screen,params={}){route={screen,...params}; render(); setTimeout(()=>scrollTo(0,0),0)}
+function header(title,back="home"){return '<div class="topbar"><button class="smallbtn ghost" onclick="nav(&quot;'+back+'&quot;)">Back</button><b>'+esc(title)+'</b><span></span></div>'}
+function footer(){return '<div class="version">RGB Mileage v'+VERSION+' - '+BUILD_DATE+'</div>'}
+function bottomNav(){return '<div class="bottom-nav"><button onclick="nav(&quot;home&quot;)">Home</button><button onclick="nav(&quot;reports&quot;)">Reports</button><button onclick="nav(&quot;data&quot;)">Data</button><button onclick="nav(&quot;settings&quot;)">Settings</button></div>'}
+function vehicleLabel(v){return v?([v.year,v.make,v.model].filter(Boolean).join(" ")||v.nickname||v.displayName||"Vehicle"):"Vehicle"}
+function vehicleBadge(v){if(!v)return "+"; if(v.badge)return v.badge; const s=vehicleLabel(v); if(/grand wagoneer/i.test(s))return "JGW"; if(/cj\s*7/i.test(s))return "CJ7"; return s.split(/\s+/).map(x=>x[0]).join("").slice(0,6).toUpperCase()||"+"}
+function getVehicle(id){return state.vehicles.find(v=>v&&v.vehicleId===id)}
+function render(){const app=$("app"); const s=route.screen; if(s==="home")return home(app); if(s==="vehicleView")return vehicleView(app,route.vehicleId); if(s==="vehicleEdit")return vehicleEdit(app,route.vehicleId,route.slot); if(s==="quickFuel")return quickFuel(app,route.vehicleId); if(s==="quickMaintenance")return quickMaintenance(app,route.vehicleId); if(s==="quickInsurance")return quickInsurance(app,route.vehicleId); if(s==="recordView")return recordView(app,route.type,route.recordId); if(s==="recordEdit")return recordEdit(app,route.type,route.recordId); if(s==="data")return dataScreen(app); if(s==="reports")return reports(app); if(s==="settings")return settings(app)}
+function clearLP(){if(longPressTimer)clearTimeout(longPressTimer); longPressTimer=null}
+function home(app){app.innerHTML='<h1>RGB Mileage</h1><div class="subtitle">Vehicle Record Preservation System</div><div class="stack">'+state.vehicles.map((v,i)=>circleHtml(v,i)).join("")+'</div>'+bottomNav()+footer()}
+function circleHtml(v,i){const inner=v&&v.primaryPhoto?'<img src="'+v.primaryPhoto+'" alt="">':esc(vehicleBadge(v)); const label=v?vehicleLabel(v):"Add Vehicle"; return '<div class="circle-wrap" ontouchstart="lpVehicle(event,'+i+')" onmousedown="lpVehicle(event,'+i+')" ontouchend="clearLP()" onmouseup="clearLP()" onclick="tapVehicle('+i+')"><div class="circle">'+inner+'</div><div class="vehicle-label">'+esc(label)+'</div></div>'}
+function tapVehicle(i){if(suppressTap){suppressTap=false;return} const v=state.vehicles[i]; if(v)nav("quickFuel",{vehicleId:v.vehicleId}); else nav("vehicleEdit",{slot:i})}
+function lpVehicle(e,i){clearLP(); longPressTimer=setTimeout(()=>{suppressTap=true; const v=state.vehicles[i]; if(v)nav("vehicleView",{vehicleId:v.vehicleId}); else nav("vehicleEdit",{slot:i})},650)}
+function vehicleView(app,vid){const v=getVehicle(vid); if(!v)return nav("home"); app.innerHTML=header("View Vehicle")+'<div class="card"><h2>'+esc(vehicleLabel(v))+'</h2><p>Badge: '+esc(v.badge||vehicleBadge(v))+'<br>Status: '+esc(v.status)+'</p><div class="form-actions"><button onclick="nav(&quot;vehicleEdit&quot;,{vehicleId:&quot;'+vid+'&quot;})">Edit</button><button class="danger" onclick="archiveVehicle(&quot;'+vid+'&quot;)">Archive</button></div></div><div class="card"><h2>Actions</h2><button class="wide" onclick="nav(&quot;quickFuel&quot;,{vehicleId:&quot;'+vid+'&quot;})">Quick Fuel Entry</button><button class="wide" onclick="nav(&quot;quickMaintenance&quot;,{vehicleId:&quot;'+vid+'&quot;})">Quick Maintenance Entry</button><button class="wide" onclick="nav(&quot;quickInsurance&quot;,{vehicleId:&quot;'+vid+'&quot;})">Quick Insurance Entry</button></div>'+previousRecordsHtml("Fuel",vid)+previousRecordsHtml("Maintenance",vid)+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}
+function vehicleEdit(app,vid,slot=0){let v=vid?getVehicle(vid):null; if(!v)v={vehicleId:uid("VEH"),slot,status:"Active"}; app.innerHTML=header(vid?"Edit Vehicle":"Add Vehicle")+'<div class="card"><label>Year<input id="vehYear" value="'+esc(v.year||"")+'"></label><label>Make<input id="vehMake" value="'+esc(v.make||"")+'"></label><label>Model<input id="vehModel" value="'+esc(v.model||"")+'"></label><label>Badge<input id="vehBadge" value="'+esc(v.badge||"")+'"></label><label>Photo<input type="file" id="vehPhoto" accept="image/*"></label><h3>Vehicle Acquisition Record</h3><label>Acquisition Date<input type="date" id="acqDate"></label><label>Starting Odometer<input type="number" step="0.01" id="startOdo"></label><label>Purchase Price<input type="number" step="0.01" id="purchasePrice"></label><label>Seller<input id="seller"></label><button class="wide primary" onclick="saveVehicle(&quot;'+v.vehicleId+'&quot;,'+(v.slot??slot)+')">Save Vehicle</button></div>'+bottomNav()+footer()}
+async function imageToData(file){return await new Promise(resolve=>{const r=new FileReader(); r.onload=e=>{const img=new Image(); img.onload=()=>{let w=img.width,h=img.height,sc=Math.min(1,1200/Math.max(w,h)); const c=document.createElement("canvas"); c.width=Math.round(w*sc); c.height=Math.round(h*sc); c.getContext("2d").drawImage(img,0,0,c.width,c.height); resolve(c.toDataURL("image/jpeg",.85))}; img.onerror=()=>resolve(e.target.result); img.src=e.target.result}; r.readAsDataURL(file)})}
+async function saveVehicle(vid,slot){let v=getVehicle(vid)||{vehicleId:vid,slot,status:"Active",createdAt:nowISO()}; v.year=$("vehYear").value.trim(); v.make=$("vehMake").value.trim(); v.model=$("vehModel").value.trim(); v.badge=$("vehBadge").value.trim(); v.displayName=vehicleLabel(v); v.modifiedAt=nowISO(); const f=$("vehPhoto").files[0]; if(f)v.primaryPhoto=await imageToData(f); state.vehicles[slot]=v; if($("acqDate").value||$("startOdo").value||$("purchasePrice").value||$("seller").value){const r=baseRecord("VehicleAcquisition",vid); r.acquisitionDate=$("acqDate").value;r.startingOdometer=numVal($("startOdo").value);r.purchasePrice=numVal($("purchasePrice").value);r.seller=$("seller").value; state.vehicleAcquisitionRecords.push(r)} saveData(); alert("Vehicle saved."); nav("home")}
+function archiveVehicle(vid){if(confirm("Archive vehicle?")){const v=getVehicle(vid); v.status="Archived"; v.modifiedAt=nowISO(); saveData(); nav("home")}}
 
-    (oldV.fuel||[]).forEach((f,idx)=>{
-      converted.entries.push({
-        recordId:f.recordId||f.id||uid("FUEL"),
-        entrySequence:Number(f.entrySequence)||idx+1,
-        vehicleId:vehicleId,
-        vehicle:`${v.year||""} ${v.make||""} ${v.model||""}`.trim()||v.nickname||"Vehicle",
-        entryType:f.entryType||"Fuel",
-        dataQuality:f.dataQuality||"Verified",
-        date:f.date||"",
-        time:f.time||"",
-        odometer:f.odometer||"",
-        miles:f.miles||"",
-        gallons:f.gallons||"",
-        fuelGrade:f.fuelGrade||f.grade||(oldV.lastFuel&&oldV.lastFuel.grade)||"",
-        ethanolFree:f.ethanolFree||((f.type||oldV.lastFuel?.type||"").toLowerCase().includes("non")?"Yes":""),
-        station:f.station||(oldV.lastFuel&&oldV.lastFuel.station)||"",
-        mpg:f.mpg||"",
-        fuelPricePerGallon:f.fuelPricePerGallon||f.price||"",
-        totalFuelCost:f.totalFuelCost||f.cost||"",
-        fuelCostSource:f.fuelCostSource||"",
-        notes:f.notes||"",
-        attachments:Array.isArray(f.attachments)?f.attachments:[]
-      });
-    });
+function recArray(type){return type==="Fuel"?state.fuelRecords:type==="Maintenance"?state.maintenanceRecords:type==="Insurance"?state.insuranceRecords:state.vehicleAcquisitionRecords}
+function records(type,vid,includeArchived=false){return recArray(type).filter(r=>(!vid||r.vehicleId===vid)&&(includeArchived||!hasTag(r,"Archived"))).sort((a,b)=>(b.entrySequence||0)-(a.entrySequence||0))}
+function findRecord(type,id){return records(type,null,true).find(r=>r.recordId===id)}
+function recordTitle(type,r){if(type==="Fuel")return (r.date||"No Date")+" Odo "+fmt(r.odometer); if(type==="Maintenance")return (r.dropOffDate||"No Date")+" "+(r.category||"Maintenance"); if(type==="Insurance")return (r.company||"Insurance")+" "+(r.policyNumber||""); return r.recordId}
+function recordDetails(type,r){if(type==="Fuel")return "Miles: "+fmt(r.miles)+" | Gallons: "+fmt(r.gallons,3)+" | MPG: "+fmt(r.mpg)+" | Station: "+esc(r.station||"")+"<br>"+esc(r.notes||""); if(type==="Maintenance")return "Odometer: "+fmt(r.odometer)+" | Cost: "+money(r.totalCost)+"<br>"+esc(r.notes||""); if(type==="Insurance")return "Effective: "+esc(r.effectiveDate||"")+" - "+esc(r.expirationDate||"")+" | Premium: "+money(r.premium); return ""}
+function previousRecordsHtml(type,vid){const rows=records(type,vid,false); return '<details class="card" open><summary><strong>Previous '+type+' Records</strong></summary>'+(rows.length?rows.map(r=>entryRow(type,r)).join(""):'<p class="muted">No records.</p>')+'</details>'}
+function entryRow(type,r){const b=tags(r.classificationTags).map(t=>'<span class="badge '+(t==="Historical"?"warn":t==="Archived"?"arch":"")+'">'+esc(t)+'</span>').join(""); return '<div class="entry-row" ontouchstart="lpRecord(event,&quot;'+type+'&quot;,&quot;'+r.recordId+'&quot;)" onmousedown="lpRecord(event,&quot;'+type+'&quot;,&quot;'+r.recordId+'&quot;)" ontouchend="clearLP()" onmouseup="clearLP()" onclick="tapRecordRow(event)"><details><summary><div class="entry-main"><span>'+recordTitle(type,r)+'</span><span class="muted">'+esc(r.dataQuality)+'</span></div><div class="badges">'+b+'</div></summary><p>'+recordDetails(type,r)+'</p></details></div>'}
+function lpRecord(e,type,id){clearLP(); longPressTimer=setTimeout(()=>{suppressTap=true; nav("recordView",{type,recordId:id})},650)}
+function tapRecordRow(e){if(suppressTap){e.preventDefault();suppressTap=false}}
+function recordMeta(r){return '<p>Record ID: '+esc(r.recordId)+'<br>Sequence: '+r.entrySequence+'<br>Source: '+esc(r.source)+'<br>Quality: '+esc(r.dataQuality)+'<br>Tags: '+esc(tags(r.classificationTags).join("; "))+'</p>'}
+function commonFields(r,ro){const rd=ro?"readonly":""; const sd=ro?"disabled":""; return '<label>Data Quality<select id="rq" '+sd+'>'+DATA_QUALITIES.map(q=>'<option '+(r.dataQuality===q?"selected":"")+'>'+q+'</option>').join("")+'</select></label><label>Tags<input id="rtags" '+rd+' value="'+esc(tags(r.classificationTags).join("; "))+'"></label><label>Notes<textarea id="rnotes" '+rd+'>'+esc(r.notes||"")+'</textarea></label>'}
+function recordFields(type,r,ro){const rd=ro?"readonly":""; if(type==="Fuel")return '<div class="row"><label>Date<input type="date" id="rdate" '+rd+' value="'+esc(r.date||"")+'"></label><label>Time<input type="time" id="rtime" '+rd+' value="'+esc(r.time||"")+'"></label></div><div class="row"><label>Odometer<input type="number" step="0.01" id="rodo" '+rd+' value="'+esc(r.odometer)+'"></label><label>Miles<input type="number" step="0.01" id="rmiles" '+rd+' value="'+esc(r.miles)+'"></label></div><div class="row"><label>Gallons<input type="number" step="0.001" id="rgal" '+rd+' value="'+esc(r.gallons)+'"></label><label>MPG<input type="number" step="0.01" id="rmpg" '+rd+' value="'+esc(r.mpg)+'"></label></div><label>Station<input id="rstation" '+rd+' value="'+esc(r.station||"")+'"></label>'+commonFields(r,ro); if(type==="Maintenance")return '<label>Drop-Off Date<input type="date" id="rdrop" '+rd+' value="'+esc(r.dropOffDate||"")+'"></label><label>Category<input id="rcat" '+rd+' value="'+esc(r.category||"")+'"></label><label>Cost<input type="number" step="0.01" id="rcost" '+rd+' value="'+esc(r.totalCost)+'"></label>'+commonFields(r,ro); if(type==="Insurance")return '<label>Company<input id="rcompany" '+rd+' value="'+esc(r.company||"")+'"></label><label>Policy Number<input id="rpol" '+rd+' value="'+esc(r.policyNumber||"")+'"></label><label>Effective<input type="date" id="reff" '+rd+' value="'+esc(r.effectiveDate||"")+'"></label><label>Expiration<input type="date" id="rexp" '+rd+' value="'+esc(r.expirationDate||"")+'"></label><label>Premium<input type="number" step="0.01" id="rprem" '+rd+' value="'+esc(r.premium)+'"></label>'+commonFields(r,ro); return commonFields(r,ro)}
+function recordView(app,type,id){const r=findRecord(type,id); if(!r)return nav("home"); app.innerHTML=header("View "+type+" Record","home")+'<div class="card">'+recordMeta(r)+recordFields(type,r,true)+'<div class="form-actions"><button onclick="nav(&quot;recordEdit&quot;,{type:&quot;'+type+'&quot;,recordId:&quot;'+id+'&quot;})">Edit</button><button class="danger" onclick="archiveRecord(&quot;'+type+'&quot;,&quot;'+id+'&quot;)">Archive</button></div></div>'+bottomNav()+footer()}
+function recordEdit(app,type,id){const r=findRecord(type,id); if(!r)return nav("home"); app.innerHTML=header("Edit "+type+" Record","home")+'<div class="card">'+recordFields(type,r,false)+'<div class="form-actions"><button class="primary" onclick="saveRecordEdit(&quot;'+type+'&quot;,&quot;'+id+'&quot;)">Save Changes</button><button class="danger" onclick="archiveRecord(&quot;'+type+'&quot;,&quot;'+id+'&quot;)">Archive</button></div></div>'+bottomNav()+footer()}
+function saveRecordEdit(type,id){const r=findRecord(type,id); if(!r)return; r.dataQuality=$("rq").value; r.classificationTags=$("rtags").value.split(";").map(x=>x.trim()).filter(Boolean); r.notes=$("rnotes").value; r.modifiedAt=nowISO(); if(type==="Fuel"){r.date=$("rdate").value;r.time=$("rtime").value;r.odometer=numVal($("rodo").value);r.miles=numVal($("rmiles").value);r.gallons=numVal($("rgal").value);r.mpg=numVal($("rmpg").value);r.station=$("rstation").value} if(type==="Maintenance"){r.dropOffDate=$("rdrop").value;r.category=$("rcat").value;r.totalCost=numVal($("rcost").value)} if(type==="Insurance"){r.company=$("rcompany").value;r.policyNumber=$("rpol").value;r.effectiveDate=$("reff").value;r.expirationDate=$("rexp").value;r.premium=numVal($("rprem").value)} saveData(); alert("Changes saved."); nav("recordView",{type,recordId:id})}
+function archiveRecord(type,id){const r=findRecord(type,id); if(!r)return; if(confirm("Archive this record?")){addTag(r,"Archived"); r.modifiedAt=nowISO(); saveData(); alert("Record archived."); nav("vehicleView",{vehicleId:r.vehicleId})}}
 
-    (oldV.maintenance||[]).forEach((m,idx)=>{
-      converted.maintenance.push({
-        id:m.id||uid("MAINT"),
-        recordId:m.recordId||m.id||uid("MAINT"),
-        entrySequence:Number(m.entrySequence)||converted.entries.length+idx+1,
-        vehicleId:vehicleId,
-        vehicle:`${v.year||""} ${v.make||""} ${v.model||""}`.trim()||v.nickname||"Vehicle",
-        entryType:"Maintenance",
-        dataQuality:m.dataQuality||"Verified",
-        date:m.date||m.dropOffDate||m.drop||"",
-        odometer:m.odometer||"",
-        category:m.category||m.type||"Maintenance",
-        status:m.status||"",
-        performedBy:m.performedBy||"",
-        location:m.location||m.shop||"",
-        cost:m.cost||"",
-        notes:m.notes||"",
-        attachments:Array.isArray(m.attachments)?m.attachments:[]
-      });
-    });
+function quickFuel(app,vid){const v=getVehicle(vid), n=new Date(); if(!v)return nav("home"); app.innerHTML=header(vehicleLabel(v)+" - Quick Fuel Entry")+'<div class="card"><div class="row"><label>Date<input type="date" id="fdate" value="'+n.toISOString().slice(0,10)+'"></label><label>Time<input type="time" id="ftime" value="'+n.toTimeString().slice(0,5)+'"></label></div><div class="row"><label>Odometer<input type="number" step="0.01" id="fodo" oninput="calcFuel(&quot;'+vid+'&quot;)"></label><label>Miles<input type="number" step="0.01" id="fmiles" oninput="calcMpg()"></label></div><div class="row"><label>Gallons<input type="number" step="0.001" id="fgal" oninput="calcMpg()"></label><label>MPG<input type="number" step="0.01" id="fmpg" readonly></label></div><div class="row"><label>Fuel Grade<select id="fgrade">'+FUEL_GRADES.map(g=>'<option>'+g+'</option>').join("")+'</select></label><label>Ethanol Free<select id="fef"><option></option><option>Yes</option><option>No</option></select></label></div><label>Station<select id="fstation">'+state.stations.map(s=>'<option>'+esc(s)+'</option>').join("")+'</select></label><div class="row"><label>Price/Gal<input type="number" step="0.01" id="fprice" oninput="calcCost()"></label><label>Total Cost<input type="number" step="0.01" id="fcost"></label></div><label>Notes<textarea id="fnotes"></textarea></label><button class="wide primary" onclick="saveQuickFuel(&quot;'+vid+'&quot;)">Save Entry</button></div>'+previousRecordsHtml("Fuel",vid)+bottomNav()+footer()}
+function previousFuelOdo(vid,odo){const rows=records("Fuel",vid,false).filter(r=>r.odometer!==""&&Number(r.odometer)<Number(odo)).sort((a,b)=>Number(b.odometer)-Number(a.odometer)); return rows[0]?.odometer ?? ""}
+function calcFuel(vid){const odo=numVal($("fodo").value), prev=previousFuelOdo(vid,odo); if(odo!==""&&prev!=="")$("fmiles").value=(odo-prev).toFixed(2); calcMpg()}
+function calcMpg(){const m=numVal($("fmiles").value), g=numVal($("fgal").value); $("fmpg").value=(m!==""&&g>0)?(m/g).toFixed(2):""; calcCost()}
+function calcCost(){const g=numVal($("fgal")?.value), p=numVal($("fprice")?.value); if($("fcost")&&g!==""&&p!=="")$("fcost").value=(g*p).toFixed(2)}
+function saveQuickFuel(vid){const r=baseRecord("Fuel",vid,"Manual Entry"); Object.assign(r,{date:$("fdate").value,time:$("ftime").value,odometer:numVal($("fodo").value),miles:numVal($("fmiles").value),gallons:numVal($("fgal").value),mpg:numVal($("fmpg").value),fuelGrade:$("fgrade").value,ethanolFree:$("fef").value,station:$("fstation").value,fuelPricePerGallon:numVal($("fprice").value),totalFuelCost:numVal($("fcost").value),fuelCostSource:$("fcost").value?"Calculated":"",notes:$("fnotes").value,attachments:[]}); if(r.odometer!==""&&r.miles==="")addTag(r,"Historical"); state.fuelRecords.push(r); saveData(); alert("Fuel entry saved."); nav("home")}
 
-    if(oldV.insCompany||oldV.policyNumber||oldV.effectiveDate||oldV.expirationDate||oldV.insuranceValue||(oldV.insuranceAttachments||[]).length){
-      converted.insurance.push({
-        id:uid("INS"),
-        recordId:uid("INS"),
-        entrySequence:converted.entries.length+converted.maintenance.length+converted.insurance.length+1,
-        vehicleId:vehicleId,
-        vehicle:`${v.year||""} ${v.make||""} ${v.model||""}`.trim()||v.nickname||"Vehicle",
-        company:oldV.insCompany||"",
-        policyNumber:oldV.policyNumber||"",
-        effectiveDate:oldV.effectiveDate||"",
-        expirationDate:oldV.expirationDate||"",
-        insuranceValue:oldV.insuranceValue||"",
-        attachments:Array.isArray(oldV.insuranceAttachments)?oldV.insuranceAttachments:[]
-      });
-    }
-  });
-  return converted;
-}
-function backupSummary(d, legacy){
-  const vehicleCount=(d.vehicles||[]).filter(Boolean).length;
-  const entryCount=(d.entries||[]).length;
-  const maintCount=(d.maintenance||[]).length;
-  const insCount=(d.insurance||[]).length;
-  const stationCount=(d.stations||[]).length;
-  const attachmentCount=[...(d.entries||[]),...(d.maintenance||[]),...(d.insurance||[])].reduce((n,r)=>n+(Array.isArray(r.attachments)?r.attachments.length:0),0);
-  return `${legacy?"Supported backup conversion detected.\n\n":""}Backup Version: ${d.originalVersion||d.version||"Unknown"}\nVehicles: ${vehicleCount}\nFuel Entries: ${entryCount}\nMaintenance Records: ${maintCount}\nInsurance Records: ${insCount}\nStations: ${stationCount}\nAttachments: ${attachmentCount}`;
-}
+function quickMaintenance(app,vid){app.innerHTML=header("Quick Maintenance Entry")+'<div class="card"><label>Drop-Off Date<input type="date" id="mdrop"></label><label>Category<input id="mcat"></label><label>Odometer<input type="number" step="0.01" id="modo"></label><label>Cost<input type="number" step="0.01" id="mcost"></label><label>Notes<textarea id="mnotes"></textarea></label><button class="wide primary" onclick="saveQuickMaintenance(&quot;'+vid+'&quot;)">Save Maintenance</button></div>'+previousRecordsHtml("Maintenance",vid)+bottomNav()+footer()}
+function saveQuickMaintenance(vid){const r=baseRecord("Maintenance",vid,"Manual Entry"); Object.assign(r,{dropOffDate:$("mdrop").value,category:$("mcat").value||"Maintenance",odometer:numVal($("modo").value),totalCost:numVal($("mcost").value),notes:$("mnotes").value,attachments:[]}); state.maintenanceRecords.push(r); saveData(); alert("Maintenance saved."); nav("vehicleView",{vehicleId:vid})}
+function quickInsurance(app,vid){app.innerHTML=header("Quick Insurance Entry")+'<div class="card"><label>Company<input id="icomp"></label><label>Policy Number<input id="ipol"></label><label>Effective Date<input type="date" id="ieff"></label><label>Expiration Date<input type="date" id="iexp"></label><label>Premium<input type="number" step="0.01" id="iprem"></label><label>Notes<textarea id="inotes"></textarea></label><button class="wide primary" onclick="saveQuickInsurance(&quot;'+vid+'&quot;)">Save Policy</button></div>'+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}
+function saveQuickInsurance(vid){const r=baseRecord("Insurance",vid,"Manual Entry"); Object.assign(r,{company:$("icomp").value,policyNumber:$("ipol").value,effectiveDate:$("ieff").value,expirationDate:$("iexp").value,premium:numVal($("iprem").value),notes:$("inotes").value,attachments:[]}); state.insuranceRecords.push(r); saveData(); alert("Insurance policy saved."); nav("vehicleView",{vehicleId:vid})}
 
-function normalizeData(d){
-  const base=blankData();
-  if(!d||typeof d!=="object") return base;
-  if(isLegacyBackup(d)){const originalVersion=d.version; d=convertLegacyBackup(d); d.originalVersion=originalVersion;}
-  d.version=VERSION;
-  d.settings=Object.assign(base.settings,d.settings||{});
-  d.stations=Array.isArray(d.stations)&&d.stations.length?d.stations:base.stations;
-  d.maintenanceCategories=Array.isArray(d.maintenanceCategories)&&d.maintenanceCategories.length?d.maintenanceCategories:base.maintenanceCategories;
-  d.maintenanceStatus=Array.isArray(d.maintenanceStatus)&&d.maintenanceStatus.length?d.maintenanceStatus:base.maintenanceStatus;
-  d.performedBy=Array.isArray(d.performedBy)&&d.performedBy.length?d.performedBy:base.performedBy;
-  d.vehicles=Array.isArray(d.vehicles)?d.vehicles:base.vehicles;
-  while(d.vehicles.length<2)d.vehicles.push(null);
-  d.entries=Array.isArray(d.entries)?d.entries:[];
-  d.maintenance=Array.isArray(d.maintenance)?d.maintenance:[];
-  d.insurance=Array.isArray(d.insurance)?d.insurance:[];
-  d.documents=Array.isArray(d.documents)?d.documents:[];
-  d.photos=Array.isArray(d.photos)?d.photos:[];
-  d.vehicles=d.vehicles.map(v=>v?Object.assign({primaryPhotoOffsetX:0,primaryPhotoOffsetY:0,primaryPhotoZoom:1.25,status:"Active",photos:[]},v):null);
-  return d;
-}
-function getData(){
-  try{
-    let raw=localStorage.getItem(KEY), sourceKey=KEY;
-    if(!raw && Array.isArray(LEGACY_KEYS)){
-      for(const k of LEGACY_KEYS){raw=localStorage.getItem(k);if(raw){sourceKey=k;break}}
-    }
-    const d=normalizeData(raw?JSON.parse(raw):blankData());
-    if(sourceKey!==KEY) setData(d);
-    return d;
-  }catch(err){
-    console.error("RGB Mileage data load failed",err);
-    return blankData();
-  }
-}
-function setData(d){localStorage.setItem(KEY,JSON.stringify(d))}
-function showScreen(id){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  const screen=document.getElementById(id)||document.getElementById("homeScreen");
-  screen.classList.add("active");
-  if(id==="homeScreen")renderHome();
-  if(id==="reportsScreen")renderReports();
-  if(id==="backupScreen"||id==="dataScreen")renderDataMeta();
-  if(id==="settingsScreen")loadSettings();
-  ensureVersionFooters();
-}
-function ensureVersionFooters(){
-  document.querySelectorAll(".screen").forEach(s=>{
-    let f=s.querySelector(":scope > footer.version");
-    if(!f){f=document.createElement("footer");f.className="version";s.appendChild(f)}
-    f.textContent=`Version ${VERSION}`;
-  });
-}
-function initialsFor(v){if(!v)return"";const text=`${v.year||""} ${v.make||""} ${v.model||""}`.trim();if(/grand wagoneer/i.test(text))return"JGW";if(/c10/i.test(text))return"CC10";if(/f-?150.*lightning/i.test(text))return"F150L";if(/cj7|cj-7/i.test(text))return"CJ7";return text.split(/\s+/).filter(w=>!/^\d{4}$/.test(w)).map(w=>w[0]).join("").slice(0,5).toUpperCase()||"+"}
-function labelFor(v){return v?(`${v.year||""} ${v.make||""} ${v.model||""}`.trim()||v.nickname||"Vehicle"):""}
-let pressTimer=null;
-function renderHome(){
-  const d=getData();
-  [0,1].forEach(i=>{
-    const slot=document.getElementById(`slot${i}`);
-    const label=document.getElementById(`slot${i}Label`);
-    const v=d.vehicles[i];
-    slot.oncontextmenu=e=>e.preventDefault();
-    slot.onpointerdown=e=>handlePointerDown(e,i);
-    slot.onpointerup=clearPressTimer;
-    slot.onpointercancel=clearPressTimer;
-    if(!v||(v.status==="Archived"&&!d.settings.showArchived)){
-      slot.innerHTML=`<div class="empty-wrap"><div class="plus">+</div><div class="empty-car">▰</div><div class="add-text">Add Vehicle</div></div>`;
-      label.textContent="";
-      slot.onclick=()=>{activeSlot=i;prepareAddVehicle();showScreen("addVehicleScreen")};
-    }else{
-      slot.innerHTML=v.primaryPhoto
-        ? `<img src="${v.primaryPhoto}" alt="${labelFor(v)}" style="transform:translate(${v.primaryPhotoOffsetX||0}px,${v.primaryPhotoOffsetY||0}px) scale(${v.primaryPhotoZoom||1.25})" draggable="false">`
-        : `<span class="initials">${initialsFor(v)}</span>`;
-      label.textContent=labelFor(v);
-      slot.onclick=()=>{
-        if(longPressTriggered){longPressTriggered=false;return}
-        openQuickFuel(i);
-      };
-    }
-  });
-  ensureVersionFooters();
-}
-function handlePointerDown(e,i){
-  clearPressTimer();
-  longPressTriggered=false;
-  pressTimer=setTimeout(()=>{
-    const d=getData();
-    if(d.vehicles[i]){
-      longPressTriggered=true;
-      if(e&&e.preventDefault)e.preventDefault();
-      activeSlot=i;
-      prepareEditVehicle(i);
-      showScreen("addVehicleScreen");
-    }
-  },650);
-}
-function clearPressTimer(){if(pressTimer)clearTimeout(pressTimer);pressTimer=null}
-function prepareAddVehicle(){document.getElementById("vehicleFormTitle").textContent="Add Vehicle";["vehicleNickname","vehicleYear","vehicleMake","vehicleModel","vehicleVin","vehiclePlate","vehiclePlateState","vehicleAcqDate","vehicleStartingOdo","vehiclePurchaseDate","vehiclePurchaseCost","vehicleSeller","vehicleInsuranceValue","vehicleAgreedValue","vehicleNotes"].forEach(id=>document.getElementById(id).value="");document.getElementById("vehiclePhoto").value="";selectedVehiclePhotoData="";selectedVehiclePhotoZoom=1.25;selectedVehiclePhotoOffsetX=0;selectedVehiclePhotoOffsetY=0;document.getElementById("vehiclePhotoZoom").value="1.25";document.getElementById("vehiclePhotoPreview").innerHTML="<span>Preview</span>";initPhotoPreviewDrag()}
+function dataScreen(app){app.innerHTML=header("Data Management")+'<div class="card"><h2>Backup & Restore</h2><button class="wide primary" onclick="downloadBackup()">Create JSON Backup</button><label>Restore JSON<input type="file" id="restoreFile" accept=".json"></label><button class="wide" onclick="restoreBackup()">Restore JSON Backup</button><pre id="dataStatus" class="small"></pre></div><div class="card"><h2>CSV Import</h2><p class="muted">CSV import preview. XLSX remains deferred.</p><label>Vehicle<select id="importVehicle">'+state.vehicles.filter(Boolean).map(v=>'<option value="'+v.vehicleId+'">'+esc(vehicleLabel(v))+'</option>').join("")+'</select></label><label>CSV File<input type="file" id="csvFile" accept=".csv"></label><button class="wide" onclick="previewCSV()">Preview Import</button><button class="wide primary" onclick="savePreviewRows()">Save Reviewed Rows</button><pre id="importStatus" class="small"></pre></div>'+bottomNav()+footer()}
+function backupPayload(){const p=JSON.parse(JSON.stringify(state)); p.app="RGB Mileage"; p.schemaVersion="2.1.0"; p.exportedAt=nowISO(); p.exportedByVersion=VERSION; p.backupType="Full JSON"; p.metadata={vehicleCount:state.vehicles.filter(Boolean).length,fuelRecordCount:state.fuelRecords.length,maintenanceRecordCount:state.maintenanceRecords.length,insuranceRecordCount:state.insuranceRecords.length,attachmentCount:state.attachments.length}; return p}
+function downloadBackup(){const p=backupPayload(), txt=JSON.stringify(p,null,2); if(!confirm("Backup Summary\\nVehicles: "+p.metadata.vehicleCount+"\\nFuel: "+p.metadata.fuelRecordCount+"\\nMaintenance: "+p.metadata.maintenanceRecordCount+"\\nInsurance: "+p.metadata.insuranceRecordCount+"\\nEstimated Size: "+new Blob([txt]).size+" bytes\\n\\nCreate backup?"))return; const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"})); a.download="RGBM_Backup_v"+VERSION+"_"+new Date().toISOString().slice(0,10)+".json"; a.click(); URL.revokeObjectURL(a.href); state.settings.lastBackupDate=nowISO(); saveData()}
+function restoreBackup(){const f=$("restoreFile").files[0]; if(!f)return alert("Choose a JSON backup first."); const r=new FileReader(); r.onload=()=>{try{const d=normalizeData(JSON.parse(r.result)); if(confirm("Restore Summary\\nVehicles: "+d.vehicles.filter(Boolean).length+"\\nFuel: "+d.fuelRecords.length+"\\nMaintenance: "+d.maintenanceRecords.length+"\\nInsurance: "+d.insuranceRecords.length+"\\n\\nThis replaces current data.")){saveData(d); alert("Restore complete."); nav("home")}}catch(e){alert("Restore failed: invalid or unsupported JSON.")}}; r.readAsText(f)}
+let previewRows=[];
+function parseCSV(t){const rows=[]; let row=[], cell="", q=false; for(let i=0;i<t.length;i++){const ch=t[i], nx=t[i+1]; if(ch=='"'&&q&&nx=='"'){cell+='"';i++;continue} if(ch=='"'){q=!q;continue} if(ch==","&&!q){row.push(cell);cell="";continue} if((ch=="\\n"||ch=="\\r")&&!q){if(ch=="\\r"&&nx=="\\n")i++; row.push(cell); if(row.some(x=>x.trim()))rows.push(row); row=[]; cell=""; continue} cell+=ch} row.push(cell); if(row.some(x=>x.trim()))rows.push(row); return rows}
+function previewCSV(){const file=$("csvFile").files[0]; if(!file)return alert("Choose a CSV file."); const reader=new FileReader(); reader.onload=()=>{const parsed=parseCSV(reader.result); if(parsed.length<2){$("importStatus").textContent="No records.";return} const headers=parsed[0].map(h=>h.trim()); const idx=n=>headers.findIndex(h=>h.toLowerCase()===n.toLowerCase()); const get=(row,n)=>{const x=idx(n); return x>=0?row[x]:""}; const vid=$("importVehicle").value; previewRows=parsed.slice(1).map(row=>normFuel({recordId:get(row,"recordId")||get(row,"Record ID")||uid("FUELIMP"),entrySequence:Number(get(row,"entrySequence")||get(row,"Entry Sequence"))||seq(),source:get(row,"source")||"CSV Import",classificationTags:(get(row,"classificationTags")||"Imported").split(";").map(x=>x.trim()).filter(Boolean),dataQuality:get(row,"dataQuality")||"Review",date:get(row,"date")||get(row,"Date"),time:get(row,"time")||get(row,"Time"),odometer:get(row,"odometer")||get(row,"Odometer"),miles:get(row,"miles")||get(row,"Total Miles"),gallons:get(row,"gallons")||get(row,"Gallons"),mpg:get(row,"mpg")||get(row,"MPG"),fuelGrade:get(row,"fuelGrade")||get(row,"Fuel Grade"),ethanolFree:get(row,"ethanolFree")||get(row,"Ethanol Free"),station:get(row,"station")||get(row,"Fuel Station"),notes:get(row,"notes")||get(row,"Notes")},vid)); $("importStatus").textContent="Preview complete.\\nRows ready: "+previewRows.length+"\\nDuplicates: "+previewRows.filter(r=>state.fuelRecords.some(e=>e.recordId===r.recordId)).length}; reader.readAsText(file)}
+function savePreviewRows(){if(!previewRows.length)return alert("Preview first."); let imported=0, skipped=0; const existing=new Set(state.fuelRecords.map(r=>r.recordId)); previewRows.forEach(r=>{if(existing.has(r.recordId)){skipped++;return} state.fuelRecords.push(r); existing.add(r.recordId); imported++}); saveData(); $("importStatus").textContent="Import Summary\\nImported: "+imported+"\\nSkipped existing: "+skipped; previewRows=[]}
+function reports(app){const fuel=state.fuelRecords.filter(r=>!hasTag(r,"Archived")&&!hasTag(r,"Historical")); const miles=fuel.reduce((a,r)=>a+(+r.miles||0),0), gal=fuel.reduce((a,r)=>a+(+r.gallons||0),0); app.innerHTML=header("Reports")+'<div class="grid2"><div class="kpi"><span>Fuel Records</span><b>'+fuel.length+'</b></div><div class="kpi"><span>Average MPG</span><b>'+(gal?(miles/gal).toFixed(2):"")+'</b></div><div class="kpi"><span>Maintenance</span><b>'+state.maintenanceRecords.filter(r=>!hasTag(r,"Archived")).length+'</b></div><div class="kpi"><span>Insurance</span><b>'+state.insuranceRecords.filter(r=>!hasTag(r,"Archived")).length+'</b></div></div><div class="card"><p class="muted">Default reports exclude Historical and Archived records.</p></div>'+bottomNav()+footer()}
+function settings(app){app.innerHTML=header("Settings")+'<div class="card"><h2>About</h2><p>RGB Mileage v'+VERSION+'<br>Build Date: '+BUILD_DATE+'<br>Schema: v2.1.0</p><button class="wide danger" onclick="if(confirm(&quot;Clear all local data?&quot;)){localStorage.removeItem(KEY);state=blankData();saveData();nav(&quot;home&quot;)}">Clear Local Data</button></div>'+bottomNav()+footer()}
 
-function optimizeImageFile(file,maxDim=1200,quality=0.85){
-  return new Promise(resolve=>{
-    if(!file || !file.type || !file.type.startsWith("image/")) return resolve("");
-    const reader=new FileReader();
-    reader.onload=e=>{
-      const img=new Image();
-      img.onload=()=>{
-        let w=img.width, h=img.height;
-        const scale=Math.min(1,maxDim/Math.max(w,h));
-        w=Math.round(w*scale); h=Math.round(h*scale);
-        const canvas=document.createElement("canvas");
-        canvas.width=w; canvas.height=h;
-        const ctx=canvas.getContext("2d");
-        ctx.drawImage(img,0,0,w,h);
-        resolve(canvas.toDataURL("image/jpeg",quality));
-      };
-      img.onerror=()=>resolve(e.target.result||"");
-      img.src=e.target.result;
-    };
-    reader.onerror=()=>resolve("");
-    reader.readAsDataURL(file);
-  });
-}
-async function fileToOptimizedDataURL(file){
-  if(file && file.type && file.type.startsWith("image/")) return await optimizeImageFile(file,1200,0.85);
-  return await fileToDataURL(file);
-}
-
-function fileToDataURL(file){return new Promise(resolve=>{if(!file)return resolve("");const reader=new FileReader();reader.onload=e=>resolve(e.target.result);reader.readAsDataURL(file)})}
-async function loadVehiclePhotoPreview(event){selectedVehiclePhotoData=await fileToOptimizedDataURL(event.target.files[0]);selectedVehiclePhotoOffsetX=0;selectedVehiclePhotoOffsetY=0;updatePhotoPreview()}
-function updatePhotoPreview(){selectedVehiclePhotoZoom=Number(document.getElementById("vehiclePhotoZoom").value||1.25);const box=document.getElementById("vehiclePhotoPreview");box.innerHTML=selectedVehiclePhotoData?`<img src="${selectedVehiclePhotoData}" style="transform:translate(${selectedVehiclePhotoOffsetX}px,${selectedVehiclePhotoOffsetY}px) scale(${selectedVehiclePhotoZoom})" alt="Vehicle preview" draggable="false">`:"<span>Preview</span>";initPhotoPreviewDrag()}
-
-function prepareEditVehicle(i){
-  const d=getData(), v=d.vehicles[i];
-  if(!v){prepareAddVehicle();return}
-  activeSlot=i;
-  document.getElementById("vehicleFormTitle").textContent="Edit Vehicle";
-  document.getElementById("vehicleNickname").value=v.nickname||"";
-  document.getElementById("vehicleYear").value=v.year||"";
-  document.getElementById("vehicleMake").value=v.make||"";
-  document.getElementById("vehicleModel").value=v.model||"";
-  document.getElementById("vehicleVin").value=v.vin||"";
-  document.getElementById("vehiclePlate").value=v.plate||"";
-  document.getElementById("vehiclePlateState").value=v.plateState||"";
-  document.getElementById("vehicleAcqDate").value=v.acquisitionDate||"";
-  document.getElementById("vehicleStartingOdo").value=v.startingOdometer||"";
-  document.getElementById("vehiclePurchaseDate").value=v.purchaseDate||"";
-  document.getElementById("vehiclePurchaseCost").value=v.purchaseCost||"";
-  document.getElementById("vehicleSeller").value=v.seller||"";
-  document.getElementById("vehicleInsuranceValue").value=v.insuranceValue||"";
-  document.getElementById("vehicleAgreedValue").value=v.agreedValue||"";
-  document.getElementById("vehicleNotes").value=v.notes||"";
-  document.getElementById("vehiclePhoto").value="";
-  selectedVehiclePhotoData=v.primaryPhoto||"";
-  selectedVehiclePhotoZoom=Number(v.primaryPhotoZoom||1.25);
-  selectedVehiclePhotoOffsetX=Number(v.primaryPhotoOffsetX||0);
-  selectedVehiclePhotoOffsetY=Number(v.primaryPhotoOffsetY||0);
-  document.getElementById("vehiclePhotoZoom").value=selectedVehiclePhotoZoom;
-  updatePhotoPreview();
-}
-function initPhotoPreviewDrag(){
-  const box=document.getElementById("vehiclePhotoPreview");
-  if(!box || box.dataset.dragReady==="yes")return;
-  box.dataset.dragReady="yes";
-  box.onpointerdown=e=>{
-    if(!selectedVehiclePhotoData)return;
-    photoDrag={x:e.clientX,y:e.clientY};
-    box.setPointerCapture(e.pointerId);
-    e.preventDefault();
-  };
-  box.onpointermove=e=>{
-    if(!photoDrag)return;
-    selectedVehiclePhotoOffsetX += e.clientX-photoDrag.x;
-    selectedVehiclePhotoOffsetY += e.clientY-photoDrag.y;
-    photoDrag={x:e.clientX,y:e.clientY};
-    updatePhotoPreview();
-    e.preventDefault();
-  };
-  box.onpointerup=box.onpointercancel=()=>{photoDrag=null};
-}
-function swapVehiclePositions(){
-  const d=getData();
-  [d.vehicles[0],d.vehicles[1]]=[d.vehicles[1],d.vehicles[0]];
-  if(d.vehicles[0])d.vehicles[0].slot=0;
-  if(d.vehicles[1])d.vehicles[1].slot=1;
-  setData(d);
-  alert("Vehicle positions swapped.");
-  showScreen("homeScreen");
-}
-
-async function saveVehicle(){const d=getData();const filePhoto=await fileToOptimizedDataURL(document.getElementById("vehiclePhoto").files[0]);const photo=selectedVehiclePhotoData||filePhoto;const zoom=selectedVehiclePhotoZoom||Number(document.getElementById("vehiclePhotoZoom").value||1.25);const existing=d.vehicles[activeSlot]||{};d.vehicles[activeSlot]={id:existing.id||`vehicle-${activeSlot+1}`,slot:activeSlot,nickname:value("vehicleNickname"),year:value("vehicleYear"),make:value("vehicleMake"),model:value("vehicleModel"),vin:value("vehicleVin"),plate:value("vehiclePlate"),plateState:value("vehiclePlateState"),acquisitionDate:value("vehicleAcqDate"),startingOdometer:numberValue("vehicleStartingOdo"),purchaseDate:value("vehiclePurchaseDate"),purchaseCost:moneyValue("vehiclePurchaseCost"),seller:value("vehicleSeller"),insuranceValue:moneyValue("vehicleInsuranceValue"),agreedValue:moneyValue("vehicleAgreedValue"),notes:value("vehicleNotes"),primaryPhoto:photo,primaryPhotoZoom:zoom,primaryPhotoOffsetX:selectedVehiclePhotoOffsetX||0,primaryPhotoOffsetY:selectedVehiclePhotoOffsetY||0,photos:photo?[{id:uid("photo"),data:photo,caption:"Primary Photo",primary:true,zoom,offsetX:selectedVehiclePhotoOffsetX||0,offsetY:selectedVehiclePhotoOffsetY||0}]:[],status:existing.status||"Active",defaultFuelGrade:"",registration:{}};setData(d);showScreen("homeScreen")}
-function value(id){return document.getElementById(id).value.trim()}function numberValue(id){const n=Number(value(id));return Number.isFinite(n)?Number(n.toFixed(2)):""}function moneyValue(id){return numberValue(id)}function uid(prefix){return`${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`}
-
-function setFuelStatus(message){
-  const el=document.getElementById("fuelFormStatus");
-  if(el)el.textContent=message||"";
-}
-function setFuelFormMode(mode){
-  const title=document.getElementById("fuelVehicleTitle");
-  const saveBtn=document.getElementById("fuelSaveButton");
-  const cancelBtn=document.getElementById("fuelCancelEditButton");
-  const screen=document.getElementById("quickFuelScreen");
-  if(mode==="edit"){
-    if(title)title.textContent="Edit Fuel Entry";
-    if(saveBtn)saveBtn.textContent="Save Edit";
-    if(cancelBtn)cancelBtn.classList.remove("hidden");
-    if(screen)screen.classList.add("edit-mode");
-  }else{
-    const v=getData().vehicles[activeSlot];
-    if(title&&v)title.textContent=`${labelFor(v)} — Quick Fuel Entry`;
-    if(saveBtn)saveBtn.textContent="Save Entry";
-    if(cancelBtn)cancelBtn.classList.add("hidden");
-    if(screen)screen.classList.remove("edit-mode");
-    editingFuelRecordId=null;
-  }
-}
-function resetFuelFormToQuickMode(){
-  clearFuelForm();
-  setCurrentFuelDateTime();
-  setFuelFormMode("quick");
-  const v=getData().vehicles[activeSlot];
-  if(v){
-    loadStationDropdown();
-    document.getElementById("fuelGrade").value=v.defaultFuelGrade||lastFuelGrade(v.id)||"";
-    document.getElementById("fuelStation").value=lastStation(v.id)||"";
-  }
-  updateFuelCalculations();
-  renderRecentFuel();
-}
-function cancelFuelEdit(){
-  setFuelStatus("Edit cancelled.");
-  resetFuelFormToQuickMode();
-}
-function setCurrentFuelDateTime(){
-  const now=new Date();
-  const dateEl=document.getElementById("fuelDate");
-  const timeEl=document.getElementById("fuelTime");
-  if(dateEl)dateEl.value=now.toISOString().slice(0,10);
-  if(timeEl)timeEl.value=now.toTimeString().slice(0,5);
-}
-function fuelDateTimeValue(e){
-  return `${e.date||""}${e.time?" "+e.time:""}`.trim();
-}
-function openQuickFuel(slot){
-  activeSlot=slot;
-  setFuelStatus("");
-  editingFuelRecordId=null;
-  const v=getData().vehicles[slot];
-  clearFuelForm();
-  setCurrentFuelDateTime();
-  loadStationDropdown();
-  document.getElementById("fuelGrade").value=v.defaultFuelGrade||lastFuelGrade(v.id)||"";
-  document.getElementById("fuelStation").value=lastStation(v.id)||"";
-  showScreen("quickFuelScreen");
-  setFuelFormMode("quick");
-  renderRecentFuel();
-  updateFuelCalculations();
-}
-function clearFuelForm(){
-  ["fuelOdometer","fuelGallons","fuelPrice","fuelCost","fuelMiles","fuelMpg","fuelNotes"].forEach(id=>{
-    const el=document.getElementById(id); if(el)el.value="";
-  });
-  const ef=document.getElementById("fuelEthanolFree"); if(ef)ef.value="";
-  const cs=document.getElementById("fuelCostSource"); if(cs)cs.value="";
-  const fr=document.getElementById("fuelReceipt"); if(fr)fr.value="";
-  clearFuelCalcState();
-}
-function loadStationDropdown(){const d=getData(), sel=document.getElementById("fuelStation");sel.innerHTML="";d.stations.forEach(s=>sel.insertAdjacentHTML("beforeend",`<option>${s}</option>`));sel.onchange=handleStationChange}
-function lastFuelGrade(vehicleId){return (getData().entries.filter(e=>e.vehicleId===vehicleId&&e.fuelGrade).sort(sortEntriesDesc)[0]||{}).fuelGrade||""}
-function lastStation(vehicleId){return (getData().entries.filter(e=>e.vehicleId===vehicleId&&e.station).sort(sortEntriesDesc)[0]||{}).station||""}
-function handleStationChange(){const sel=document.getElementById("fuelStation");if(sel.value!=="Other")return;const name=prompt("Enter station name:");if(!name){sel.value="";return}if(confirm("Save this station to the dropdown list?")){const d=getData();if(!d.stations.includes(name))d.stations.splice(Math.max(0,d.stations.length-1),0,name);setData(d);loadStationDropdown();sel.value=name}else{const opt=document.createElement("option");opt.textContent=name;opt.value=name;sel.insertBefore(opt,sel.lastElementChild);sel.value=name}}
-
-function manualMilesEdited(){milesManuallyEdited=true}
-function previousFuelEntry(vehicleId,currentOdo=""){
-  const rows=getData().entries
-    .filter(e=>e.vehicleId===vehicleId && e.entryType==="Fuel" && e.odometer!=="" && e.odometer!==undefined)
-    .sort((a,b)=>Number(a.odometer)-Number(b.odometer));
-  if(currentOdo!=="" && Number.isFinite(Number(currentOdo))){
-    const lower=rows.filter(e=>Number(e.odometer)<Number(currentOdo));
-    return lower.length?lower[lower.length-1]:null;
-  }
-  return rows.length?rows[rows.length-1]:null;
-}
-function updateFuelCalculations(){
-  const v=getData().vehicles[activeSlot];
-  if(!v)return;
-  const odo=Number(document.getElementById("fuelOdometer").value);
-  const gallons=Number(document.getElementById("fuelGallons").value);
-  const milesEl=document.getElementById("fuelMiles");
-  const mpgEl=document.getElementById("fuelMpg");
-  const prev=previousFuelEntry(v.id,Number.isFinite(odo)?odo:"");
-  if(prev && Number.isFinite(odo) && !milesManuallyEdited){
-    const miles=odo-Number(prev.odometer);
-    if(Number.isFinite(miles) && miles>=0) milesEl.value=miles.toFixed(2);
-  }
-  const miles=Number(milesEl.value);
-  if(Number.isFinite(miles) && Number.isFinite(gallons) && gallons>0){
-    mpgEl.value=(miles/gallons).toFixed(2);
-  }else{
-    mpgEl.value="";
-  }
-}
-function clearFuelCalcState(){
-  milesManuallyEdited=false;
-  const miles=document.getElementById("fuelMiles");
-  const mpg=document.getElementById("fuelMpg");
-  if(miles)miles.value="";
-  if(mpg)mpg.value="";
-}
-function offerHistoricalRecalculation(newEntry){
-  const d=getData();
-  const rows=d.entries
-    .filter(e=>e.vehicleId===newEntry.vehicleId && e.entryType==="Fuel" && e.odometer!=="" && e.recordId!==newEntry.recordId)
-    .sort((a,b)=>Number(a.odometer)-Number(b.odometer));
-  const next=rows.find(e=>Number(e.odometer)>Number(newEntry.odometer));
-  if(!next || newEntry.odometer==="" || next.odometer==="")return;
-  const recalculated=Number(next.odometer)-Number(newEntry.odometer);
-  if(!Number.isFinite(recalculated) || recalculated<0)return;
-  const currentMiles=Number(next.miles);
-  if(Number.isFinite(currentMiles) && Math.abs(currentMiles-recalculated)<0.01)return;
-  const gallons=Number(next.gallons);
-  let msg=`An older fuel entry was added before a newer entry.\n\nAffected Entry: ${next.date||""} ${next.odometer||""}\nCurrent Miles: ${next.miles||""}\nRecalculated Miles: ${recalculated.toFixed(2)}\n\nUpdate Miles for the affected entry?`;
-  if(confirm(msg)){
-    next.miles=Number(recalculated.toFixed(2));
-    if(Number.isFinite(gallons) && gallons>0) next.mpg=Number((next.miles/gallons).toFixed(2));
-    setData(d);
-    alert("Miles updated. MPG recalculated automatically.");
-  }
-}
-
-async function saveFuelEntry(){
-  updateFuelCalculations();
-  const d=getData(), v=d.vehicles[activeSlot];
-  const odo=numberFrom("fuelOdometer");
-  const gallons=numberFrom("fuelGallons");
-  const miles=numberFrom("fuelMiles");
-  const mpg=numberFrom("fuelMpg");
-  const price=moneyFrom("fuelPrice");
-  let totalCost=moneyFrom("fuelCost"), costSource=value("fuelCostSource");
-  if(totalCost===""&&price!==""&&gallons!==""){totalCost=Number((price*gallons).toFixed(2));costSource="Calculated"}
-  const attachments=[];
-  for(const file of document.getElementById("fuelReceipt").files){
-    attachments.push({id:uid("fuelReceipt"),name:file.name,type:file.type,data:(file.type&&file.type.startsWith("image/"))?await fileToOptimizedDataURL(file):await fileToDataURL(file)});
-  }
-
-  if(editingFuelRecordId){
-    const existing=d.entries.find(e=>e.recordId===editingFuelRecordId);
-    if(!existing){alert("Entry not found.");resetFuelFormToQuickMode();return}
-    existing.date=value("fuelDate")||existing.date||new Date().toISOString().slice(0,10);
-    existing.time=value("fuelTime")||existing.time||new Date().toTimeString().slice(0,5);
-    existing.odometer=odo;
-    existing.miles=miles===""?"":Number(Number(miles).toFixed(2));
-    existing.gallons=gallons;
-    existing.fuelGrade=value("fuelGrade");
-    existing.ethanolFree=value("fuelEthanolFree");
-    existing.station=document.getElementById("fuelStation").value;
-    existing.mpg=mpg===""?"":Number(Number(mpg).toFixed(2));
-    existing.fuelPricePerGallon=price;
-    existing.totalFuelCost=totalCost;
-    existing.fuelCostSource=costSource;
-    existing.notes=value("fuelNotes");
-    if(attachments.length)existing.attachments=[...(existing.attachments||[]),...attachments];
-    if(existing.fuelGrade)d.vehicles[activeSlot].defaultFuelGrade=existing.fuelGrade;
-    setData(d);
-    checkRecalculationAround(existing);
-    setFuelStatus("Fuel entry edit saved.");
-    resetFuelFormToQuickMode();
-    return;
-  }
-
-  const entry={recordId:uid("FUEL"),entrySequence:nextSequence(),vehicleId:v.id,vehicle:labelFor(v),entryType:"Fuel",dataQuality:"Verified",date:value("fuelDate")||new Date().toISOString().slice(0,10),time:value("fuelTime")||new Date().toTimeString().slice(0,5),odometer:odo,miles:miles===""?"":Number(Number(miles).toFixed(2)),gallons,fuelGrade:value("fuelGrade"),ethanolFree:value("fuelEthanolFree"),station:document.getElementById("fuelStation").value,mpg:mpg===""?"":Number(Number(mpg).toFixed(2)),fuelPricePerGallon:price,totalFuelCost:totalCost,fuelCostSource:costSource,notes:value("fuelNotes"),attachments};
-  d.entries.push(entry);
-  if(entry.fuelGrade)d.vehicles[activeSlot].defaultFuelGrade=entry.fuelGrade;
-  setData(d);
-  offerHistoricalRecalculation(entry);
-  alert("Fuel entry saved.");
-  clearFuelForm();
-  showScreen("homeScreen");
-}
-function numberFrom(id){const n=Number(document.getElementById(id).value);return Number.isFinite(n)?Number(n.toFixed(2)):""}function moneyFrom(id){return numberFrom(id)}
-function previousOdometer(vehicleId,currentOdo){const rows=getData().entries.filter(e=>e.vehicleId===vehicleId&&e.odometer!=="").sort((a,b)=>Number(b.odometer)-Number(a.odometer));const lower=rows.find(e=>currentOdo!==""&&Number(e.odometer)<currentOdo);return lower?Number(lower.odometer):(rows[0]?Number(rows[0].odometer):"")}
-function nextSequence(){const d=getData(), all=[...d.entries,...d.maintenance,...d.insurance];return all.length?Math.max(...all.map(x=>Number(x.entrySequence)||0))+1:1}
-function renderRecentFuel(){
-  const d=getData(), v=d.vehicles[activeSlot], table=document.getElementById("previousFuelTable")||document.getElementById("recentFuelTable");
-  if(!table||!v)return;
-  const rows=d.entries.filter(e=>e.vehicleId===v.id&&e.entryType==="Fuel").sort(sortEntriesDesc);
-  table.innerHTML=`<tr><th>Date/Time</th><th>Odo</th><th>Miles</th><th>Gal</th><th>MPG</th><th>Station</th><th>Actions</th></tr>`+
-    rows.map(e=>`<tr><td>${fuelDateTimeValue(e)}</td><td>${fmt(e.odometer)}</td><td>${fmt(e.miles)}</td><td>${fmt(e.gallons,3)}</td><td>${fmt(e.mpg)}</td><td>${csvEscapeHTML(e.station||"")}</td><td><div class="entry-actions"><button onclick="editFuelEntry('${e.recordId}')">Edit</button><button class="danger" onclick="deleteFuelEntry('${e.recordId}')">Delete</button></div></td></tr>`).join("");
-}
-function editFuelEntry(recordId){
-  const d=getData();
-  const e=d.entries.find(x=>x.recordId===recordId);
-  if(!e)return alert("Entry not found.");
-  editingFuelRecordId=recordId;
-  setFuelFormMode("edit");
-  setFuelStatus("Editing selected fuel entry.");
-  document.getElementById("fuelDate").value=e.date||new Date().toISOString().slice(0,10);
-  document.getElementById("fuelTime").value=e.time||new Date().toTimeString().slice(0,5);
-  document.getElementById("fuelOdometer").value=e.odometer||"";
-  document.getElementById("fuelMiles").value=e.miles||"";
-  document.getElementById("fuelGallons").value=e.gallons||"";
-  document.getElementById("fuelGrade").value=e.fuelGrade||"";
-  document.getElementById("fuelEthanolFree").value=e.ethanolFree||"";
-  loadStationDropdown();
-  if(e.station && ![...document.getElementById("fuelStation").options].some(o=>o.value===e.station)){
-    const opt=document.createElement("option");
-    opt.value=e.station;
-    opt.textContent=e.station;
-    document.getElementById("fuelStation").appendChild(opt);
-  }
-  document.getElementById("fuelStation").value=e.station||"";
-  document.getElementById("fuelPrice").value=e.fuelPricePerGallon||"";
-  document.getElementById("fuelCost").value=e.totalFuelCost||"";
-  document.getElementById("fuelCostSource").value=e.fuelCostSource||"";
-  document.getElementById("fuelNotes").value=e.notes||"";
-  const receipt=document.getElementById("fuelReceipt");
-  if(receipt)receipt.value="";
-  milesManuallyEdited=true;
-  updateFuelCalculations();
-  window.scrollTo(0,0);
-}
-
-function deleteFuelEntry(recordId){
-  const d=getData(); const e=d.entries.find(x=>x.recordId===recordId);
-  if(!e)return alert("Entry not found.");
-  if(!confirm(`Delete this fuel entry?\n\n${fuelDateTimeValue(e)}\nOdometer: ${e.odometer||""}`))return;
-  d.entries=d.entries.filter(x=>x.recordId!==recordId); setData(d); checkRecalculationAfterDelete(e.vehicleId,e.odometer); renderRecentFuel();
-}
-function numberFromValue(v){if(v===""||v===undefined||v===null)return"";const n=Number(String(v).replace(/[$,]/g,""));return Number.isFinite(n)?Number(n.toFixed(2)):""}
-function checkRecalculationAround(entry){offerHistoricalRecalculation(entry);checkRecalculationAfterDelete(entry.vehicleId,entry.odometer)}
-function checkRecalculationAfterDelete(vehicleId,changedOdo){
-  const d=getData();
-  const rows=d.entries.filter(e=>e.vehicleId===vehicleId&&e.entryType==="Fuel"&&e.odometer!=="").sort((a,b)=>Number(a.odometer)-Number(b.odometer));
-  if(!rows.length)return;
-  const affected=rows.find(e=>Number(e.odometer)>Number(changedOdo)); if(!affected)return;
-  const prev=[...rows].reverse().find(e=>Number(e.odometer)<Number(affected.odometer)); if(!prev)return;
-  const recalculated=Number(affected.odometer)-Number(prev.odometer); const currentMiles=Number(affected.miles);
-  if(!Number.isFinite(recalculated)||recalculated<0)return;
-  if(Number.isFinite(currentMiles)&&Math.abs(currentMiles-recalculated)<0.01)return;
-  if(confirm(`Mileage recalculation available.\n\nAffected Entry: ${fuelDateTimeValue(affected)}\nCurrent Miles: ${affected.miles||""}\nRecalculated Miles: ${recalculated.toFixed(2)}\n\nUpdate Miles field?`)){
-    affected.miles=Number(recalculated.toFixed(2));
-    if(affected.gallons!==""&&Number(affected.gallons)>0)affected.mpg=Number((affected.miles/Number(affected.gallons)).toFixed(2));
-    setData(d); alert("Miles updated. MPG recalculated automatically.");
-  }
-}
-
-function sortEntriesDesc(a,b){if(a.date&&b.date&&a.date!==b.date)return new Date(b.date)-new Date(a.date);return(Number(b.entrySequence)||0)-(Number(a.entrySequence)||0)}function fmt(v,p=2){if(v===""||v===undefined||v===null)return"";const n=Number(v);return Number.isFinite(n)?n.toFixed(p):""}
-function openVehicleDetails(slot){activeSlot=slot;activeTab="info";showScreen("vehicleDetailsScreen");renderVehicleDetails()}
-function renderVehicleDetails(){const v=getData().vehicles[activeSlot], zoom=v.primaryPhotoZoom||1.25;document.getElementById("vehicleDetailsHeader").innerHTML=`${v.primaryPhoto?`<img src="${v.primaryPhoto}" alt="${labelFor(v)}" style="transform:scale(${zoom})">`:""}<h1>${labelFor(v)}</h1>`;renderTab()}
-function setTab(tab){activeTab=tab;renderTab()}function renderTab(){const d=getData(),v=d.vehicles[activeSlot],el=document.getElementById("tabContent");if(activeTab==="info")el.innerHTML=`<h2>Vehicle Information</h2><p><strong>Nickname:</strong> ${v.nickname||""}</p><p><strong>VIN:</strong> ${v.vin||""}</p><p><strong>Plate:</strong> ${v.plate||""} ${v.plateState||""}</p><p><strong>Starting Odometer:</strong> ${fmt(v.startingOdometer)}</p><p><strong>Status:</strong> ${v.status}</p><button class="danger" onclick="archiveVehicle()">Archive Vehicle</button>`;else if(activeTab==="stats")el.innerHTML=vehicleStatsHTML(v.id);else if(activeTab==="maint")el.innerHTML="<h2>Maintenance</h2><p>Vehicle-specific maintenance records, line items, reminders, and attachments live here.</p>";else if(activeTab==="ins")el.innerHTML="<h2>Insurance</h2><p>Current and historical policies, coverage, agents, and attachments live here.</p>";else if(activeTab==="photos")el.innerHTML=`<h2>Photos</h2>`+(v.photos||[]).map(p=>`<figure><img src="${p.data}" style="max-width:100%;border-radius:12px"><figcaption>${p.caption||""}</figcaption></figure>`).join("");else if(activeTab==="docs")el.innerHTML="<h2>Documents</h2><p>Vehicle documents, registrations, titles, and appraisals live here.</p>";else el.innerHTML=historyHTML(v.id)}
-function currency(v){return v===""||v===undefined?"":`$${fmt(v)}`}function archiveVehicle(){const d=getData();d.vehicles[activeSlot].status="Archived";setData(d);showScreen("homeScreen")}
-function vehicleStatsHTML(vehicleId){const rows=getData().entries.filter(e=>e.vehicleId===vehicleId&&e.dataQuality!=="Review"&&e.dataQuality!=="Historical"),gallons=sum(rows.map(e=>Number(e.gallons)||0)),miles=sum(rows.map(e=>Number(e.miles)||0)),mpgs=rows.map(e=>Number(e.mpg)).filter(Number.isFinite),cost=sum(rows.map(e=>Number(e.totalFuelCost)||0));return`<h2>Vehicle Statistics</h2><p><strong>Total Miles:</strong> ${fmt(miles)}</p><p><strong>Total Gallons:</strong> ${fmt(gallons)}</p><p><strong>Average MPG:</strong> ${mpgs.length?fmt(sum(mpgs)/mpgs.length):""}</p><p><strong>Fuel Cost YTD:</strong> ${currency(cost)}</p>`}function sum(a){return a.reduce((x,y)=>x+y,0)}
-function historyHTML(vehicleId){const d=getData(),rows=[...d.entries.filter(e=>e.vehicleId===vehicleId).map(e=>({...e,kind:"Fuel"})),...d.maintenance.filter(e=>e.vehicleId===vehicleId).map(e=>({...e,kind:"Maintenance"})),...d.insurance.filter(e=>e.vehicleId===vehicleId).map(e=>({...e,kind:"Insurance"}))].sort(sortEntriesDesc);return`<h2>History</h2>`+rows.map(r=>`<p><strong>${r.kind}</strong> ${r.date||""} ${r.notes||""}</p>`).join("")}
-function renderReports(){const d=getData(),rows=d.entries,miles=sum(rows.map(e=>Number(e.miles)||0)),fuelCost=sum(rows.map(e=>Number(e.totalFuelCost)||0));document.getElementById("reportsDashboard").innerHTML=`<h2>Dashboard</h2><p><strong>Combined Miles:</strong> ${fmt(miles)}</p><p><strong>Combined Fuel Cost:</strong> ${currency(fuelCost)}</p>`}
-function exportCSV(){const lines=["Record ID,Entry Sequence,Vehicle,Entry Type,Date,Odometer,Miles,Gallons,Fuel Grade,Ethanol Free,MPG,Station,Fuel Price Per Gallon,Total Fuel Cost,Data Quality,Notes"];getData().entries.forEach(e=>lines.push([e.recordId,e.entrySequence,e.vehicle,e.entryType,e.date,e.odometer,e.miles,e.gallons,e.fuelGrade,e.ethanolFree,e.mpg,e.station,e.fuelPricePerGallon,e.totalFuelCost,e.dataQuality,e.notes].map(csvEscape).join(",")));download(`RGBM_Export_v${VERSION}_${new Date().toISOString().slice(0,10)}.csv`,lines.join("\n"),"text/csv")}function csvEscape(v){const s=String(v??"");return/[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s}
-function parseCSVText(text){
-  const rows=[]; let row=[], cell="", q=false;
-  for(let i=0;i<text.length;i++){
-    const ch=text[i], next=text[i+1];
-    if(ch==='"' && q && next==='"'){cell+='"';i++;continue}
-    if(ch==='"'){q=!q;continue}
-    if(ch==="," && !q){row.push(cell);cell="";continue}
-    if((ch==="\n"||ch==="\r") && !q){
-      if(ch==="\r" && next==="\n")i++;
-      row.push(cell);cell="";
-      if(row.some(v=>String(v).trim()!==""))rows.push(row);
-      row=[];continue
-    }
-    cell+=ch;
-  }
-  row.push(cell);
-  if(row.some(v=>String(v).trim()!==""))rows.push(row);
-  return rows;
-}
-function hmap(headers){
-  const map={};
-  headers.forEach((h,i)=>map[String(h||"").toLowerCase().trim().replace(/[^a-z0-9]/g,"")]=i);
-  return name=> {
-    const key=String(name).toLowerCase().trim().replace(/[^a-z0-9]/g,"");
-    return map[key]!==undefined?map[key]:-1;
-  };
-}
-function csvCell(row, idx){return idx>=0 && idx<row.length ? String(row[idx]||"").trim() : ""}
-function previewImport(){
-  const file=document.getElementById("importFile")?.files?.[0];
-  const status=document.getElementById("importStatus");
-  const table=document.getElementById("importPreviewTable");
-  const commit=document.getElementById("commitImportButton");
-  previewRows=[];
-  if(commit)commit.disabled=true;
-  if(table)table.innerHTML="";
-  if(!file){status.textContent="Choose a CSV fuel file first.";return}
-  if(!file.name.toLowerCase().endsWith(".csv")){
-    status.textContent="Only CSV fuel imports are supported here. Use Restore JSON Backup for JSON files.";
-    return;
-  }
-  const reader=new FileReader();
-  reader.onload=e=>{
-    try{
-      const parsed=parseCSVText(e.target.result);
-      if(parsed.length<2){status.textContent="No import rows found.";return}
-      const headers=parsed[0], find=hmap(headers), d=getData();
-      const vehicleIndex=Number(document.getElementById("csvImportVehicle")?.value||0);
-      const vehicle=d.vehicles[vehicleIndex];
-      if(!vehicle){status.textContent="Choose or create a vehicle before importing fuel CSV records.";return}
-      const existingIds=new Set((d.entries||[]).map(r=>r.recordId).filter(Boolean));
-      let warnings=[], duplicates=0;
-      previewRows=parsed.slice(1).map((row,idx)=>{
-        const recordId=csvCell(row,find("Record ID"))||csvCell(row,find("recordId"))||uid("FUELIMP");
-        if(existingIds.has(recordId))duplicates++;
-        const entry={
-          recordId,
-          entrySequence:Number(csvCell(row,find("Entry Sequence")))||nextSequence()+idx,
-          vehicleId:vehicle.id,
-          vehicle:labelFor(vehicle),
-          entryType:csvCell(row,find("Entry Type"))||"Fuel",
-          dataQuality:csvCell(row,find("Data Quality"))||"Review",
-          date:csvCell(row,find("Date")),
-          time:csvCell(row,find("Time")),
-          odometer:numberOrBlank(csvCell(row,find("Odometer"))),
-          miles:numberOrBlank(csvCell(row,find("Miles"))),
-          gallons:numberOrBlank(csvCell(row,find("Gallons"))),
-          fuelGrade:csvCell(row,find("Fuel Grade")),
-          ethanolFree:normalizeEthanol(csvCell(row,find("Ethanol Free"))),
-          mpg:numberOrBlank(csvCell(row,find("MPG"))),
-          station:csvCell(row,find("Station")),
-          fuelPricePerGallon:moneyOrBlank(csvCell(row,find("Fuel Price Per Gallon"))),
-          totalFuelCost:moneyOrBlank(csvCell(row,find("Total Fuel Cost"))),
-          fuelCostSource:csvCell(row,find("Fuel Cost Source")),
-          notes:csvCell(row,find("Notes")),
-          attachments:[]
-        };
-        if(entry.odometer==="" && entry.gallons==="") warnings.push(`Row ${idx+2}: no odometer or gallons.`);
-        return entry;
-      }).filter(r=>r.recordId||r.odometer!==""||r.gallons!=="");
-      status.textContent=`CSV Preview Complete\nRows Found: ${parsed.length-1}\nRows Ready: ${previewRows.length}\nDuplicates Found: ${duplicates}\nWarnings: ${warnings.length}${warnings.length?"\\n"+warnings.slice(0,8).join("\n"):""}`;
-      if(table){
-        table.innerHTML="<tr><th>Record ID</th><th>Date</th><th>Odometer</th><th>Gallons</th><th>Station</th><th>Quality</th></tr>"+
-          previewRows.slice(0,20).map(r=>`<tr><td>${csvEscapeHTML(r.recordId)}</td><td>${csvEscapeHTML(r.date)}</td><td>${csvEscapeHTML(r.odometer)}</td><td>${csvEscapeHTML(r.gallons)}</td><td>${csvEscapeHTML(r.station)}</td><td>${csvEscapeHTML(r.dataQuality)}</td></tr>`).join("");
-      }
-      if(commit)commit.disabled=previewRows.length===0;
-    }catch(err){
-      status.textContent="CSV preview failed. Check the file format.";
-      console.error(err);
-    }
-  };
-  reader.readAsText(file);
-}
-function commitImport(){
-  if(!previewRows.length){alert("Preview a CSV file before importing.");return}
-  const d=getData();
-  const existingIds=new Set((d.entries||[]).map(r=>r.recordId).filter(Boolean));
-  let imported=0, skipped=0;
-  previewRows.forEach(r=>{
-    if(r.recordId && existingIds.has(r.recordId)){skipped++;return}
-    d.entries.push(r);
-    if(r.recordId)existingIds.add(r.recordId);
-    imported++;
-  });
-  setData(d);
-  previewRows=[];
-  document.getElementById("commitImportButton").disabled=true;
-  document.getElementById("importStatus").textContent=`Import Complete\nImported: ${imported}\nSkipped Duplicates: ${skipped}`;
-  document.getElementById("importPreviewTable").innerHTML="";
-}
-function numberOrBlank(v){if(v===""||v===undefined||v===null)return"";const n=Number(String(v).replace(/[$,]/g,""));return Number.isFinite(n)?Number(n.toFixed(2)):""}
-function moneyOrBlank(v){return numberOrBlank(v)}
-function normalizeEthanol(v){const s=String(v||"").toLowerCase();if(!s)return"";if(s==="yes"||s.includes("free")||s.includes("non")||s==="ef")return"Yes";if(s==="no"||s.includes("ethanol"))return"No";return v}
-function csvEscapeHTML(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-function downloadFuelTemplate(){
-  const headers="Record ID,Entry Sequence,Vehicle,Entry Type,Date,Time,Odometer,Miles,Gallons,Fuel Grade,Ethanol Free,MPG,Station,Fuel Price Per Gallon,Total Fuel Cost,Fuel Cost Source,Data Quality,Notes";
-  download(`RGBM_Fuel_Import_Template_v${VERSION}_${BUILD_DATE}.csv`,headers+"\n","text/csv");
-}
-
-function estimateBytesFromText(text){return new Blob([text]).size}
-function countBackupItems(d){
-  const attachments=[...(d.entries||[]),...(d.maintenance||[]),...(d.insurance||[])].reduce((n,r)=>n+(Array.isArray(r.attachments)?r.attachments.length:0),0);
-  const photos=(d.photos||[]).length + (d.vehicles||[]).filter(v=>v&&v.primaryPhoto).length;
-  return {
-    vehicles:(d.vehicles||[]).filter(Boolean).length,
-    fuel:(d.entries||[]).length,
-    maintenance:(d.maintenance||[]).length,
-    insurance:(d.insurance||[]).length,
-    photos,
-    attachments
-  };
-}
-function formatBytes(bytes){
-  if(bytes<1024)return `${bytes} bytes`;
-  if(bytes<1024*1024)return `${(bytes/1024).toFixed(1)} KB`;
-  return `${(bytes/1024/1024).toFixed(2)} MB`;
-}
-
-function downloadDataBackup(){
-  const d=getData();
-  d.version=VERSION;
-  d.settings.lastDataBackupDate=new Date().toISOString().slice(0,10);
-  d.settings.lastDataBackupFilename=`RGBM_Backup_v${VERSION}_${d.settings.lastDataBackupDate}.json`;
-  const jsonText=JSON.stringify(d,null,2);
-  const counts=countBackupItems(d);
-  const summary=`Backup Summary
-
-Vehicles: ${counts.vehicles}
-Fuel Entries: ${counts.fuel}
-Maintenance Records: ${counts.maintenance}
-Insurance Records: ${counts.insurance}
-Photos: ${counts.photos}
-Attachments: ${counts.attachments}
-
-Estimated Backup Size: ${formatBytes(estimateBytesFromText(jsonText))}
-
-Create backup now?`;
-  if(!confirm(summary))return;
-  setData(d);
-  download(d.settings.lastDataBackupFilename,jsonText,"application/json");
-  renderDataMeta();
-}
-function restoreBackup(){
-  const input=document.getElementById("restoreFile");
-  const file=input&&input.files&&input.files[0];
-  const status=document.getElementById("restoreStatus");
-  if(!file){alert("Choose a JSON backup file first.");return}
-  const reader=new FileReader();
-  reader.onload=e=>{
-    try{
-      const parsed=JSON.parse(e.target.result);
-      const legacy=isLegacyBackup(parsed);
-      const restored=normalizeData(parsed);
-      const summary=backupSummary(restored,legacy);
-      if(status)status.textContent=summary;
-      if(confirm(`${summary}\n\nRestore ${legacy?"and convert ":""}this backup?\n\nThis will replace the current local data.`)){
-        setData(restored);
-        alert(legacy?"Supported backup restored and converted.":"Backup restored.");
-        renderDataMeta();
-        showScreen("homeScreen");
-      }
-    }catch(err){
-      if(status)status.textContent="Restore failed. This file is not readable as a valid RGB Mileage JSON backup.";
-      alert("This does not appear to be a valid RGB Mileage JSON backup.");
-      console.error(err);
-    }
-  };
-  reader.readAsText(file);
-}
-function renderDataMeta(){
-  const d=getData(), s=d.settings;
-  const meta=document.getElementById("backupMeta");
-  if(meta)meta.textContent=`Last JSON Backup: ${s.lastDataBackupDate||"Never"}${s.lastDataBackupFilename?" | "+s.lastDataBackupFilename:""}`;
-  const sel=document.getElementById("csvImportVehicle");
-  if(sel){
-    sel.innerHTML="";
-    d.vehicles.forEach((v,i)=>{if(v){const opt=document.createElement("option");opt.value=i;opt.textContent=labelFor(v);sel.appendChild(opt)}});
-  }
-}
-function renderBackupMeta(){renderDataMeta()}
-function download(filename,text,type){const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url)}
-function loadSettings(){const s=getData().settings;document.getElementById("duplicateSetting").value=s.duplicateHandling;document.getElementById("backupReminder").value=s.backupReminder;document.getElementById("showArchived").checked=!!s.showArchived}function saveSettings(){const d=getData();d.settings.duplicateHandling=value("duplicateSetting");d.settings.backupReminder=value("backupReminder");d.settings.showArchived=document.getElementById("showArchived").checked;setData(d);alert("Settings saved.")}function validateDatabase(){alert("Database validation complete.")}function rebuildStatistics(){alert("Statistics rebuilt.")}function removeOrphanAttachments(){alert("Orphan attachment scan complete.")}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js?v=211").catch(err=>console.warn("Service worker registration failed",err));ensureVersionFooters();renderHome();
+state=loadData(); render();
+if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js?v=210").catch(()=>{})}
