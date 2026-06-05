@@ -1,6 +1,6 @@
 
-const VERSION="2.0.10", BUILD_DATE="2026-06-04", KEY="rgbMileage", LEGACY_KEYS=["rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbm_data_v110"];
-let activeSlot=0, activeTab="info", previewRows=[], selectedVehiclePhotoData="", selectedVehiclePhotoZoom=1.25, selectedVehiclePhotoOffsetX=0, selectedVehiclePhotoOffsetY=0, photoDrag=null, longPressTriggered=false, milesManuallyEdited=false;
+const VERSION="2.0.11", BUILD_DATE="2026-06-04", KEY="rgbMileage", LEGACY_KEYS=["rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11","rgbm_data_v110"];
+let activeSlot=0, activeTab="info", previewRows=[], selectedVehiclePhotoData="", selectedVehiclePhotoZoom=1.25, selectedVehiclePhotoOffsetX=0, selectedVehiclePhotoOffsetY=0, photoDrag=null, longPressTriggered=false, milesManuallyEdited=false, editingFuelRecordId=null;
 const DEFAULT_STATIONS=["Murphy USA","Circle K","refuel","BP","Shell","Other"];
 function blankData(){return{version:VERSION,settings:{duplicateHandling:"Ask Every Time",backupReminder:"Never",showArchived:false,lastDataBackupDate:"",lastCompleteBackupDate:""},stations:[...DEFAULT_STATIONS],maintenanceCategories:["Oil Change","Tire Rotation","Brakes","Suspension","Engine","Cooling System","Electrical","Transmission","Inspection","Cleaning / Detailing","Repair","Upgrade / Modification","Other"],maintenanceStatus:["Planned","Fix","Other"],performedBy:["Shop","Self","Friend","Other"],vehicles:[null,null],entries:[],maintenance:[],insurance:[],documents:[],photos:[]}}
 
@@ -324,6 +324,47 @@ function swapVehiclePositions(){
 
 async function saveVehicle(){const d=getData();const filePhoto=await fileToOptimizedDataURL(document.getElementById("vehiclePhoto").files[0]);const photo=selectedVehiclePhotoData||filePhoto;const zoom=selectedVehiclePhotoZoom||Number(document.getElementById("vehiclePhotoZoom").value||1.25);const existing=d.vehicles[activeSlot]||{};d.vehicles[activeSlot]={id:existing.id||`vehicle-${activeSlot+1}`,slot:activeSlot,nickname:value("vehicleNickname"),year:value("vehicleYear"),make:value("vehicleMake"),model:value("vehicleModel"),vin:value("vehicleVin"),plate:value("vehiclePlate"),plateState:value("vehiclePlateState"),acquisitionDate:value("vehicleAcqDate"),startingOdometer:numberValue("vehicleStartingOdo"),purchaseDate:value("vehiclePurchaseDate"),purchaseCost:moneyValue("vehiclePurchaseCost"),seller:value("vehicleSeller"),insuranceValue:moneyValue("vehicleInsuranceValue"),agreedValue:moneyValue("vehicleAgreedValue"),notes:value("vehicleNotes"),primaryPhoto:photo,primaryPhotoZoom:zoom,primaryPhotoOffsetX:selectedVehiclePhotoOffsetX||0,primaryPhotoOffsetY:selectedVehiclePhotoOffsetY||0,photos:photo?[{id:uid("photo"),data:photo,caption:"Primary Photo",primary:true,zoom,offsetX:selectedVehiclePhotoOffsetX||0,offsetY:selectedVehiclePhotoOffsetY||0}]:[],status:existing.status||"Active",defaultFuelGrade:"",registration:{}};setData(d);showScreen("homeScreen")}
 function value(id){return document.getElementById(id).value.trim()}function numberValue(id){const n=Number(value(id));return Number.isFinite(n)?Number(n.toFixed(2)):""}function moneyValue(id){return numberValue(id)}function uid(prefix){return`${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`}
+
+function setFuelStatus(message){
+  const el=document.getElementById("fuelFormStatus");
+  if(el)el.textContent=message||"";
+}
+function setFuelFormMode(mode){
+  const title=document.getElementById("fuelVehicleTitle");
+  const saveBtn=document.getElementById("fuelSaveButton");
+  const cancelBtn=document.getElementById("fuelCancelEditButton");
+  const screen=document.getElementById("quickFuelScreen");
+  if(mode==="edit"){
+    if(title)title.textContent="Edit Fuel Entry";
+    if(saveBtn)saveBtn.textContent="Save Edit";
+    if(cancelBtn)cancelBtn.classList.remove("hidden");
+    if(screen)screen.classList.add("edit-mode");
+  }else{
+    const v=getData().vehicles[activeSlot];
+    if(title&&v)title.textContent=`${labelFor(v)} — Quick Fuel Entry`;
+    if(saveBtn)saveBtn.textContent="Save Entry";
+    if(cancelBtn)cancelBtn.classList.add("hidden");
+    if(screen)screen.classList.remove("edit-mode");
+    editingFuelRecordId=null;
+  }
+}
+function resetFuelFormToQuickMode(){
+  clearFuelForm();
+  setCurrentFuelDateTime();
+  setFuelFormMode("quick");
+  const v=getData().vehicles[activeSlot];
+  if(v){
+    loadStationDropdown();
+    document.getElementById("fuelGrade").value=v.defaultFuelGrade||lastFuelGrade(v.id)||"";
+    document.getElementById("fuelStation").value=lastStation(v.id)||"";
+  }
+  updateFuelCalculations();
+  renderRecentFuel();
+}
+function cancelFuelEdit(){
+  setFuelStatus("Edit cancelled.");
+  resetFuelFormToQuickMode();
+}
 function setCurrentFuelDateTime(){
   const now=new Date();
   const dateEl=document.getElementById("fuelDate");
@@ -336,14 +377,16 @@ function fuelDateTimeValue(e){
 }
 function openQuickFuel(slot){
   activeSlot=slot;
+  setFuelStatus("");
+  editingFuelRecordId=null;
   const v=getData().vehicles[slot];
-  document.getElementById("fuelVehicleTitle").textContent=`${labelFor(v)} — Quick Fuel Entry`;
   clearFuelForm();
   setCurrentFuelDateTime();
   loadStationDropdown();
   document.getElementById("fuelGrade").value=v.defaultFuelGrade||lastFuelGrade(v.id)||"";
   document.getElementById("fuelStation").value=lastStation(v.id)||"";
   showScreen("quickFuelScreen");
+  setFuelFormMode("quick");
   renderRecentFuel();
   updateFuelCalculations();
 }
@@ -433,10 +476,40 @@ async function saveFuelEntry(){
   for(const file of document.getElementById("fuelReceipt").files){
     attachments.push({id:uid("fuelReceipt"),name:file.name,type:file.type,data:(file.type&&file.type.startsWith("image/"))?await fileToOptimizedDataURL(file):await fileToDataURL(file)});
   }
+
+  if(editingFuelRecordId){
+    const existing=d.entries.find(e=>e.recordId===editingFuelRecordId);
+    if(!existing){alert("Entry not found.");resetFuelFormToQuickMode();return}
+    existing.date=value("fuelDate")||existing.date||new Date().toISOString().slice(0,10);
+    existing.time=value("fuelTime")||existing.time||new Date().toTimeString().slice(0,5);
+    existing.odometer=odo;
+    existing.miles=miles===""?"":Number(Number(miles).toFixed(2));
+    existing.gallons=gallons;
+    existing.fuelGrade=value("fuelGrade");
+    existing.ethanolFree=value("fuelEthanolFree");
+    existing.station=document.getElementById("fuelStation").value;
+    existing.mpg=mpg===""?"":Number(Number(mpg).toFixed(2));
+    existing.fuelPricePerGallon=price;
+    existing.totalFuelCost=totalCost;
+    existing.fuelCostSource=costSource;
+    existing.notes=value("fuelNotes");
+    if(attachments.length)existing.attachments=[...(existing.attachments||[]),...attachments];
+    if(existing.fuelGrade)d.vehicles[activeSlot].defaultFuelGrade=existing.fuelGrade;
+    setData(d);
+    checkRecalculationAround(existing);
+    setFuelStatus("Fuel entry edit saved.");
+    resetFuelFormToQuickMode();
+    return;
+  }
+
   const entry={recordId:uid("FUEL"),entrySequence:nextSequence(),vehicleId:v.id,vehicle:labelFor(v),entryType:"Fuel",dataQuality:"Verified",date:value("fuelDate")||new Date().toISOString().slice(0,10),time:value("fuelTime")||new Date().toTimeString().slice(0,5),odometer:odo,miles:miles===""?"":Number(Number(miles).toFixed(2)),gallons,fuelGrade:value("fuelGrade"),ethanolFree:value("fuelEthanolFree"),station:document.getElementById("fuelStation").value,mpg:mpg===""?"":Number(Number(mpg).toFixed(2)),fuelPricePerGallon:price,totalFuelCost:totalCost,fuelCostSource:costSource,notes:value("fuelNotes"),attachments};
   d.entries.push(entry);
   if(entry.fuelGrade)d.vehicles[activeSlot].defaultFuelGrade=entry.fuelGrade;
-  setData(d); offerHistoricalRecalculation(entry); clearFuelForm(); showScreen("homeScreen");
+  setData(d);
+  offerHistoricalRecalculation(entry);
+  alert("Fuel entry saved.");
+  clearFuelForm();
+  showScreen("homeScreen");
 }
 function numberFrom(id){const n=Number(document.getElementById(id).value);return Number.isFinite(n)?Number(n.toFixed(2)):""}function moneyFrom(id){return numberFrom(id)}
 function previousOdometer(vehicleId,currentOdo){const rows=getData().entries.filter(e=>e.vehicleId===vehicleId&&e.odometer!=="").sort((a,b)=>Number(b.odometer)-Number(a.odometer));const lower=rows.find(e=>currentOdo!==""&&Number(e.odometer)<currentOdo);return lower?Number(lower.odometer):(rows[0]?Number(rows[0].odometer):"")}
@@ -449,19 +522,38 @@ function renderRecentFuel(){
     rows.map(e=>`<tr><td>${fuelDateTimeValue(e)}</td><td>${fmt(e.odometer)}</td><td>${fmt(e.miles)}</td><td>${fmt(e.gallons,3)}</td><td>${fmt(e.mpg)}</td><td>${csvEscapeHTML(e.station||"")}</td><td><div class="entry-actions"><button onclick="editFuelEntry('${e.recordId}')">Edit</button><button class="danger" onclick="deleteFuelEntry('${e.recordId}')">Delete</button></div></td></tr>`).join("");
 }
 function editFuelEntry(recordId){
-  const d=getData(); const e=d.entries.find(x=>x.recordId===recordId);
+  const d=getData();
+  const e=d.entries.find(x=>x.recordId===recordId);
   if(!e)return alert("Entry not found.");
-  const newDate=prompt("Date",e.date||""); if(newDate===null)return;
-  const newTime=prompt("Time",e.time||""); if(newTime===null)return;
-  const newOdo=prompt("Odometer",e.odometer||""); if(newOdo===null)return;
-  const newMiles=prompt("Miles",e.miles||""); if(newMiles===null)return;
-  const newGallons=prompt("Gallons",e.gallons||""); if(newGallons===null)return;
-  const newStation=prompt("Station",e.station||""); if(newStation===null)return;
-  const newNotes=prompt("Notes",e.notes||""); if(newNotes===null)return;
-  e.date=newDate; e.time=newTime; e.odometer=numberFromValue(newOdo); e.miles=numberFromValue(newMiles); e.gallons=numberFromValue(newGallons); e.station=newStation; e.notes=newNotes;
-  if(e.miles!==""&&e.gallons!==""&&Number(e.gallons)>0)e.mpg=Number((Number(e.miles)/Number(e.gallons)).toFixed(2));
-  setData(d); checkRecalculationAround(e); renderRecentFuel(); alert("Entry updated.");
+  editingFuelRecordId=recordId;
+  setFuelFormMode("edit");
+  setFuelStatus("Editing selected fuel entry.");
+  document.getElementById("fuelDate").value=e.date||new Date().toISOString().slice(0,10);
+  document.getElementById("fuelTime").value=e.time||new Date().toTimeString().slice(0,5);
+  document.getElementById("fuelOdometer").value=e.odometer||"";
+  document.getElementById("fuelMiles").value=e.miles||"";
+  document.getElementById("fuelGallons").value=e.gallons||"";
+  document.getElementById("fuelGrade").value=e.fuelGrade||"";
+  document.getElementById("fuelEthanolFree").value=e.ethanolFree||"";
+  loadStationDropdown();
+  if(e.station && ![...document.getElementById("fuelStation").options].some(o=>o.value===e.station)){
+    const opt=document.createElement("option");
+    opt.value=e.station;
+    opt.textContent=e.station;
+    document.getElementById("fuelStation").appendChild(opt);
+  }
+  document.getElementById("fuelStation").value=e.station||"";
+  document.getElementById("fuelPrice").value=e.fuelPricePerGallon||"";
+  document.getElementById("fuelCost").value=e.totalFuelCost||"";
+  document.getElementById("fuelCostSource").value=e.fuelCostSource||"";
+  document.getElementById("fuelNotes").value=e.notes||"";
+  const receipt=document.getElementById("fuelReceipt");
+  if(receipt)receipt.value="";
+  milesManuallyEdited=true;
+  updateFuelCalculations();
+  window.scrollTo(0,0);
 }
+
 function deleteFuelEntry(recordId){
   const d=getData(); const e=d.entries.find(x=>x.recordId===recordId);
   if(!e)return alert("Entry not found.");
@@ -697,4 +789,4 @@ function renderDataMeta(){
 function renderBackupMeta(){renderDataMeta()}
 function download(filename,text,type){const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url)}
 function loadSettings(){const s=getData().settings;document.getElementById("duplicateSetting").value=s.duplicateHandling;document.getElementById("backupReminder").value=s.backupReminder;document.getElementById("showArchived").checked=!!s.showArchived}function saveSettings(){const d=getData();d.settings.duplicateHandling=value("duplicateSetting");d.settings.backupReminder=value("backupReminder");d.settings.showArchived=document.getElementById("showArchived").checked;setData(d);alert("Settings saved.")}function validateDatabase(){alert("Database validation complete.")}function rebuildStatistics(){alert("Statistics rebuilt.")}function removeOrphanAttachments(){alert("Orphan attachment scan complete.")}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js?v=210").catch(err=>console.warn("Service worker registration failed",err));ensureVersionFooters();renderHome();
+if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js?v=211").catch(err=>console.warn("Service worker registration failed",err));ensureVersionFooters();renderHome();

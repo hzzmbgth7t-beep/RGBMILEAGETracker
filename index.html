@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RGB Mileage</title>
-<link rel="manifest" href="./manifest.json?v=210">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png?v=210">
-<link rel="icon" href="./favicon.png?v=210">
+<link rel="manifest" href="./manifest.json?v=211">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png?v=211">
+<link rel="icon" href="./favicon.png?v=211">
 <meta name="theme-color" content="#102435">
-<link rel="stylesheet" href="./styles.css?v=210">
+<link rel="stylesheet" href="./styles.css?v=211">
 </head>
 <body>
 <main>
@@ -24,7 +24,7 @@
     <button onclick="showScreen('settingsScreen')">⚙️<span>Settings</span></button>
     <button onclick="showScreen('aboutScreen')">ⓘ<span>About</span></button>
   </nav>
-  <footer class="version">Version 2.0.10</footer>
+  <footer class="version">Version 2.0.11</footer>
 </section>
 
 <section id="addVehicleScreen" class="screen">
@@ -63,6 +63,7 @@
 <section id="quickFuelScreen" class="screen">
   <button class="back" onclick="showScreen('homeScreen')">← Home</button>
   <h1 id="fuelVehicleTitle">Quick Fuel Entry</h1>
+  <div id="fuelFormStatus" class="form-status"></div>
   <div class="card form-grid">
     <label>Date<input id="fuelDate" type="date"></label>
     <label>Time<input id="fuelTime" type="time"></label>
@@ -78,7 +79,8 @@
     <label>Fuel Cost Source<select id="fuelCostSource"><option></option><option>Calculated</option><option>Entered Manually</option></select></label>
     <label>Receipt / Attachment<input id="fuelReceipt" type="file" accept="image/*,.pdf" multiple></label>
     <label class="wide">Notes<textarea id="fuelNotes"></textarea></label>
-    <button class="primary wide" onclick="saveFuelEntry()">Save Entry</button>
+    <button id="fuelSaveButton" class="primary wide" onclick="saveFuelEntry()">Save Entry</button>
+    <button id="fuelCancelEditButton" class="wide hidden" onclick="cancelFuelEdit()">Cancel Edit</button>
   </div>
   <details class="card previous-entries" open>
     <summary><strong>Previous Entries</strong></summary>
@@ -139,7 +141,7 @@
   <button onclick="swapVehiclePositions()">Swap Vehicle Positions</button>
 </div>
 </section>
-<section id="aboutScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>About RGB Mileage</h1><div class="card"><p><strong>Version:</strong> 2.0.10</p><p><strong>Build Date:</strong> 2026-06-04</p><p>RGB Mileage is a vehicle-first mileage, fuel, maintenance, insurance, and history tracker.</p></div></section>
+<section id="aboutScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>About RGB Mileage</h1><div class="card"><p><strong>Version:</strong> 2.0.11</p><p><strong>Build Date:</strong> 2026-06-04</p><p>RGB Mileage is a vehicle-first mileage, fuel, maintenance, insurance, and history tracker.</p></div></section>
 </main>
-<script src="./app.js?v=210"></script>
+<script src="./app.js?v=211"></script>
 </body></html>

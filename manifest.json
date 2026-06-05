@@ -2,7 +2,7 @@
   "name": "RGB Mileage",
   "short_name": "RGB Mileage",
   "description": "Vehicle-first mileage, fuel, maintenance, insurance, and history tracking.",
-  "start_url": "./index.html?v=210",
+  "start_url": "./index.html?v=211",
   "scope": "./",
   "display": "standalone",
   "background_color": "#102435",
