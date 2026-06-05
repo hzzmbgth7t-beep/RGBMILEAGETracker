@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RGB Mileage</title>
-<link rel="manifest" href="./manifest.json?v=208">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png?v=208">
-<link rel="icon" href="./favicon.png?v=208">
+<link rel="manifest" href="./manifest.json?v=209">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png?v=209">
+<link rel="icon" href="./favicon.png?v=209">
 <meta name="theme-color" content="#102435">
-<link rel="stylesheet" href="./styles.css?v=208">
+<link rel="stylesheet" href="./styles.css?v=209">
 </head>
 <body>
 <main>
@@ -24,7 +24,7 @@
     <button onclick="showScreen('settingsScreen')">⚙️<span>Settings</span></button>
     <button onclick="showScreen('aboutScreen')">ⓘ<span>About</span></button>
   </nav>
-  <footer class="version">Version 2.0.8</footer>
+  <footer class="version">Version 2.0.9</footer>
 </section>
 
 <section id="addVehicleScreen" class="screen">
@@ -64,8 +64,10 @@
   <button class="back" onclick="showScreen('homeScreen')">← Home</button>
   <h1 id="fuelVehicleTitle">Quick Fuel Entry</h1>
   <div class="card form-grid">
-    <label>Odometer<input id="fuelOdometer" type="number" step="0.01"></label>
-    <label>Gallons<input id="fuelGallons" type="number" step="0.001"></label>
+    <label>Odometer<input id="fuelOdometer" type="number" step="0.01" oninput="updateFuelCalculations()"></label>
+    <label>Miles<input id="fuelMiles" type="number" step="0.01" oninput="manualMilesEdited(); updateFuelCalculations()"></label>
+    <label>Gallons<input id="fuelGallons" type="number" step="0.001" oninput="updateFuelCalculations()"></label>
+    <label>MPG<input id="fuelMpg" type="number" step="0.01" readonly></label>
     <label>Fuel Grade<select id="fuelGrade"><option></option><option>87</option><option>89</option><option>90</option><option>91</option><option>93</option><option>Other</option></select></label>
     <label>Ethanol Free<select id="fuelEthanolFree"><option></option><option>No</option><option>Yes</option></select></label>
     <label>Station<select id="fuelStation"></select></label>
@@ -132,7 +134,7 @@
   <button onclick="swapVehiclePositions()">Swap Vehicle Positions</button>
 </div>
 </section>
-<section id="aboutScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>About RGB Mileage</h1><div class="card"><p><strong>Version:</strong> 2.0.8</p><p><strong>Build Date:</strong> 2026-06-04</p><p>RGB Mileage is a vehicle-first mileage, fuel, maintenance, insurance, and history tracker.</p></div></section>
+<section id="aboutScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>About RGB Mileage</h1><div class="card"><p><strong>Version:</strong> 2.0.9</p><p><strong>Build Date:</strong> 2026-06-04</p><p>RGB Mileage is a vehicle-first mileage, fuel, maintenance, insurance, and history tracker.</p></div></section>
 </main>
-<script src="./app.js?v=208"></script>
+<script src="./app.js?v=209"></script>
 </body></html>
