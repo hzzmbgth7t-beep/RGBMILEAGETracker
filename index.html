@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RGB Mileage</title>
-<link rel="manifest" href="./manifest.json?v=209">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png?v=209">
-<link rel="icon" href="./favicon.png?v=209">
+<link rel="manifest" href="./manifest.json?v=210">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png?v=210">
+<link rel="icon" href="./favicon.png?v=210">
 <meta name="theme-color" content="#102435">
-<link rel="stylesheet" href="./styles.css?v=209">
+<link rel="stylesheet" href="./styles.css?v=210">
 </head>
 <body>
 <main>
@@ -24,7 +24,7 @@
     <button onclick="showScreen('settingsScreen')">⚙️<span>Settings</span></button>
     <button onclick="showScreen('aboutScreen')">ⓘ<span>About</span></button>
   </nav>
-  <footer class="version">Version 2.0.9</footer>
+  <footer class="version">Version 2.0.10</footer>
 </section>
 
 <section id="addVehicleScreen" class="screen">
@@ -64,6 +64,8 @@
   <button class="back" onclick="showScreen('homeScreen')">← Home</button>
   <h1 id="fuelVehicleTitle">Quick Fuel Entry</h1>
   <div class="card form-grid">
+    <label>Date<input id="fuelDate" type="date"></label>
+    <label>Time<input id="fuelTime" type="time"></label>
     <label>Odometer<input id="fuelOdometer" type="number" step="0.01" oninput="updateFuelCalculations()"></label>
     <label>Miles<input id="fuelMiles" type="number" step="0.01" oninput="manualMilesEdited(); updateFuelCalculations()"></label>
     <label>Gallons<input id="fuelGallons" type="number" step="0.001" oninput="updateFuelCalculations()"></label>
@@ -78,7 +80,10 @@
     <label class="wide">Notes<textarea id="fuelNotes"></textarea></label>
     <button class="primary wide" onclick="saveFuelEntry()">Save Entry</button>
   </div>
-  <div class="card"><h2>Recent Entries</h2><div class="table-wrap"><table id="recentFuelTable"></table></div></div>
+  <details class="card previous-entries" open>
+    <summary><strong>Previous Entries</strong></summary>
+    <div class="table-wrap"><table id="previousFuelTable"></table></div>
+  </details>
 </section>
 
 <section id="vehicleDetailsScreen" class="screen">
@@ -134,7 +139,7 @@
   <button onclick="swapVehiclePositions()">Swap Vehicle Positions</button>
 </div>
 </section>
-<section id="aboutScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>About RGB Mileage</h1><div class="card"><p><strong>Version:</strong> 2.0.9</p><p><strong>Build Date:</strong> 2026-06-04</p><p>RGB Mileage is a vehicle-first mileage, fuel, maintenance, insurance, and history tracker.</p></div></section>
+<section id="aboutScreen" class="screen"><button class="back" onclick="showScreen('homeScreen')">← Home</button><h1>About RGB Mileage</h1><div class="card"><p><strong>Version:</strong> 2.0.10</p><p><strong>Build Date:</strong> 2026-06-04</p><p>RGB Mileage is a vehicle-first mileage, fuel, maintenance, insurance, and history tracker.</p></div></section>
 </main>
-<script src="./app.js?v=209"></script>
+<script src="./app.js?v=210"></script>
 </body></html>
