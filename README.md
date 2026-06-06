@@ -1,30 +1,42 @@
 # RGB Mileage
 
-Version: 2.1.1
-Release Date: 2026-06-05
-Build Type: Repair Release
-Schema: v2.1.1
+App Site Address:
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-## Purpose
+Current Version:
+v2.1.2
 
-v2.1.1 repairs the defects identified after the v2.1.0 architecture build review.
+Release Date:
+2026-06-05
 
-## Repairs Included
+## Current Release Information
 
-- Functional back button with navigation history.
-- Home screen layout adjusted for iPhone 17 Pro Max.
-- Vehicle tap/long-press actions limited to the vehicle circle button.
-- RGB chrome-style branding and non-generic bottom navigation.
-- Global iOS callout suppression on app controls.
-- Quick Entry Clear & Exit behavior.
-- Station Other workflow with Use Once / Save To List.
-- Maintenance Category dropdown and Other workflow.
-- Vehicle circle order swap.
-- Reports menu and basic report detail views.
+v2.1.2 is a Shell Repair release.
 
-## Deferred
+Included scope:
+- Navigation stack repair.
+- Back button repair.
+- Route parameter preservation.
+- Cancel behavior for quick-entry screens.
+- Long-press suppression.
+- Dynamic Island / top safe-area handling.
+- Bottom safe-area handling.
+- Footer and bottom navigation placement.
+- App shell / viewport handling.
 
-- XLSX import.
-- OCR receipt processing.
-- Cloud sync.
-- Full report export.
+Explicitly excluded:
+- Image editor and image cropping.
+- Home circle sizing optimization beyond shell/safe-area impact.
+- Vehicle ordering.
+- Form layout redesign.
+- Dropdown framework.
+- Reports.
+- Restore modes.
+
+## Version History
+
+### v2.1.1 — 2026-06-05
+Repair discovery build. Identified unresolved shell, home, image, dropdown, reports, and layout defects.
+
+### v2.1.0 — 2026-06-05
+Architecture stabilization build aligned to the master specification. Later determined to require staged repair.
