@@ -1,29 +1,32 @@
-# RGB Mileage Changelog
+# CHANGELOG
 
-App Site Address:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Current Version:
-v2.1.2
+Current Version: 2.1.2a
+Release Date: 2026-06-05
 
-Release Date:
-2026-06-05
+## v2.1.2a
 
-## v2.1.2 — 2026-06-05
+### Fixed
+- Home Screen navigation bar vertical positioning.
+- Excess blank space below navigation bar.
+- Version/build date visibility on Home Screen.
+- Vehicle image preview on Edit Vehicle screen.
+- Default vehicle image circle crop behavior.
+- Previous Fuel and Maintenance record sort order.
+- Reports sort order for affected record tables.
 
 ### Changed
-- Restricted release scope to Shell Repair only.
-- Added navigation stack and stack-aware Back button behavior.
-- Updated version identifiers and service worker cache to v2.1.2.
-- Updated safe-area and viewport CSS to address Dynamic Island, footer, navigation, and bottom white-area defects.
+- Vehicle ordering standard remains Swap Vehicles.
+- Move Up / Move Down requirements removed from current scope.
 
-### Excluded
-- Images, dropdowns, form layout redesign, reports, and restore modes remain scheduled for later incremental repair releases.
+## History
 
-## Version History
+### v2.1.2 — 2026-06-05
+Repair release approved after user testing.
 
 ### v2.1.1 — 2026-06-05
-Repair release attempt; served as defect discovery build.
+Repair release.
 
 ### v2.1.0 — 2026-06-05
-Architecture stabilization build.
+Architecture stabilization release.

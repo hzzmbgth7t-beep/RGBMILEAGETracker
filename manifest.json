@@ -3,8 +3,8 @@
   "short_name": "RGB Mileage",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0A1324",
-  "theme_color": "#0A1324",
+  "background_color": "#0a1324",
+  "theme_color": "#0a1324",
   "icons": [
     {
       "src": "apple-touch-icon.png",

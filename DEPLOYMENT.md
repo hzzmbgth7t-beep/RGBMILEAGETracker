@@ -1,47 +1,18 @@
-# RGB Mileage Deployment
+# DEPLOYMENT
 
-App Site Address:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Current Version:
-v2.1.2
-
-Release Date:
-2026-06-05
+Current Version: 2.1.2a
+Release Date: 2026-06-05
 
 ## Deployment Checklist
 
-- [ ] Backup made before deployment.
-- [ ] index.html replaced.
-- [ ] app.js replaced.
-- [ ] styles.css replaced.
-- [ ] sw.js replaced.
-- [ ] manifest.json replaced.
-- [ ] README.md uploaded.
-- [ ] CHANGELOG.md uploaded.
-- [ ] FIXNOTES.md uploaded.
-- [ ] DEPLOYMENT.md uploaded.
-- [ ] Cache-clearing steps completed.
-- [ ] Safari tested.
-- [ ] Home Screen app tested.
-
-## Service Worker Cache
-
-rgbm-v2.1.2-2026-06-05
-
-## Verification
-
-- [ ] GitHub Pages URL shows v2.1.2.
-- [ ] Home Screen app shows v2.1.2.
-- [ ] Back button works.
-- [ ] Cancel buttons work.
-- [ ] Safe areas respected.
-- [ ] No bottom white area.
-
-## Version History
-
-### v2.1.1 — 2026-06-05
-Prior repair package.
-
-### v2.1.0 — 2026-06-05
-Architecture stabilization package.
+- [ ] Upload root files from package.
+- [ ] Confirm index.html references app.js?v=212a.
+- [ ] Confirm index.html references styles.css?v=212a.
+- [ ] Confirm service worker cache rgbm-v2.1.2a-2026-06-05.
+- [ ] Open site with cache buster: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=212a
+- [ ] Confirm displayed version is v2.1.2a.
+- [ ] Confirm Home Screen layout.
+- [ ] Confirm Edit Vehicle image display.
+- [ ] Confirm Previous Records sort order.

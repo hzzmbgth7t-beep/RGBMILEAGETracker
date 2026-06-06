@@ -1,57 +1,22 @@
-# RGB Mileage Fix Notes
+# FIXNOTES
 
-App Site Address:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Current Version:
-v2.1.2
+Current Version: 2.1.2a
+Release Date: 2026-06-05
 
-Release Date:
-2026-06-05
+## v2.1.2a Fix Notes
 
-## Current Fix Scope
+- Tightened Home Screen layout to keep version/build date visible without scrolling.
+- Moved bottom navigation flush to the bottom while preserving safe-area padding.
+- Added Edit Vehicle image preview when a primary image exists.
+- Increased default image fill inside circular vehicle display to avoid square-edge visibility.
+- Added previous-record sort helper using date, odometer for undated fuel/maintenance records, entry sequence, and timestamps.
+- Retained working Swap Vehicles button and removed Move Up / Move Down from current implementation scope.
 
-This release addresses shell-level defects only:
-- Back button failures.
-- Missing navigation stack.
-- Route context loss.
-- Cancel behavior on quick-entry screens.
-- Long-press tap suppression.
-- Dynamic Island / top safe-area overlap.
-- Bottom white area.
-- Footer and bottom nav placement.
+## Verification Required
 
-## Deferred Defects
-
-The following defects are intentionally deferred:
-- Home screen image cropping.
-- Vehicle image editor.
-- Dropdown Other workflows.
-- Form field layout redesign.
-- Reports module reconstruction.
-- Restore mode expansion.
-
-## Deployment Verification
-
-- [ ] App opens from GitHub Pages URL.
-- [ ] App opens from Home Screen icon.
-- [ ] Version shown is v2.1.2.
-- [ ] Back works from View Vehicle.
-- [ ] Back works from Quick Fuel.
-- [ ] Back works from Quick Maintenance.
-- [ ] Back works from Quick Insurance.
-- [ ] Back works from Reports.
-- [ ] Back works from Data.
-- [ ] Back works from Settings.
-- [ ] Cancel exits quick-entry screens without saving.
-- [ ] Dynamic Island overlap is eliminated.
-- [ ] Bottom white area is eliminated.
-- [ ] Footer and bottom navigation are visible.
-
-## Version History
-
-### v2.1.1 — 2026-06-05
-Prior repair attempt; required staged follow-up.
-
-### v2.1.0 — 2026-06-05
-Architecture stabilization release.
+- Home Screen visible without scrolling.
+- No blank space below navigation bar.
+- Edit Vehicle shows current image.
+- Fuel and Maintenance records sort newest/highest-odometer first where undated.
