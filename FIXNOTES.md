@@ -2,11 +2,22 @@
 
 App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Current Version: 2.1.2d
-Release Date: 2026-06-06
+Current Version: 2.1.3
+Release Date: 2026-06-07
 
-## v2.1.2d Fix Notes
+## v2.1.3 Fix Notes
 
-The backup JSON is valid. v2.1.2c reached the restore confirmation stage, proving JSON parsing and normalization worked. The later error, "The quota has been exceeded," occurred when Safari refused the localStorage write.
+v2.1.3 was built under stabilization governance. Only D-001 through D-015 were targeted.
 
-The likely cause is accumulated storage from multiple RGB Mileage versions and previous restore attempts. v2.1.2d clears stale RGBM/rgbMileage localStorage keys before Replace restore and retries after cleanup if Safari still raises a quota error.
+Implementation:
+- Fixed-position app shell and full background fill.
+- Portrait orientation in manifest with portrait-style layout behavior.
+- Shared two-column grid for Vehicle/Fuel/Maintenance/Insurance entry screens.
+- Tap routes Previous Records to View.
+- 500ms long press routes Previous Records to Edit.
+- Shared Other modal implements Use Once, Save To List, Cancel.
+
+Excluded:
+- D-017
+- D-018
+- Deferred items

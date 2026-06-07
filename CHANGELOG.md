@@ -2,14 +2,27 @@
 
 App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Current Version: 2.1.2d
-Release Date: 2026-06-06
+Current Version: 2.1.3
+Release Date: 2026-06-07
 
-## v2.1.2d
+## v2.1.3
 
 ### Fixed
-- Restore failure caused by Safari localStorage quota after repeated app versions.
-- Replace restore now clears stale RGB Mileage storage keys before writing restored data.
-- saveData now retries after old-cache cleanup if quota is exceeded.
-- Restore confirmation now displays normal line breaks instead of literal backslash-n.
-- Added Clear Old Cached Storage button on Data Management screen.
+- D-001 Home Screen vertical movement controls added.
+- D-002 Full top background fill enforced.
+- D-003 Portrait visual layout behavior set.
+- D-004 through D-010 Unified grid layout applied to Vehicle/Acquisition, Fuel, Maintenance, and Insurance forms.
+- D-011 through D-013 Previous record long press routes to Edit mode with 500ms hold timing.
+- D-014 through D-015 Standardized Other workflow modal implemented for Fuel Grade, Station, and Maintenance Category.
+
+### Preserved
+- JSON Backup and Restore.
+- Vehicle image display/save.
+- Acquisition data save.
+- Fuel and Maintenance ordering.
+- Insurance display.
+- Swap Vehicles.
+
+### Excluded
+- D-017 Circle Border Chrome Styling.
+- D-018 Vehicle Label Chrome Styling.
