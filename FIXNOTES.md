@@ -2,21 +2,13 @@
 
 App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Current Version: 2.1.2a
+Current Version: 2.1.2b
 Release Date: 2026-06-05
 
-## v2.1.2a Fix Notes
+## v2.1.2b Fix Notes
 
-- Tightened Home Screen layout to keep version/build date visible without scrolling.
-- Moved bottom navigation flush to the bottom while preserving safe-area padding.
-- Added Edit Vehicle image preview when a primary image exists.
-- Increased default image fill inside circular vehicle display to avoid square-edge visibility.
-- Added previous-record sort helper using date, odometer for undated fuel/maintenance records, entry sequence, and timestamps.
-- Retained working Swap Vehicles button and removed Move Up / Move Down from current implementation scope.
-
-## Verification Required
-
-- Home Screen visible without scrolling.
-- No blank space below navigation bar.
-- Edit Vehicle shows current image.
-- Fuel and Maintenance records sort newest/highest-odometer first where undated.
+- Uses v2.1.2b stabilization scope SB-001 through SB-016.
+- Adds normalization for maintenance and insurance records across legacy and current structures.
+- Persists acquisition fields into both vehicle data and the one-to-one acquisition record.
+- Adds duplicate import modes: Cancel, Replace, Update, Duplicate, Skip.
+- Keeps Swap Vehicles and removes Move Up / Move Down.
