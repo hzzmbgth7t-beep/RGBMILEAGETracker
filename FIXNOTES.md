@@ -2,22 +2,19 @@
 
 App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Current Version: 2.1.3
+Current Version: 2.1.3a
 Release Date: 2026-06-07
 
-## v2.1.3 Fix Notes
+## v2.1.3a Fix Notes
 
-v2.1.3 was built under stabilization governance. Only D-001 through D-015 were targeted.
+This build follows the v2.1.3a Build Control Package and Consistency Review.
 
-Implementation:
-- Fixed-position app shell and full background fill.
-- Portrait orientation in manifest with portrait-style layout behavior.
-- Shared two-column grid for Vehicle/Fuel/Maintenance/Insurance entry screens.
-- Tap routes Previous Records to View.
-- 500ms long press routes Previous Records to Edit.
-- Shared Other modal implements Use Once, Save To List, Cancel.
+System-first corrections:
+- Shared record interaction handler.
+- Shared Other workflow persistence model.
+- Shared field-height and grid layout rules.
+- Shared maintenance normalization/display/save model.
 
 Excluded:
-- D-017
-- D-018
-- Deferred items
+- Chrome styling defects D-017 and D-018.
+- Future decisions DEC-019 through DEC-021.
