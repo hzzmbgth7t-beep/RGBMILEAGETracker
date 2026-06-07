@@ -2,13 +2,11 @@
 
 App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Current Version: 2.1.2b
-Release Date: 2026-06-05
+Current Version: 2.1.2c
+Release Date: 2026-06-06
 
-## v2.1.2b Fix Notes
+## v2.1.2c Fix Notes
 
-- Uses v2.1.2b stabilization scope SB-001 through SB-016.
-- Adds normalization for maintenance and insurance records across legacy and current structures.
-- Persists acquisition fields into both vehicle data and the one-to-one acquisition record.
-- Adds duplicate import modes: Cancel, Replace, Update, Duplicate, Skip.
-- Keeps Swap Vehicles and removes Move Up / Move Down.
+The v2.1.2b restore screen was calling normalizeData(), but the function was not present in the generated app.js file. This caused valid backups to be rejected with the generic invalid JSON message.
+
+v2.1.2c adds normalizeData() and validates JSON backup compatibility before packaging.
