@@ -2,12 +2,14 @@
 
 App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Current Version: 2.1.2c
+Current Version: 2.1.2d
 Release Date: 2026-06-06
 
-## v2.1.2c
+## v2.1.2d
 
 ### Fixed
-- Restore JSON Backup failure caused by missing normalizeData() in v2.1.2b.
-- Added explicit compatibility normalization for v2.1.0 and v2.1.2 backups.
-- Improved restore error reporting.
+- Restore failure caused by Safari localStorage quota after repeated app versions.
+- Replace restore now clears stale RGB Mileage storage keys before writing restored data.
+- saveData now retries after old-cache cleanup if quota is exceeded.
+- Restore confirmation now displays normal line breaks instead of literal backslash-n.
+- Added Clear Old Cached Storage button on Data Management screen.
