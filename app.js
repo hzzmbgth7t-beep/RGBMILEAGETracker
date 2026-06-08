@@ -1,5 +1,5 @@
-const VERSION="2.1.3b", BUILD_DATE="2026-06-07", KEY="RGBM_DATA_v213b";
-const LEGACY_KEYS=["RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
+const VERSION="2.1.3c", BUILD_DATE="2026-06-07", KEY="RGBM_DATA_v213c";
+const LEGACY_KEYS=["RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
 let state, route={screen:"home"}, historyStack=[], longTimer=null, suppressTap=false;
 function nowISO(){return new Date().toISOString()} function uid(p="ID"){return p+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)} function arr(v){return Array.isArray(v)?v:[]} function tags(v){return Array.isArray(v)?v:(v?[String(v)]:[])} function hasTag(r,t){return tags(r.classificationTags).includes(t)} function addTag(r,t){r.classificationTags=tags(r.classificationTags);if(!r.classificationTags.includes(t))r.classificationTags.push(t)} function numVal(v){if(v===null||v===undefined||v==="")return "";const n=Number(String(v).replace(/[$,]/g,""));return Number.isFinite(n)?n:""}
@@ -50,13 +50,13 @@ function storageBytes(obj){
   try{return new Blob([JSON.stringify(obj)]).size}
   catch(e){return JSON.stringify(obj).length}
 }
-function blankData(){return {fuelGrades:[...FUEL_GRADES],app:"RGB Mileage",schemaVersion:"2.1.3b",appVersion:VERSION,settings:{lastBackupDate:"",showArchived:false},nextEntrySequence:1,stations:[...STATIONS_DEFAULT],maintenanceCategories:[...MAINT_CATS],vehicles:[null,null],vehicleAcquisitionRecords:[],fuelRecords:[],maintenanceRecords:[],insuranceRecords:[],attachments:[],createdAt:nowISO(),modifiedAt:nowISO()}}
+function blankData(){return {fuelGrades:[...FUEL_GRADES],app:"RGB Mileage",schemaVersion:"2.1.3c",appVersion:VERSION,settings:{lastBackupDate:"",showArchived:false},nextEntrySequence:1,stations:[...STATIONS_DEFAULT],maintenanceCategories:[...MAINT_CATS],vehicles:[null,null],vehicleAcquisitionRecords:[],fuelRecords:[],maintenanceRecords:[],insuranceRecords:[],attachments:[],createdAt:nowISO(),modifiedAt:nowISO()}}
 
 function normalizeData(input){
   const d=blankData();
   if(!input || typeof input!=="object") return d;
   d.app="RGB Mileage";
-  d.schemaVersion="2.1.3b";
+  d.schemaVersion="2.1.3c";
   d.appVersion=VERSION;
   d.createdAt=input.createdAt||nowISO();
   d.modifiedAt=input.modifiedAt||nowISO();
@@ -137,7 +137,7 @@ function dedupeRecords(d){
 }
 function loadData(){let raw=localStorage.getItem(KEY); if(raw){try{return normalizeData(JSON.parse(raw))}catch(e){console.warn(e)}} for(const k of LEGACY_KEYS){raw=localStorage.getItem(k); if(raw){try{const d=normalizeData(JSON.parse(raw)); saveData(d); return d}catch(e){console.warn(e)}}} const d=blankData(); saveData(d); return d}
 function saveData(d=state){
-  d.schemaVersion="2.1.3b";
+  d.schemaVersion="2.1.3c";
   d.appVersion=VERSION;
   d.modifiedAt=nowISO();
   const payload=JSON.stringify(d);
@@ -169,48 +169,83 @@ function nav(screen,params={},push=true){if(push)historyStack.push({...route});r
 function header(title){return `<div class="topbar"><button class="smallbtn ghost" onclick="goBack()">Back</button><b>${esc(title)}</b><span></span></div>`} function footer(){return `<div class="version">RGB Mileage v${VERSION} - ${BUILD_DATE}</div>`} function bottomNav(){return `<div class="bottom-nav"><button onclick="nav('home')"><span>⌂</span>Home</button><button onclick="nav('reports')"><span>▤</span>Reports</button><button onclick="nav('data')"><span>⇅</span>Data</button><button onclick="nav('settings')"><span>⚙</span>Settings</button></div>`}
 function vehicleLabel(v){return v?([v.year,v.make,v.model].filter(Boolean).join(" ")||v.nickname||v.displayName||"Vehicle"):"Vehicle"} function vehicleBadge(v){if(!v)return "+"; if(v.badge)return v.badge; const s=vehicleLabel(v); if(/grand wagoneer/i.test(s))return "JGW"; if(/cj\s*7/i.test(s))return "CJ7"; return s.split(/\s+/).map(x=>x[0]).join("").slice(0,6).toUpperCase()||"+"} function getVehicle(id){return state.vehicles.find(v=>v&&v.vehicleId===id)}
 function render(){const app=$("app"),s=route.screen; if(s==="home")return home(app); if(s==="vehicleView")return vehicleView(app,route.vehicleId); if(s==="vehicleEdit")return vehicleEdit(app,route.vehicleId,route.slot); if(s==="quickFuel")return quickFuel(app,route.vehicleId); if(s==="quickMaintenance")return quickMaintenance(app,route.vehicleId); if(s==="quickInsurance")return quickInsurance(app,route.vehicleId); if(s==="recordView")return recordView(app,route.type,route.recordId); if(s==="recordEdit")return recordEdit(app,route.type,route.recordId); if(s==="data")return dataScreen(app); if(s==="reports")return reportsHome(app); if(s.startsWith("report"))return reportDetail(app,s); if(s==="settings")return settings(app)}
-function clearLP(){if(longTimer)clearTimeout(longTimer);longTimer=null}
-function pressStart(cb,e){clearLP();suppressTap=false;longTimer=setTimeout(()=>{suppressTap=true;cb()},500)}
-function rowTap(e,cb){if(suppressTap){suppressTap=false;return}if(cb)cb()}
 
-function pressStart(cb,e){if(e&&e.preventDefault)e.preventDefault();clearLP();suppressTap=false;longTimer=setTimeout(()=>{suppressTap=true;cb()},500)}
-function rowTap(e,cb){if(suppressTap){if(e&&e.preventDefault)e.preventDefault();suppressTap=false;return}if(cb)cb()}
+
+
+
+
+
+
+
+function showToast(msg){alert(msg)}
+function clearInputs(ids){ids.forEach(id=>{const el=$(id); if(el){ if(el.tagName==="SELECT") el.selectedIndex=0; else el.value=""; }})}
+
+
+
+
+
 
 function viewField(label,value,full=false){
   return `<div class="view-field ${full?'full':''}"><span class="view-label">${esc(label)}</span><span class="view-value">${esc(value??"")}</span></div>`;
 }
-function showToast(msg){alert(msg)}
-function clearInputs(ids){ids.forEach(id=>{const el=$(id); if(el){ if(el.tagName==="SELECT") el.selectedIndex=0; else el.value=""; }})}
+
+function showToast(msg){ alert(msg); }
+
+function clearInputs(ids){
+  ids.forEach(id=>{
+    const el=$(id);
+    if(el){
+      if(el.tagName==="SELECT") el.selectedIndex=0;
+      else el.value="";
+    }
+  });
+}
+
 function sortWithOther(list,defaults=[]){
   const out=[];
-  defaults.forEach(x=>{if(x!=="Other"&&!out.includes(x))out.push(x)});
-  (list||[]).forEach(x=>{if(x&&x!=="Other"&&!out.some(y=>String(y).toLowerCase()===String(x).toLowerCase()))out.push(x)});
+  defaults.forEach(x=>{ if(x && x!=="Other" && !out.some(y=>String(y).toLowerCase()===String(x).toLowerCase())) out.push(x); });
+  (list||[]).forEach(x=>{ if(x && x!=="Other" && !out.some(y=>String(y).toLowerCase()===String(x).toLowerCase())) out.push(x); });
   out.push("Other");
   return out;
 }
+
 function activeList(listName){
   if(listName==="fuelGrades"){
-    if(!state.fuelGrades)state.fuelGrades=[...FUEL_GRADES];
+    if(!state.fuelGrades) state.fuelGrades=[...FUEL_GRADES];
     return sortWithOther(state.fuelGrades,FUEL_GRADES);
   }
   if(listName==="stations"){
-    if(!state.stations)state.stations=[...STATIONS_DEFAULT];
+    if(!state.stations) state.stations=[...STATIONS_DEFAULT];
     return sortWithOther(state.stations,STATIONS_DEFAULT);
   }
   if(listName==="maintenanceCategories"){
-    if(!state.maintenanceCategories)state.maintenanceCategories=[...MAINT_CATS];
+    if(!state.maintenanceCategories) state.maintenanceCategories=[...MAINT_CATS];
     return sortWithOther(state.maintenanceCategories,MAINT_CATS);
   }
-  if(!state[listName])state[listName]=[];
+  if(!state[listName]) state[listName]=[];
   return sortWithOther(state[listName],[]);
 }
+
 function saveOtherValueToState(listName,val){
-  if(listName==="fuelGrades"){if(!state.fuelGrades)state.fuelGrades=[...FUEL_GRADES]; if(!state.fuelGrades.some(x=>String(x).toLowerCase()===val.toLowerCase()))state.fuelGrades.push(val); return}
-  if(listName==="stations"){if(!state.stations)state.stations=[...STATIONS_DEFAULT]; if(!state.stations.some(x=>String(x).toLowerCase()===val.toLowerCase()))state.stations.push(val); return}
-  if(listName==="maintenanceCategories"){if(!state.maintenanceCategories)state.maintenanceCategories=[...MAINT_CATS]; if(!state.maintenanceCategories.some(x=>String(x).toLowerCase()===val.toLowerCase()))state.maintenanceCategories.push(val); return}
-  if(!state[listName])state[listName]=[];
-  if(!state[listName].some(x=>String(x).toLowerCase()===val.toLowerCase()))state[listName].push(val);
+  if(listName==="fuelGrades"){
+    if(!state.fuelGrades) state.fuelGrades=[...FUEL_GRADES];
+    if(!state.fuelGrades.some(x=>String(x).toLowerCase()===String(val).toLowerCase())) state.fuelGrades.push(val);
+    return;
+  }
+  if(listName==="stations"){
+    if(!state.stations) state.stations=[...STATIONS_DEFAULT];
+    if(!state.stations.some(x=>String(x).toLowerCase()===String(val).toLowerCase())) state.stations.push(val);
+    return;
+  }
+  if(listName==="maintenanceCategories"){
+    if(!state.maintenanceCategories) state.maintenanceCategories=[...MAINT_CATS];
+    if(!state.maintenanceCategories.some(x=>String(x).toLowerCase()===String(val).toLowerCase())) state.maintenanceCategories.push(val);
+    return;
+  }
+  if(!state[listName]) state[listName]=[];
+  if(!state[listName].some(x=>String(x).toLowerCase()===String(val).toLowerCase())) state[listName].push(val);
 }
+
 function selectValueWithOption(sel,val){
   let opt=[...sel.options].find(o=>o.value===val);
   if(!opt){
@@ -218,22 +253,90 @@ function selectValueWithOption(sel,val){
     opt.value=val;
     opt.textContent=val;
     const other=[...sel.options].find(o=>o.value==="Other");
-    if(other)sel.insertBefore(opt,other); else sel.appendChild(opt);
+    if(other) sel.insertBefore(opt,other);
+    else sel.appendChild(opt);
   }
   sel.value=val;
   sel.setAttribute("data-prev",val);
 }
-function clearEditForm(type){
-  if(type==="Fuel")clearInputs(["efdate","eftime","efodo","efmiles","efgal","efmpg","efgrade","efstation","efnotes"]);
-  if(type==="Maintenance")clearInputs(["emdate","emcat","emodo","emcost","emloc","emprov","emnotes"]);
-  if(type==="Insurance")clearInputs(["eicomp","eipol","eieff","eiexp","eicov","eiprem","eiagent","eiphone","eiemail","eiagency","einotes"]);
+
+function otherUseOnce(){
+  if(!pendingOtherSelect) return;
+  const val=otherEnteredValue();
+  if(!val) return alert("Enter a value first.");
+  selectValueWithOption(pendingOtherSelect.sel,val);
+  otherClose();
+  pendingOtherSelect=null;
 }
+
+function otherSaveToList(){
+  if(!pendingOtherSelect) return;
+  const val=otherEnteredValue();
+  if(!val) return alert("Enter a value first.");
+  saveOtherValueToState(pendingOtherSelect.listName,val);
+  selectValueWithOption(pendingOtherSelect.sel,val);
+  saveData();
+  otherClose();
+  pendingOtherSelect=null;
+}
+
+function clearLP(){
+  if(longTimer) clearTimeout(longTimer);
+  longTimer=null;
+}
+
+function pressStart(cb,e){
+  clearLP();
+  suppressTap=false;
+  longTimer=setTimeout(()=>{ suppressTap=true; cb(); },500);
+}
+
+function rowTap(e,cb){
+  if(suppressTap){ suppressTap=false; return; }
+  if(cb) cb();
+}
+
+function entryRow(type,r){
+  const b=tags(r.classificationTags).map(t=>`<span class="badge ${t==='Historical'?'warn':t==='Archived'?'arch':''}">${esc(t)}</span>`).join("");
+  return `<div class="entry-row" ontouchstart="pressStart(()=>nav('recordEdit',{type:'${type}',recordId:'${r.recordId}'}),event)" ontouchend="clearLP();rowTap(event,()=>nav('recordView',{type:'${type}',recordId:'${r.recordId}'}))" ontouchcancel="clearLP()" onmousedown="pressStart(()=>nav('recordEdit',{type:'${type}',recordId:'${r.recordId}'}),event)" onmouseup="clearLP();rowTap(event,()=>nav('recordView',{type:'${type}',recordId:'${r.recordId}'}))"><div class="entry-main"><span>${recordTitle(type,r)}</span><span class="muted">${esc(r.dataQuality||"")}</span></div><div class="badges">${b}</div></div>`;
+}
+
+function clearEditForm(type){
+  if(type==="Fuel") clearInputs(["efdate","eftime","efodo","efmiles","efgal","efmpg","efgrade","efstation","efnotes"]);
+  if(type==="Maintenance") clearInputs(["emdate","emcat","emodo","emcost","emloc","emprov","emnotes"]);
+  if(type==="Insurance") clearInputs(["eicomp","eipol","eieff","eiexp","eicov","eiprem","eiagent","eiphone","eiemail","eiagency","einotes"]);
+}
+
+function saveRecordEdit(type,recordId){
+  const a=recArray(type);
+  const r=a.find(x=>x.recordId===recordId);
+  if(!r) return alert("Record not found.");
+  if(type==="Fuel"){
+    Object.assign(r,{date:$("efdate").value,time:$("eftime").value,odometer:numVal($("efodo").value),miles:numVal($("efmiles").value),gallons:numVal($("efgal").value),mpg:numVal($("efmpg").value),fuelGrade:$("efgrade").value,station:$("efstation").value,notes:$("efnotes").value,modifiedAt:nowISO()});
+  }else if(type==="Maintenance"){
+    Object.assign(r,{date:$("emdate").value,dropOffDate:$("emdate").value,category:$("emcat").value,odometer:numVal($("emodo").value),totalCost:numVal($("emcost").value),cost:numVal($("emcost").value),location:$("emloc").value,serviceProvider:$("emprov").value,provider:$("emprov").value,notes:$("emnotes").value,modifiedAt:nowISO()});
+  }else if(type==="Insurance"){
+    Object.assign(r,{company:$("eicomp").value,policyNumber:$("eipol").value,effectiveDate:$("eieff").value,expirationDate:$("eiexp").value,coverageValue:numVal($("eicov").value),insuranceValue:numVal($("eicov").value),premium:numVal($("eiprem").value),agent:$("eiagent").value,agentName:$("eiagent").value,phone:$("eiphone").value,email:$("eiemail").value,agency:$("eiagency").value,notes:$("einotes").value,modifiedAt:nowISO()});
+  }
+  saveData();
+  showToast("Edit saved.");
+  clearEditForm(type);
+}
+
+function vehicleView(app,vid){
+  const v=getVehicle(vid);
+  if(!v) return nav("home");
+  const acq=getAcq(vid);
+  app.innerHTML=header(vehicleLabel(v))+`<div class="card"><div class="vehicle-view-photo">${v.primaryPhoto?`<div class="circleBtn"><img src="${v.primaryPhoto}" alt=""></div>`:`<div class="circleBtn"><span>${vehicleInitials(v)}</span></div>`}</div><div class="view-grid">${viewField("Year",v.year||"")}${viewField("Make",v.make||"")}${viewField("Model",v.model||"")}${viewField("Badge",v.badge||"")}${viewField("Acquisition Date",acq.acquisitionDate||"")}${viewField("Starting Odometer",acq.startingOdometer||"")}${viewField("Purchase Price",acq.purchasePrice||"")}${viewField("Status",v.status||"Active")}${viewField("Seller",acq.seller||"",true)}</div><button class="wide primary" onclick="nav('vehicleEdit',{vehicleId:'${vid}'})">Edit Vehicle</button><button class="wide" onclick="nav('quickFuel',{vehicleId:'${vid}'})">Quick Fuel Entry</button><button class="wide" onclick="nav('quickMaintenance',{vehicleId:'${vid}'})">Quick Maintenance Entry</button><button class="wide" onclick="nav('quickInsurance',{vehicleId:'${vid}'})">Quick Insurance Entry</button></div>`+previousRecordsHtml("Fuel",vid)+previousRecordsHtml("Maintenance",vid)+previousRecordsHtml("Insurance",vid)+bottomNav()+footer();
+}
+
+
 function home(app){app.innerHTML=`<div class="screen home"><div class="home-head"><h1 class="chrome-title">RGB Mileage</h1><div class="subtitle">Vehicle Record Preservation System</div></div><div class="vehicle-area">${state.vehicles.map((v,i)=>circleHtml(v,i)).join("")}</div><div class="home-version">RGB Mileage v${VERSION} - ${BUILD_DATE}</div></div>${bottomNav()}`}
 function circleHtml(v,i){const inner=v&&v.primaryPhoto?`<img src="${v.primaryPhoto}" alt="">`:esc(vehicleBadge(v)); const label=v?vehicleLabel(v):"Add Vehicle"; return `<div class="circle-wrap"><button class="circleBtn" onpointerdown="pressStart(()=>vehicleLong(${i}))" onpointerup="clearLP()" onpointercancel="clearLP()" onclick="vehicleTap(${i})">${inner}</button><div class="vehicle-label">${esc(label)}</div></div>`}
 function vehicleTap(i){if(suppressTap){suppressTap=false;return} const v=state.vehicles[i]; if(v)nav("quickFuel",{vehicleId:v.vehicleId}); else nav("vehicleEdit",{slot:i})} function vehicleLong(i){const v=state.vehicles[i]; if(v)nav("vehicleView",{vehicleId:v.vehicleId}); else nav("vehicleEdit",{slot:i})}
 function getAcq(vid){let a=state.vehicleAcquisitionRecords.find(r=>r.vehicleId===vid);const v=getVehicle(vid)||{};return a||{vehicleId:vid,acquisitionDate:v.acquisitionDate||v.purchaseDate||"",purchaseDate:v.purchaseDate||v.acquisitionDate||"",startingOdometer:v.startingOdometer||"",purchasePrice:v.purchasePrice||v.purchaseCost||"",seller:v.seller||""}}
 function saveAcq(vid,vals){let a=state.vehicleAcquisitionRecords.find(r=>r.vehicleId===vid);if(!a){a=baseRecord("VehicleAcquisition",vid,"Manual Entry");state.vehicleAcquisitionRecords.push(a)}Object.assign(a,vals,{modifiedAt:nowISO()});const v=getVehicle(vid);if(v){v.acquisitionDate=vals.acquisitionDate||"";v.purchaseDate=vals.acquisitionDate||"";v.startingOdometer=vals.startingOdometer||"";v.purchasePrice=vals.purchasePrice||"";v.purchaseCost=vals.purchasePrice||"";v.seller=vals.seller||"";v.modifiedAt=nowISO()}}
-function vehicleView(app,vid){const v=getVehicle(vid);if(!v)return nav("home");const acq=getAcq(vid);app.innerHTML=header(vehicleLabel(v))+`<div class="card"><div class="vehicle-view-photo">${v.primaryPhoto?`<div class="circleBtn"><img src="${v.primaryPhoto}" alt=""></div>`:`<div class="circleBtn"><span>${vehicleInitials(v)}</span></div>`}</div><div class="view-grid">${viewField("Year",v.year||"")}${viewField("Make",v.make||"")}${viewField("Model",v.model||"")}${viewField("Badge",v.badge||"")}${viewField("Acquisition Date",acq.acquisitionDate||"")}${viewField("Starting Odometer",acq.startingOdometer||"")}${viewField("Purchase Price",acq.purchasePrice||"")}${viewField("Status",v.status||"Active")}${viewField("Seller",acq.seller||"",true)}</div><button class="wide primary" onclick="nav('vehicleEdit',{vehicleId:'${vid}'})">Edit Vehicle</button><button class="wide" onclick="nav('quickFuel',{vehicleId:'${vid}'})">Quick Fuel Entry</button><button class="wide" onclick="nav('quickMaintenance',{vehicleId:'${vid}'})">Quick Maintenance Entry</button><button class="wide" onclick="nav('quickInsurance',{vehicleId:'${vid}'})">Quick Insurance Entry</button></div>`+previousRecordsHtml("Fuel",vid)+previousRecordsHtml("Maintenance",vid)+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}
+
 function vehicleEdit(app,vid,slot=0){let v=vid?getVehicle(vid):null;if(!v)v={vehicleId:uid("VEH"),slot,status:"Active"};const acq=getAcq(v.vehicleId);const currentImg=v.primaryPhoto?`<div class="edit-image-preview"><div class="circleBtn imagePreviewCircle"><img src="${v.primaryPhoto}" alt=""></div><div class="muted">Current vehicle image saved</div></div>`:`<div class="muted">No vehicle image saved</div>`;app.innerHTML=header(vid?"Edit Vehicle":"Add Vehicle")+`<div class="card"><div class="form-grid"><label>Year<input id="vehYear" value="${esc(v.year||"")}"></label><label>Make<input id="vehMake" value="${esc(v.make||"")}"></label><label>Model<input id="vehModel" value="${esc(v.model||"")}"></label><label>Badge<input id="vehBadge" value="${esc(v.badge||"")}"></label></div><div class="image-edit-block"><h3>Vehicle Image</h3>${currentImg}<label>Replace Image<input type="file" id="vehPhoto" accept="image/*"></label><div class="muted">Saved image data: ${v.primaryPhoto?"Present":"None"}</div></div><h3>Vehicle Acquisition Record</h3><div class="form-grid"><label>Acquisition Date<input type="date" id="acqDate" value="${esc(acq.acquisitionDate||"")}"></label><label>Starting Odometer<input type="number" step="0.01" id="startOdo" value="${esc(acq.startingOdometer||"")}"></label><label>Purchase Price<input type="number" step="0.01" id="purchasePrice" value="${esc(acq.purchasePrice||"")}"></label><label>Status<select id="vehStatus"><option ${v.status==="Active"?"selected":""}>Active</option><option ${v.status==="Archived"?"selected":""}>Archived</option></select></label><label class="full">Seller<input id="seller" value="${esc(acq.seller||"")}"></label></div><button class="wide primary" onclick="saveVehicle('${v.vehicleId}',${v.slot??slot})">Save Vehicle</button><button class="wide ghost" onclick="clearVehicleFormExit()">Clear & Exit</button></div>`+bottomNav()+footer()}
 async function imgData(file){return new Promise(resolve=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height,sc=Math.min(1,1200/Math.max(w,h));const c=document.createElement("canvas");c.width=Math.round(w*sc);c.height=Math.round(h*sc);c.getContext("2d").drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL("image/jpeg",.85))};img.onerror=()=>resolve(e.target.result);img.src=e.target.result};r.readAsDataURL(file)})}
 async function saveVehicle(vid,slot){let v=getVehicle(vid)||{vehicleId:vid,id:vid,slot,status:"Active",createdAt:nowISO()};v.year=$("vehYear").value.trim();v.make=$("vehMake").value.trim();v.model=$("vehModel").value.trim();v.badge=$("vehBadge").value.trim();v.status=$("vehStatus")?$("vehStatus").value:(v.status||"Active");v.displayName=vehicleLabel(v);v.modifiedAt=nowISO();const f=$("vehPhoto").files[0];if(f)v.primaryPhoto=await imgData(f);state.vehicles[slot]=v;saveAcq(vid,{acquisitionDate:$("acqDate").value,startingOdometer:numVal($("startOdo").value),purchasePrice:numVal($("purchasePrice").value),seller:$("seller").value});saveData();alert("Vehicle saved.");nav("home",{},false)}
@@ -246,9 +349,9 @@ function recordTitle(type,r){if(type==="Fuel")return `${r.date||"No Date"} Odo $
 function line(k,v){return `<div><b>${esc(k)}:</b> ${esc(v??"")}</div>`}
 function recordDetails(type,r){if(type==="Fuel")return line("Odometer",fmt(r.odometer))+line("Miles",fmt(r.miles))+line("Gallons",fmt(r.gallons,3))+line("MPG",fmt(r.mpg))+line("Station",r.station)+line("Notes",r.notes); if(type==="Maintenance")return line("Odometer",fmt(r.odometer))+line("Cost",money(r.totalCost))+line("Provider",r.serviceProvider||r.provider||"")+line("Notes",r.notes); if(type==="Insurance")return line("Effective",r.effectiveDate)+line("Expiration",r.expirationDate)+line("Premium",money(r.premium))+line("Agency",r.agency||"");return ""}
 function previousRecordsHtml(type,vid){const rows=records(type,vid,false);return `<details class="card" open><summary><strong>Previous ${type} Records</strong></summary>${rows.length?rows.map(r=>entryRow(type,r)).join(""):'<p class="muted">No records.</p>'}</details>`}
-function entryRow(type,r){const b=tags(r.classificationTags).map(t=>`<span class="badge ${t==='Historical'?'warn':t==='Archived'?'arch':''}">${esc(t)}</span>`).join("");return `<div class="entry-row" ontouchstart="pressStart(()=>nav('recordEdit',{type:'${type}',recordId:'${r.recordId}'}),event)" ontouchend="clearLP();rowTap(event,()=>nav('recordView',{type:'${type}',recordId:'${r.recordId}'}))" ontouchcancel="clearLP()" onmousedown="pressStart(()=>nav('recordEdit',{type:'${type}',recordId:'${r.recordId}'}),event)" onmouseup="clearLP();rowTap(event,()=>nav('recordView',{type:'${type}',recordId:'${r.recordId}'}))"><div class="entry-main"><span>${recordTitle(type,r)}</span><span class="muted">${esc(r.dataQuality||"")}</span></div><div class="badges">${b}</div></div>`}
 
-function entryRow(type,r){const b=tags(r.classificationTags).map(t=>`<span class="badge ${t==='Historical'?'warn':t==='Archived'?'arch':''}">${esc(t)}</span>`).join("");return `<div class="entry-row" onpointerdown="pressStart(()=>nav('recordEdit',{type:'${type}',recordId:'${r.recordId}'}),event)" onpointerup="clearLP()" onpointercancel="clearLP()" onclick="rowTap(event,()=>nav('recordView',{type:'${type}',recordId:'${r.recordId}'}))"><div class="entry-main"><span>${recordTitle(type,r)}</span><span class="muted">${esc(r.dataQuality)}</span></div><div class="badges">${b}</div></div>`}
+
+
 function meta(r){return `<div class="readonly-grid"><div class="fieldbox"><b>Record ID</b><span>${esc(r.recordId)}</span></div><div class="fieldbox"><b>Sequence</b><span>${r.entrySequence}</span></div><div class="fieldbox"><b>Source</b><span>${esc(r.source)}</span></div><div class="fieldbox"><b>Quality</b><span>${esc(r.dataQuality)}</span></div><div class="fieldbox"><b>Tags</b><span>${esc(tags(r.classificationTags).join('; '))}</span></div></div>`} function roBox(label,val){return `<div class="fieldbox"><b>${esc(label)}</b><span>${esc(val??"")}</span></div>`}
 function recordView(app,type,id){const r=findRecord(type,id);if(!r)return nav("home",{},false);app.innerHTML=header("View "+type+" Record")+`<div class="card">${meta(r)}<h3>${type} Information</h3><div class="readonly-grid">${viewFields(type,r)}</div><div class="form-actions"><button onclick="nav('recordEdit',{type:'${type}',recordId:'${id}'})">Edit</button><button class="danger" onclick="archiveRecord('${type}','${id}')">Archive</button></div></div>`+bottomNav()+footer()} function viewFields(type,r){if(type==="Fuel")return roBox("Date",r.date)+roBox("Time",r.time)+roBox("Odometer",fmt(r.odometer))+roBox("Miles",fmt(r.miles))+roBox("Gallons",fmt(r.gallons,3))+roBox("MPG",fmt(r.mpg))+roBox("Station",r.station)+roBox("Notes",r.notes); if(type==="Maintenance")return roBox("Date",r.dropOffDate)+roBox("Category",r.category)+roBox("Odometer",fmt(r.odometer))+roBox("Cost",money(r.totalCost))+roBox("Notes",r.notes); if(type==="Insurance")return roBox("Company",r.company)+roBox("Policy",r.policyNumber)+roBox("Effective",r.effectiveDate)+roBox("Expiration",r.expirationDate)+roBox("Premium",money(r.premium))+roBox("Notes",r.notes);return ""}
 function commonEdit(r){return `<label>Data Quality<select id="rq">${DATA_QUALITIES.map(q=>`<option ${r.dataQuality===q?'selected':''}>${q}</option>`).join("")}</select></label><label>Tags<input id="rtags" value="${esc(tags(r.classificationTags).join('; '))}"></label><label>Notes<textarea id="rnotes">${esc(r.notes||"")}</textarea></label>`} 
@@ -268,35 +371,15 @@ function recordEdit(app,type,recordId){
     app.innerHTML=header("Edit Insurance Record")+`<div class="card"><div class="form-grid"><label>Company<input id="eicomp" value="${esc(r.company||"")}"></label><label>Policy Number<input id="eipol" value="${esc(r.policyNumber||"")}"></label><label>Effective Date<input type="date" id="eieff" value="${esc(r.effectiveDate||"")}"></label><label>Expiration Date<input type="date" id="eiexp" value="${esc(r.expirationDate||"")}"></label><label>Coverage Value<input type="number" step="0.01" id="eicov" value="${esc(r.coverageValue||r.insuranceValue||"")}"></label><label>Premium<input type="number" step="0.01" id="eiprem" value="${esc(r.premium||"")}"></label><label>Agent<input id="eiagent" value="${esc(r.agent||r.agentName||"")}"></label><label>Phone<input id="eiphone" value="${esc(r.phone||"")}"></label><label>Email<input type="email" id="eiemail" value="${esc(r.email||"")}"></label><label class="full">Agency<input id="eiagency" value="${esc(r.agency||"")}"></label><label class="full">Notes<textarea id="einotes">${esc(r.notes||"")}</textarea></label></div><button class="wide primary" onclick="saveRecordEdit('Insurance','${recordId}')">Save Changes</button><button class="wide ghost" onclick="nav('vehicleView',{vehicleId:'${vid}'})">Cancel</button></div>`+bottomNav()+footer();
   }
 }
-function saveRecordEdit(type,recordId){
-  const a=recArray(type);
-  const r=a.find(x=>x.recordId===recordId);
-  if(!r)return alert("Record not found.");
-  if(type==="Fuel"){
-    Object.assign(r,{date:$("efdate").value,time:$("eftime").value,odometer:numVal($("efodo").value),miles:numVal($("efmiles").value),gallons:numVal($("efgal").value),mpg:numVal($("efmpg").value),fuelGrade:$("efgrade").value,station:$("efstation").value,notes:$("efnotes").value,modifiedAt:nowISO()});
-  }else if(type==="Maintenance"){
-    Object.assign(r,{date:$("emdate").value,dropOffDate:$("emdate").value,category:$("emcat").value,odometer:numVal($("emodo").value),totalCost:numVal($("emcost").value),cost:numVal($("emcost").value),location:$("emloc").value,serviceProvider:$("emprov").value,provider:$("emprov").value,notes:$("emnotes").value,modifiedAt:nowISO()});
-  }else if(type==="Insurance"){
-    Object.assign(r,{company:$("eicomp").value,policyNumber:$("eipol").value,effectiveDate:$("eieff").value,expirationDate:$("eiexp").value,coverageValue:numVal($("eicov").value),insuranceValue:numVal($("eicov").value),premium:numVal($("eiprem").value),agent:$("eiagent").value,agentName:$("eiagent").value,phone:$("eiphone").value,email:$("eiemail").value,agency:$("eiagency").value,notes:$("einotes").value,modifiedAt:nowISO()});
-  }
-  saveData();
-  showToast("Edit saved.");
-  clearEditForm(type);
-}
+
 
 function editFields(type,r){if(type==="Fuel")return `<div class="row"><label>Date<input type="date" id="rdate" value="${esc(r.date||"")}"></label><label>Time<input type="time" id="rtime" value="${esc(r.time||"")}"></label></div><div class="row"><label>Odometer<input type="number" step="0.01" id="rodo" value="${esc(r.odometer)}"></label><label>Miles<input type="number" step="0.01" id="rmiles" value="${esc(r.miles)}"></label></div><div class="row"><label>Gallons<input type="number" step="0.001" id="rgal" value="${esc(r.gallons)}"></label><label>MPG<input type="number" step="0.01" id="rmpg" value="${esc(r.mpg)}"></label></div><label>Station<input id="rstation" value="${esc(r.station||"")}"></label>`; if(type==="Maintenance")return `<label>Date<input type="date" id="rdrop" value="${esc(r.dropOffDate||"")}"></label><label>Category<select id="rcat">${state.maintenanceCategories.map(c=>`<option ${r.category===c?'selected':''}>${esc(c)}</option>`).join("")}</select></label><label>Cost<input type="number" step="0.01" id="rcost" value="${esc(r.totalCost)}"></label>`; if(type==="Insurance")return `<label>Company<input id="rcompany" value="${esc(r.company||"")}"></label><label>Policy Number<input id="rpol" value="${esc(r.policyNumber||"")}"></label><div class="row"><label>Effective<input type="date" id="reff" value="${esc(r.effectiveDate||"")}"></label><label>Expiration<input type="date" id="rexp" value="${esc(r.expirationDate||"")}"></label></div><label>Premium<input type="number" step="0.01" id="rprem" value="${esc(r.premium)}"></label>`;return ""}
-function saveRecordEdit(type,id){const r=findRecord(type,id);r.dataQuality=$("rq").value;r.classificationTags=$("rtags").value.split(";").map(x=>x.trim()).filter(Boolean);r.notes=$("rnotes").value;r.modifiedAt=nowISO();if(type==="Fuel"){r.date=$("rdate").value;r.time=$("rtime").value;r.odometer=numVal($("rodo").value);r.miles=numVal($("rmiles").value);r.gallons=numVal($("rgal").value);r.mpg=numVal($("rmpg").value);r.station=$("rstation").value}if(type==="Maintenance"){r.dropOffDate=$("rdrop").value;r.category=$("rcat").value;r.totalCost=numVal($("rcost").value)}if(type==="Insurance"){r.company=$("rcompany").value;r.policyNumber=$("rpol").value;r.effectiveDate=$("reff").value;r.expirationDate=$("rexp").value;r.premium=numVal($("rprem").value)}saveData();alert("Changes saved.");nav("recordView",{type,recordId:id},false)} function archiveRecord(type,id){const r=findRecord(type,id);if(confirm("Archive this record?")){addTag(r,"Archived");r.modifiedAt=nowISO();saveData();alert("Record archived.");nav("vehicleView",{vehicleId:r.vehicleId})}}
+ function archiveRecord(type,id){const r=findRecord(type,id);if(confirm("Archive this record?")){addTag(r,"Archived");r.modifiedAt=nowISO();saveData();alert("Record archived.");nav("vehicleView",{vehicleId:r.vehicleId})}}
 function openOtherList(selectId,listName,label){const sel=$(selectId);if(sel.value!=="Other")return;showOtherSheet(label,(name,save)=>{if(!name){sel.value="";return}let list=state[listName];if(save&&!list.includes(name)){list.splice(Math.max(0,list.length-1),0,name);saveData()}if(![...sel.options].some(o=>o.value===name)){const opt=document.createElement("option");opt.value=name;opt.textContent=name;sel.insertBefore(opt,sel.querySelector('option[value="Other"]'))}sel.value=name})} function showOtherSheet(label,cb){const div=document.createElement("div");div.className="modal";div.innerHTML=`<div class="sheet"><h2>Other ${esc(label)}</h2><label>${esc(label)} Name<input id="otherName"></label><div class="form-actions"><button class="primary" id="useOnce">Use Once</button><button class="ok" id="saveList">Save To List</button></div><button class="wide danger" id="cancelOther">Cancel</button></div>`;document.body.appendChild(div);$("otherName").focus();$("useOnce").onclick=()=>{const v=$("otherName").value.trim();div.remove();cb(v,false)};$("saveList").onclick=()=>{const v=$("otherName").value.trim();div.remove();cb(v,true)};$("cancelOther").onclick=()=>{div.remove();cb("",false)}}
 function quickFuel(app,vid){const v=getVehicle(vid),n=new Date();if(!v)return nav("home");app.innerHTML=header(vehicleLabel(v)+" - Quick Fuel Entry")+`<div class="card"><div class="form-grid"><label>Date<input type="date" id="fdate" value="${n.toISOString().slice(0,10)}"></label><label>Time<input type="time" id="ftime" value="${n.toTimeString().slice(0,5)}"></label><label>Odometer<input type="number" step="0.01" id="fodo" oninput="calcFuel('${vid}')"></label><label>Miles<input type="number" step="0.01" id="fmiles" oninput="calcMpg()"></label><label>Gallons<input type="number" step="0.001" id="fgal" oninput="calcMpg()"></label><label>MPG<input type="number" step="0.01" id="fmpg" readonly></label><label>Fuel Grade<select id="fgrade" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'fuelGrades')">${activeList("fuelGrades").map(g=>`<option>${esc(g)}</option>`).join("")}</select></label><label>Ethanol Free<select id="fef"><option></option><option>Yes</option><option>No</option></select></label><label>Station<select id="fstation" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'stations')">${state.stations.map(s=>`<option>${esc(s)}</option>`).join("")}</select></label><label>Cost Source<select id="fcostsource"><option></option><option>Calculated</option><option>Entered</option></select></label><label>Price/Gal<input type="number" step="0.01" id="fprice" oninput="calcCost()"></label><label>Total Cost<input type="number" step="0.01" id="fcost"></label><label class="full">Notes<textarea id="fnotes"></textarea></label></div><button class="wide primary" onclick="saveQuickFuel('${vid}')">Save Entry</button><button class="wide ghost" onclick="nav('home')">Cancel</button></div>`+previousRecordsHtml("Fuel",vid)+bottomNav()+footer()}
 
 let pendingOtherSelect=null;
-function activeList(listName){
-  if(listName==="fuelGrades"){if(!state.fuelGrades)state.fuelGrades=[...FUEL_GRADES];return state.fuelGrades}
-  if(listName==="stations"){if(!state.stations)state.stations=[...STATIONS_DEFAULT];return state.stations}
-  if(listName==="maintenanceCategories"){if(!state.maintenanceCategories)state.maintenanceCategories=[...MAINT_CATS];return state.maintenanceCategories}
-  if(!state[listName])state[listName]=[];
-  return state[listName];
-}
+
 function otherTitleFromList(listName){
   if(listName==="fuelGrades")return ["Other Fuel Grade","Fuel Grade Name"];
   if(listName==="stations")return ["Other Station","Station Name"];
@@ -334,24 +417,8 @@ function addOptionToSelect(sel,val){
   sel.value=val;
   sel.setAttribute("data-prev",val);
 }
-function otherUseOnce(){
-  if(!pendingOtherSelect)return;
-  const val=otherEnteredValue();
-  if(!val)return alert("Enter a value first.");
-  selectValueWithOption(pendingOtherSelect.sel,val);
-  otherClose();
-  pendingOtherSelect=null;
-}
-function otherSaveToList(){
-  if(!pendingOtherSelect)return;
-  const val=otherEnteredValue();
-  if(!val)return alert("Enter a value first.");
-  saveOtherValueToState(pendingOtherSelect.listName,val);
-  selectValueWithOption(pendingOtherSelect.sel,val);
-  saveData();
-  otherClose();
-  pendingOtherSelect=null;
-}
+
+
 function otherCancel(){
   if(pendingOtherSelect&&pendingOtherSelect.sel)pendingOtherSelect.sel.value=pendingOtherSelect.previous||"";
   otherClose();
@@ -399,5 +466,5 @@ function mergeData(d,mode){if(mode==="Cancel")return;d.vehicles.filter(Boolean).
 let previewRows=[];function parseCSV(t){const rows=[];let row=[],cell="",q=false;for(let i=0;i<t.length;i++){const ch=t[i],nx=t[i+1];if(ch==='"'&&q&&nx==='"'){cell+='"';i++;continue}if(ch==='"'){q=!q;continue}if(ch===","&&!q){row.push(cell);cell="";continue}if((ch==="\n"||ch==="\r")&&!q){if(ch==="\r"&&nx==="\n")i++;row.push(cell);if(row.some(x=>x.trim()))rows.push(row);row=[];cell="";continue}cell+=ch}row.push(cell);if(row.some(x=>x.trim()))rows.push(row);return rows} function previewCSV(){const file=$("csvFile").files[0];if(!file)return alert("Choose a CSV file.");const reader=new FileReader();reader.onload=()=>{const parsed=parseCSV(reader.result);if(parsed.length<2){$("importStatus").textContent="No records.";return}const headers=parsed[0].map(h=>h.trim());const idx=n=>headers.findIndex(h=>h.toLowerCase()===n.toLowerCase());const get=(row,n)=>{const x=idx(n);return x>=0?row[x]:""};const vid=$("importVehicle").value;previewRows=parsed.slice(1).map(row=>{const typ=(get(row,"recordType")||get(row,"entryType")||"Fuel").toLowerCase();const base={recordId:get(row,"recordId")||get(row,"Record ID")||uid("IMP"),entrySequence:Number(get(row,"entrySequence")||get(row,"Entry Sequence"))||seq(),source:get(row,"source")||"CSV Import",classificationTags:(get(row,"classificationTags")||"Imported").split(";").map(x=>x.trim()).filter(Boolean),dataQuality:get(row,"dataQuality")||"Review",notes:get(row,"notes")||get(row,"Notes")};if(typ.includes("maint"))return normMaint({...base,date:get(row,"date")||get(row,"Date"),dropOffDate:get(row,"dropOffDate")||get(row,"Date"),pickUpDate:get(row,"pickUpDate"),odometer:get(row,"odometer")||get(row,"Odometer"),category:get(row,"category")||"Maintenance",status:get(row,"status"),location:get(row,"location"),serviceProvider:get(row,"serviceProvider")||get(row,"provider"),performedBy:get(row,"performedBy"),totalCost:get(row,"totalCost")||get(row,"cost")},vid);return normFuel({...base,date:get(row,"date")||get(row,"Date"),time:get(row,"time")||get(row,"Time"),odometer:get(row,"odometer")||get(row,"Odometer"),miles:get(row,"miles")||get(row,"Total Miles"),gallons:get(row,"gallons")||get(row,"Gallons"),mpg:get(row,"mpg")||get(row,"MPG"),fuelGrade:get(row,"fuelGrade")||get(row,"Fuel Grade"),ethanolFree:get(row,"ethanolFree")||get(row,"Ethanol Free"),station:get(row,"station")||get(row,"Fuel Station"),fuelPricePerGallon:get(row,"fuelPricePerGallon"),totalFuelCost:get(row,"totalFuelCost"),fuelCostSource:get(row,"fuelCostSource")},vid)});const dup=previewRows.filter(r=>[...state.fuelRecords,...state.maintenanceRecords,...state.insuranceRecords].some(e=>e.recordId===r.recordId)).length;$("importStatus").textContent=`Preview complete.\\nRows ready: ${previewRows.length}\\nDuplicates: ${dup}\\nChoose duplicate mode before saving.`};reader.readAsText(file)}
 function savePreviewRows(){if(!previewRows.length)return alert("Preview first.");const mode=$("importMode")?.value||"Skip";if(mode==="Cancel"){$("importStatus").textContent="Import cancelled.";previewRows=[];return}let imported=0,updated=0,skipped=0,duplicated=0,replaced=0;function targetFor(r){return r.recordType==="Maintenance"?state.maintenanceRecords:r.recordType==="Insurance"?state.insuranceRecords:state.fuelRecords}previewRows.forEach(r=>{const target=targetFor(r),i=target.findIndex(e=>e.recordId===r.recordId);if(i>=0){if(mode==="Skip"){skipped++;return}if(mode==="Update"){target[i]={...target[i],...r,modifiedAt:nowISO()};updated++;return}if(mode==="Replace"){target[i]=r;replaced++;return}if(mode==="Duplicate"){r={...r,recordId:r.recordId+"-DUP-"+Date.now().toString(36)};target.push(r);duplicated++;return}}else{target.push(r);imported++}});saveData();$("importStatus").textContent=`Import Summary\\nImported: ${imported}\\nUpdated: ${updated}\\nReplaced: ${replaced}\\nDuplicated: ${duplicated}\\nSkipped: ${skipped}`;previewRows=[]}
 function reportsHome(app){app.innerHTML=header("Reports")+`<div class="card report-menu"><h2>Report Menu</h2><button class="wide" onclick="nav('reportFuel')">Fuel History Report</button><button class="wide" onclick="nav('reportMPG')">MPG Report</button><button class="wide" onclick="nav('reportMaintenance')">Maintenance Report</button><button class="wide" onclick="nav('reportInsurance')">Insurance History Report</button><button class="wide" onclick="nav('reportVehicle')">Vehicle Summary Report</button></div>`+bottomNav()+footer()} function reportDetail(app,s){let title="Report", rows=[]; if(s==="reportFuel"){title="Fuel History Report";rows=state.fuelRecords.filter(r=>!hasTag(r,"Archived")).sort((a,b)=>previousSort("Fuel",a,b)).map(r=>[r.date||"",getVehicle(r.vehicleId)?vehicleLabel(getVehicle(r.vehicleId)):"",fmt(r.odometer),fmt(r.miles),fmt(r.gallons,3),fmt(r.mpg)])} if(s==="reportMPG"){title="MPG Report";rows=state.fuelRecords.filter(r=>!hasTag(r,"Archived")&&!hasTag(r,"Historical")).sort((a,b)=>previousSort("Fuel",a,b)).map(r=>[r.date||"",fmt(r.odometer),fmt(r.miles),fmt(r.gallons,3),fmt(r.mpg)])} if(s==="reportMaintenance"){title="Maintenance Report";rows=state.maintenanceRecords.filter(r=>!hasTag(r,"Archived")).sort((a,b)=>previousSort("Maintenance",a,b)).map(r=>[r.dropOffDate||"",r.category||"",fmt(r.odometer),money(r.totalCost)])} if(s==="reportInsurance"){title="Insurance History Report";rows=state.insuranceRecords.filter(r=>!hasTag(r,"Archived")).sort((a,b)=>previousSort("Insurance",a,b)).map(r=>[r.company||"",r.policyNumber||"",r.effectiveDate||"",r.expirationDate||"",money(r.premium)])} if(s==="reportVehicle"){title="Vehicle Summary Report";rows=state.vehicles.filter(Boolean).map(v=>[vehicleLabel(v),v.status,state.fuelRecords.filter(r=>r.vehicleId===v.vehicleId&&!hasTag(r,"Archived")).length,state.maintenanceRecords.filter(r=>r.vehicleId===v.vehicleId&&!hasTag(r,"Archived")).length])} app.innerHTML=header(title)+`<div class="card"><p class="muted">Default views exclude Archived records. MPG report also excludes Historical records.</p><div style="overflow:auto"><table><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")||'<tr><td>No records.</td></tr>'}</tbody></table></div></div>`+bottomNav()+footer()}
-function settings(app){app.innerHTML=header("Settings")+`<div class="card"><h2>Vehicle Order</h2><button class="wide" onclick="swapVehicles()">Swap Vehicle Circles</button></div><div class="card"><h2>About</h2><p>RGB Mileage v${VERSION}<br>Build Date: ${BUILD_DATE}<br>Schema: 2.1.3b</p><button class="wide danger" onclick="if(confirm('Clear all local data?')){localStorage.removeItem(KEY);state=blankData();saveData();nav('home')}">Clear Local Data</button></div>`+bottomNav()+footer()} function swapVehicles(){[state.vehicles[0],state.vehicles[1]]=[state.vehicles[1],state.vehicles[0]];state.vehicles.forEach((v,i)=>{if(v)v.slot=i});saveData();alert("Vehicle order swapped.");nav("home")}
+function settings(app){app.innerHTML=header("Settings")+`<div class="card"><h2>Vehicle Order</h2><button class="wide" onclick="swapVehicles()">Swap Vehicle Circles</button></div><div class="card"><h2>About</h2><p>RGB Mileage v${VERSION}<br>Build Date: ${BUILD_DATE}<br>Schema: 2.1.3c</p><button class="wide danger" onclick="if(confirm('Clear all local data?')){localStorage.removeItem(KEY);state=blankData();saveData();nav('home')}">Clear Local Data</button></div>`+bottomNav()+footer()} function swapVehicles(){[state.vehicles[0],state.vehicles[1]]=[state.vehicles[1],state.vehicles[0]];state.vehicles.forEach((v,i)=>{if(v)v.slot=i});saveData();alert("Vehicle order swapped.");nav("home")}
 initV213aShell();initV213Shell();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=211').catch(()=>{})}

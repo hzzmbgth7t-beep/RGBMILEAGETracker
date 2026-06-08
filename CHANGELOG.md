@@ -2,22 +2,18 @@
 
 App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Current Version: 2.1.3b
+Current Version: 2.1.3c
 Release Date: 2026-06-07
 
-## v2.1.3b
+## v2.1.3c
 
 ### Fixed
-- D-036 Bottom navigation anchoring.
-- D-037 Vehicle View layout consistency.
-- D-039 Edit save confirmation and clear-after-save behavior.
-- D-040/D-042/D-045 Tap-to-view behavior for previous records.
-- D-041 Fuel Grade list preserving defaults plus user values.
-- D-043 Other Use Once values saved into record data.
+- Duplicate function definitions overriding corrected behavior.
+- Fuel Grade default list preservation via authoritative activeList().
+- Tap-to-view via authoritative entryRow()/rowTap().
+- Edit save workflow via authoritative saveRecordEdit().
+- Vehicle View grid via authoritative vehicleView().
+- Bottom navigation anchoring CSS reinforced.
 
-### Preserved
-- Long press edit behavior.
-- Restore/data operation.
-- Home screen movement corrections.
-- Station Other workflow.
-- Maintenance Category Save To List workflow.
+### Added
+- Duplicate-definition audit report.
