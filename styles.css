@@ -421,3 +421,25 @@ body { position:fixed!important; inset:0!important; touch-action:manipulation!im
 input,select { height:44px!important; min-height:44px!important; }
 textarea { min-height:86px!important; }
 .entry-row { cursor:pointer!important; touch-action:manipulation!important; -webkit-user-select:none!important; user-select:none!important; }
+
+/* RGBM v2.1.3e stabilization: main/Home screen movement lock only */
+body.home-active,
+#app.screen-home {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+#app.screen-home {
+  height: 100svh !important;
+  max-height: 100svh !important;
+  touch-action: none !important;
+  -webkit-overflow-scrolling: auto !important;
+}
+#app.screen-home .screen.home {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  touch-action: none !important;
+}
+#app:not(.screen-home) {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
