@@ -543,3 +543,18 @@ body {
   -webkit-user-select: none !important;
   user-select: none !important;
 }
+
+
+/* RGBM v2.1.3i final navigation positioning owner */
+#app {
+  padding-bottom: 54px !important;
+}
+.bottom-nav {
+  bottom: 0 !important;
+  min-height: 54px !important;
+  padding-top: 3px !important;
+  padding-bottom: 2px !important;
+}
+.bottom-nav button {
+  min-height: 48px !important;
+}
