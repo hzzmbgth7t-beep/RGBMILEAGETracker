@@ -1,4 +1,40 @@
-# RGB Mileage Tracker v2.1.3h
+# RGB Mileage v2.1.3h
+
+GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
+GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
+
+Build Date: 09/06/26  
+Internal Build Date: 2026-06-09
+
+## Scope
+
+v2.1.3h is a stabilization candidate built from the confirmed installed v2.1.3g baseline.
+
+Authorized corrections:
+- D-047: Record Interaction System — Tap opens View; Long Press opens Edit.
+- D-054: App Identity System — RGB Mileage is the single visible app name.
+- D-055: Build Display System — build date displays as DD/MM/YY.
+- D-056: Navigation Layout System — bottom navigation uses one authoritative layout override.
+
+## Data Compatibility
+
+The storage key is intentionally reviewed for continuity with the stabilization series. Existing user data should remain compatible.
+
+## Deployment Verification
+
+Open with cache buster:
+
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213h
+
+
+---
+
+# Previous README History
+
+## v2.1.3g
+08/06/26
+
+# RGB Mileage Tracker v2.1.3g
 
 Patch release built from accepted v2.1.3f baseline.
 

@@ -1,16 +1,15 @@
-# RGB Mileage Tracker — CHANGELOG v2.1.3g
+# CHANGELOG
 
-Build date: 2026-06-08
+GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
+GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 
-## Changed
-- Updated application version to v2.1.3g.
-- Updated service worker cache to v2.1.3g.
+## v2.1.3h — 09/06/26
 
-## Fixed
-- D-047: previous record tap now uses an explicit click/tap fallback to launch the existing View screen.
-- D-053: Fuel Edit now includes Ethanol Free, Cost Source, Price/Gal, and Total Cost.
-- Fuel View now displays fuel grade and cost-related fields one field per row.
+### Fixed
+- D-047 Record Interaction System.
+- D-054 App Identity System.
+- D-055 Build Display System.
+- D-056 Navigation Layout System.
 
-## Deferred
-- D-049: orientation lock remains deferred based on user-approved Option B.
-- D-054: landscape vehicle-circle overlap deferred to future UI modernization.
+### Packaging
+- D-058 Release Identity Audit enforced.
