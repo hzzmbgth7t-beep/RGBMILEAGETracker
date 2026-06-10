@@ -1,13 +1,19 @@
 # CHANGELOG
 
-GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
+App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-## v2.1.3i — 09/06/26
+Current Version: 2.1.3c
+Release Date: 2026-06-07
+
+## v2.1.3c
 
 ### Fixed
-- D-047 Previous record Tap opens View.
-- D-056 Navigation final positioning adjusted.
-- D-059 Vehicle Circle Long Press regression corrected.
-- D-061 Edit navigation policy corrected.
-- D-062 Edit Cancel action corrected.
+- Duplicate function definitions overriding corrected behavior.
+- Fuel Grade default list preservation via authoritative activeList().
+- Tap-to-view via authoritative entryRow()/rowTap().
+- Edit save workflow via authoritative saveRecordEdit().
+- Vehicle View grid via authoritative vehicleView().
+- Bottom navigation anchoring CSS reinforced.
+
+### Added
+- Duplicate-definition audit report.

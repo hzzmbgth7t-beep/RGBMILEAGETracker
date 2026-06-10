@@ -1,80 +1,23 @@
-# RGB Mileage v2.1.3i
+# RGB Mileage
 
-GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
+App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Build Date: 09/06/26  
-Internal Build Date: 2026-06-09
+Current Version: 2.1.3c
+Release Date: 2026-06-07
 
-## Scope
+## Current Release Information
 
-v2.1.3i is a stabilization candidate built from the corrected v2.1.3h package.
+v2.1.3c is a corrective stabilization build implementing the required duplicate-definition audit before packaging.
 
-Authorized corrections:
-- D-047: Previous record Tap opens View.
-- D-056: Navigation final positioning adjusted.
-- D-059: Vehicle Circle Long Press regression corrected.
-- D-061: Edit screen navigation policy corrected.
-- D-062: Edit Cancel action corrected.
+Authorized scope:
+- Duplicate-definition audit
+- Removal of obsolete definitions overriding corrected shared-system functions
+- Validation that final active definitions are the corrected shared-system versions
 
-## Deployment Verification
+## Version History
 
-Open with cache buster:
+### v2.1.3b — 2026-06-07
+Corrective stabilization build; failed review due to duplicate function overrides.
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213i
-
----
-
-# Previous README History
-
-## v2.1.3h
-09/06/26
-
-# RGB Mileage v2.1.3h
-
-GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
-
-Build Date: 09/06/26  
-Internal Build Date: 2026-06-09
-
-## Scope
-
-v2.1.3h is a stabilization candidate built from the confirmed installed v2.1.3g baseline.
-
-Authorized corrections:
-- D-047: Record Interaction System — Tap opens View; Long Press opens Edit.
-- D-054: App Identity System — RGB Mileage is the single visible app name.
-- D-055: Build Display System — build date displays as DD/MM/YY.
-- D-056: Navigation Layout System — bottom navigation uses one authoritative layout override.
-
-## Data Compatibility
-
-The storage key is intentionally reviewed for continuity with the stabilization series. Existing user data should remain compatible.
-
-## Deployment Verification
-
-Open with cache buster:
-
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213h
-
-
----
-
-# Previous README History
-
-## v2.1.3g
-08/06/26
-
-# RGB Mileage Tracker v2.1.3g
-
-Patch release built from accepted v2.1.3f baseline.
-
-## Scope
-- D-047: repair tap-to-view launch for Fuel, Maintenance, and Insurance previous records.
-- D-053: restore Fuel Edit field parity with Quick Fuel Entry.
-- D-049: orientation lock remains deferred.
-- D-054: landscape overlap remains deferred.
-
-## Data Compatibility
-The localStorage key remains `RGBM_DATA_v213d` to preserve deployed user data across the stabilization series.
+### v2.1.3a — 2026-06-07
+Corrective stabilization build.

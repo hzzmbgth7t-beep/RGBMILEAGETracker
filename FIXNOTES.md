@@ -1,13 +1,23 @@
 # FIXNOTES
 
-GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
+App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-## v2.1.3i — 09/06/26
+Current Version: 2.1.3c
+Release Date: 2026-06-07
 
-Root causes addressed:
-- Disconnected rowTap handler.
-- Vehicle circles wired to legacy long-press functions.
-- Edit routes pushing record-chain history.
-- Cancel action lacked explicit ownership.
-- Bottom navigation spacing duplication.
+## v2.1.3c Fix Notes
+
+Root Cause:
+v2.1.3b contained duplicate JavaScript function definitions. Older definitions appeared later in app.js and overrode corrected versions.
+
+Correction:
+- Audited duplicate functions.
+- Removed obsolete definitions for affected shared systems.
+- Inserted one authoritative definition per affected function.
+- Added static validation to verify uniqueness and final behavior markers.
+
+Affected systems:
+- Layout System
+- Record Interaction System
+- Other Workflow System
+- Edit Workflow System
