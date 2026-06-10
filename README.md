@@ -1,5 +1,24 @@
 # RGB Mileage
 
+Version: v2.1.3m
+Build Date: 09/06/26
+GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+Cache-Buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213m
+GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
+
+## Current Release Information
+
+v2.1.3m is built from v2.1.3l and corrects the shared tap/long-press interaction issue affecting vehicle-circle tap and previous-record tap.
+
+## Previous README History
+
+---
+
+## v2.1.3l
+09/06/26
+
+# RGB Mileage
+
 Version: v2.1.3l
 Build Date: 09/06/26
 GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/

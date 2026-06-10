@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.3l", BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.3m", BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -52,13 +52,13 @@ function storageBytes(obj){
   try{return new Blob([JSON.stringify(obj)]).size}
   catch(e){return JSON.stringify(obj).length}
 }
-function blankData(){return {fuelGrades:[...FUEL_GRADES],app:"RGB Mileage",schemaVersion:"2.1.3l",appVersion:VERSION,settings:{lastBackupDate:"",showArchived:false},nextEntrySequence:1,stations:[...STATIONS_DEFAULT],maintenanceCategories:[...MAINT_CATS],vehicles:[null,null],vehicleAcquisitionRecords:[],fuelRecords:[],maintenanceRecords:[],insuranceRecords:[],attachments:[],createdAt:nowISO(),modifiedAt:nowISO()}}
+function blankData(){return {fuelGrades:[...FUEL_GRADES],app:"RGB Mileage",schemaVersion:"2.1.3m",appVersion:VERSION,settings:{lastBackupDate:"",showArchived:false},nextEntrySequence:1,stations:[...STATIONS_DEFAULT],maintenanceCategories:[...MAINT_CATS],vehicles:[null,null],vehicleAcquisitionRecords:[],fuelRecords:[],maintenanceRecords:[],insuranceRecords:[],attachments:[],createdAt:nowISO(),modifiedAt:nowISO()}}
 
 function normalizeData(input){
   const d=blankData();
   if(!input || typeof input!=="object") return d;
   d.app="RGB Mileage";
-  d.schemaVersion="2.1.3l";
+  d.schemaVersion="2.1.3m";
   d.appVersion=VERSION;
   d.createdAt=input.createdAt||nowISO();
   d.modifiedAt=input.modifiedAt||nowISO();
@@ -139,7 +139,7 @@ function dedupeRecords(d){
 }
 function loadData(){let raw=localStorage.getItem(KEY); if(raw){try{return normalizeData(JSON.parse(raw))}catch(e){console.warn(e)}} for(const k of LEGACY_KEYS){raw=localStorage.getItem(k); if(raw){try{const d=normalizeData(JSON.parse(raw)); saveData(d); return d}catch(e){console.warn(e)}}} const d=blankData(); saveData(d); return d}
 function saveData(d=state){
-  d.schemaVersion="2.1.3l";
+  d.schemaVersion="2.1.3m";
   d.appVersion=VERSION;
   d.modifiedAt=nowISO();
   const payload=JSON.stringify(d);
@@ -276,13 +276,19 @@ function recordEdit(app,type,recordId){const r=records(type,null,true).find(x=>x
 
 function home(app){app.innerHTML=`<div class="screen home"><div class="home-head"><h1 class="chrome-title">${APP_NAME}</h1><div class="subtitle version-subtitle">v${VERSION} • Build ${formatBuildDate(BUILD_DATE)}</div></div><div class="vehicle-area">${state.vehicles.map((v,i)=>circleHtml(v,i)).join("")}</div></div>${bottomNav()}`}
 
+
+
+
+
+
+
 function pressStart(fn,e,ms=500){
   try{
     if(e && e.cancelable) e.preventDefault();
     if(longTimer) clearTimeout(longTimer);
-    suppressTap=false;
     longTimer=setTimeout(()=>{
       suppressTap=true;
+      longTimer=null;
       try{ fn(); }catch(err){ console.error(err); }
     },ms);
   }catch(err){ console.error(err); }
@@ -290,22 +296,57 @@ function pressStart(fn,e,ms=500){
 function clearLP(){
   if(longTimer) clearTimeout(longTimer);
   longTimer=null;
-  setTimeout(()=>{ suppressTap=false; },120);
 }
-
-function circleHtml(v,i){const inner=v&&v.primaryPhoto?`<img src="${v.primaryPhoto}" alt="">`:esc(vehicleBadge(v)); const label=v?vehicleLabel(v):"Add Vehicle"; return `<div class="circle-wrap"><button class="circleBtn" ontouchstart="pressStart(()=>vehicleLong(${i}),event,500)" ontouchend="clearLP()" ontouchcancel="clearLP()" onpointerdown="pressStart(()=>vehicleLong(${i}),event,500)" onpointerup="clearLP()" onpointercancel="clearLP()" onclick="vehicleTap(${i})">${inner}</button><div class="vehicle-label">${esc(label)}</div></div>`}
-
- 
-function vehicleTap(i){
+function consumeSuppressedTap(){
   if(suppressTap){
     suppressTap=false;
-    return false;
+    return true;
   }
+  return false;
+}
+function vehicleTap(i){
+  if(consumeSuppressedTap()) return false;
   const v=state.vehicles[i];
   if(v) nav("quickFuel",{vehicleId:v.vehicleId});
   else nav("vehicleEdit",{slot:i});
   return false;
 }
+function rowPressStart(type,recordId,e){
+  pressStart(()=>nav("recordEdit",{type,recordId},false),e,500);
+}
+function rowPressEnd(type,recordId,e){
+  clearLP();
+  if(consumeSuppressedTap()) return false;
+  nav("recordView",{type,recordId},false);
+  return false;
+}
+function rowPressCancel(){
+  clearLP();
+}
+function rowTap(type,recordId,e){
+  if(e && e.preventDefault) e.preventDefault();
+  if(consumeSuppressedTap()) return false;
+  nav("recordView",{type,recordId},false);
+  return false;
+}
+function entryRow(type,r){
+  const b=tags(r.classificationTags).map(t=>`<span class="badge ${t==='Historical'?'warn':t==='Archived'?'arch':''}">${esc(t)}</span>`).join("");
+  return `<div class="entry-row" role="button" tabindex="0"
+    ontouchstart="rowPressStart('${type}','${r.recordId}',event)"
+    ontouchend="return rowPressEnd('${type}','${r.recordId}',event)"
+    ontouchcancel="rowPressCancel()"
+    onmousedown="rowPressStart('${type}','${r.recordId}',event)"
+    onmouseup="return rowPressEnd('${type}','${r.recordId}',event)"
+    onmouseleave="rowPressCancel()"
+    onclick="return rowTap('${type}','${r.recordId}',event)">
+    <div class="entry-main"><span>${recordTitle(type,r)}</span><span class="muted">${esc(r.dataQuality||"")}</span></div><div class="badges">${b}</div></div>`;
+}
+
+function circleHtml(v,i){const inner=v&&v.primaryPhoto?`<img src="${v.primaryPhoto}" alt="">`:esc(vehicleBadge(v)); const label=v?vehicleLabel(v):"Add Vehicle"; return `<div class="circle-wrap"><button class="circleBtn" ontouchstart="pressStart(()=>vehicleLong(${i}),event,500)" ontouchend="clearLP()" ontouchcancel="clearLP()" onpointerdown="pressStart(()=>vehicleLong(${i}),event,500)" onpointerup="clearLP()" onpointercancel="clearLP()" onclick="return vehicleTap(${i})">${inner}</button><div class="vehicle-label">${esc(label)}</div></div>`}
+
+ 
+
+
 
 function vehicleLong(i){const v=state.vehicles[i]; if(v)nav("vehicleView",{vehicleId:v.vehicleId}); else nav("vehicleEdit",{slot:i})}
 function getAcq(vid){let a=state.vehicleAcquisitionRecords.find(r=>r.vehicleId===vid);const v=getVehicle(vid)||{};return a||{vehicleId:vid,acquisitionDate:v.acquisitionDate||v.purchaseDate||"",purchaseDate:v.purchaseDate||v.acquisitionDate||"",startingOdometer:v.startingOdometer||"",purchasePrice:v.purchasePrice||v.purchaseCost||"",seller:v.seller||""}}
@@ -323,47 +364,16 @@ function recordTitle(type,r){if(type==="Fuel")return `${r.date||"No Date"} Odo $
 function line(k,v){return `<div><b>${esc(k)}:</b> ${esc(v??"")}</div>`}
 function recordDetails(type,r){if(type==="Fuel")return line("Odometer",fmt(r.odometer))+line("Miles",fmt(r.miles))+line("Gallons",fmt(r.gallons,3))+line("MPG",fmt(r.mpg))+line("Station",r.station)+line("Notes",r.notes); if(type==="Maintenance")return line("Odometer",fmt(r.odometer))+line("Cost",money(r.totalCost))+line("Provider",r.serviceProvider||r.provider||"")+line("Notes",r.notes); if(type==="Insurance")return line("Effective",r.effectiveDate)+line("Expiration",r.expirationDate)+line("Premium",money(r.premium))+line("Agency",r.agency||"");return ""}
 
-function rowPressStart(type,recordId,e){
-  if(e && e.cancelable) e.preventDefault();
-  if(rowInteraction.timer) clearTimeout(rowInteraction.timer);
-  rowInteraction={timer:null,long:false,type,recordId};
-  rowInteraction.timer=setTimeout(()=>{
-    rowInteraction.long=true;
-    nav('recordEdit',{type,recordId});
-  },500);
-}
-function rowPressEnd(type,recordId,e){
-  if(rowInteraction.timer) clearTimeout(rowInteraction.timer);
-  const wasLong=rowInteraction.long;
-  rowInteraction.timer=null;
-  if(wasLong){
-    rowInteraction.long=false;
-    return false;
-  }
-  nav('recordView',{type,recordId});
-  return false;
-}
-function rowPressCancel(){
-  if(rowInteraction.timer) clearTimeout(rowInteraction.timer);
-  rowInteraction={timer:null,long:false,type:null,recordId:null};
-}
-function rowTap(type,recordId,e){
-  if(e && e.preventDefault) e.preventDefault();
-  nav('recordView',{type,recordId});
-  return false;
-}
-function entryRow(type,r){
-  const b=tags(r.classificationTags).map(t=>`<span class="badge ${t==='Historical'?'warn':t==='Archived'?'arch':''}">${esc(t)}</span>`).join("");
-  return `<div class="entry-row" role="button" tabindex="0"
-    ontouchstart="rowPressStart('${type}','${r.recordId}',event)"
-    ontouchend="return rowPressEnd('${type}','${r.recordId}',event)"
-    ontouchcancel="rowPressCancel()"
-    onmousedown="rowPressStart('${type}','${r.recordId}',event)"
-    onmouseup="return rowPressEnd('${type}','${r.recordId}',event)"
-    onmouseleave="rowPressCancel()"
-    onclick="return false">
-    <div class="entry-main"><span>${recordTitle(type,r)}</span><span class="muted">${esc(r.dataQuality||"")}</span></div><div class="badges">${b}</div></div>`;
-}
+
+
+
+
+
+
+
+
+
+
 
 function previousRecordsHtml(type,vid){const rows=records(type,vid,false);return `<details class="card" open><summary><strong>Previous ${type} Records</strong></summary>${rows.length?rows.map(r=>entryRow(type,r)).join(""):'<p class="muted">No records.</p>'}</details>`}
 
@@ -479,4 +489,4 @@ function initV213eStabilization(){
     window.addEventListener("orientationchange",()=>setTimeout(lock,50),{passive:true});
   }catch(e){}
 }
-initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=213l').catch(()=>{})}
+initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=213m').catch(()=>{})}
