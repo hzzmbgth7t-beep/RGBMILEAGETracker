@@ -1,3 +1,35 @@
+# RGB Mileage v2.1.3i
+
+GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
+GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
+
+Build Date: 09/06/26  
+Internal Build Date: 2026-06-09
+
+## Scope
+
+v2.1.3i is a stabilization candidate built from the corrected v2.1.3h package.
+
+Authorized corrections:
+- D-047: Previous record Tap opens View.
+- D-056: Navigation final positioning adjusted.
+- D-059: Vehicle Circle Long Press regression corrected.
+- D-061: Edit screen navigation policy corrected.
+- D-062: Edit Cancel action corrected.
+
+## Deployment Verification
+
+Open with cache buster:
+
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213i
+
+---
+
+# Previous README History
+
+## v2.1.3h
+09/06/26
+
 # RGB Mileage v2.1.3h
 
 GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  

@@ -1,28 +1,12 @@
-# DEPLOYMENT — v2.1.3h
+# DEPLOYMENT — v2.1.3i
 
 GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
 GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 
-## Upload Files
+Test URL:
 
-Replace the GitHub repo root app files with this package.
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213i
 
-Required active files:
-- index.html
-- app.js
-- styles.css
-- manifest.json
-- sw.js
-- README.md
-- CHANGELOG.md
-- FIXNOTES.md
-- DEPLOYMENT.md
-- icon files included in package
+Expected Version:
 
-## Test URL
-
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213h
-
-## Expected Version
-
-v2.1.3h
+v2.1.3i
