@@ -2,25 +2,35 @@
 
 App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Current Version: 2.1.3a
+Current Version: 2.1.3
 Release Date: 2026-06-07
 
 ## Current Release Information
 
-v2.1.3a is a corrective stabilization build for failed v2.1.3 acceptance items.
+v2.1.3 is a stabilization release built from the locked v2.1.3 scope.
 
 Authorized scope:
-- D-021, D-022, D-023, D-024, D-025, D-027, D-029, D-030, D-031, D-032, D-033, D-034, D-035
+- D-001 through D-015
 
 Explicitly excluded:
-- D-017, D-018
-- DEC-019, DEC-020, DEC-021
-- Deferred items
+- D-017 Circle Border Chrome Styling
+- D-018 Vehicle Label Chrome Styling
+
+## Current Release Goals
+
+- Stabilize Home Screen movement and top background fill.
+- Maintain portrait layout behavior.
+- Correct multi-column layouts for Vehicle/Acquisition, Fuel, Maintenance, and Insurance screens.
+- Restore tap/view and long-press/edit behavior for previous records.
+- Standardize the Other workflow across supported dropdowns.
 
 ## Version History
 
-### v2.1.3 — 2026-06-07
-Stabilization release; failed acceptance review.
-
 ### v2.1.2d — 2026-06-06
 Restore/storage hotfix.
+
+### v2.1.2c — 2026-06-06
+Restore normalization hotfix.
+
+### v2.1.2b — 2026-06-05
+Stabilization build.
