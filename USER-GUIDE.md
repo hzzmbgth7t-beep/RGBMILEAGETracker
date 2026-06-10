@@ -1,20 +1,16 @@
 # RGB Mileage
 
-Version: v2.1.3m
+Version: v2.1.3n
 Build Date: 09/06/26
 
 Last Updated:
-v2.1.3m
+v2.1.3n
 Build 09/06/26
 
-## Home Screen
+Home Screen:
+- Tap vehicle circle: Quick Fuel Entry.
+- Long press vehicle circle: Vehicle menu.
 
-Tap a vehicle circle to open Quick Fuel Entry.
-
-Long press a vehicle circle to open the vehicle menu.
-
-## Previous Records
-
-Tap a previous record to open View.
-
-Long press a previous record to open Edit.
+Previous Records:
+- Tap record: View.
+- Long press record: Edit.
