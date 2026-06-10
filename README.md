@@ -1,14 +1,14 @@
 # RGB Mileage
 
-Version: v2.1.3j
+Version: v2.1.3l
 Build Date: 09/06/26
 GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-Cache-Buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213j
+Cache-Buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213l
 GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 
 ## Current Release Information
 
-v2.1.3j is built from v2.1.3h and corrects only the Home Screen Vehicle Circle long-press regression.
+v2.1.3l is built from v2.1.3h and corrects only the Home Screen Vehicle Circle long-press regression.
 
 ## Previous README History
 
