@@ -2,17 +2,19 @@
 
 App Site Address: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Current Version: 2.1.3b
+Current Version: 2.1.3a
 Release Date: 2026-06-07
 
-## v2.1.3b Fix Notes
+## v2.1.3a Fix Notes
 
-This build uses the locked v2.1.3b Build Control Package, Consistency Review, and Implementation Plan.
+This build follows the v2.1.3a Build Control Package and Consistency Review.
 
-System corrections:
-- Layout System
-- Record Interaction System
-- Other Workflow System
-- Edit Workflow System
+System-first corrections:
+- Shared record interaction handler.
+- Shared Other workflow persistence model.
+- Shared field-height and grid layout rules.
+- Shared maintenance normalization/display/save model.
 
-No deferred items or future decisions were implemented.
+Excluded:
+- Chrome styling defects D-017 and D-018.
+- Future decisions DEC-019 through DEC-021.
