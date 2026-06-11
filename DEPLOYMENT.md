@@ -1,20 +1,20 @@
-## v2.1.3od Deployment Notes
+## v2.1.3oe Deployment Notes
 
 ### Release Type
 View Metadata Presentation Refinement
 
 ### Purpose
-Deploy v2.1.3od only after confirming that Maintenance and Insurance field parity is complete and current app behavior has not changed unintentionally.
+Deploy v2.1.3oe only after confirming that Maintenance and Insurance field parity is complete and current app behavior has not changed unintentionally.
 
 ### Active Version
-- App version: `v2.1.3od`
-- Active cache-buster: `?v=213od`
+- App version: `v2.1.3oe`
+- Active cache-buster: `?v=213oe`
 
 ### Active URLs
 - GitHub Pages:
   `https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/`
 - Cache-buster URL:
-  `https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213od`
+  `https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213oe`
 - Repository:
   `https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker`
 
@@ -39,7 +39,7 @@ Confirm all of the following before deployment:
 ### Post-Deployment Verification
 After deployment, verify:
 1. Open the active cache-buster URL.
-2. Confirm the app loads as `v2.1.3od`.
+2. Confirm the app loads as `v2.1.3oe`.
 3. Open one Maintenance record in View and Edit.
 4. Open one Insurance record in View and Edit.
 5. Confirm all parity fields are visible.
@@ -57,21 +57,21 @@ If parity changes cause unexpected behavior, revert to the prior stable baseline
 
 # DEPLOYMENT
 
-Version: v2.1.3od
+Version: v2.1.3oe
 Build Date: 09/06/26
 GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-Cache-Buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213od
+Cache-Buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213oe
 GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 
 ## Deployment Steps
-1. Upload the complete v2.1.3od build to the deployment target.
+1. Upload the complete v2.1.3oe build to the deployment target.
 2. Ensure `index.html`, `app.js`, `styles.css`, `manifest.json`, and `sw.js` are all updated together.
 3. Open the cache-buster URL after deployment.
 4. If a prior service worker is active, refresh again after the new cache is installed.
 
 ## Post-Deployment Verification
-- App title shows `RGB Mileage v2.1.3od`.
-- Settings screen shows schema `2.1.3od`.
+- App title shows `RGB Mileage v2.1.3oe`.
+- Settings screen shows schema `2.1.3oe`.
 - Home long-press on the center circle opens Vehicle.
 - Vehicle record tap opens View.
 - Vehicle record long-press opens Edit.

@@ -1,6 +1,6 @@
 # RGB Mileage Tracker
 
-Version: **v2.1.3od**  
+Version: **v2.1.3oe**  
 Release type: **View Metadata Presentation Refinement**
 
 ## Purpose
@@ -52,7 +52,7 @@ Active URL:
 `https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/`
 
 Active cache-buster URL:
-`https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213od`
+`https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213oe`
 
 Repository:
 `https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker`
@@ -68,15 +68,15 @@ Use this version as the field-parity checkpoint in the staged rollout:
 
 # RGB Mileage
 
-Version: v2.1.3od
+Version: v2.1.3oe
 Build Date: 09/06/26
 GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-Cache-Buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213od
+Cache-Buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213oe
 GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 
 ## Current Release Information
 
-v2.1.3od is a follow-on corrective build derived from v2.1.3oa.
+v2.1.3oe is a follow-on corrective build derived from v2.1.3oa.
 
 Scope of this build:
 - Preserve the stabilization work from v2.1.3oa.
@@ -107,9 +107,15 @@ To avoid version-label inconsistencies, every future build must follow this rule
 
 ## Current Active URLs
 - GitHub Pages: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache-Buster: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213od
+- Cache-Buster: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213oe
 - Repository: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 
 ## Historical README Notes
 
 Previous README details and older release references should be retained here as historical notes only.
+
+
+### v2.1.3oe Highlights
+- View Fuel / Maintenance / Insurance screens now use a collapsible **Data Information** section above the main fields.
+- **Data Information** is collapsed by default and follows the same accordion-style pattern as **Previous Records**.
+- **Archive** and **Edit** now appear on one row on View screens, with Archive left and Edit right.

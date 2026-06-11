@@ -1,4 +1,4 @@
-## v2.1.3od User Guide Addendum
+## v2.1.3oe User Guide Addendum
 Release type: **View Metadata Presentation Refinement**
 
 ### What changed in this version
@@ -33,11 +33,11 @@ This version is part of a staged rollout. It prepares the app for later simplifi
 
 # RGB Mileage
 
-Version: v2.1.3od
+Version: v2.1.3oe
 Build Date: 09/06/26
 
 Last Updated:
-v2.1.3od
+v2.1.3oe
 Build 09/06/26
 
 ## What This Build Changes
