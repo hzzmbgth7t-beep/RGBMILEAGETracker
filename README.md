@@ -1,10 +1,10 @@
 # RGB Mileage Tracker
 
-Version: **v2.1.3oc**  
-Release type: **Field Parity Release**
+Version: **v2.1.3od**  
+Release type: **View Metadata Presentation Refinement**
 
 ## Purpose
-This release completes field parity work for Maintenance and Insurance before any section-screen consolidation. The goal is to ensure that the current separate View and Edit screens display the same intended user-facing record data while preserving existing screen behavior.
+This release refines the current separate View screens for Fuel, Maintenance, and Insurance by moving technical metadata into a collapsible section and improving the action button layout. The goal is to reduce clutter while preserving existing view/edit behavior.
 
 ## What This Release Changes
 
@@ -52,7 +52,7 @@ Active URL:
 `https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/`
 
 Active cache-buster URL:
-`https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213oc`
+`https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213od`
 
 Repository:
 `https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker`
@@ -68,15 +68,15 @@ Use this version as the field-parity checkpoint in the staged rollout:
 
 # RGB Mileage
 
-Version: v2.1.3oc
+Version: v2.1.3od
 Build Date: 09/06/26
 GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-Cache-Buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213oc
+Cache-Buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213od
 GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 
 ## Current Release Information
 
-v2.1.3oc is a follow-on corrective build derived from v2.1.3oa.
+v2.1.3od is a follow-on corrective build derived from v2.1.3oa.
 
 Scope of this build:
 - Preserve the stabilization work from v2.1.3oa.
@@ -107,7 +107,7 @@ To avoid version-label inconsistencies, every future build must follow this rule
 
 ## Current Active URLs
 - GitHub Pages: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache-Buster: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213oc
+- Cache-Buster: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213od
 - Repository: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 
 ## Historical README Notes

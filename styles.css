@@ -543,3 +543,9 @@ body {
   -webkit-user-select: none !important;
   user-select: none !important;
 }
+
+.data-info{margin:0 0 10px;border:1px solid var(--line);border-radius:14px;background:#13233a;overflow:hidden}
+.data-info summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:900;color:#f4e2bd}
+.data-info summary::-webkit-details-marker{display:none}
+.data-info[open] summary{border-bottom:1px solid var(--line)}
+.data-info .readonly-grid{padding:10px}
