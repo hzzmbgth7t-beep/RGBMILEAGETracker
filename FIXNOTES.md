@@ -1,6 +1,50 @@
+## v2.1.3oc — Field Parity Release Notes
+
+### Summary
+This build focuses on field parity only. It ensures that Maintenance and Insurance records expose the intended user-facing fields consistently across the current separate View and Edit screens.
+
+### What Was Corrected
+
+#### Maintenance
+Added missing Maintenance fields to the current screen set so both View and Edit expose the same intended data:
+- Location
+- Provider
+- Pickup Date
+- Performed By
+
+#### Insurance
+Added and aligned Insurance fields so both View and Edit expose the same intended data:
+- Agency
+- Agreed Value
+- Agent
+- Phone
+- Email
+- Notes
+
+### Presentation Cleanup
+Insurance presentation is simplified to use:
+- Agency instead of Company as the primary visible organization field
+- Agreed Value instead of Coverage Value as the primary visible value field
+- one Notes field for user-facing display
+
+### What This Release Does Not Change
+- no screen consolidation
+- no unified section-screen behavior
+- no new save/cancel prompt model
+- no button-layout redesign
+- no responsive layout changes
+
+### Verification Focus
+Primary verification for this release should confirm:
+- all parity fields are visible in both View and Edit
+- saved values persist correctly
+- existing navigation behavior remains unchanged
+- no unrelated regressions were introduced
+
+
 # FIXNOTES
 
-## v2.1.3ob — 09/06/26
+## v2.1.3oc — 09/06/26
 
 This build is a follow-on corrective pass based on v2.1.3oa.
 
@@ -11,7 +55,7 @@ Verified issues corrected:
 - Record edit screens now warn about unsaved changes and offer Save or Discard before leaving.
 
 Release-control correction:
-- Version labels, cache-buster references, and release documentation were synchronized for v2.1.3ob.
+- Version labels, cache-buster references, and release documentation were synchronized for v2.1.3oc.
 - A standing release rule was added requiring a single version source of truth and synchronized label verification before packaging.
 
 Non-scope items:

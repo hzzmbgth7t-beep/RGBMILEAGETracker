@@ -1,10 +1,58 @@
+## v2.1.3oc User Guide Addendum
+Release type: **Field Parity Release**
+
+### What changed in this version
+This release improves field consistency in the current Maintenance and Insurance screens. The app still uses separate View and Edit screens for these sections, but more record details are now intended to appear consistently in both.
+
+### Maintenance
+Maintenance records now include these user-facing fields across the current screen set:
+- Date
+- Category
+- Odometer
+- Cost
+- Location
+- Provider
+- Pickup Date
+- Performed By
+- Notes
+
+### Insurance
+Insurance records now include these user-facing fields across the current screen set:
+- Agency
+- Policy Number
+- Effective Date
+- Expiration Date
+- Agreed Value
+- Premium
+- Agent
+- Phone
+- Email
+- Notes
+
+### Insurance field naming
+Insurance screens are being aligned to a simpler naming model:
+- **Agency** is used as the main organization field
+- **Agreed Value** is used as the main value field
+- **Notes** is the single user-facing notes field
+
+### What did not change
+This release does not change the basic screen flow:
+- View and Edit remain separate screens
+- tapping a record still opens View
+- long pressing a record still opens Edit
+- existing navigation patterns are intended to remain the same
+
+### Purpose of this release
+This version is part of a staged rollout. It prepares the app for later simplification by making sure the current screens expose the intended record information before any larger UI consolidation takes place.
+
+
 # RGB Mileage
 
-Version: v2.1.3ob
+Version: v2.1.3oc
 Build Date: 09/06/26
 
 Last Updated:
-v2.1.3ob
+v2.1.3oc
 Build 09/06/26
 
 ## What This Build Changes
