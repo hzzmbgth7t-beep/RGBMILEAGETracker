@@ -1,117 +1,47 @@
 # RGB Mileage
 
-Version: v2.1.3oa
+Version: v2.1.3ob
 Build Date: 09/06/26
 GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-Cache-Buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213oa
+Cache-Buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213ob
 GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 
 ## Current Release Information
 
-v2.1.3oa is a corrective stabilization build derived from v2.1.3o.
+v2.1.3ob is a follow-on corrective build derived from v2.1.3oa.
 
 Scope of this build:
-- Correct concrete defects identified during review.
-- Tighten validation and input consistency.
-- Centralize version/schema references.
-- Reduce obvious regression risk without redesigning the app.
-- Preserve the existing app structure and user workflows.
+- Preserve the stabilization work from v2.1.3oa.
+- Correct back-navigation behavior for record and report flows.
+- Add unsaved-changes protection for record edit screens.
+- Keep the existing app structure and user workflows.
+- Update all release documentation in sync with the build.
 
-Included corrections:
-- Restored CSV preview/import sequence fallback by replacing the undefined seq() call with nextSeq().
-- Corrected Quick Fuel so Cost Source saves the selected field value.
-- Centralized schema/version handling so schema display and backup metadata align with the build version.
-- Updated Settings schema display to match the active build.
-- Hardened storage quota recovery to reduce risk to existing saved data.
-- Added low-risk validation improvements for Fuel, Maintenance, and Insurance save paths.
+Included corrections and improvements:
+- Back from Fuel, Maintenance, and Insurance record view/edit now returns to the true previous screen instead of cycling through records opened from the current screen.
+- Back from a report detail now returns to the Reports screen.
+- Back from the Reports screen returns to the prior screen, which is typically Home in the standard flow.
+- Record edit screens now warn about unsaved changes and offer Save or Discard before leaving.
+- Version labels, cache-buster references, and release notes were synchronized for this build.
 
 Compatibility:
-- Existing saved data is intended to remain compatible.
-- This build is intended to run in modern desktop browsers and iOS Safari.
-- Local browser storage remains device/browser specific.
+- Intended to run in modern desktop browsers and iOS Safari.
+- Browser storage remains local to each browser/device.
 
-Deployment verification:
-1. Deploy all updated files.
-2. Open with the cache-buster URL shown above.
-3. Confirm the title/build displays v2.1.3oa.
-4. Confirm Previous Records view, Quick Fuel save, CSV preview, backup creation, and Settings schema display.
+## Release Control Rule
 
+To avoid version-label inconsistencies, every future build must follow this rule:
 
-## Previous README History
+1. Set the version once in the codebase source of truth.
+2. Update all visible version references, cache-buster values, manifest/service-worker labels, and release documentation in the same change set.
+3. Verify the package before release so only the current version appears active.
+4. Do not package a build until code, docs, deployment references, and visible labels all match.
 
-The links and cache-buster URLs below are preserved as historical release references only. Only the URLs listed at the top of this README should be used as the current live deployment addresses.
+## Current Active URLs
+- GitHub Pages: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+- Cache-Buster: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213ob
+- Repository: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 
----
+## Historical README Notes
 
-## v2.1.3n
-09/06/26
-
-# RGB Mileage
-
-Version: v2.1.3n
-Build Date: 09/06/26
-Historical GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-Historical Cache-Buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213n
-Historical GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
-
-## Current Release Information
-
-v2.1.3n is built from v2.1.3h and corrects only:
-- Home Screen vehicle-circle long press support.
-- Previous Records tap-to-view behavior.
-
-## Previous README History
-
----
-
-## v2.1.3h
-09/06/26
-
-# RGB Mileage v2.1.3h
-
-Historical GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-Historical GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
-
-Build Date: 09/06/26  
-Internal Build Date: 2026-06-09
-
-## Scope
-
-v2.1.3h is a stabilization candidate built from the confirmed installed v2.1.3g baseline.
-
-Authorized corrections:
-- D-047: Record Interaction System — Tap opens View; Long Press opens Edit.
-- D-054: App Identity System — RGB Mileage is the single visible app name.
-- D-055: Build Display System — build date displays as DD/MM/YY.
-- D-056: Navigation Layout System — bottom navigation uses one authoritative layout override.
-
-## Data Compatibility
-
-The storage key is intentionally reviewed for continuity with the stabilization series. Existing user data should remain compatible.
-
-## Deployment Verification
-
-Open with cache buster:
-
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213h
-
-
----
-
-# Previous README History
-
-## v2.1.3g
-08/06/26
-
-# RGB Mileage Tracker v2.1.3g
-
-Patch release built from accepted v2.1.3f baseline.
-
-## Scope
-- D-047: repair tap-to-view launch for Fuel, Maintenance, and Insurance previous records.
-- D-053: restore Fuel Edit field parity with Quick Fuel Entry.
-- D-049: orientation lock remains deferred.
-- D-054: landscape overlap remains deferred.
-
-## Data Compatibility
-The localStorage key remains `RGBM_DATA_v213d` to preserve deployed user data across the stabilization series.
+Previous README details and older release references should be retained here as historical notes only.

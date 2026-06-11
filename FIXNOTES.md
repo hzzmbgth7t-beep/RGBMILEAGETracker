@@ -1,5 +1,24 @@
 # FIXNOTES
 
+## v2.1.3ob — 09/06/26
+
+This build is a follow-on corrective pass based on v2.1.3oa.
+
+Verified issues corrected:
+- Back from Fuel, Maintenance, and Insurance record view/edit now returns to the true prior screen.
+- Opening additional records from a record screen no longer creates a back-stack cycle through those records.
+- Back from report detail now returns to the Reports screen before returning to Home.
+- Record edit screens now warn about unsaved changes and offer Save or Discard before leaving.
+
+Release-control correction:
+- Version labels, cache-buster references, and release documentation were synchronized for v2.1.3ob.
+- A standing release rule was added requiring a single version source of truth and synchronized label verification before packaging.
+
+Non-scope items:
+- No architecture redesign.
+- No module split.
+- No new user-facing feature expansion.
+
 ## v2.1.3oa — 09/06/26
 
 This build is a corrective stabilization pass based on v2.1.3o.
