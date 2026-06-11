@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.3n", BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.3o", BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -52,13 +52,13 @@ function storageBytes(obj){
   try{return new Blob([JSON.stringify(obj)]).size}
   catch(e){return JSON.stringify(obj).length}
 }
-function blankData(){return {fuelGrades:[...FUEL_GRADES],app:"RGB Mileage",schemaVersion:"2.1.3n",appVersion:VERSION,settings:{lastBackupDate:"",showArchived:false},nextEntrySequence:1,stations:[...STATIONS_DEFAULT],maintenanceCategories:[...MAINT_CATS],vehicles:[null,null],vehicleAcquisitionRecords:[],fuelRecords:[],maintenanceRecords:[],insuranceRecords:[],attachments:[],createdAt:nowISO(),modifiedAt:nowISO()}}
+function blankData(){return {fuelGrades:[...FUEL_GRADES],app:"RGB Mileage",schemaVersion:"2.1.3o",appVersion:VERSION,settings:{lastBackupDate:"",showArchived:false},nextEntrySequence:1,stations:[...STATIONS_DEFAULT],maintenanceCategories:[...MAINT_CATS],vehicles:[null,null],vehicleAcquisitionRecords:[],fuelRecords:[],maintenanceRecords:[],insuranceRecords:[],attachments:[],createdAt:nowISO(),modifiedAt:nowISO()}}
 
 function normalizeData(input){
   const d=blankData();
   if(!input || typeof input!=="object") return d;
   d.app="RGB Mileage";
-  d.schemaVersion="2.1.3n";
+  d.schemaVersion="2.1.3o";
   d.appVersion=VERSION;
   d.createdAt=input.createdAt||nowISO();
   d.modifiedAt=input.modifiedAt||nowISO();
@@ -139,7 +139,7 @@ function dedupeRecords(d){
 }
 function loadData(){let raw=localStorage.getItem(KEY); if(raw){try{return normalizeData(JSON.parse(raw))}catch(e){console.warn(e)}} for(const k of LEGACY_KEYS){raw=localStorage.getItem(k); if(raw){try{const d=normalizeData(JSON.parse(raw)); saveData(d); return d}catch(e){console.warn(e)}}} const d=blankData(); saveData(d); return d}
 function saveData(d=state){
-  d.schemaVersion="2.1.3n";
+  d.schemaVersion="2.1.3o";
   d.appVersion=VERSION;
   d.modifiedAt=nowISO();
   const payload=JSON.stringify(d);
@@ -356,6 +356,9 @@ function previousRecordsHtml(type,vid){const rows=records(type,vid,false);return
 
 
 function meta(r){return `<div class="readonly-grid"><div class="fieldbox"><b>Record ID</b><span>${esc(r.recordId)}</span></div><div class="fieldbox"><b>Sequence</b><span>${r.entrySequence}</span></div><div class="fieldbox"><b>Source</b><span>${esc(r.source)}</span></div><div class="fieldbox"><b>Quality</b><span>${esc(r.dataQuality)}</span></div><div class="fieldbox"><b>Tags</b><span>${esc(tags(r.classificationTags).join('; '))}</span></div></div>`} function roBox(label,val){return `<div class="fieldbox"><b>${esc(label)}</b><span>${esc(val??"")}</span></div>`}
+function findRecord(type,id){
+  return recArray(type).find(r=>String(r.recordId)===String(id));
+}
 function recordView(app,type,id){const r=findRecord(type,id);if(!r)return nav("home",{},false);app.innerHTML=header("View "+type+" Record")+`<div class="card">${meta(r)}<h3>${type} Information</h3><div class="readonly-grid">${viewFields(type,r)}</div><div class="form-actions"><button onclick="navRecord('${type}','${id}','edit')">Edit</button><button class="danger" onclick="archiveRecord('${type}','${id}')">Archive</button></div></div>`+bottomNav()+footer()} function viewFields(type,r){if(type==="Fuel")return roBox("Date",r.date)+roBox("Time",r.time)+roBox("Odometer",fmt(r.odometer))+roBox("Miles",fmt(r.miles))+roBox("Gallons",fmt(r.gallons,3))+roBox("MPG",fmt(r.mpg))+roBox("Fuel Grade",r.fuelGrade)+roBox("Ethanol Free",r.ethanolFree)+roBox("Station",r.station)+roBox("Cost Source",r.fuelCostSource)+roBox("Price/Gal",money(r.fuelPricePerGallon))+roBox("Total Cost",money(r.totalFuelCost))+roBox("Notes",r.notes); if(type==="Maintenance")return roBox("Date",r.dropOffDate)+roBox("Category",r.category)+roBox("Odometer",fmt(r.odometer))+roBox("Cost",money(r.totalCost))+roBox("Notes",r.notes); if(type==="Insurance")return roBox("Company",r.company)+roBox("Policy",r.policyNumber)+roBox("Effective",r.effectiveDate)+roBox("Expiration",r.expirationDate)+roBox("Premium",money(r.premium))+roBox("Notes",r.notes);return ""}
 function commonEdit(r){return `<label>Data Quality<select id="rq">${DATA_QUALITIES.map(q=>`<option ${r.dataQuality===q?'selected':''}>${q}</option>`).join("")}</select></label><label>Tags<input id="rtags" value="${esc(tags(r.classificationTags).join('; '))}"></label><label>Notes<textarea id="rnotes">${esc(r.notes||"")}</textarea></label>`} 
 
@@ -465,4 +468,4 @@ function initV213eStabilization(){
     window.addEventListener("orientationchange",()=>setTimeout(lock,50),{passive:true});
   }catch(e){}
 }
-initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=213n').catch(()=>{})}
+initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=213o').catch(()=>{})}

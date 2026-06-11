@@ -1,11 +1,7 @@
 # FIXNOTES
 
-## v2.1.3n — 09/06/26
+## v2.1.3o — 09/06/26
 
-Vehicle circle:
-- Restored pressStart() and clearLP().
-- Preserved v2.1.3h circleHtml(), vehicleTap(), and vehicleLong().
+Previous Records tap reached the row and attempted View routing, but recordView() depended on findRecord(type,id), which was missing.
 
-Previous Records:
-- Replaced failed click-callback dependency with explicit pointer release to recordView.
-- Long press routes to recordEdit.
+v2.1.3o adds findRecord() only. No record row, vehicle circle, navigation, report, settings, storage, or CSS logic was intentionally changed.
