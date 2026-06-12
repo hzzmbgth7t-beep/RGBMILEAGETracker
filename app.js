@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.4a", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.4b", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -169,12 +169,19 @@ function normIns(r,vid){const rec=normRecord(r,"Insurance",vid);Object.assign(re
 function $(id){return document.getElementById(id)} function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))} function fmt(v,d=2){return v!==""&&v!=null&&Number.isFinite(+v)?(+v).toFixed(d):""} function money(v){return v!==""&&v!=null&&Number.isFinite(+v)?"$"+(+v).toFixed(2):""}
 function cloneRoute(r){return r?JSON.parse(JSON.stringify(r)):null}
 function renderRoute(){render();setTimeout(()=>{const app=$("app"); if(app)app.scrollTo(0,0); scrollTo(0,0)},0)}
-function nav(screen,params={},push=true){if(push)historyStack.push(cloneRoute(route));route={screen,...params};renderRoute()}
+function rawNav(screen,params={},push=true){if(push)historyStack.push(cloneRoute(route));route={screen,...params};renderRoute()}
+function nav(screen,params={},push=true){
+  if(screen==="home" && route.screen==="quickFuel") return handleQuickFuelHome();
+  return rawNav(screen,params,push);
+}
 function resolveRecordReturnTo(){return (["recordView","recordEdit"].includes(route.screen)&&route.returnTo)?cloneRoute(route.returnTo):cloneRoute(route)}
 function resolveReportReturnTo(){return (String(route.screen||"").startsWith("report")&&route.returnTo)?cloneRoute(route.returnTo):cloneRoute(route)}
 function navRecord(type,recordId,mode){const screen=mode==="edit"?"recordEdit":"recordView";route={screen,...{type,recordId,returnTo:resolveRecordReturnTo()}};renderRoute();if(screen==="recordEdit")focusEditTop()}
 function openReport(screen){route={screen,returnTo:resolveReportReturnTo()};renderRoute()}
-function performBackNavigation(){const target=(route&&route.returnTo&&((["recordView","recordEdit"].includes(route.screen))||String(route.screen||"").startsWith("report")))?cloneRoute(route.returnTo):historyStack.pop(); if(target){route=target;editSnapshot=null;renderRoute()}else nav("home",{},false)}
+function performBackNavigation(){
+  const target=(route&&route.returnTo&&((["recordView","recordEdit"].includes(route.screen))||String(route.screen||"").startsWith("report")))?cloneRoute(route.returnTo):historyStack.pop();
+  if(target){route=target;editSnapshot=null;renderRoute()}else rawNav("home",{},false)
+}
 function goBack(){if(route.screen==="recordEdit")return handleRecordEditBack();if(route.screen==="quickFuel")return handleQuickFuelBack();performBackNavigation()}
 function focusEditTop(){setTimeout(()=>{const app=$("app"); if(app)app.scrollTo({top:0,left:0,behavior:"auto"}); const first=document.querySelector(".form-grid input,.form-grid select,.form-grid textarea"); if(first&&first.focus)try{first.focus({preventScroll:true})}catch(e){}},0)}
 function currentRecordEditValues(type){if(type==="Fuel")return {date:cleanText($("efdate")?.value),time:cleanText($("eftime")?.value),odometer:cleanText($("efodo")?.value),miles:cleanText($("efmiles")?.value),gallons:cleanText($("efgal")?.value),mpg:cleanText($("efmpg")?.value),fuelGrade:cleanText($("efgrade")?.value),ethanolFree:cleanText($("efef")?.value),station:cleanText($("efstation")?.value),fuelCostSource:cleanText($("efcostsource")?.value),fuelPricePerGallon:cleanText($("efprice")?.value),totalFuelCost:cleanText($("efcost")?.value),notes:cleanText($("efnotes")?.value)};if(type==="Maintenance")return {date:cleanText($("emdate")?.value),category:cleanText($("emcat")?.value),odometer:cleanText($("emodo")?.value),totalCost:cleanText($("emcost")?.value),location:cleanText($("emloc")?.value),serviceProvider:cleanText($("emprov")?.value),notes:cleanText($("emnotes")?.value)};if(type==="Insurance")return {company:cleanText($("eicomp")?.value),policyNumber:cleanText($("eipol")?.value),effectiveDate:cleanText($("eieff")?.value),expirationDate:cleanText($("eiexp")?.value),coverageValue:cleanText($("eicov")?.value),premium:cleanText($("eiprem")?.value),agent:cleanText($("eiagent")?.value),phone:cleanText($("eiphone")?.value),email:cleanText($("eiemail")?.value),agency:cleanText($("eiagency")?.value),notes:cleanText($("einotes")?.value)};return {}}
@@ -255,7 +262,7 @@ function render(){const app=$("app"),s=route.screen; app.className="app-screen s
 
 
 function header(title){return `<div class="topbar"><button class="nav-control back-btn" type="button" onclick="goBack()">‹ Back</button><h1>${esc(title||"RGB Mileage")}</h1></div>`}
-function bottomNav(){return `<div class="bottom-nav"><button class="nav-control" type="button" onclick="nav('home')"><span>⌂</span>Home</button><button class="nav-control" type="button" onclick="nav('reports')"><span>▣</span>Reports</button><button class="nav-control" type="button" onclick="nav('data')"><span>⇅</span>Data</button><button class="nav-control" type="button" onclick="nav('settings')"><span>⚙</span>Settings</button></div>`}
+function bottomNav(){return `<div class="bottom-nav"><button class="nav-control" type="button" onclick="goHome()"><span>⌂</span>Home</button><button class="nav-control" type="button" onclick="nav('reports')"><span>▣</span>Reports</button><button class="nav-control" type="button" onclick="nav('data')"><span>⇅</span>Data</button><button class="nav-control" type="button" onclick="nav('settings')"><span>⚙</span>Settings</button></div>`}
 function viewField(label,value,full=false){return `<div class="view-field ${full?'full':''}"><span class="view-label">${esc(label)}</span><span class="view-value">${esc(value??"")}</span></div>`}
 function showToast(msg){alert(msg)}
 function clearInputs(ids){ids.forEach(id=>{const el=$(id);if(el){if(el.tagName==="SELECT")el.selectedIndex=0;else el.value=""}})}
@@ -424,21 +431,51 @@ function setQuickFuelSnapshot(){
     editSnapshot={screen:"quickFuel",vehicleId:route.vehicleId,recordId:route.recordId||"",values:currentQuickFuelValues()};
   }
 }
-function fuelPostActionPrompt(){
-  if(confirm("Stay on this screen? Press OK to stay or Cancel to return to the previous screen.")){
-    route={screen:"quickFuel",vehicleId:route.vehicleId,mode:"empty",returnTo:route.returnTo||cloneRoute(route)};
-    editSnapshot=null;
-    renderRoute();
-    return false;
-  }
+function fuelReturnPrevious(){
   editSnapshot=null;
-  performBackNavigation();
+  const target=route.returnTo?cloneRoute(route.returnTo):historyStack.pop();
+  if(target){route=target;renderRoute();return false;}
+  rawNav("home",{},false);
   return false;
 }
-function fuelViewExitPrompt(){
-  if(confirm("Stay on this screen? Press OK to stay or Cancel to return to the previous screen.")) return false;
-  performBackNavigation();
+function fuelReturnToList(){
+  route={screen:"quickFuel",vehicleId:route.vehicleId,mode:"empty",returnTo:route.returnTo||cloneRoute(route)};
+  editSnapshot=null;
+  renderRoute();
   return false;
+}
+function fuelNewEntry(){
+  route={screen:"quickFuel",vehicleId:route.vehicleId,mode:"edit",recordId:"",returnTo:route.returnTo||cloneRoute(route)};
+  editSnapshot=null;
+  renderRoute();
+  setTimeout(setQuickFuelSnapshot,0);
+  return false;
+}
+function fuelAfterSavePrompt(){
+  if(confirm("Fuel record saved. Press OK for New entry, or Cancel for more options.")) return fuelNewEntry();
+  if(confirm("Return to list? Press OK to return to list, or Cancel to return to the previous screen.")) return fuelReturnToList();
+  return fuelReturnPrevious();
+}
+function fuelAfterDiscardPrompt(message){
+  if(confirm((message||"Changes discarded.")+" Press OK for New entry, or Cancel for more options.")) return fuelNewEntry();
+  if(confirm("Return to list? Press OK to return to list, or Cancel to return to the previous screen.")) return fuelReturnToList();
+  return fuelReturnPrevious();
+}
+function fuelViewExitPrompt(){
+  if(confirm("Return to list? Press OK to return to list, or Cancel for more options.")) return fuelReturnToList();
+  if(confirm("Return to previous screen? Press OK to return, or Cancel to stay on this screen.")) return fuelReturnPrevious();
+  return false;
+}
+function handleQuickFuelHome(){
+  if(route.screen==="quickFuel" && route.mode==="edit" && isQuickFuelDirty()){
+    if(confirm("Unsaved changes. Press OK to save and go Home, or Cancel for more options.")){
+      if(saveQuickFuel(route.vehicleId,true)) return rawNav("home",{},true);
+      return false;
+    }
+    if(confirm("Discard changes and go Home? Press OK to discard, or Cancel to stay on this screen.")) return rawNav("home",{},true);
+    return false;
+  }
+  return rawNav("home",{},true);
 }
 function fuelToggleMode(){
   if(route.mode==="view"){
@@ -472,37 +509,34 @@ function handleQuickFuelBack(){
   if(route.mode==="view") return fuelViewExitPrompt();
   if(route.mode==="edit"){
     if(isQuickFuelDirty()){
-      if(confirm("Save changes before leaving this screen? Press OK to save, or Cancel for more options.")){
-        if(saveQuickFuel(route.vehicleId,true)) return fuelPostActionPrompt();
+      if(confirm("Unsaved changes. Press OK to save and return, or Cancel for more options.")){
+        if(saveQuickFuel(route.vehicleId,true)) return fuelReturnPrevious();
         return false;
       }
-      if(confirm("Continue without saving?")) return fuelPostActionPrompt();
+      if(confirm("Discard changes and return? Press OK to discard, or Cancel to stay on this screen.")) return fuelReturnPrevious();
       return false;
     }
-    return fuelPostActionPrompt();
+    return fuelReturnPrevious();
   }
-  performBackNavigation();
-  return false;
+  return fuelReturnPrevious();
 }
 function fuelCancel(){
   if(route.mode==="view") return fuelViewExitPrompt();
   if(route.mode==="edit"){
     if(isQuickFuelDirty()){
-      if(confirm("Save changes before continuing? Press OK to save, or Cancel for more options.")){
-        if(saveQuickFuel(route.vehicleId,true)) return fuelPostActionPrompt();
+      if(confirm("Unsaved changes. Press OK to save and choose what to do next, or Cancel for more options.")){
+        if(saveQuickFuel(route.vehicleId,true)) return fuelAfterSavePrompt();
         return false;
       }
-      if(!confirm("Continue without saving?")) return false;
+      if(confirm("Discard changes? Press OK to choose what to do next without saving, or Cancel to stay on this screen.")) return fuelAfterDiscardPrompt();
+      return false;
     }
-    return fuelPostActionPrompt();
+    return fuelAfterDiscardPrompt("Choose next action.");
   }
   return false;
 }
 function fuelNew(){
-  route={...route,mode:"edit",recordId:""};
-  renderRoute();
-  setTimeout(setQuickFuelSnapshot,0);
-  return false;
+  return fuelNewEntry();
 }
 function fuelFormHtml(vid,r,readOnly){
   const stationList=activeList("stations");
@@ -610,32 +644,14 @@ function saveQuickFuel(vid,silent){
       r=baseRecord("Fuel",vid,"Manual Entry");
       state.fuelRecords.push(r);
     }
-    Object.assign(r,{
-      date,
-      time:$("ftime").value,
-      odometer,
-      miles,
-      gallons,
-      mpg:requireNonNegative($("fmpg").value,"MPG"),
-      fuelGrade:cleanText($("fgrade").value),
-      ethanolFree:cleanText($("fef").value),
-      station:cleanText($("fstation").value),
-      fuelPricePerGallon:price,
-      totalFuelCost:total,
-      fuelCostSource:cleanText($("fcostsource").value)||(total!==""?"Entered":price!==""?"Calculated":""),
-      notes:cleanText($("fnotes").value),
-      attachments:r.attachments||[]
-    });
+    Object.assign(r,{date,time:$("ftime").value,odometer,miles,gallons,mpg:requireNonNegative($("fmpg").value,"MPG"),fuelGrade:cleanText($("fgrade").value),ethanolFree:cleanText($("fef").value),station:cleanText($("fstation").value),fuelPricePerGallon:price,totalFuelCost:total,fuelCostSource:cleanText($("fcostsource").value)||(total!==""?"Entered":price!==""?"Calculated":""),notes:cleanText($("fnotes").value),attachments:r.attachments||[]});
     if(r.odometer!==""&&r.miles==="")addTag(r,"Historical");
     r.modifiedAt=nowISO();
     saveData();
     editSnapshot=null;
-    if(silent) return true;
-    return fuelPostActionPrompt();
-  }catch(err){
-    alert(err.message||"Unable to save fuel entry.");
-    return false;
-  }
+    if(!silent) return fuelAfterSavePrompt();
+    return true;
+  }catch(e){alert(e.message||String(e));return false;}
 }
 
 function quickMaintenance(app,vid){const n=new Date().toISOString().slice(0,10);app.innerHTML=header("Quick Maintenance Entry")+`<div class="card"><div class="form-grid"><label>Date<input type="date" id="mdrop" value="${n}"></label><label>Pickup Date<input type="date" id="mpick"></label><label>Category<select id="mcat" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'maintenanceCategories')">${activeList("maintenanceCategories").map(c=>`<option>${esc(c)}</option>`).join("")}</select></label><label>Odometer<input type="number" step="0.01" id="modo"></label><label>Cost<input type="number" step="0.01" id="mcost"></label><label>Location<input id="mloc"></label><label>Provider<input id="mprov"></label><label>Performed By<input id="mperf"></label><label class="full">Notes<textarea id="mnotes"></textarea></label></div><button class="wide primary" onclick="saveQuickMaintenance('${vid}')">Save Maintenance</button><button class="wide ghost" onclick="nav('home')">Cancel</button></div>`+previousRecordsHtml("Maintenance",vid)+bottomNav()+footer()} function saveQuickMaintenance(vid){try{const date=requireValue($("mdrop").value,"Date");const odometer=requireNonNegative($("modo").value,"Odometer");const totalCost=requireNonNegative($("mcost").value,"Cost");const provider=cleanText($("mprov").value);const r=baseRecord("Maintenance",vid,"Manual Entry");Object.assign(r,{date,dropOffDate:date,pickUpDate:cleanText($("mpick").value),category:cleanText($("mcat").value)||"Maintenance",odometer,totalCost,cost:totalCost,location:cleanText($("mloc").value),serviceProvider:provider,provider,performedBy:cleanText($("mperf").value),notes:cleanText($("mnotes").value),attachments:[]});state.maintenanceRecords.push(r);saveData();alert("Maintenance saved.");nav("vehicleView",{vehicleId:vid})}catch(e){alert(e.message||String(e))}}
@@ -688,4 +704,4 @@ function initV213eStabilization(){
     window.addEventListener("orientationchange",()=>setTimeout(lock,50),{passive:true});
   }catch(e){}
 }
-initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=214a').catch(()=>{})}
+initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=214b').catch(()=>{})}
