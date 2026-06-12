@@ -1,6 +1,6 @@
 # USER-GUIDE.md
 
-## v2.1.4 User Guide Addendum
+## v2.1.4a User Guide Addendum
 Release type: **Fuel Screen Merger Release**
 
 ### What changed

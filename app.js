@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.4", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.4a", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -610,14 +610,32 @@ function saveQuickFuel(vid,silent){
       r=baseRecord("Fuel",vid,"Manual Entry");
       state.fuelRecords.push(r);
     }
-    Object.assign(r,{date,time:$("ftime").value,odometer,miles,gallons,mpg:requireNonNegative($("fmpg").value,"MPG"),fuelGrade:cleanText($("fgrade").value),ethanolFree:cleanText($("fef").value),station:cleanText($("fstation").value),fuelPricePerGallon:price,totalFuelCost:total,fuelCostSource:cleanText($("fcostsource").value)||(total!==""?"Entered":price!==""?"Calculated":""),notes:cleanText($("fnotes").value),attachments:r.attachments||[]});
+    Object.assign(r,{
+      date,
+      time:$("ftime").value,
+      odometer,
+      miles,
+      gallons,
+      mpg:requireNonNegative($("fmpg").value,"MPG"),
+      fuelGrade:cleanText($("fgrade").value),
+      ethanolFree:cleanText($("fef").value),
+      station:cleanText($("fstation").value),
+      fuelPricePerGallon:price,
+      totalFuelCost:total,
+      fuelCostSource:cleanText($("fcostsource").value)||(total!==""?"Entered":price!==""?"Calculated":""),
+      notes:cleanText($("fnotes").value),
+      attachments:r.attachments||[]
+    });
     if(r.odometer!==""&&r.miles==="")addTag(r,"Historical");
     r.modifiedAt=nowISO();
     saveData();
     editSnapshot=null;
-    if(!silent) alert("Fuel entry saved.");
-    return true;
-  }catch(e){alert(e.message||String(e));return false;}
+    if(silent) return true;
+    return fuelPostActionPrompt();
+  }catch(err){
+    alert(err.message||"Unable to save fuel entry.");
+    return false;
+  }
 }
 
 function quickMaintenance(app,vid){const n=new Date().toISOString().slice(0,10);app.innerHTML=header("Quick Maintenance Entry")+`<div class="card"><div class="form-grid"><label>Date<input type="date" id="mdrop" value="${n}"></label><label>Pickup Date<input type="date" id="mpick"></label><label>Category<select id="mcat" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'maintenanceCategories')">${activeList("maintenanceCategories").map(c=>`<option>${esc(c)}</option>`).join("")}</select></label><label>Odometer<input type="number" step="0.01" id="modo"></label><label>Cost<input type="number" step="0.01" id="mcost"></label><label>Location<input id="mloc"></label><label>Provider<input id="mprov"></label><label>Performed By<input id="mperf"></label><label class="full">Notes<textarea id="mnotes"></textarea></label></div><button class="wide primary" onclick="saveQuickMaintenance('${vid}')">Save Maintenance</button><button class="wide ghost" onclick="nav('home')">Cancel</button></div>`+previousRecordsHtml("Maintenance",vid)+bottomNav()+footer()} function saveQuickMaintenance(vid){try{const date=requireValue($("mdrop").value,"Date");const odometer=requireNonNegative($("modo").value,"Odometer");const totalCost=requireNonNegative($("mcost").value,"Cost");const provider=cleanText($("mprov").value);const r=baseRecord("Maintenance",vid,"Manual Entry");Object.assign(r,{date,dropOffDate:date,pickUpDate:cleanText($("mpick").value),category:cleanText($("mcat").value)||"Maintenance",odometer,totalCost,cost:totalCost,location:cleanText($("mloc").value),serviceProvider:provider,provider,performedBy:cleanText($("mperf").value),notes:cleanText($("mnotes").value),attachments:[]});state.maintenanceRecords.push(r);saveData();alert("Maintenance saved.");nav("vehicleView",{vehicleId:vid})}catch(e){alert(e.message||String(e))}}
@@ -670,4 +688,4 @@ function initV213eStabilization(){
     window.addEventListener("orientationchange",()=>setTimeout(lock,50),{passive:true});
   }catch(e){}
 }
-initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=214').catch(()=>{})}
+initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=214a').catch(()=>{})}
