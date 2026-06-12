@@ -1,19 +1,19 @@
 # CHANGELOG.md
 
-## v2.1.4g — Fuel Screen Merger Release
+## v2.1.5 — Maintenance Screen Merger Release
 Date: 2026-06-09
 
 ### Purpose
-This release begins the structural screen-merger phase by moving Fuel onto one unified screen while leaving Maintenance and Insurance unchanged.
+This release applies the accepted Fuel merged-screen model to Maintenance while leaving Insurance unchanged.
 
 ### Added / Changed
-- unified Fuel screen with Empty / View / Edit states
-- Fuel tap -> View
-- Fuel long press -> Edit
-- New button for new Fuel entry
-- Data Information available in Fuel View and Fuel Edit
-- Stay / Return prompt flow after Fuel Save and Fuel Cancel
-- Fuel-specific unsaved-change handling
+- unified Maintenance screen with Empty / View / Edit states
+- Maintenance tap -> View
+- Maintenance long press -> Edit
+- New button for new Maintenance entry
+- Data Information available in Maintenance View and Maintenance Edit
+- Maintenance-specific unsaved-change handling
+- Maintenance-specific Save / Cancel / Back / Home prompt flow aligned to the accepted Fuel model
 
 ### Scope Notes
-This release is Fuel only. Maintenance and Insurance remain on the prior screen model.
+This release updates Maintenance only. Fuel remains on the accepted merged model. Insurance remains on the prior screen model.

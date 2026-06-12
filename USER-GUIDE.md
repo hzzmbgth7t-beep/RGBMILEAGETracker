@@ -1,18 +1,18 @@
 # USER-GUIDE.md
 
-## v2.1.4g User Guide Addendum
-Release type: **Fuel Screen Merger Release**
+## v2.1.5 User Guide Addendum
+Release type: **Maintenance Screen Merger Release**
 
 ### What changed
-Fuel now uses one screen for viewing and editing. The Fuel screen can be empty, show a record in view mode, or show a record in edit mode.
+Maintenance now uses one screen for viewing and editing. The Maintenance screen can be empty, show a record in view mode, or show a record in edit mode.
 
-### Fuel basics
-- Tap a home-screen vehicle circle to open Fuel in Edit
-- Tap a Fuel record to open View
-- Long press a Fuel record to open Edit
-- Tap New to start a new Fuel record
-- Data Information is available in both Fuel View and Fuel Edit
+### Maintenance basics
+- Open the Vehicle screen and tap **Maintenance Entry** to open Maintenance in Edit
+- Tap a Maintenance record to open View
+- Long press a Maintenance record to open Edit
+- Tap New to start a new Maintenance record
+- Data Information is available in both Maintenance View and Maintenance Edit
 
 ### What did not change
-- Maintenance still uses the current separate View/Edit screens
+- Fuel remains on the accepted merged-screen model
 - Insurance still uses the current separate View/Edit screens

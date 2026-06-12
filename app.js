@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.4g", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.5", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -182,8 +182,8 @@ function performBackNavigation(){
   const target=(route&&route.returnTo&&((["recordView","recordEdit"].includes(route.screen))||String(route.screen||"").startsWith("report")))?cloneRoute(route.returnTo):historyStack.pop();
   if(target){route=target;editSnapshot=null;renderRoute()}else rawNav("home",{},false)
 }
-function goHome(){if(route.screen==="quickFuel")return handleQuickFuelHome();return nav("home")}
-function goBack(){if(route.screen==="recordEdit")return handleRecordEditBack();if(route.screen==="quickFuel")return handleQuickFuelBack();performBackNavigation()}
+function goHome(){if(route.screen==="quickFuel")return handleQuickFuelHome();if(route.screen==="quickMaintenance")return handleQuickMaintenanceHome();return nav("home")}
+function goBack(){if(route.screen==="recordEdit")return handleRecordEditBack();if(route.screen==="quickFuel")return handleQuickFuelBack();if(route.screen==="quickMaintenance")return handleQuickMaintenanceBack();performBackNavigation()}
 function focusEditTop(){setTimeout(()=>{const app=$("app"); if(app)app.scrollTo({top:0,left:0,behavior:"auto"}); const first=document.querySelector(".form-grid input,.form-grid select,.form-grid textarea"); if(first&&first.focus)try{first.focus({preventScroll:true})}catch(e){}},0)}
 function currentRecordEditValues(type){if(type==="Fuel")return {date:cleanText($("efdate")?.value),time:cleanText($("eftime")?.value),odometer:cleanText($("efodo")?.value),miles:cleanText($("efmiles")?.value),gallons:cleanText($("efgal")?.value),mpg:cleanText($("efmpg")?.value),fuelGrade:cleanText($("efgrade")?.value),ethanolFree:cleanText($("efef")?.value),station:cleanText($("efstation")?.value),fuelCostSource:cleanText($("efcostsource")?.value),fuelPricePerGallon:cleanText($("efprice")?.value),totalFuelCost:cleanText($("efcost")?.value),notes:cleanText($("efnotes")?.value)};if(type==="Maintenance")return {date:cleanText($("emdate")?.value),category:cleanText($("emcat")?.value),odometer:cleanText($("emodo")?.value),totalCost:cleanText($("emcost")?.value),location:cleanText($("emloc")?.value),serviceProvider:cleanText($("emprov")?.value),notes:cleanText($("emnotes")?.value)};if(type==="Insurance")return {company:cleanText($("eicomp")?.value),policyNumber:cleanText($("eipol")?.value),effectiveDate:cleanText($("eieff")?.value),expirationDate:cleanText($("eiexp")?.value),coverageValue:cleanText($("eicov")?.value),premium:cleanText($("eiprem")?.value),agent:cleanText($("eiagent")?.value),phone:cleanText($("eiphone")?.value),email:cleanText($("eiemail")?.value),agency:cleanText($("eiagency")?.value),notes:cleanText($("einotes")?.value)};return {}}
 function setEditSnapshot(type,recordId){editSnapshot={type,recordId,values:currentRecordEditValues(type)}}
@@ -289,7 +289,7 @@ function otherSaveToList(){if(!pendingOtherSelect)return;const val=otherEnteredV
 
 function clearEditForm(type){if(type==="Fuel")clearInputs(["efdate","eftime","efodo","efmiles","efgal","efmpg","efgrade","efstation","efnotes"]);if(type==="Maintenance")clearInputs(["emdate","emcat","emodo","emcost","emloc","emprov","emnotes"]);if(type==="Insurance")clearInputs(["eicomp","eipol","eieff","eiexp","eicov","eiprem","eiagent","eiphone","eiemail","eiagency","einotes"])}
 function saveRecordEdit(type,recordId,goBackAfterSave=false){try{const a=recArray(type);const r=a.find(x=>x.recordId===recordId);if(!r)return alert("Record not found.");if(type==="Fuel"){const date=requireValue($("efdate").value,"Date");const gallons=requirePositive($("efgal").value,"Gallons");const odometer=requireNonNegative($("efodo").value,"Odometer");const miles=requireNonNegative($("efmiles").value,"Miles");const price=requireNonNegative($("efprice").value,"Price/Gal");const total=requireNonNegative($("efcost").value,"Total Cost");Object.assign(r,{date,time:$("eftime").value,odometer,miles,gallons,mpg:requireNonNegative($("efmpg").value,"MPG"),fuelGrade:cleanText($("efgrade").value),ethanolFree:cleanText($("efef").value),station:cleanText($("efstation").value),fuelCostSource:cleanText($("efcostsource").value)||(total!==""?"Entered":price!==""?"Calculated":""),fuelPricePerGallon:price,totalFuelCost:total,notes:cleanText($("efnotes").value),modifiedAt:nowISO()})}else if(type==="Maintenance"){const date=requireValue($("emdate").value,"Date");const odometer=requireNonNegative($("emodo").value,"Odometer");const totalCost=requireNonNegative($("emcost").value,"Cost");const provider=cleanText($("emprov").value);Object.assign(r,{date,dropOffDate:date,pickUpDate:cleanText($("empick").value),category:cleanText($("emcat").value)||"Maintenance",odometer,totalCost,cost:totalCost,location:cleanText($("emloc").value),serviceProvider:provider,provider,performedBy:cleanText($("emperf").value),notes:cleanText($("emnotes").value),modifiedAt:nowISO()})}else if(type==="Insurance"){const agency=requireValue($("eiagency").value,"Agency");const policyNumber=requireValue($("eipol").value,"Policy Number");const effectiveDate=requireValue($("eieff").value,"Effective Date");const expirationDate=cleanText($("eiexp").value);if(expirationDate&&expirationDate<effectiveDate)throw new Error("Expiration Date cannot be earlier than Effective Date.");const agreedValue=requireNonNegative($("eiagree").value,"Agreed Value");const premium=requireNonNegative($("eiprem").value,"Premium");const agent=cleanText($("eiagent").value);const notes=cleanText($("einotes").value);Object.assign(r,{company:agency,agency,policyNumber,effectiveDate,expirationDate,agreedValue,coverageValue:agreedValue,insuranceValue:agreedValue,premium,agent,agentName:agent,phone:cleanText($("eiphone").value),email:cleanText($("eiemail").value),notes,coverageNotes:notes,modifiedAt:nowISO()})}saveData();editSnapshot=null;showToast("Edit saved.");if(goBackAfterSave){performBackNavigation();return true}clearEditForm(type);return true}catch(e){alert(e.message||String(e));return false}}
-function vehicleView(app,vid){const v=getVehicle(vid);if(!v)return nav("home");const acq=getAcq(vid);app.innerHTML=header(vehicleLabel(v))+`<div class="card"><div class="vehicle-view-photo">${v.primaryPhoto?`<div class="circleBtn"><img src="${v.primaryPhoto}" alt=""></div>`:`<div class="circleBtn"><span>${vehicleInitials(v)}</span></div>`}</div><div class="view-grid">${viewField("Year",v.year||"")}${viewField("Make",v.make||"")}${viewField("Model",v.model||"")}${viewField("Badge",v.badge||"")}${viewField("Acquisition Date",acq.acquisitionDate||"")}${viewField("Starting Odometer",acq.startingOdometer||"")}${viewField("Purchase Price",acq.purchasePrice||"")}${viewField("Status",v.status||"Active")}${viewField("Seller",acq.seller||"",true)}</div><button class="wide primary nav-control" type="button" onclick="nav('vehicleEdit',{vehicleId:'${vid}'})">Edit Vehicle</button><button class="wide nav-control" type="button" onclick="openFuelFromVehicle('${vid}')">Fuel Entry</button><button class="wide nav-control" type="button" onclick="nav('quickMaintenance',{vehicleId:'${vid}'})">Maintenance Entry</button><button class="wide nav-control" type="button" onclick="nav('quickInsurance',{vehicleId:'${vid}'})">Insurance Entry</button></div>`+previousRecordsHtml("Fuel",vid)+previousRecordsHtml("Maintenance",vid)+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}
+function vehicleView(app,vid){const v=getVehicle(vid);if(!v)return nav("home");const acq=getAcq(vid);app.innerHTML=header(vehicleLabel(v))+`<div class="card"><div class="vehicle-view-photo">${v.primaryPhoto?`<div class="circleBtn"><img src="${v.primaryPhoto}" alt=""></div>`:`<div class="circleBtn"><span>${vehicleInitials(v)}</span></div>`}</div><div class="view-grid">${viewField("Year",v.year||"")}${viewField("Make",v.make||"")}${viewField("Model",v.model||"")}${viewField("Badge",v.badge||"")}${viewField("Acquisition Date",acq.acquisitionDate||"")}${viewField("Starting Odometer",acq.startingOdometer||"")}${viewField("Purchase Price",acq.purchasePrice||"")}${viewField("Status",v.status||"Active")}${viewField("Seller",acq.seller||"",true)}</div><button class="wide primary nav-control" type="button" onclick="nav('vehicleEdit',{vehicleId:'${vid}'})">Edit Vehicle</button><button class="wide nav-control" type="button" onclick="openFuelFromVehicle('${vid}')">Fuel Entry</button><button class="wide nav-control" type="button" onclick="openMaintenanceFromVehicle('${vid}')">Maintenance Entry</button><button class="wide nav-control" type="button" onclick="nav('quickInsurance',{vehicleId:'${vid}'})">Insurance Entry</button></div>`+previousRecordsHtml("Fuel",vid)+previousRecordsHtml("Maintenance",vid)+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}
 function recordEdit(app,type,recordId){const r=records(type,null,true).find(x=>x.recordId===recordId);if(!r)return nav("home");const vid=r.vehicleId;if(type==="Fuel"){app.innerHTML=header("Edit Fuel Record")+`<div class="card"><div class="form-grid"><label>Date<input type="date" id="efdate" value="${esc(r.date||"")}"></label><label>Time<input type="time" id="eftime" value="${esc(r.time||"")}"></label><label>Odometer<input type="number" step="0.01" id="efodo" value="${esc(r.odometer||"")}"></label><label>Miles<input type="number" step="0.01" id="efmiles" value="${esc(r.miles||"")}"></label><label>Gallons<input type="number" step="0.001" id="efgal" value="${esc(r.gallons||"")}"></label><label>MPG<input type="number" step="0.01" id="efmpg" value="${esc(r.mpg||"")}"></label><label>Fuel Grade<select id="efgrade" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'fuelGrades')">${activeList("fuelGrades").map(g=>`<option ${g===(r.fuelGrade||"")?"selected":""}>${esc(g)}</option>`).join("")}</select></label><label>Ethanol Free<select id="efef"><option ${String(r.ethanolFree||"")===""?"selected":""}></option><option ${String(r.ethanolFree||"")==="Yes"?"selected":""}>Yes</option><option ${String(r.ethanolFree||"")==="No"?"selected":""}>No</option></select></label><label>Station<select id="efstation" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'stations')">${activeList("stations").map(s=>`<option ${s===(r.station||"")?"selected":""}>${esc(s)}</option>`).join("")}</select></label><label>Cost Source<select id="efcostsource"><option ${String(r.fuelCostSource||"")===""?"selected":""}></option><option ${String(r.fuelCostSource||"")==="Calculated"?"selected":""}>Calculated</option><option ${String(r.fuelCostSource||"")==="Entered"?"selected":""}>Entered</option></select></label><label>Price/Gal<input type="number" step="0.01" id="efprice" value="${esc(r.fuelPricePerGallon||"")}" oninput="calcEditCost()"></label><label>Total Cost<input type="number" step="0.01" id="efcost" value="${esc(r.totalFuelCost||"")}"></label><label class="full">Notes<textarea id="efnotes">${esc(r.notes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Fuel','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Fuel",vid)+bottomNav()+footer();setEditSnapshot(type,recordId);return}if(type==="Maintenance"){app.innerHTML=header("Edit Maintenance Record")+`<div class="card"><div class="form-grid"><label>Date<input type="date" id="emdate" value="${esc(r.dropOffDate||r.date||"")}"></label><label>Pickup Date<input type="date" id="empick" value="${esc(r.pickUpDate||"")}"></label><label>Category<select id="emcat" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'maintenanceCategories')">${activeList("maintenanceCategories").map(c=>`<option ${c===(r.category||"")?"selected":""}>${esc(c)}</option>`).join("")}</select></label><label>Odometer<input type="number" step="0.01" id="emodo" value="${esc(r.odometer||"")}"></label><label>Cost<input type="number" step="0.01" id="emcost" value="${esc(r.totalCost||r.cost||"")}"></label><label>Location<input id="emloc" value="${esc(r.location||"")}"></label><label>Provider<input id="emprov" value="${esc(r.serviceProvider||r.provider||"")}"></label><label>Performed By<input id="emperf" value="${esc(r.performedBy||"")}"></label><label class="full">Notes<textarea id="emnotes">${esc(r.notes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Maintenance','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Maintenance",vid)+bottomNav()+footer();setEditSnapshot(type,recordId);return}if(type==="Insurance"){app.innerHTML=header("Edit Insurance Record")+`<div class="card"><div class="form-grid"><label>Agency<input id="eiagency" value="${esc(r.agency||r.company||"")}"></label><label>Policy Number<input id="eipol" value="${esc(r.policyNumber||"")}"></label><label>Effective Date<input type="date" id="eieff" value="${esc(r.effectiveDate||"")}"></label><label>Expiration Date<input type="date" id="eiexp" value="${esc(r.expirationDate||"")}"></label><label>Agreed Value<input type="number" step="0.01" id="eiagree" value="${esc((r.agreedValue!==""&&r.agreedValue!=null)?r.agreedValue:(r.coverageValue!==""&&r.coverageValue!=null?r.coverageValue:r.insuranceValue||""))}"></label><label>Premium<input type="number" step="0.01" id="eiprem" value="${esc(r.premium||"")}"></label><label>Agent<input id="eiagent" value="${esc(r.agent||r.agentName||"")}"></label><label>Phone<input id="eiphone" value="${esc(r.phone||"")}"></label><label>Email<input type="email" id="eiemail" value="${esc(r.email||"")}"></label><label class="full">Notes<textarea id="einotes">${esc(r.notes||r.coverageNotes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Insurance','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}}
 
 
@@ -313,6 +313,14 @@ function openRecordFlow(type,recordId,mode){
     if(!r)return false;
     const source=(route.screen==="quickFuel"&&route.returnTo)?cloneRoute(route.returnTo):cloneRoute(route);
     route={screen:"quickFuel",vehicleId:r.vehicleId,mode:mode==="edit"?"edit":"view",recordId:r.recordId,returnTo:source};
+    renderRoute();
+    return false;
+  }
+  if(type==="Maintenance"){
+    const r=findRecord("Maintenance",recordId);
+    if(!r)return false;
+    const source=(route.screen==="quickMaintenance"&&route.returnTo)?cloneRoute(route.returnTo):cloneRoute(route);
+    route={screen:"quickMaintenance",vehicleId:r.vehicleId,mode:mode==="edit"?"edit":"view",recordId:r.recordId,returnTo:source};
     renderRoute();
     return false;
   }
@@ -723,7 +731,165 @@ function saveQuickFuel(vid,silent){
   }catch(e){alert(e.message||String(e));return false;}
 }
 
-function quickMaintenance(app,vid){const n=new Date().toISOString().slice(0,10);app.innerHTML=header("Maintenance Entry")+`<div class="card"><div class="form-grid"><label>Date<input type="date" id="mdrop" value="${n}"></label><label>Pickup Date<input type="date" id="mpick"></label><label>Category<select id="mcat" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'maintenanceCategories')">${activeList("maintenanceCategories").map(c=>`<option>${esc(c)}</option>`).join("")}</select></label><label>Odometer<input type="number" step="0.01" id="modo"></label><label>Cost<input type="number" step="0.01" id="mcost"></label><label>Location<input id="mloc"></label><label>Provider<input id="mprov"></label><label>Performed By<input id="mperf"></label><label class="full">Notes<textarea id="mnotes"></textarea></label></div><button class="wide primary" onclick="saveQuickMaintenance('${vid}')">Save Maintenance</button><button class="wide ghost" onclick="nav('home')">Cancel</button></div>`+previousRecordsHtml("Maintenance",vid)+bottomNav()+footer()} function saveQuickMaintenance(vid){try{const date=requireValue($("mdrop").value,"Date");const odometer=requireNonNegative($("modo").value,"Odometer");const totalCost=requireNonNegative($("mcost").value,"Cost");const provider=cleanText($("mprov").value);const r=baseRecord("Maintenance",vid,"Manual Entry");Object.assign(r,{date,dropOffDate:date,pickUpDate:cleanText($("mpick").value),category:cleanText($("mcat").value)||"Maintenance",odometer,totalCost,cost:totalCost,location:cleanText($("mloc").value),serviceProvider:provider,provider,performedBy:cleanText($("mperf").value),notes:cleanText($("mnotes").value),attachments:[]});state.maintenanceRecords.push(r);saveData();alert("Maintenance saved.");nav("vehicleView",{vehicleId:vid})}catch(e){alert(e.message||String(e))}}
+
+function currentQuickMaintenanceValues(){
+  return {
+    dropOffDate:cleanText($("mdrop")?.value),
+    pickUpDate:cleanText($("mpick")?.value),
+    category:cleanText($("mcat")?.value),
+    odometer:cleanText($("modo")?.value),
+    totalCost:cleanText($("mcost")?.value),
+    location:cleanText($("mloc")?.value),
+    provider:cleanText($("mprov")?.value),
+    performedBy:cleanText($("mperf")?.value),
+    notes:cleanText($("mnotes")?.value)
+  };
+}
+function maintenanceDefaultRecord(vid){
+  const n=new Date().toISOString().slice(0,10);
+  return {vehicleId:vid,dropOffDate:n,pickUpDate:"",category:activeList("maintenanceCategories")[0]||"Maintenance",odometer:"",totalCost:"",location:"",provider:"",performedBy:"",notes:""};
+}
+function isQuickMaintenanceDirty(){
+  return !!(route.screen==="quickMaintenance" && route.mode==="edit" && editSnapshot && editSnapshot.screen==="quickMaintenance" && JSON.stringify(editSnapshot.values)!==JSON.stringify(currentQuickMaintenanceValues()));
+}
+function setQuickMaintenanceSnapshot(){
+  if(route.screen==="quickMaintenance" && route.mode==="edit") editSnapshot={screen:"quickMaintenance",vehicleId:route.vehicleId,recordId:route.recordId||"",values:currentQuickMaintenanceValues()};
+}
+function maintenanceReturnPrevious(){
+  editSnapshot=null;
+  const target=route.returnTo?cloneRoute(route.returnTo):historyStack.pop();
+  if(target){route=target;renderRoute();return false;}
+  rawNav("home",{},false);
+  return false;
+}
+function maintenanceReturnToList(){
+  route={screen:"quickMaintenance",vehicleId:route.vehicleId,mode:"empty",returnTo:route.returnTo||null};
+  editSnapshot=null; renderRoute(); return false;
+}
+function maintenanceNewEntry(){
+  route={screen:"quickMaintenance",vehicleId:route.vehicleId,mode:"edit",recordId:"",returnTo:route.returnTo||null};
+  editSnapshot=null; renderRoute(); setTimeout(setQuickMaintenanceSnapshot,0); return false;
+}
+function maintenanceAfterSavePrompt(){
+  return showChoiceModal("Maintenance Record Saved",[
+    {label:"New Entry",className:"primary",onClick:()=>maintenanceNewEntry()},
+    {label:"Return To List",className:"ghost",onClick:()=>maintenanceReturnToList()},
+    {label:"Return To Previous Screen",className:"ghost",onClick:()=>maintenanceReturnPrevious()}
+  ]);
+}
+function maintenanceAfterDiscardPrompt(title){
+  return showChoiceModal(title||"Changes Discarded",[
+    {label:"New Entry",className:"primary",onClick:()=>maintenanceNewEntry()},
+    {label:"Return To List",className:"ghost",onClick:()=>maintenanceReturnToList()},
+    {label:"Return To Previous Screen",className:"ghost",onClick:()=>maintenanceReturnPrevious()}
+  ]);
+}
+function maintenanceViewExitPrompt(){
+  return showChoiceModal("Choose Next Action",[
+    {label:"Return To List",className:"primary",onClick:()=>maintenanceReturnToList()},
+    {label:"Return To Previous Screen",className:"ghost",onClick:()=>maintenanceReturnPrevious()},
+    {label:"Stay On This Screen",className:"ghost",onClick:()=>false}
+  ]);
+}
+function maintenanceReturnHome(){ editSnapshot=null; rawNav("home",{},false); return false; }
+function maintenanceBackActions(){
+  return [
+    {label:"Save And Return To List",className:"primary",onClick:()=>{if(saveQuickMaintenance(route.vehicleId,true)) maintenanceReturnToList();}},
+    {label:"Discard And Return To List",className:"danger",onClick:()=>maintenanceReturnToList()},
+    {label:"Stay On This Screen",className:"ghost",onClick:()=>false}
+  ];
+}
+function maintenanceHomeActions(){
+  return [
+    {label:"Save And Go Home",className:"primary",onClick:()=>{if(saveQuickMaintenance(route.vehicleId,true)) maintenanceReturnHome();}},
+    {label:"Discard And Go Home",className:"danger",onClick:()=>maintenanceReturnHome()},
+    {label:"Stay On This Screen",className:"ghost",onClick:()=>false}
+  ];
+}
+function handleQuickMaintenanceHome(){
+  if(route.screen==="quickMaintenance" && route.mode==="edit" && isQuickMaintenanceDirty()) return showChoiceModal("Unsaved Changes",maintenanceHomeActions());
+  return rawNav("home",{},true);
+}
+function maintenanceToggleMode(){
+  if(route.mode==="view"){
+    route={...route,mode:"edit"}; renderRoute(); setTimeout(setQuickMaintenanceSnapshot,0); return false;
+  }
+  if(route.mode==="edit" && route.recordId){
+    if(isQuickMaintenanceDirty()) return showChoiceModal("Unsaved Changes",[
+      {label:"Save And View Record",className:"primary",onClick:()=>{if(saveQuickMaintenance(route.vehicleId,true)){route={...route,mode:"view"};renderRoute();}}},
+      {label:"Discard And View Record",className:"danger",onClick:()=>{editSnapshot=null;route={...route,mode:"view"};renderRoute();}},
+      {label:"Stay On This Screen",className:"ghost",onClick:()=>false}
+    ]);
+    route={...route,mode:"view"}; renderRoute();
+  }
+  return false;
+}
+function handleQuickMaintenanceBack(){
+  if(route.mode==="view") return maintenanceViewExitPrompt();
+  if(route.mode==="edit"){
+    if(isQuickMaintenanceDirty()) return showChoiceModal("Unsaved Changes",maintenanceBackActions());
+    return maintenanceReturnToList();
+  }
+  return maintenanceReturnPrevious();
+}
+function maintenanceCancel(){
+  if(route.mode==="view") return maintenanceViewExitPrompt();
+  if(route.mode==="edit"){
+    if(isQuickMaintenanceDirty()) return showChoiceModal("Unsaved Changes",[
+      {label:"Save Changes",className:"primary",onClick:()=>{if(saveQuickMaintenance(route.vehicleId,true)) maintenanceAfterSavePrompt();}},
+      {label:"Discard Changes",className:"danger",onClick:()=>maintenanceAfterDiscardPrompt("Changes Discarded")},
+      {label:"Stay On This Screen",className:"ghost",onClick:()=>false}
+    ]);
+    return maintenanceAfterDiscardPrompt("Choose Next Action");
+  }
+  return false;
+}
+function maintenanceNew(){ return maintenanceNewEntry(); }
+function openMaintenanceFromVehicle(vehicleId){ route={screen:'quickMaintenance',vehicleId,mode:'edit',returnTo:cloneRoute(route)}; renderRoute(); setTimeout(setQuickMaintenanceSnapshot,0); return false; }
+function maintenanceFormHtml(vid,r,readOnly){
+  const catList=activeList("maintenanceCategories");
+  const dis=readOnly?' disabled':''; const ro=readOnly?' readonly':'';
+  return `<div class="form-grid">
+    <label>Date<input type="date" id="mdrop" value="${esc(r.dropOffDate||r.date||"")}"${readOnly?' readonly':''}></label>
+    <label>Pickup Date<input type="date" id="mpick" value="${esc(r.pickUpDate||"")}"${readOnly?' readonly':''}></label>
+    <label>Category<select id="mcat"${dis} ${readOnly?'':'onfocus="this.setAttribute(\'data-prev\',this.value)" onchange="selectOther(this,\'maintenanceCategories\')"'}>${catList.map(c=>`<option ${c===(r.category||"")?'selected':''}>${esc(c)}</option>`).join("")}</select></label>
+    <label>Odometer<input type="number" step="0.01" id="modo" value="${esc(r.odometer||"")}" ${ro}></label>
+    <label>Cost<input type="number" step="0.01" id="mcost" value="${esc(r.totalCost||r.cost||"")}" ${ro}></label>
+    <label>Location<input id="mloc" value="${esc(r.location||"")}" ${ro}></label>
+    <label>Provider<input id="mprov" value="${esc(r.serviceProvider||r.provider||"")}" ${ro}></label>
+    <label>Performed By<input id="mperf" value="${esc(r.performedBy||"")}" ${ro}></label>
+    <label class="full">Notes<textarea id="mnotes"${readOnly?' readonly':''}>${esc(r.notes||"")}</textarea></label>
+  </div>`;
+}
+function maintenanceActionButtons(){
+  const mode=route.mode||"edit";
+  if(mode==="empty") return `<div class="fuel-actions single"><button class="primary" onclick="maintenanceNew()">New</button></div>`;
+  if(mode==="view") return `<div class="fuel-actions"><button class="ghost" onclick="maintenanceNew()">New</button><button onclick="maintenanceToggleMode()">Edit</button><button class="ghost" onclick="maintenanceCancel()">Cancel</button></div>`;
+  const toggleBtn=route.recordId?`<button onclick="maintenanceToggleMode()">View</button>`:'';
+  return `<div class="fuel-actions"><button class="ghost" onclick="maintenanceNew()">New</button>${toggleBtn}<button class="primary" onclick="saveQuickMaintenance('${route.vehicleId}')">Save</button><button class="ghost" onclick="maintenanceCancel()">Cancel</button></div>`;
+}
+function quickMaintenance(app,vid){
+  const v=getVehicle(vid); if(!v)return nav("home");
+  const mode=route.mode||"edit"; const recordId=route.recordId||""; const existing=recordId?findRecord("Maintenance",recordId):null; const r=existing?existing:maintenanceDefaultRecord(vid);
+  let body=`<div class="card">`;
+  if(mode==="empty") body += `<div class="empty-state"><p class="muted">No record selected. Choose a record below or tap New.</p>${maintenanceActionButtons()}</div>`;
+  else { if(existing) body += meta(existing); body += `<h3>Maintenance Information</h3>`+maintenanceFormHtml(vid,r,mode==="view")+maintenanceActionButtons(); }
+  body += `</div>`;
+  app.innerHTML=header(vehicleLabel(v)+" - Maintenance")+body+previousRecordsHtml("Maintenance",vid)+bottomNav()+footer();
+  if(mode==="edit") setTimeout(setQuickMaintenanceSnapshot,0);
+}
+function saveQuickMaintenance(vid,silent){
+  try{
+    const date=requireValue($("mdrop").value,"Date");
+    const odometer=requireNonNegative($("modo").value,"Odometer");
+    const totalCost=requireNonNegative($("mcost").value,"Cost");
+    const provider=cleanText($("mprov").value);
+    let r=route.recordId?findRecord("Maintenance",route.recordId):null;
+    if(!r){ r=baseRecord("Maintenance",vid,"Manual Entry"); state.maintenanceRecords.push(r); }
+    Object.assign(r,{date,dropOffDate:date,pickUpDate:cleanText($("mpick").value),category:cleanText($("mcat").value)||"Maintenance",odometer,totalCost,cost:totalCost,location:cleanText($("mloc").value),serviceProvider:provider,provider,performedBy:cleanText($("mperf").value),notes:cleanText($("mnotes").value),attachments:r.attachments||[]});
+    r.modifiedAt=nowISO(); saveData(); editSnapshot=null; if(!silent) return maintenanceAfterSavePrompt(); return true;
+  }catch(e){alert(e.message||String(e));return false;}
+}
 function quickInsurance(app,vid){app.innerHTML=header("Insurance Entry")+`<div class="card"><div class="form-grid"><label>Agency<input id="iagency"></label><label>Policy Number<input id="ipol"></label><label>Effective Date<input type="date" id="ieff"></label><label>Expiration Date<input type="date" id="iexp"></label><label>Agreed Value<input type="number" step="0.01" id="iagree"></label><label>Premium<input type="number" step="0.01" id="iprem"></label><label>Agent<input id="iagent"></label><label>Phone<input id="iphone"></label><label>Email<input type="email" id="iemail"></label><label class="full">Notes<textarea id="inotes"></textarea></label></div><button class="wide primary" onclick="saveQuickInsurance('${vid}')">Save Policy</button><button class="wide ghost" onclick="nav('home')">Cancel</button></div>`+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()} function saveQuickInsurance(vid){try{const agency=requireValue($("iagency").value,"Agency");const policyNumber=requireValue($("ipol").value,"Policy Number");const effectiveDate=requireValue($("ieff").value,"Effective Date");const expirationDate=cleanText($("iexp").value);if(expirationDate&&expirationDate<effectiveDate)throw new Error("Expiration Date cannot be earlier than Effective Date.");const agreedValue=requireNonNegative($("iagree").value,"Agreed Value");const premium=requireNonNegative($("iprem").value,"Premium");const agent=cleanText($("iagent").value);const notes=cleanText($("inotes").value);const r=baseRecord("Insurance",vid,"Manual Entry");Object.assign(r,{company:agency,agency,policyNumber,effectiveDate,expirationDate,agreedValue,coverageValue:agreedValue,insuranceValue:agreedValue,premium,agent,agentName:agent,phone:cleanText($("iphone").value),email:cleanText($("iemail").value),notes,coverageNotes:notes,attachments:[]});state.insuranceRecords.push(r);saveData();alert("Insurance policy saved.");nav("vehicleView",{vehicleId:vid})}catch(e){alert(e.message||String(e))}}
 function dataScreen(app){app.innerHTML=header("Data Management")+`<div class="card"><h2>Backup & Restore</h2><button class="wide primary" onclick="downloadBackup()">Create JSON Backup</button><label>Restore JSON<input type="file" id="restoreFile" accept=".json"></label><label>Restore Mode<select id="restoreMode"><option>Replace</option><option>Update</option><option>Duplicate</option><option>Skip</option></select></label><button class="wide" onclick="restoreBackup()">Restore JSON Backup</button><button class="wide ghost" onclick="if(confirm('Clear old RGB Mileage cached storage? Current active data may be removed.')){clearRGBMStorage(false);alert('Old RGB Mileage storage cleared.')}">Clear Old Cached Storage</button><pre id="dataStatus" class="small"></pre></div><div class="card"><h2>CSV Import</h2><p class="muted">CSV import supports Fuel and Maintenance records.</p><label>Vehicle<select id="importVehicle">${state.vehicles.filter(Boolean).map(v=>`<option value="${v.vehicleId}">${esc(vehicleLabel(v))}</option>`).join("")}</select></label><label>CSV File<input type="file" id="csvFile" accept=".csv"></label><label>Duplicate Mode<select id="importMode"><option>Skip</option><option>Update</option><option>Duplicate</option><option>Replace</option><option>Cancel</option></select></label><button class="wide" onclick="previewCSV()">Preview Import</button><button class="wide primary" onclick="savePreviewRows()">Save Previewed Rows</button><pre id="importStatus" class="small"></pre></div>`+bottomNav()+footer()}
 function backupPayload(){const p=JSON.parse(JSON.stringify(state));p.app="RGB Mileage";p.schemaVersion=SCHEMA_VERSION;p.exportedAt=nowISO();p.exportedByVersion=VERSION;p.backupType="Full JSON";p.metadata={vehicleCount:state.vehicles.filter(Boolean).length,fuelRecordCount:state.fuelRecords.length,maintenanceRecordCount:state.maintenanceRecords.length,insuranceRecordCount:state.insuranceRecords.length,attachmentCount:state.attachments.length};return p} function downloadBackup(){const p=backupPayload(),txt=JSON.stringify(p,null,2);if(!confirm(`Backup Summary\nVehicles: ${p.metadata.vehicleCount}\nFuel: ${p.metadata.fuelRecordCount}\nMaintenance: ${p.metadata.maintenanceRecordCount}\nInsurance: ${p.metadata.insuranceRecordCount}\nEstimated Size: ${new Blob([txt]).size} bytes\n\nCreate backup?`))return;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));a.download=`RGBM_Backup_v${VERSION}_${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href);state.settings.lastBackupDate=nowISO();saveData()} function restoreBackup(){
@@ -773,4 +939,4 @@ function initV213eStabilization(){
     window.addEventListener("orientationchange",()=>setTimeout(lock,50),{passive:true});
   }catch(e){}
 }
-initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=214g').catch(()=>{})}
+initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=215').catch(()=>{})}
