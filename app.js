@@ -1,9 +1,10 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.5", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.5a", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
 let state, route={screen:"home"}, historyStack=[], longTimer=null, suppressTap=false, editSnapshot=null;
 let rowInteraction={timer:null,long:false,type:null,recordId:null};
+let pendingRecordOpen=null;
 function nowISO(){return new Date().toISOString()} function uid(p="ID"){return p+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)} function arr(v){return Array.isArray(v)?v:[]} function tags(v){return Array.isArray(v)?v:(v?[String(v)]:[])} function hasTag(r,t){return tags(r.classificationTags).includes(t)} function addTag(r,t){r.classificationTags=tags(r.classificationTags);if(!r.classificationTags.includes(t))r.classificationTags.push(t)} function numVal(v){if(v===null||v===undefined||v==="")return "";const n=Number(String(v).replace(/[$,]/g,""));return Number.isFinite(n)?n:""} function cleanText(v){return String(v??"").trim()} function requireValue(v,label){const s=cleanText(v);if(!s)throw new Error(`${label} is required.`);return s} function requireNonNegative(v,label){const n=numVal(v);if(n==="")return "";if(n<0)throw new Error(`${label} cannot be negative.`);return n} function requirePositive(v,label){const n=numVal(v);if(n==="")return "";if(n<=0)throw new Error(`${label} must be greater than zero.`);return n}
 
 
@@ -307,7 +308,40 @@ function clearLP(){
   if(longTimer) clearTimeout(longTimer);
   longTimer=null;
 }
-function openRecordFlow(type,recordId,mode){
+function queuePendingRecordOpen(type,recordId,mode){
+  pendingRecordOpen={type,recordId,mode};
+}
+function continuePendingRecordOpen(){
+  const p=pendingRecordOpen;
+  pendingRecordOpen=null;
+  if(!p)return false;
+  return openRecordFlow(p.type,p.recordId,p.mode,true);
+}
+function guardMergedRecordOpen(type,recordId,mode){
+  if(route.screen==="quickFuel" && route.mode==="edit" && isQuickFuelDirty()){
+    queuePendingRecordOpen(type,recordId,mode);
+    return showChoiceModal("Unsaved Changes",[
+      {label:"Save And Continue",className:"primary",onClick:()=>{if(saveQuickFuel(route.vehicleId,true)) continuePendingRecordOpen();}},
+      {label:"Discard And Continue",className:"danger",onClick:()=>{editSnapshot=null;continuePendingRecordOpen();}},
+      {label:"Stay On This Screen",className:"ghost",onClick:()=>{pendingRecordOpen=null;return false;}}
+    ]);
+  }
+  if(route.screen==="quickMaintenance" && route.mode==="edit" && isQuickMaintenanceDirty()){
+    queuePendingRecordOpen(type,recordId,mode);
+    return showChoiceModal("Unsaved Changes",[
+      {label:"Save And Continue",className:"primary",onClick:()=>{if(saveQuickMaintenance(route.vehicleId,true)) continuePendingRecordOpen();}},
+      {label:"Discard And Continue",className:"danger",onClick:()=>{editSnapshot=null;continuePendingRecordOpen();}},
+      {label:"Stay On This Screen",className:"ghost",onClick:()=>{pendingRecordOpen=null;return false;}}
+    ]);
+  }
+  return null;
+}
+
+function openRecordFlow(type,recordId,mode,bypassGuard){
+  if(!bypassGuard){
+    const guarded=guardMergedRecordOpen(type,recordId,mode);
+    if(guarded!==null) return guarded;
+  }
   if(type==="Fuel"){
     const r=findRecord("Fuel",recordId);
     if(!r)return false;
@@ -472,6 +506,7 @@ function setQuickFuelSnapshot(){
   }
 }
 function fuelReturnPrevious(){
+  pendingRecordOpen=null;
   editSnapshot=null;
   const target=route.returnTo?cloneRoute(route.returnTo):historyStack.pop();
   if(target){route=target;renderRoute();return false;}
@@ -479,12 +514,14 @@ function fuelReturnPrevious(){
   return false;
 }
 function fuelReturnToList(){
+  pendingRecordOpen=null;
   route={screen:"quickFuel",vehicleId:route.vehicleId,mode:"empty",returnTo:route.returnTo||null};
   editSnapshot=null;
   renderRoute();
   return false;
 }
 function fuelNewEntry(){
+  pendingRecordOpen=null;
   route={screen:"quickFuel",vehicleId:route.vehicleId,mode:"edit",recordId:"",returnTo:route.returnTo||null};
   editSnapshot=null;
   renderRoute();
@@ -618,22 +655,37 @@ function openFuelFromVehicle(vehicleId){
 function fuelFormHtml(vid,r,readOnly){
   const stationList=activeList("stations");
   const gradeList=activeList("fuelGrades");
-  const dis=readOnly?' disabled':'';
-  const ro=readOnly?' readonly':'';
+  if(readOnly){
+    return `<div class="readonly-grid">
+      ${roBox("Date",r.date||"")}
+      ${roBox("Time",r.time||"")}
+      ${roBox("Odometer",fmt(r.odometer))}
+      ${roBox("Miles",fmt(r.miles))}
+      ${roBox("Gallons",fmt(r.gallons,3))}
+      ${roBox("MPG",fmt(r.mpg))}
+      ${roBox("Fuel Grade",r.fuelGrade||"")}
+      ${roBox("Ethanol Free",r.ethanolFree||"")}
+      ${roBox("Station",r.station||"")}
+      ${roBox("Cost Source",r.fuelCostSource||"")}
+      ${roBox("Price/Gal",money(r.fuelPricePerGallon))}
+      ${roBox("Total Cost",money(r.totalFuelCost))}
+      <div class="fieldbox full"><b>Notes</b><span>${esc(r.notes||"")}</span></div>
+    </div>`;
+  }
   return `<div class="form-grid">
-    <label>Date<input type="date" id="fdate" value="${esc(r.date||"")}"${readOnly?' readonly':''}></label>
-    <label>Time<input type="time" id="ftime" value="${esc(r.time||"")}"${readOnly?' readonly':''}></label>
-    <label>Odometer<input type="number" step="0.01" id="fodo" value="${esc(r.odometer||"")}" ${ro}${readOnly?'':' oninput="calcFuel(\''+vid+'\')"'}></label>
-    <label>Miles<input type="number" step="0.01" id="fmiles" value="${esc(r.miles||"")}" ${ro}${readOnly?'':' oninput="calcMpg()"'}></label>
-    <label>Gallons<input type="number" step="0.001" id="fgal" value="${esc(r.gallons||"")}" ${ro}${readOnly?'':' oninput="calcMpg()"'}></label>
+    <label>Date<input type="date" id="fdate" value="${esc(r.date||"")}"></label>
+    <label>Time<input type="time" id="ftime" value="${esc(r.time||"")}"></label>
+    <label>Odometer<input type="number" step="0.01" id="fodo" value="${esc(r.odometer||"")}" oninput="calcFuel('${vid}')"></label>
+    <label>Miles<input type="number" step="0.01" id="fmiles" value="${esc(r.miles||"")}" oninput="calcMpg()"></label>
+    <label>Gallons<input type="number" step="0.001" id="fgal" value="${esc(r.gallons||"")}" oninput="calcMpg()"></label>
     <label>MPG<input type="number" step="0.01" id="fmpg" value="${esc(r.mpg||"")}" readonly></label>
-    <label>Fuel Grade<select id="fgrade"${dis} ${readOnly?'':'onfocus="this.setAttribute(\'data-prev\',this.value)" onchange="selectOther(this,\'fuelGrades\')"'}>${gradeList.map(g=>`<option ${g===(r.fuelGrade||"")?'selected':''}>${esc(g)}</option>`).join("")}</select></label>
-    <label>Ethanol Free<select id="fef"${dis}><option ${String(r.ethanolFree||"")===""?"selected":""}></option><option ${String(r.ethanolFree||"")==="Yes"?"selected":""}>Yes</option><option ${String(r.ethanolFree||"")==="No"?"selected":""}>No</option></select></label>
-    <label>Station<select id="fstation"${dis} ${readOnly?'':'onfocus="this.setAttribute(\'data-prev\',this.value)" onchange="selectOther(this,\'stations\')"'}>${stationList.map(s=>`<option ${s===(r.station||"")?'selected':''}>${esc(s)}</option>`).join("")}</select></label>
-    <label>Cost Source<select id="fcostsource"${dis}><option ${String(r.fuelCostSource||"")===""?"selected":""}></option><option ${String(r.fuelCostSource||"")==="Calculated"?"selected":""}>Calculated</option><option ${String(r.fuelCostSource||"")==="Entered"?"selected":""}>Entered</option></select></label>
-    <label>Price/Gal<input type="number" step="0.01" id="fprice" value="${esc(r.fuelPricePerGallon||"")}" ${ro}${readOnly?'':' oninput="calcCost()"'}></label>
-    <label>Total Cost<input type="number" step="0.01" id="fcost" value="${esc(r.totalFuelCost||"")}" ${ro}></label>
-    <label class="full">Notes<textarea id="fnotes"${readOnly?' readonly':''}>${esc(r.notes||"")}</textarea></label>
+    <label>Fuel Grade<select id="fgrade" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'fuelGrades')">${gradeList.map(g=>`<option ${g===(r.fuelGrade||"")?'selected':''}>${esc(g)}</option>`).join("")}</select></label>
+    <label>Ethanol Free<select id="fef"><option ${String(r.ethanolFree||"")===""?"selected":""}></option><option ${String(r.ethanolFree||"")==="Yes"?"selected":""}>Yes</option><option ${String(r.ethanolFree||"")==="No"?"selected":""}>No</option></select></label>
+    <label>Station<select id="fstation" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'stations')">${stationList.map(s=>`<option ${s===(r.station||"")?'selected':''}>${esc(s)}</option>`).join("")}</select></label>
+    <label>Cost Source<select id="fcostsource"><option ${String(r.fuelCostSource||"")===""?"selected":""}></option><option ${String(r.fuelCostSource||"")==="Calculated"?"selected":""}>Calculated</option><option ${String(r.fuelCostSource||"")==="Entered"?"selected":""}>Entered</option></select></label>
+    <label>Price/Gal<input type="number" step="0.01" id="fprice" value="${esc(r.fuelPricePerGallon||"")}" oninput="calcCost()"></label>
+    <label>Total Cost<input type="number" step="0.01" id="fcost" value="${esc(r.totalFuelCost||"")}"></label>
+    <label class="full">Notes<textarea id="fnotes">${esc(r.notes||"")}</textarea></label>
   </div>`;
 }
 function fuelActionButtons(){
@@ -756,6 +808,7 @@ function setQuickMaintenanceSnapshot(){
   if(route.screen==="quickMaintenance" && route.mode==="edit") editSnapshot={screen:"quickMaintenance",vehicleId:route.vehicleId,recordId:route.recordId||"",values:currentQuickMaintenanceValues()};
 }
 function maintenanceReturnPrevious(){
+  pendingRecordOpen=null;
   editSnapshot=null;
   const target=route.returnTo?cloneRoute(route.returnTo):historyStack.pop();
   if(target){route=target;renderRoute();return false;}
@@ -763,10 +816,12 @@ function maintenanceReturnPrevious(){
   return false;
 }
 function maintenanceReturnToList(){
+  pendingRecordOpen=null;
   route={screen:"quickMaintenance",vehicleId:route.vehicleId,mode:"empty",returnTo:route.returnTo||null};
   editSnapshot=null; renderRoute(); return false;
 }
 function maintenanceNewEntry(){
+  pendingRecordOpen=null;
   route={screen:"quickMaintenance",vehicleId:route.vehicleId,mode:"edit",recordId:"",returnTo:route.returnTo||null};
   editSnapshot=null; renderRoute(); setTimeout(setQuickMaintenanceSnapshot,0); return false;
 }
@@ -848,17 +903,29 @@ function maintenanceNew(){ return maintenanceNewEntry(); }
 function openMaintenanceFromVehicle(vehicleId){ route={screen:'quickMaintenance',vehicleId,mode:'edit',returnTo:cloneRoute(route)}; renderRoute(); setTimeout(setQuickMaintenanceSnapshot,0); return false; }
 function maintenanceFormHtml(vid,r,readOnly){
   const catList=activeList("maintenanceCategories");
-  const dis=readOnly?' disabled':''; const ro=readOnly?' readonly':'';
+  if(readOnly){
+    return `<div class="readonly-grid">
+      ${roBox("Date",r.dropOffDate||r.date||"")}
+      ${roBox("Pickup Date",r.pickUpDate||"")}
+      ${roBox("Category",r.category||"")}
+      ${roBox("Odometer",fmt(r.odometer))}
+      ${roBox("Cost",money(r.totalCost||r.cost))}
+      ${roBox("Location",r.location||"")}
+      ${roBox("Provider",r.serviceProvider||r.provider||"")}
+      ${roBox("Performed By",r.performedBy||"")}
+      <div class="fieldbox full"><b>Notes</b><span>${esc(r.notes||"")}</span></div>
+    </div>`;
+  }
   return `<div class="form-grid">
-    <label>Date<input type="date" id="mdrop" value="${esc(r.dropOffDate||r.date||"")}"${readOnly?' readonly':''}></label>
-    <label>Pickup Date<input type="date" id="mpick" value="${esc(r.pickUpDate||"")}"${readOnly?' readonly':''}></label>
-    <label>Category<select id="mcat"${dis} ${readOnly?'':'onfocus="this.setAttribute(\'data-prev\',this.value)" onchange="selectOther(this,\'maintenanceCategories\')"'}>${catList.map(c=>`<option ${c===(r.category||"")?'selected':''}>${esc(c)}</option>`).join("")}</select></label>
-    <label>Odometer<input type="number" step="0.01" id="modo" value="${esc(r.odometer||"")}" ${ro}></label>
-    <label>Cost<input type="number" step="0.01" id="mcost" value="${esc(r.totalCost||r.cost||"")}" ${ro}></label>
-    <label>Location<input id="mloc" value="${esc(r.location||"")}" ${ro}></label>
-    <label>Provider<input id="mprov" value="${esc(r.serviceProvider||r.provider||"")}" ${ro}></label>
-    <label>Performed By<input id="mperf" value="${esc(r.performedBy||"")}" ${ro}></label>
-    <label class="full">Notes<textarea id="mnotes"${readOnly?' readonly':''}>${esc(r.notes||"")}</textarea></label>
+    <label>Date<input type="date" id="mdrop" value="${esc(r.dropOffDate||r.date||"")}"></label>
+    <label>Pickup Date<input type="date" id="mpick" value="${esc(r.pickUpDate||"")}"></label>
+    <label>Category<select id="mcat" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'maintenanceCategories')">${catList.map(c=>`<option ${c===(r.category||"")?'selected':''}>${esc(c)}</option>`).join("")}</select></label>
+    <label>Odometer<input type="number" step="0.01" id="modo" value="${esc(r.odometer||"")}"></label>
+    <label>Cost<input type="number" step="0.01" id="mcost" value="${esc(r.totalCost||r.cost||"")}"></label>
+    <label>Location<input id="mloc" value="${esc(r.location||"")}"></label>
+    <label>Provider<input id="mprov" value="${esc(r.serviceProvider||r.provider||"")}"></label>
+    <label>Performed By<input id="mperf" value="${esc(r.performedBy||"")}"></label>
+    <label class="full">Notes<textarea id="mnotes">${esc(r.notes||"")}</textarea></label>
   </div>`;
 }
 function maintenanceActionButtons(){
