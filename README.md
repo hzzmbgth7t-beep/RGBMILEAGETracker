@@ -1,6 +1,6 @@
 # RGB Mileage Tracker
 
-Version: **v2.1.4b**  
+Version: **v2.1.4c**  
 Release type: **Fuel Screen Merger Release**
 
 ## Purpose
@@ -9,7 +9,7 @@ This release starts the structural screen-merger phase by converting **Fuel** to
 ## Links
 GitHub Pages: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=214b
+Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=214c
 
 Repository: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 

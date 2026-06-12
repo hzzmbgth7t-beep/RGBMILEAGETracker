@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.4b", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.4c", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -182,6 +182,7 @@ function performBackNavigation(){
   const target=(route&&route.returnTo&&((["recordView","recordEdit"].includes(route.screen))||String(route.screen||"").startsWith("report")))?cloneRoute(route.returnTo):historyStack.pop();
   if(target){route=target;editSnapshot=null;renderRoute()}else rawNav("home",{},false)
 }
+function goHome(){if(route.screen==="quickFuel")return handleQuickFuelHome();return nav("home")}
 function goBack(){if(route.screen==="recordEdit")return handleRecordEditBack();if(route.screen==="quickFuel")return handleQuickFuelBack();performBackNavigation()}
 function focusEditTop(){setTimeout(()=>{const app=$("app"); if(app)app.scrollTo({top:0,left:0,behavior:"auto"}); const first=document.querySelector(".form-grid input,.form-grid select,.form-grid textarea"); if(first&&first.focus)try{first.focus({preventScroll:true})}catch(e){}},0)}
 function currentRecordEditValues(type){if(type==="Fuel")return {date:cleanText($("efdate")?.value),time:cleanText($("eftime")?.value),odometer:cleanText($("efodo")?.value),miles:cleanText($("efmiles")?.value),gallons:cleanText($("efgal")?.value),mpg:cleanText($("efmpg")?.value),fuelGrade:cleanText($("efgrade")?.value),ethanolFree:cleanText($("efef")?.value),station:cleanText($("efstation")?.value),fuelCostSource:cleanText($("efcostsource")?.value),fuelPricePerGallon:cleanText($("efprice")?.value),totalFuelCost:cleanText($("efcost")?.value),notes:cleanText($("efnotes")?.value)};if(type==="Maintenance")return {date:cleanText($("emdate")?.value),category:cleanText($("emcat")?.value),odometer:cleanText($("emodo")?.value),totalCost:cleanText($("emcost")?.value),location:cleanText($("emloc")?.value),serviceProvider:cleanText($("emprov")?.value),notes:cleanText($("emnotes")?.value)};if(type==="Insurance")return {company:cleanText($("eicomp")?.value),policyNumber:cleanText($("eipol")?.value),effectiveDate:cleanText($("eieff")?.value),expirationDate:cleanText($("eiexp")?.value),coverageValue:cleanText($("eicov")?.value),premium:cleanText($("eiprem")?.value),agent:cleanText($("eiagent")?.value),phone:cleanText($("eiphone")?.value),email:cleanText($("eiemail")?.value),agency:cleanText($("eiagency")?.value),notes:cleanText($("einotes")?.value)};return {}}
@@ -397,6 +398,37 @@ function editFields(type,r){if(type==="Fuel")return `<div class="row"><label>Dat
  function archiveRecord(type,id){const r=findRecord(type,id);if(confirm("Archive this record?")){addTag(r,"Archived");r.modifiedAt=nowISO();saveData();alert("Record archived.");nav("vehicleView",{vehicleId:r.vehicleId})}}
 function openOtherList(selectId,listName,label){const sel=$(selectId);if(sel.value!=="Other")return;showOtherSheet(label,(name,save)=>{if(!name){sel.value="";return}let list=state[listName];if(save&&!list.includes(name)){list.splice(Math.max(0,list.length-1),0,name);saveData()}if(![...sel.options].some(o=>o.value===name)){const opt=document.createElement("option");opt.value=name;opt.textContent=name;sel.insertBefore(opt,sel.querySelector('option[value="Other"]'))}sel.value=name})} function showOtherSheet(label,cb){const div=document.createElement("div");div.className="modal";div.innerHTML=`<div class="sheet"><h2>Other ${esc(label)}</h2><label>${esc(label)} Name<input id="otherName"></label><div class="form-actions"><button class="primary" id="useOnce">Use Once</button><button class="ok" id="saveList">Save To List</button></div><button class="wide danger" id="cancelOther">Cancel</button></div>`;document.body.appendChild(div);$("otherName").focus();$("useOnce").onclick=()=>{const v=$("otherName").value.trim();div.remove();cb(v,false)};$("saveList").onclick=()=>{const v=$("otherName").value.trim();div.remove();cb(v,true)};$("cancelOther").onclick=()=>{div.remove();cb("",false)}}
 
+let activeChoiceModal=null;
+function closeChoiceModal(){if(activeChoiceModal){activeChoiceModal.remove();activeChoiceModal=null}return false}
+function showChoiceModal(title,actions){
+  closeChoiceModal();
+  const overlay=document.createElement("div");
+  overlay.className="modal choice-modal";
+  const box=document.createElement("div");
+  box.className="choice-box";
+  const h2=document.createElement("h2");
+  h2.textContent=title||"Choose next action";
+  box.appendChild(h2);
+  const wrap=document.createElement("div");
+  wrap.className="choice-buttons";
+  (actions||[]).forEach(action=>{
+    const btn=document.createElement("button");
+    btn.type="button";
+    btn.className=((action.className||"ghost")+" wide").trim();
+    btn.textContent=action.label||"Continue";
+    btn.onclick=()=>{closeChoiceModal(); if(typeof action.onClick==="function") action.onClick();};
+    wrap.appendChild(btn);
+  });
+  box.appendChild(wrap);
+  overlay.appendChild(box);
+  overlay.addEventListener("click",e=>{if(e.target===overlay)e.preventDefault()});
+  document.body.appendChild(overlay);
+  activeChoiceModal=overlay;
+  const first=wrap.querySelector("button");
+  if(first&&first.focus) setTimeout(()=>first.focus(),0);
+  return false;
+}
+
 function currentQuickFuelValues(){
   return {
     date:cleanText($("fdate")?.value),
@@ -451,32 +483,40 @@ function fuelNewEntry(){
   setTimeout(setQuickFuelSnapshot,0);
   return false;
 }
+
 function fuelAfterSavePrompt(){
-  if(confirm("Fuel record saved. Press OK for New entry, or Cancel for more options.")) return fuelNewEntry();
-  if(confirm("Return to list? Press OK to return to list, or Cancel to return to the previous screen.")) return fuelReturnToList();
-  return fuelReturnPrevious();
+  return showChoiceModal("Fuel record saved",[
+    {label:"New entry",className:"primary",onClick:()=>fuelNewEntry()},
+    {label:"Return to list",className:"ghost",onClick:()=>fuelReturnToList()},
+    {label:"Return to previous screen",className:"ghost",onClick:()=>fuelReturnPrevious()}
+  ]);
 }
-function fuelAfterDiscardPrompt(message){
-  if(confirm((message||"Changes discarded.")+" Press OK for New entry, or Cancel for more options.")) return fuelNewEntry();
-  if(confirm("Return to list? Press OK to return to list, or Cancel to return to the previous screen.")) return fuelReturnToList();
-  return fuelReturnPrevious();
+function fuelAfterDiscardPrompt(title){
+  return showChoiceModal(title||"Changes discarded",[
+    {label:"New entry",className:"primary",onClick:()=>fuelNewEntry()},
+    {label:"Return to list",className:"ghost",onClick:()=>fuelReturnToList()},
+    {label:"Return to previous screen",className:"ghost",onClick:()=>fuelReturnPrevious()}
+  ]);
 }
 function fuelViewExitPrompt(){
-  if(confirm("Return to list? Press OK to return to list, or Cancel for more options.")) return fuelReturnToList();
-  if(confirm("Return to previous screen? Press OK to return, or Cancel to stay on this screen.")) return fuelReturnPrevious();
-  return false;
+  return showChoiceModal("Choose next action",[
+    {label:"Return to list",className:"primary",onClick:()=>fuelReturnToList()},
+    {label:"Return to previous screen",className:"ghost",onClick:()=>fuelReturnPrevious()},
+    {label:"Stay on this screen",className:"ghost",onClick:()=>false}
+  ]);
 }
+
 function handleQuickFuelHome(){
   if(route.screen==="quickFuel" && route.mode==="edit" && isQuickFuelDirty()){
-    if(confirm("Unsaved changes. Press OK to save and go Home, or Cancel for more options.")){
-      if(saveQuickFuel(route.vehicleId,true)) return rawNav("home",{},true);
-      return false;
-    }
-    if(confirm("Discard changes and go Home? Press OK to discard, or Cancel to stay on this screen.")) return rawNav("home",{},true);
-    return false;
+    return showChoiceModal("Unsaved changes",[
+      {label:"Save and go Home",className:"primary",onClick:()=>{if(saveQuickFuel(route.vehicleId,true)) rawNav("home",{},true)}},
+      {label:"Discard and go Home",className:"danger",onClick:()=>rawNav("home",{},true)},
+      {label:"Stay on this screen",className:"ghost",onClick:()=>false}
+    ]);
   }
   return rawNav("home",{},true);
 }
+
 function fuelToggleMode(){
   if(route.mode==="view"){
     route={...route,mode:"edit"};
@@ -486,52 +526,44 @@ function fuelToggleMode(){
   }
   if(route.mode==="edit" && route.recordId){
     if(isQuickFuelDirty()){
-      if(confirm("Save changes before switching to view? Press OK to save, or Cancel for more options.")){
-        if(saveQuickFuel(route.vehicleId,true)){
-          route={...route,mode:"view"};
-          renderRoute();
-        }
-        return false;
-      }
-      if(confirm("Discard unsaved changes and switch to view?")){
-        editSnapshot=null;
-        route={...route,mode:"view"};
-        renderRoute();
-      }
-      return false;
+      return showChoiceModal("Unsaved changes",[
+        {label:"Save and view record",className:"primary",onClick:()=>{if(saveQuickFuel(route.vehicleId,true)){route={...route,mode:"view"};renderRoute();}}},
+        {label:"Discard and view record",className:"danger",onClick:()=>{editSnapshot=null;route={...route,mode:"view"};renderRoute();}},
+        {label:"Stay on this screen",className:"ghost",onClick:()=>false}
+      ]);
     }
     route={...route,mode:"view"};
     renderRoute();
   }
   return false;
 }
+
 function handleQuickFuelBack(){
   if(route.mode==="view") return fuelViewExitPrompt();
   if(route.mode==="edit"){
     if(isQuickFuelDirty()){
-      if(confirm("Unsaved changes. Press OK to save and return, or Cancel for more options.")){
-        if(saveQuickFuel(route.vehicleId,true)) return fuelReturnPrevious();
-        return false;
-      }
-      if(confirm("Discard changes and return? Press OK to discard, or Cancel to stay on this screen.")) return fuelReturnPrevious();
-      return false;
+      return showChoiceModal("Unsaved changes",[
+        {label:"Save and return",className:"primary",onClick:()=>{if(saveQuickFuel(route.vehicleId,true)) fuelReturnPrevious();}},
+        {label:"Discard and return",className:"danger",onClick:()=>fuelReturnPrevious()},
+        {label:"Stay on this screen",className:"ghost",onClick:()=>false}
+      ]);
     }
     return fuelReturnPrevious();
   }
   return fuelReturnPrevious();
 }
+
 function fuelCancel(){
   if(route.mode==="view") return fuelViewExitPrompt();
   if(route.mode==="edit"){
     if(isQuickFuelDirty()){
-      if(confirm("Unsaved changes. Press OK to save and choose what to do next, or Cancel for more options.")){
-        if(saveQuickFuel(route.vehicleId,true)) return fuelAfterSavePrompt();
-        return false;
-      }
-      if(confirm("Discard changes? Press OK to choose what to do next without saving, or Cancel to stay on this screen.")) return fuelAfterDiscardPrompt();
-      return false;
+      return showChoiceModal("Unsaved changes",[
+        {label:"Save",className:"primary",onClick:()=>{if(saveQuickFuel(route.vehicleId,true)) fuelAfterSavePrompt();}},
+        {label:"Discard",className:"danger",onClick:()=>fuelAfterDiscardPrompt("Changes discarded")},
+        {label:"Stay on this screen",className:"ghost",onClick:()=>false}
+      ]);
     }
-    return fuelAfterDiscardPrompt("Choose next action.");
+    return fuelAfterDiscardPrompt("Choose next action");
   }
   return false;
 }
@@ -704,4 +736,4 @@ function initV213eStabilization(){
     window.addEventListener("orientationchange",()=>setTimeout(lock,50),{passive:true});
   }catch(e){}
 }
-initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=214b').catch(()=>{})}
+initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=214c').catch(()=>{})}
