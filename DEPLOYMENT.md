@@ -1,21 +1,21 @@
-## v2.1.4d Deployment Notes
+## v2.1.4f Deployment Notes
 
 ### Release Type
 Fuel Screen Merger Release
 
 ### Purpose
-Deploy v2.1.4d only after confirming that the new unified Fuel screen works correctly and that Maintenance and Insurance behavior remains unchanged.
+Deploy v2.1.4f only after confirming that the new unified Fuel screen works correctly and that Maintenance and Insurance behavior remains unchanged.
 
 ### Links
 GitHub Pages: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/)
 
-Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=214d](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=214d)
+Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=214f](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=214f)
 
 Repository: [https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker](https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker)
 
 ### Active Version
-- App version: `v2.1.4d`
-- Active cache-buster: `?v=214d`
+- App version: `v2.1.4f`
+- Active cache-buster: `?v=214f`
 
 ### Pre-Deployment Checks
 - version labels are aligned across docs and app files
@@ -28,7 +28,7 @@ Repository: [https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker](https://githu
 
 ### Post-Deployment Verification
 1. Open the cache-buster URL.
-2. Confirm the app shows `v2.1.4d`.
+2. Confirm the app shows `v2.1.4f`.
 3. Tap a home-screen vehicle circle and confirm Fuel opens in Edit.
 4. Tap a Fuel record and confirm View opens.
 5. Long press a Fuel record and confirm Edit opens.

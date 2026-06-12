@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.4d", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.4f", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-09", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -506,6 +506,39 @@ function fuelViewExitPrompt(){
   ]);
 }
 
+
+function fuelBackDestination(){
+  const target=(route&&route.returnTo)?route.returnTo:null;
+  return (target && target.screen==="home")?"home":"list";
+}
+function fuelReturnHome(){
+  editSnapshot=null;
+  rawNav("home",{},false);
+  return false;
+}
+function fuelBackActions(){
+  const dest=fuelBackDestination();
+  if(dest==="home"){
+    return [
+      {label:"Save And Return To Home",className:"primary",onClick:()=>{if(saveQuickFuel(route.vehicleId,true)) fuelReturnHome();}},
+      {label:"Discard And Return To Home",className:"danger",onClick:()=>fuelReturnHome()},
+      {label:"Stay On This Screen",className:"ghost",onClick:()=>false}
+    ];
+  }
+  return [
+    {label:"Save And Return To List",className:"primary",onClick:()=>{if(saveQuickFuel(route.vehicleId,true)) fuelReturnToList();}},
+    {label:"Discard And Return To List",className:"danger",onClick:()=>fuelReturnToList()},
+    {label:"Stay On This Screen",className:"ghost",onClick:()=>false}
+  ];
+}
+function fuelHomeDestinationActions(){
+  return [
+    {label:"Save And Go Home",className:"primary",onClick:()=>{if(saveQuickFuel(route.vehicleId,true)) fuelReturnHome();}},
+    {label:"Discard And Go Home",className:"danger",onClick:()=>fuelReturnHome()},
+    {label:"Stay On This Screen",className:"ghost",onClick:()=>false}
+  ];
+}
+
 function handleQuickFuelHome(){
   if(route.screen==="quickFuel" && route.mode==="edit" && isQuickFuelDirty()){
     return showChoiceModal("Unsaved Changes",fuelHomeDestinationActions());
@@ -538,15 +571,11 @@ function handleQuickFuelBack(){
   if(route.mode==="view") return fuelViewExitPrompt();
   if(route.mode==="edit"){
     if(isQuickFuelDirty()){
-      return showChoiceModal("Unsaved Changes",[
-        {label:"Save And Return",className:"primary",onClick:()=>{if(saveQuickFuel(route.vehicleId,true)) fuelReturnPrevious();}},
-        {label:"Discard And Return",className:"danger",onClick:()=>fuelReturnPrevious()},
-        {label:"Stay On This Screen",className:"ghost",onClick:()=>false}
-      ]);
+      return showChoiceModal("Unsaved Changes",fuelBackActions());
     }
-    return fuelReturnPrevious();
+    return fuelBackDestination()==="home" ? fuelReturnHome() : fuelReturnToList();
   }
-  return fuelReturnPrevious();
+  return fuelBackDestination()==="home" ? fuelReturnHome() : fuelReturnToList();
 }
 
 function fuelCancel(){
@@ -554,8 +583,8 @@ function fuelCancel(){
   if(route.mode==="edit"){
     if(isQuickFuelDirty()){
       return showChoiceModal("Unsaved Changes",[
-        {label:"Save",className:"primary",onClick:()=>{if(saveQuickFuel(route.vehicleId,true)) fuelAfterSavePrompt();}},
-        {label:"Discard",className:"danger",onClick:()=>fuelAfterDiscardPrompt("Changes Discarded")},
+        {label:"Save Changes",className:"primary",onClick:()=>{if(saveQuickFuel(route.vehicleId,true)) fuelAfterSavePrompt();}},
+        {label:"Discard Changes",className:"danger",onClick:()=>fuelAfterDiscardPrompt("Changes Discarded")},
         {label:"Stay On This Screen",className:"ghost",onClick:()=>false}
       ]);
     }
@@ -732,4 +761,4 @@ function initV213eStabilization(){
     window.addEventListener("orientationchange",()=>setTimeout(lock,50),{passive:true});
   }catch(e){}
 }
-initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=214d').catch(()=>{})}
+initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=214f').catch(()=>{})}
