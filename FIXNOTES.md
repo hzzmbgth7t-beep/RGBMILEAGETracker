@@ -1,16 +1,19 @@
-## v2.1.3oe — View Metadata Presentation Refinement
+# FIXNOTES.md
+
+## v2.1.4 — Fuel Screen Merger Release Notes
 
 ### Summary
-This build reduces clutter on the current separate View screens for Fuel, Maintenance, and Insurance.
+This build replaces the old Fuel view/edit split with one unified Fuel screen and keeps the other sections unchanged.
 
-### What Was Changed
-- Technical metadata is now grouped into a collapsible section labeled **Data Information**
-- The metadata section is collapsed by default
-- Archive and Edit now share a single action row below the main data fields
-- Archive remains on the left and Edit remains on the right
+### What Was Implemented
+- Empty / View / Edit Fuel states
+- Fuel-specific record open routing
+- Fuel-specific dirty-state handling
+- Data Information on Fuel View and Edit
+- Fuel Save / Cancel flow aligned to the agreed prompt model
 
-### What This Release Does Not Change
-- no field-model changes
-- no save-flow changes
-- no unified-screen behavior
-- no navigation-model changes
+### Not Included
+- Maintenance merger
+- Insurance merger
+- Delete / Deleted Items
+- broader responsive work

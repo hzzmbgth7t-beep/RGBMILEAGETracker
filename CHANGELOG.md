@@ -1,15 +1,19 @@
-## v2.1.3oe — View Metadata Presentation Refinement
+# CHANGELOG.md
+
+## v2.1.4 — Fuel Screen Merger Release
 Date: 2026-06-09
 
 ### Purpose
-This release refines the current separate View screens for Fuel, Maintenance, and Insurance by moving technical metadata into a collapsible section and standardizing the action button row.
+This release begins the structural screen-merger phase by moving Fuel onto one unified screen while leaving Maintenance and Insurance unchanged.
 
-### Changed
-- Added a collapsible **Data Information** section to Fuel, Maintenance, and Insurance View screens
-- The metadata section is collapsed by default
-- The section appears above the main record fields
-- The section contains Record ID, Sequence, Source, Quality, and Tags
-- The action buttons now appear on one row with Archive on the left and Edit on the right
+### Added / Changed
+- unified Fuel screen with Empty / View / Edit states
+- Fuel tap -> View
+- Fuel long press -> Edit
+- New button for new Fuel entry
+- Data Information available in Fuel View and Fuel Edit
+- Stay / Return prompt flow after Fuel Save and Fuel Cancel
+- Fuel-specific unsaved-change handling
 
 ### Scope Notes
-This release is limited to current separate View screen presentation. It does not merge screens or change record-save behavior.
+This release is Fuel only. Maintenance and Insurance remain on the prior screen model.

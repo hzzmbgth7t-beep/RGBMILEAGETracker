@@ -1,102 +1,39 @@
-## v2.1.3oe Deployment Notes
+## v2.1.4 Deployment Notes
 
 ### Release Type
-View Metadata Presentation Refinement
+Fuel Screen Merger Release
 
 ### Purpose
-Deploy v2.1.3oe only after confirming that Maintenance and Insurance field parity is complete and current app behavior has not changed unintentionally.
+Deploy v2.1.4 only after confirming that the new unified Fuel screen works correctly and that Maintenance and Insurance behavior remains unchanged.
+
+### Links
+GitHub Pages: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+
+Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=214
+
+Repository: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 
 ### Active Version
-- App version: `v2.1.3oe`
-- Active cache-buster: `?v=213oe`
-
-### Active URLs
-- GitHub Pages:
-  `https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/`
-- Cache-buster URL:
-  `https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213oe`
-- Repository:
-  `https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker`
+- App version: `v2.1.4`
+- Active cache-buster: `?v=214`
 
 ### Pre-Deployment Checks
-Confirm all of the following before deployment:
-- version labels are aligned across:
-  - README
-  - CHANGELOG
-  - FIXNOTES
-  - DEPLOYMENT
-  - USER-GUIDE
-  - index.html
-  - app.js
-  - manifest.json
-  - sw.js
-- Fuel, Maintenance, and Insurance View screens show a **Data Information** section
-- **Data Information** is collapsed by default
-- **Data Information** appears above the main data fields
-- Archive and Edit appear on one row with Archive left and Edit right
-- current navigation and edit behavior remain unchanged
+- version labels are aligned across docs and app files
+- Fuel opens on one unified screen
+- Fuel supports Empty / View / Edit states
+- Fuel Data Information appears in both View and Edit, collapsed by default
+- Fuel Previous Records stays expanded
+- Maintenance and Insurance still use their existing separate View/Edit behavior
+- Back, Save, Cancel, and New behavior works for Fuel
 
 ### Post-Deployment Verification
-After deployment, verify:
-1. Open the active cache-buster URL.
-2. Confirm the app loads as `v2.1.3oe`.
-3. Open one Maintenance record in View and Edit.
-4. Open one Insurance record in View and Edit.
-5. Confirm all parity fields are visible.
-6. Save one Maintenance edit and one Insurance edit.
-7. Reopen those records and confirm saved values persist.
-8. Confirm no navigation behavior changed unexpectedly.
-
-### Deployment Rule
-Do not treat this release as a screen-simplification release. It is a field-parity checkpoint only.
+1. Open the cache-buster URL.
+2. Confirm the app shows `v2.1.4`.
+3. Tap a home-screen vehicle circle and confirm Fuel opens in Edit.
+4. Tap a Fuel record and confirm View opens.
+5. Long press a Fuel record and confirm Edit opens.
+6. Save a Fuel entry and confirm the Stay / Return prompt appears.
+7. Confirm Maintenance and Insurance still open the old way.
 
 ### Rollback Reference
-If parity changes cause unexpected behavior, revert to the prior stable baseline:
-- `v2.1.3ob`
-
-
-# DEPLOYMENT
-
-Version: v2.1.3oe
-Build Date: 09/06/26
-GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-Cache-Buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=213oe
-GitHub Repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
-
-## Deployment Steps
-1. Upload the complete v2.1.3oe build to the deployment target.
-2. Ensure `index.html`, `app.js`, `styles.css`, `manifest.json`, and `sw.js` are all updated together.
-3. Open the cache-buster URL after deployment.
-4. If a prior service worker is active, refresh again after the new cache is installed.
-
-## Post-Deployment Verification
-- App title shows `RGB Mileage v2.1.3oe`.
-- Settings screen shows schema `2.1.3oe`.
-- Home long-press on the center circle opens Vehicle.
-- Vehicle record tap opens View.
-- Vehicle record long-press opens Edit.
-- From Vehicle → record view/edit, Back returns to Vehicle.
-- From record screen after opening additional records from Previous Records, Back still returns to the original prior screen.
-- From Reports → report detail, Back returns to Reports.
-- From Reports screen, Back returns to the prior screen, typically Home.
-- Unsaved record edits prompt for Save or Discard before leaving.
-- Existing local data still loads in the target browser.
-
-## Release Control Rule
-Before packaging any future version, verify that all of the following match the active version:
-- `app.js` version/schema source
-- `index.html` title and asset query strings
-- `manifest.json` start URL
-- `sw.js` cache name and asset list
-- `README.md`
-- `CHANGELOG.md`
-- `FIXNOTES.md`
-- `DEPLOYMENT.md`
-- `USER-GUIDE.md`
-
-Do not release a package until these labels are aligned.
-
-## Browser Notes
-- Intended to run in modern desktop browsers and iOS Safari.
-- Browser storage is local to each browser/device.
-- PWA install behavior can vary by browser.
+If the Fuel merger introduces regressions, revert to `v2.1.3oe`.
