@@ -1,6 +1,6 @@
 # CHANGELOG.md
 
-## v2.1.4c — Fuel Screen Merger Release
+## v2.1.4d — Fuel Screen Merger Release
 Date: 2026-06-09
 
 ### Purpose

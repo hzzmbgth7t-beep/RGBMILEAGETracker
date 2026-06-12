@@ -1,17 +1,17 @@
 # RGB Mileage Tracker
 
-Version: **v2.1.4c**  
+Version: **v2.1.4d**  
 Release type: **Fuel Screen Merger Release**
 
 ## Purpose
 This release starts the structural screen-merger phase by converting **Fuel** to a unified workflow. Fuel now uses one screen with **Empty**, **View**, and **Edit** states. Maintenance and Insurance remain on their current separate View/Edit model in this release.
 
 ## Links
-GitHub Pages: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+GitHub Pages: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/)
 
-Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=214c
+Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=214d](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=214d)
 
-Repository: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
+Repository: [https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker](https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker)
 
 ## What This Release Changes
 - Fuel uses one unified screen instead of separate Fuel View/Edit flows
