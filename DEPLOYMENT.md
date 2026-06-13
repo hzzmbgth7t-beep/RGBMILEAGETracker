@@ -1,28 +1,38 @@
-## v2.1.5b Deployment Notes
+## v2.1.6 Deployment Notes
 
 ### Release Type
-Maintenance Screen Merger Release
+Insurance Screen Merger Release
 
 ### Purpose
-Deploy v2.1.5b only after confirming that the new unified Maintenance screen works correctly, that Fuel still works as accepted, and that Insurance behavior remains unchanged.
+Deploy v2.1.6 only after confirming that the new unified Insurance screen works correctly and that Fuel and Maintenance still work as accepted.
 
 ### Links
 GitHub Pages: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/)
 
-Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=215b](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=215b)
+Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216)
 
 Repository: [https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker](https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker)
 
 ### Active Version
-- App version: `v2.1.5b`
-- Active cache-buster: `?v=215b`
+- App version: `v2.1.6`
+- Active cache-buster: `?v=216`
 
 ### Pre-Deployment Checks
 - version labels are aligned across docs and app files
-- Maintenance opens on one unified screen
-- Maintenance supports Empty / View / Edit states
-- Maintenance Data Information appears in both View and Edit, collapsed by default
-- Maintenance Previous Records stays expanded
+- Insurance opens on one unified screen
+- Insurance supports Empty / View / Edit states
+- Insurance Data Information appears in both View and Edit, collapsed by default
+- Insurance Previous Records stays expanded
 - Fuel still uses the accepted merged-screen behavior
-- Insurance still uses its existing separate View/Edit behavior
-- Back, Save, Cancel, Home, and New behavior works for Maintenance
+- Maintenance still uses the accepted merged-screen behavior
+- Back, Save, Cancel, Home, and New Entry behave correctly on Insurance
+
+### Post-Deployment Verification
+- confirm Insurance tap opens View on the unified screen
+- confirm Insurance long press opens Edit on the unified screen
+- confirm Insurance Save / Return To List / Back / Home all work correctly
+- confirm Fuel and Maintenance remain unchanged
+
+### Rollback Reference
+If Insurance merger behavior fails, revert to the prior accepted baseline:
+- `v2.1.5b`

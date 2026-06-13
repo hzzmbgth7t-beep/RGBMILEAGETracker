@@ -1,18 +1,20 @@
 # FIXNOTES.md
 
-## v2.1.5b — Maintenance Screen Merger Release Notes
+## v2.1.6 — Insurance Screen Merger Release Notes
 
 ### Summary
-This build replaces the old Maintenance view/edit split with one unified Maintenance screen and keeps Insurance unchanged.
+This build replaces the old Insurance view/edit split with one unified Insurance screen while leaving the accepted Fuel and Maintenance merged flows intact.
 
 ### What Was Implemented
-- Empty / View / Edit Maintenance states
-- Maintenance-specific record open routing
-- Maintenance-specific dirty-state handling
-- Data Information on Maintenance View and Edit
-- Maintenance Save / Cancel / Back / Home flow aligned to the accepted Fuel model
+- Empty / View / Edit Insurance states
+- Insurance-specific record open routing
+- Insurance-specific dirty-state handling
+- Data Information on Insurance View and Insurance Edit
+- Insurance Save / Cancel / Back / Home flow aligned to the accepted merged-screen model
+- compatibility-aware use of Agency, Agreed Value, and one Notes field
 
 ### Not Included
-- Insurance merger
 - Delete / Deleted Items
+- legacy-code cleanup
 - broader responsive work
+- new fuel or maintenance workflow changes
