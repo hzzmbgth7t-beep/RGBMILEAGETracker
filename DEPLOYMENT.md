@@ -1,21 +1,21 @@
-## v2.1.6a Deployment Notes
+## v2.1.6b Deployment Notes
 
 ### Release Type
 Insurance Screen Merger Release
 
 ### Purpose
-Deploy v2.1.6a only after confirming that the new unified Insurance screen works correctly and that Fuel and Maintenance still work as accepted.
+Deploy v2.1.6b only after confirming that the new unified Insurance screen works correctly and that Fuel and Maintenance still work as accepted.
 
 ### Links
 GitHub Pages: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/)
 
-Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216a](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216a)
+Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216b](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216b)
 
 Repository: [https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker](https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker)
 
 ### Active Version
-- App version: `v2.1.6a`
-- Active cache-buster: `?v=216a`
+- App version: `v2.1.6b`
+- Active cache-buster: `?v=216b`
 
 ### Pre-Deployment Checks
 - version labels are aligned across docs and app files

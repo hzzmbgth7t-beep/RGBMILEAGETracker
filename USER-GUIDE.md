@@ -1,6 +1,6 @@
 # USER-GUIDE.md
 
-## v2.1.6a User Guide Addendum
+## v2.1.6b User Guide Addendum
 Release type: **Insurance Screen Merger Release**
 
 ### What changed

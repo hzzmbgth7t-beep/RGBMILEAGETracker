@@ -1,6 +1,6 @@
 # CHANGELOG.md
 
-## v2.1.6a — Insurance Screen Merger Release
+## v2.1.6b — Insurance Screen Merger Release
 Date: 2026-06-12
 
 ### Purpose
