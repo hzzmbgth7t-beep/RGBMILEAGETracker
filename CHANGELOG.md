@@ -1,6 +1,6 @@
 # CHANGELOG.md
 
-## v2.1.5a — Maintenance Screen Merger Release
+## v2.1.5b — Maintenance Screen Merger Release
 Date: 2026-06-12
 
 ### Purpose

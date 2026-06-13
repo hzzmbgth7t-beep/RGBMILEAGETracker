@@ -1,6 +1,6 @@
 # USER-GUIDE.md
 
-## v2.1.5a User Guide Addendum
+## v2.1.5b User Guide Addendum
 Release type: **Maintenance Screen Merger Release**
 
 ### What changed
