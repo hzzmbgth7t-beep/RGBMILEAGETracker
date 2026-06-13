@@ -1,6 +1,6 @@
 # FIXNOTES.md
 
-## v2.1.6b — Insurance Screen Merger Release Notes
+## v2.1.6c — Insurance Screen Merger Release Notes
 
 ### Summary
 This build replaces the old Insurance view/edit split with one unified Insurance screen while leaving the accepted Fuel and Maintenance merged flows intact.

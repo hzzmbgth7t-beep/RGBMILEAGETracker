@@ -1,9 +1,11 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.6b", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.6c", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
 let state, route={screen:"home"}, historyStack=[], longTimer=null, suppressTap=false, editSnapshot=null;
 let rowInteraction={timer:null,long:false,type:null,recordId:null};
+let rowTouchState={active:false,pointerId:null,startX:0,startY:0,moved:false};
+let recentRowSuppressUntil=0;
 let pendingRecordOpen=null;
 function nowISO(){return new Date().toISOString()} function uid(p="ID"){return p+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)} function arr(v){return Array.isArray(v)?v:[]} function tags(v){return Array.isArray(v)?v:(v?[String(v)]:[])} function hasTag(r,t){return tags(r.classificationTags).includes(t)} function addTag(r,t){r.classificationTags=tags(r.classificationTags);if(!r.classificationTags.includes(t))r.classificationTags.push(t)} function numVal(v){if(v===null||v===undefined||v==="")return "";const n=Number(String(v).replace(/[$,]/g,""));return Number.isFinite(n)?n:""} function cleanText(v){return String(v??"").trim()} function requireValue(v,label){const s=cleanText(v);if(!s)throw new Error(`${label} is required.`);return s} function requireNonNegative(v,label){const n=numVal(v);if(n==="")return "";if(n<0)throw new Error(`${label} cannot be negative.`);return n} function requirePositive(v,label){const n=numVal(v);if(n==="")return "";if(n<=0)throw new Error(`${label} must be greater than zero.`);return n}
 
@@ -380,18 +382,43 @@ function openRecordFlow(type,recordId,mode,bypassGuard){
   return false;
 }
 function rowPressStart(type,recordId,e){
+  rowTouchState={
+    active:true,
+    pointerId:e&&typeof e.pointerId!=="undefined"?e.pointerId:null,
+    startX:e&&typeof e.clientX==="number"?e.clientX:0,
+    startY:e&&typeof e.clientY==="number"?e.clientY:0,
+    moved:false
+  };
   pressStart(()=>openRecordFlow(type,recordId,"edit"),e,650);
+}
+function rowPressMove(e){
+  if(!rowTouchState.active) return;
+  if(rowTouchState.pointerId!==null && e && typeof e.pointerId!=="undefined" && e.pointerId!==rowTouchState.pointerId) return;
+  const x=e&&typeof e.clientX==="number"?e.clientX:rowTouchState.startX;
+  const y=e&&typeof e.clientY==="number"?e.clientY:rowTouchState.startY;
+  if(Math.abs(x-rowTouchState.startX)>10 || Math.abs(y-rowTouchState.startY)>10){
+    rowTouchState.moved=true;
+    recentRowSuppressUntil=Date.now()+250;
+    clearLP();
+  }
 }
 function rowPressEnd(type,recordId,e){
   const longFired=suppressTap;
+  const moved=rowTouchState.moved || Date.now()<recentRowSuppressUntil;
+  rowTouchState.active=false;
   clearLP();
   if(longFired){
     suppressTap=false;
     return false;
   }
+  if(moved){
+    return false;
+  }
   return openRecordFlow(type,recordId,"view");
 }
 function rowPressCancel(){
+  if(rowTouchState.active) recentRowSuppressUntil=Date.now()+250;
+  rowTouchState.active=false;
   clearLP();
 }
 function rowTap(type,recordId,e){
@@ -400,14 +427,19 @@ function rowTap(type,recordId,e){
     suppressTap=false;
     return false;
   }
+  if(Date.now()<recentRowSuppressUntil){
+    return false;
+  }
   return openRecordFlow(type,recordId,"view");
 }
 function entryRow(type,r){
   const b=tags(r.classificationTags).map(t=>`<span class="badge ${t==='Historical'?'warn':t==='Archived'?'arch':''}">${esc(t)}</span>`).join("");
   return `<div class="entry-row" role="button" tabindex="0"
     onpointerdown="rowPressStart('${type}','${r.recordId}',event)"
+    onpointermove="rowPressMove(event)"
     onpointerup="return rowPressEnd('${type}','${r.recordId}',event)"
     onpointercancel="rowPressCancel()"
+    onpointerleave="rowPressCancel()"
     onclick="return rowTap('${type}','${r.recordId}',event)">
     <div class="entry-main"><span>${recordTitle(type,r)}</span><span class="muted">${esc(r.dataQuality||"")}</span></div><div class="badges">${b}</div></div>`;
 }

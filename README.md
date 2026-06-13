@@ -1,6 +1,6 @@
 # RGB Mileage Tracker
 
-Version: **v2.1.6b**  
+Version: **v2.1.6c**  
 Release type: **Insurance Screen Merger Release**
 
 ## Purpose
@@ -9,7 +9,7 @@ This release applies the accepted Fuel and Maintenance merged-screen model to **
 ## Links
 GitHub Pages: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/)
 
-Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216b](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216b)
+Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c)
 
 Repository: [https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker](https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker)
 
