@@ -1,8 +1,32 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>RGB Mileage v2.1.6c</title>
+<title>RGB Mileage v2.2.0</title>
 <link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="favicon.png">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="RGB Mileage"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="stylesheet" href="styles.css?v=216c">
-</head><body><div id="app"></div><script src="app.js?v=216c"></script></body></html>
+<link rel="stylesheet" href="styles.css?v=220">
+</head><body><div id="app"></div>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAToCmM1TDIodjhVMPY697Tr4ymvYXMdaI",
+  authDomain: "rgbmileage.firebaseapp.com",
+  projectId: "rgbmileage",
+  storageBucket: "rgbmileage.firebasestorage.app",
+  messagingSenderId: "221596233720",
+  appId: "1:221596233720:web:9d788ad9c32fb63281300d",
+  measurementId: "G-8PZ350LEDE"
+};
+
+window.RGBM_FIREBASE_CONFIG = firebaseConfig;
+</script>
+<script type="module">
+import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
+window.RGBM_FIREBASE={
+  config:window.RGBM_FIREBASE_CONFIG||null,
+  api:{ initializeApp, getApps, getApp, getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, getFirestore, doc, getDoc, setDoc, serverTimestamp }
+};
+window.dispatchEvent(new Event('rgbm-firebase-ready'));
+</script>
+<script src="app.js?v=220"></script></body></html>
