@@ -1,38 +1,23 @@
-## v2.1.6c Deployment Notes
+## v2.2.0BC Deployment Notes
 
 ### Release Type
-Insurance Screen Merger Release
+Firebase Migration Build Candidate
 
 ### Purpose
-Deploy v2.1.6c only after confirming that the new unified Insurance screen works correctly and that Fuel and Maintenance still work as accepted.
+Deploy v2.2.0BC only for controlled Firebase authentication, Firestore connection, explicit migration-flow verification, and preservation testing of accepted current behavior.
 
 ### Links
 GitHub Pages: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/)
 
-Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c)
+Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=220](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=220)
 
-Repository: [https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker](https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker)
+GitHub repository: [https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker](https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker)
 
-### Active Version
-- App version: `v2.1.6c`
-- Active cache-buster: `?v=216c`
+### Active Runtime Indicators
+- `index.html` loads `app.js?v=220`
+- `manifest.json` start URL includes `?v=220`
+- `sw.js` cache/version is aligned to `220`
+- real Firebase config block is present in `index.html`
 
-### Pre-Deployment Checks
-- version labels are aligned across docs and app files
-- Insurance opens on one unified screen
-- Insurance supports Empty / View / Edit states
-- Insurance Data Information appears in both View and Edit, collapsed by default
-- Insurance Previous Records stays expanded
-- Fuel still uses the accepted merged-screen behavior
-- Maintenance still uses the accepted merged-screen behavior
-- Back, Save, Cancel, Home, and New Entry behave correctly on Insurance
-
-### Post-Deployment Verification
-- confirm Insurance tap opens View on the unified screen
-- confirm Insurance long press opens Edit on the unified screen
-- confirm Insurance Save / Return To List / Back / Home all work correctly
-- confirm Fuel and Maintenance remain unchanged
-
-### Rollback Reference
-If Insurance merger behavior fails, revert to the prior accepted baseline:
-- `v2.1.5b`
+### Control Note
+This is a build-candidate deployment path. Stable installed authority remains v2.1.6c until runtime verification, acceptance, and EMR/PMR closure are completed.

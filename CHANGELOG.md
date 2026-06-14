@@ -1,13 +1,13 @@
 # CHANGELOG
 
-## v2.2.0 Build Candidate
-- Introduced Firebase-aware application path for auth and Firestore integration
-- Added explicit create-account, sign-in, sign-out, cloud refresh, migrate-to-cloud, and load-from-cloud actions
-- Preserved accepted Fuel / Maintenance / Insurance merged-screen behavior through centralized save flow
-- Retained import/export capability
-- Updated web asset/runtime versioning to 220
-- Added config-patched candidate path with verified Firebase config insertion into index.html
+## v2.2.0BC Install Rebuild
+- Rebuilt install package from the config-patched v2.2.0 build candidate
+- Corrected package-facing documentation to identify the package as v2.2.0BC
+- Added required deployment URLs to README.md
+- Preserved runtime code/artifact state from the config-patched candidate
+- No additional runtime code changes introduced by this rebuild
 
-## Documentation correction
-- Corrected stale package-facing documentation that still displayed v2.1.6c baseline wording in README-related materials
-- This correction is documentation-only and does not by itself prove deployment state
+## Runtime URLs
+- GitHub Pages: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+- Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=220
+- GitHub repository: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker

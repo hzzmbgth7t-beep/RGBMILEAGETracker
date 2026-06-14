@@ -1,17 +1,11 @@
-# REBUILT INSTALL ZIP NOTE
+# REBUILT-INSTALL-NOTE
 
-Purpose:
-- Rebuild the install zip from the config-patched v2.2.0 candidate.
-- Fold in the controlled documentation correction so the install package matches the actual build state.
+This install zip was rebuilt so the package-facing documentation follows the same rules as the main controlled build line.
 
-Rebuild basis:
-- Source package: RGBMileage_v2.2.0_build_candidate_1_config_patched.zip
-- Runtime code preserved from the config-patched candidate
-- Documentation corrected: README.md and CHANGELOG.md
+Corrections included:
+- README now identifies the package as v2.2.0BC
+- README now includes deployment URLs
+- CHANGELOG updated for the rebuild event
+- DEPLOYMENT notes aligned to the build-candidate state
 
-Expected install indicators:
-- index.html references v=220 assets
-- app.js contains Firebase-aware code path
-- index.html contains the verified Firebase config block
-- manifest.json start_url includes ?v=220
-- sw.js uses the v220 cache/version line
+No additional runtime code changes were introduced beyond the already approved config-patched v2.2.0 candidate.
