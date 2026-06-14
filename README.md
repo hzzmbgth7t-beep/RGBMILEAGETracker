@@ -1,54 +1,36 @@
-# RGB Mileage Tracker
+# RGBMileage v2.2.0 Build Candidate
 
-Version: **v2.1.6c**  
-Release type: **Insurance Screen Merger Release**
+This package is the first Firebase-enabled build candidate for RGBMileage.
 
-## Purpose
-This release applies the accepted Fuel and Maintenance merged-screen model to **Insurance**. Insurance now uses one screen with **Empty**, **View**, and **Edit** states. Fuel and Maintenance remain on their accepted merged models.
+## Build status
+- Baseline authority: v2.1.6c
+- Candidate version: v2.2.0
+- Build type: Firebase migration build candidate
+- Hosting model: GitHub Pages / web PWA retained
 
-## Links
-GitHub Pages: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/)
+## Approved scope in this build candidate
+- Firebase Email/Password authentication
+- Firestore connection
+- Explicit local-to-cloud migration flow
+- Preservation of accepted current behavior
+- Import/export retained
 
-Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c)
+## Explicitly out of scope
+- Broad code cleanup/refactor
+- UI redesign unrelated to Firebase migration
+- Hosting move away from GitHub Pages
+- Realtime Database adoption
+- Analytics / unrelated Firebase products
 
-Repository: [https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker](https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker)
+## Runtime indicators for this candidate
+Do not rely on this README alone to identify the active build.
 
-## What This Release Changes
-- Insurance now uses one unified screen instead of separate Insurance View/Edit flows
-- Vehicle **Insurance Entry** opens Insurance in **Edit**
-- Insurance tap on Previous Records opens **View**
-- Insurance long press on Previous Records opens **Edit**
-- Insurance supports:
-  - **Empty** state
-  - **View** state
-  - **Edit** state
-- **Data Information** is available in both Insurance View and Insurance Edit
-- Insurance-specific unsaved-change handling, Save, Cancel, Back, Home, New Entry, and Return To List now follow the accepted merged-screen model
+Use these runtime indicators instead:
+- index.html loads app.js?v=220
+- manifest.json start_url includes ?v=220
+- sw.js cache/version is aligned to 220
+- Firebase/cloud/auth controls are present in the app UI
+- CONFIG-PATCH-VERIFICATION.md exists in the config-patched candidate package
 
-## Insurance Field Model
-Insurance uses the accepted simplified field set:
-- Agency
-- Policy Number
-- Effective Date
-- Expiration Date
-- Agreed Value
-- Premium
-- Agent
-- Phone
-- Email
-- Notes
-
-Legacy values remain compatibility-aware in the code:
-- company -> agency when loading
-- coverageValue / insuranceValue -> agreedValue when loading
-- coverageNotes -> notes when loading
-
-## What This Release Does Not Change
-This release does **not**:
-- add Delete or Deleted Items
-- perform legacy-code cleanup
-- add broader responsive/orientation changes
-- alter the accepted Fuel or Maintenance workflows beyond shared merged-model reuse
-
-## Why This Release Exists
-This release completes the section-screen merger work for the three primary record types so development can pause for EMR update and evaluation before Wiki work and later deferred enhancements.
+## Important note
+This README corrects stale baseline wording that may still appear in earlier packaged copies derived from the v2.1.6c working baseline.
