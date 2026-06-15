@@ -8,8 +8,8 @@ RGBMileage v2.2.0 full install package
 
 ## Deployment URLs
 - GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- GitHub repository URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c
+- Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=220
+- GitHub repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 
 ## Runtime identification
 - `index.html` title: `RGB Mileage v2.2.0`

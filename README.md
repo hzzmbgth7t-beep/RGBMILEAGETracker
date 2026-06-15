@@ -24,8 +24,8 @@ This package is the first Firebase-enabled full `v2.2.0` RGBMileage install pack
 
 ## Deployment URLs
 - GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- GitHub repository URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c
+- Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=220
+- GitHub repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 
 ## Runtime identification
 Use these runtime indicators to confirm the active deployed version:
