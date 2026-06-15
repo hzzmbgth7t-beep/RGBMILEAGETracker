@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.6c", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.2.0", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-13", KEY="RGBM_DATA_v213d", FIREBASE_META_KEY="RGBM_FIREBASE_META_v220";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -140,12 +140,286 @@ function dedupeRecords(d){
     });
   });
 }
-function loadData(){let raw=localStorage.getItem(KEY); if(raw){try{return normalizeData(JSON.parse(raw))}catch(e){console.warn(e)}} for(const k of LEGACY_KEYS){raw=localStorage.getItem(k); if(raw){try{const d=normalizeData(JSON.parse(raw)); saveData(d); return d}catch(e){console.warn(e)}}} const d=blankData(); saveData(d); return d}
-function saveData(d=state){
-  d.schemaVersion=SCHEMA_VERSION;
-  d.appVersion=VERSION;
-  d.modifiedAt=nowISO();
-  const payload=JSON.stringify(d);
+
+let firebaseState={available:false,initialized:false,configPresent:false,user:null,auth:null,db:null,status:"Local-only mode.",remoteExists:false,cloudLinked:false,lastSyncAt:"",syncError:"",pendingSync:false,syncInFlight:false,lastLoadedRemoteModifiedAt:"",remoteModifiedAt:""};
+function cloneData(d){return JSON.parse(JSON.stringify(d))}
+function defaultFirebaseMeta(){return {linkedUid:"",lastSyncAt:"",lastLocalModifiedAt:"",lastLoadedRemoteModifiedAt:""}}
+function loadFirebaseMeta(){
+  try{
+    const parsed=JSON.parse(localStorage.getItem(FIREBASE_META_KEY)||"null");
+    return {...defaultFirebaseMeta(),...(parsed&&typeof parsed==="object"?parsed:{})};
+  }catch(e){
+    return defaultFirebaseMeta();
+  }
+}
+function saveFirebaseMeta(meta){
+  const merged={...defaultFirebaseMeta(),...(meta&&typeof meta==="object"?meta:{})};
+  localStorage.setItem(FIREBASE_META_KEY,JSON.stringify(merged));
+  return merged;
+}
+function clearFirebaseLinkForUser(uid){
+  const meta=loadFirebaseMeta();
+  if(!uid || meta.linkedUid===uid) saveFirebaseMeta(defaultFirebaseMeta());
+}
+function hasMeaningfulData(d=state){
+  if(!d || typeof d!=="object") return false;
+  return arr(d.vehicles).filter(Boolean).length>0
+    || arr(d.vehicleAcquisitionRecords).length>0
+    || arr(d.fuelRecords).length>0
+    || arr(d.maintenanceRecords).length>0
+    || arr(d.insuranceRecords).length>0;
+}
+function getFirebaseBridge(){return window.RGBM_FIREBASE||null}
+function firebaseConfigReady(){
+  const bridge=getFirebaseBridge();
+  const cfg=bridge&&bridge.config;
+  return !!(cfg&&cfg.apiKey&&cfg.authDomain&&cfg.projectId);
+}
+function updateFirebaseState(next={}){
+  firebaseState={...firebaseState,...next};
+}
+function currentFirebaseDocRef(){
+  if(!firebaseState.db || !firebaseState.user) return null;
+  const bridge=getFirebaseBridge();
+  return bridge.api.doc(firebaseState.db,"users",firebaseState.user.uid,"rgbm","main");
+}
+async function initFirebaseIntegration(){
+  const bridge=getFirebaseBridge();
+  updateFirebaseState({available:!!bridge,configPresent:firebaseConfigReady()});
+  if(!bridge || firebaseState.initialized) return;
+  if(!firebaseConfigReady()){
+    updateFirebaseState({initialized:false,status:"Firebase not configured. App remains local-only until a valid config is added."});
+    return;
+  }
+  try{
+    const api=bridge.api;
+    const app=(api.getApps&&api.getApps().length)?api.getApp():api.initializeApp(bridge.config);
+    const auth=api.getAuth(app);
+    const db=api.getFirestore(app);
+    updateFirebaseState({initialized:true,auth,db,status:"Firebase ready. Sign in to connect cloud storage."});
+    api.onAuthStateChanged(auth,async user=>{
+      const meta=loadFirebaseMeta();
+      updateFirebaseState({
+        user:user||null,
+        cloudLinked:!!(user&&meta.linkedUid===user.uid),
+        lastSyncAt:meta.lastSyncAt||"",
+        lastLoadedRemoteModifiedAt:meta.lastLoadedRemoteModifiedAt||"",
+        syncError:""
+      });
+      if(user){
+        await refreshFirebaseRemoteStatus(true);
+      }else{
+        updateFirebaseState({remoteExists:false,remoteModifiedAt:"",status:firebaseState.configPresent?"Signed out. Local-only mode active.":"Firebase not configured. App remains local-only."});
+      }
+      if(route.screen==="data") render();
+    });
+  }catch(e){
+    console.warn(e);
+    updateFirebaseState({initialized:false,status:"Firebase initialization failed. App remains local-only.",syncError:String(e&&e.message||e)});
+    if(route.screen==="data") render();
+  }
+}
+async function refreshFirebaseRemoteStatus(silent=false){
+  if(!firebaseState.initialized || !firebaseState.user){
+    updateFirebaseState({remoteExists:false,remoteModifiedAt:"",status:firebaseState.configPresent?"Sign in to view cloud status.":"Firebase not configured. App remains local-only."});
+    if(route.screen==="data") render();
+    return false;
+  }
+  try{
+    const bridge=getFirebaseBridge();
+    const snap=await bridge.api.getDoc(currentFirebaseDocRef());
+    if(snap.exists()){
+      const remote=snap.data()||{};
+      updateFirebaseState({
+        remoteExists:true,
+        remoteModifiedAt:remote.modifiedAt||"",
+        status:firebaseState.cloudLinked?"Cloud linked and ready.":"Cloud data detected. Choose Load Cloud or Migrate Local to resolve authority."
+      });
+    }else{
+      updateFirebaseState({remoteExists:false,remoteModifiedAt:"",status:firebaseState.cloudLinked?"Cloud linked and empty.":"No cloud data found for this account."});
+    }
+    if(!silent && route.screen==="data") render();
+    return true;
+  }catch(e){
+    console.warn(e);
+    updateFirebaseState({syncError:String(e&&e.message||e),status:"Cloud status check failed. Local-only mode remains available."});
+    if(route.screen==="data") render();
+    return false;
+  }
+}
+async function writeStateToCloud(payload,reason="manual"){
+  if(!firebaseState.initialized || !firebaseState.user) throw new Error("Sign in first.");
+  const bridge=getFirebaseBridge();
+  const data=normalizeData(cloneData(payload));
+  data.schemaVersion=SCHEMA_VERSION;
+  data.appVersion=VERSION;
+  data.modifiedAt=nowISO();
+  await bridge.api.setDoc(currentFirebaseDocRef(),{
+    ...data,
+    firebaseOwnerUid:firebaseState.user.uid,
+    firebaseUpdatedAt:bridge.api.serverTimestamp(),
+    cloudLinked:true,
+    cloudReason:reason
+  });
+  const meta=saveFirebaseMeta({
+    ...loadFirebaseMeta(),
+    linkedUid:firebaseState.user.uid,
+    lastSyncAt:data.modifiedAt,
+    lastLocalModifiedAt:data.modifiedAt,
+    lastLoadedRemoteModifiedAt:data.modifiedAt
+  });
+  updateFirebaseState({
+    cloudLinked:true,
+    remoteExists:true,
+    lastSyncAt:meta.lastSyncAt||"",
+    lastLoadedRemoteModifiedAt:meta.lastLoadedRemoteModifiedAt||"",
+    remoteModifiedAt:data.modifiedAt,
+    syncError:"",
+    status:"Cloud save complete."
+  });
+  return data;
+}
+async function syncStateToCloud(reason="save",payload=state){
+  if(!firebaseState.initialized || !firebaseState.user || !firebaseState.cloudLinked) return false;
+  if(firebaseState.syncInFlight){
+    updateFirebaseState({pendingSync:true});
+    return false;
+  }
+  updateFirebaseState({syncInFlight:true,pendingSync:false});
+  try{
+    const written=await writeStateToCloud(payload,reason);
+    updateFirebaseState({syncInFlight:false,status:reason==="save"?"Cloud save complete.":"Cloud sync complete."});
+    if(firebaseState.pendingSync){
+      updateFirebaseState({pendingSync:false});
+      return syncStateToCloud("queued-save",state);
+    }
+    if(route.screen==="data") render();
+    return written;
+  }catch(e){
+    console.warn(e);
+    updateFirebaseState({syncInFlight:false,syncError:String(e&&e.message||e),status:"Cloud save failed. Local data remains on this device."});
+    if(route.screen==="data") render();
+    return false;
+  }
+}
+async function firebaseCreateAccount(){
+  const email=cleanText($("fbEmail")?.value||"");
+  const password=String($("fbPassword")?.value||"");
+  if(!firebaseState.initialized) return alert(firebaseState.status||"Firebase is not ready.");
+  if(!email || !password) return alert("Email and password are required.");
+  try{
+    await getFirebaseBridge().api.createUserWithEmailAndPassword(firebaseState.auth,email,password);
+    alert("Account created and signed in.");
+  }catch(e){
+    alert("Create account failed: "+(e&&e.message?e.message:String(e)));
+  }
+}
+async function firebaseSignIn(){
+  const email=cleanText($("fbEmail")?.value||"");
+  const password=String($("fbPassword")?.value||"");
+  if(!firebaseState.initialized) return alert(firebaseState.status||"Firebase is not ready.");
+  if(!email || !password) return alert("Email and password are required.");
+  try{
+    await getFirebaseBridge().api.signInWithEmailAndPassword(firebaseState.auth,email,password);
+    alert("Signed in.");
+  }catch(e){
+    alert("Sign in failed: "+(e&&e.message?e.message:String(e)));
+  }
+}
+async function firebaseSignOutUser(){
+  if(!firebaseState.initialized || !firebaseState.auth) return;
+  try{
+    const uid=firebaseState.user&&firebaseState.user.uid;
+    await getFirebaseBridge().api.signOut(firebaseState.auth);
+    clearFirebaseLinkForUser(uid);
+    updateFirebaseState({cloudLinked:false,status:"Signed out. Local-only mode active."});
+  }catch(e){
+    alert("Sign out failed: "+(e&&e.message?e.message:String(e)));
+  }
+}
+async function migrateLocalDataToCloud(){
+  if(!firebaseState.initialized || !firebaseState.user) return alert("Sign in first.");
+  if(!hasMeaningfulData(state) && !confirm("This device appears to have little or no local data. Continue creating cloud data from the current local state?")) return;
+  const proceed=confirm("This will copy current local RGB Mileage data into Firestore for the signed-in account. Local device data will be retained. Continue?");
+  if(!proceed) return;
+  try{
+    await writeStateToCloud(state,"local-to-cloud-migration");
+    alert("Local data migrated to cloud. Future saves will sync to Firestore while signed in.");
+    if(route.screen==="data") render();
+  }catch(e){
+    alert("Migration failed: "+(e&&e.message?e.message:String(e)));
+  }
+}
+async function loadCloudDataToDevice(){
+  if(!firebaseState.initialized || !firebaseState.user) return alert("Sign in first.");
+  try{
+    const bridge=getFirebaseBridge();
+    const snap=await bridge.api.getDoc(currentFirebaseDocRef());
+    if(!snap.exists()) return alert("No cloud data exists for this account.");
+    const remote=normalizeData(snap.data());
+    if(!confirm("This will replace the current local device data with the signed-in account's cloud data. Continue?")) return;
+    saveData(remote,{skipCloudSync:true,reason:"cloud-load"});
+    const meta=saveFirebaseMeta({
+      ...loadFirebaseMeta(),
+      linkedUid:firebaseState.user.uid,
+      lastSyncAt:remote.modifiedAt||nowISO(),
+      lastLocalModifiedAt:remote.modifiedAt||nowISO(),
+      lastLoadedRemoteModifiedAt:remote.modifiedAt||nowISO()
+    });
+    updateFirebaseState({
+      cloudLinked:true,
+      remoteExists:true,
+      lastSyncAt:meta.lastSyncAt||"",
+      lastLoadedRemoteModifiedAt:meta.lastLoadedRemoteModifiedAt||"",
+      remoteModifiedAt:remote.modifiedAt||"",
+      syncError:"",
+      status:"Cloud data loaded to this device."
+    });
+    render();
+    alert("Cloud data loaded to this device.");
+  }catch(e){
+    alert("Load cloud failed: "+(e&&e.message?e.message:String(e)));
+  }
+}
+function firebaseStatusText(){
+  const lines=[
+    `Mode: ${firebaseState.cloudLinked?"Cloud-linked":"Local-first"}`,
+    `Firebase Config: ${firebaseState.configPresent?"Present":"Missing"}`,
+    `Auth: ${firebaseState.user?`Signed in as ${firebaseState.user.email||firebaseState.user.uid}`:"Signed out"}`,
+    `Cloud Document: ${firebaseState.remoteExists?"Present":"Not detected"}`,
+    `Last Cloud Sync: ${firebaseState.lastSyncAt||"Not yet synced"}`,
+    `Last Cloud Modified: ${firebaseState.remoteModifiedAt||"Unknown"}`,
+    `Status: ${firebaseState.status||"Ready"}`
+  ];
+  if(firebaseState.syncError) lines.push(`Last Error: ${firebaseState.syncError}`);
+  return lines.join("\n");
+}
+
+function loadData(){
+  let raw=localStorage.getItem(KEY);
+  if(raw){
+    try{return normalizeData(JSON.parse(raw))}catch(e){console.warn(e)}
+  }
+  for(const k of LEGACY_KEYS){
+    raw=localStorage.getItem(k);
+    if(raw){
+      try{
+        const d=normalizeData(JSON.parse(raw));
+        saveData(d,{skipCloudSync:true,reason:"legacy-local-recover"});
+        return d;
+      }catch(e){console.warn(e)}
+    }
+  }
+  const d=blankData();
+  saveData(d,{skipCloudSync:true,reason:"blank-local-init"});
+  return d;
+}
+function saveData(d=state,options={}){
+  const next=normalizeData(d);
+  next.schemaVersion=SCHEMA_VERSION;
+  next.appVersion=VERSION;
+  next.modifiedAt=nowISO();
+  const payload=JSON.stringify(next);
   try{
     localStorage.setItem(KEY,payload);
   }catch(e){
@@ -161,7 +435,12 @@ function saveData(d=state){
       throw e;
     }
   }
-  state=d;
+  state=next;
+  const opts={skipCloudSync:false,reason:"save",...options};
+  if(!opts.skipCloudSync){
+    syncStateToCloud(opts.reason||"save",next).catch(err=>console.warn(err));
+  }
+  return next;
 }
 function nextSeq(){const n=state.nextEntrySequence||1;state.nextEntrySequence=n+1;return n} function baseRecord(type,vid,source="Manual Entry"){return {recordId:uid(type.toUpperCase()),entrySequence:nextSeq(),recordType:type,vehicleId:vid,source,classificationTags:[],dataQuality:source==="Manual Entry"?"Verified":"Review",createdAt:nowISO(),modifiedAt:nowISO(),notes:""}}
 function normVehicle(v,i){return {vehicleId:v.vehicleId||v.id||uid("VEH"),id:v.vehicleId||v.id||uid("VEH"),slot:Number.isFinite(+v.slot)?+v.slot:i,displayName:v.displayName||[v.year,v.make,v.model].filter(Boolean).join(" ")||v.nickname||"Vehicle",nickname:v.nickname||"",year:v.year||"",make:v.make||"",model:v.model||"",badge:v.badge||"",vin:v.vin||"",plate:v.plate||"",plateState:v.plateState||"",status:v.status||"Active",primaryPhoto:v.primaryPhoto||v.photo||"",primaryPhotoZoom:Number(v.primaryPhotoZoom||v.photoZoom||1.25),primaryPhotoOffsetX:Number(v.primaryPhotoOffsetX||0),primaryPhotoOffsetY:Number(v.primaryPhotoOffsetY||0),acquisitionDate:v.acquisitionDate||v.purchaseDate||"",purchaseDate:v.purchaseDate||v.acquisitionDate||"",startingOdometer:v.startingOdometer||"",purchasePrice:v.purchasePrice||v.purchaseCost||"",purchaseCost:v.purchaseCost||v.purchasePrice||"",seller:v.seller||"",insCompany:v.insCompany||"",policyNumber:v.policyNumber||"",effectiveDate:v.effectiveDate||"",expirationDate:v.expirationDate||"",insuranceValue:v.insuranceValue||"",agreedValue:v.agreedValue||"",defaultFuelGrade:v.defaultFuelGrade||"",registration:v.registration||{},photos:arr(v.photos),createdAt:v.createdAt||nowISO(),modifiedAt:v.modifiedAt||nowISO()}}
@@ -1262,4 +1541,5 @@ function initV213eStabilization(){
     window.addEventListener("orientationchange",()=>setTimeout(lock,50),{passive:true});
   }catch(e){}
 }
-initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=215').catch(()=>{})}
+initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();initFirebaseIntegration().catch(e=>console.warn(e));if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=220').catch(()=>{})}
+window.refreshFirebaseRemoteStatus=refreshFirebaseRemoteStatus;window.migrateLocalDataToCloud=migrateLocalDataToCloud;window.loadCloudDataToDevice=loadCloudDataToDevice;window.firebaseCreateAccount=firebaseCreateAccount;window.firebaseSignIn=firebaseSignIn;window.firebaseSignOutUser=firebaseSignOutUser;

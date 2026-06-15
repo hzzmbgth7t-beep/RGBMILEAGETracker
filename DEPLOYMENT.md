@@ -1,38 +1,21 @@
-## v2.1.6c Deployment Notes
+# DEPLOYMENT
 
-### Release Type
-Insurance Screen Merger Release
+## Package
+RGBMileage v2.2.0 full install package
 
-### Purpose
-Deploy v2.1.6c only after confirming that the new unified Insurance screen works correctly and that Fuel and Maintenance still work as accepted.
+## Deployment target
+- GitHub Pages / web PWA retained
 
-### Links
-GitHub Pages: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/)
+## Deployment URLs
+- GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+- Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+- GitHub repository URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c
 
-Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c)
+## Runtime identification
+- `index.html` title: `RGB Mileage v2.2.0`
+- `app.js` version: `2.2.0`
+- `manifest.json` start URL: `./index.html?v=220`
+- `sw.js` cache marker aligned to `v2.2.0`
 
-Repository: [https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker](https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker)
-
-### Active Version
-- App version: `v2.1.6c`
-- Active cache-buster: `?v=216c`
-
-### Pre-Deployment Checks
-- version labels are aligned across docs and app files
-- Insurance opens on one unified screen
-- Insurance supports Empty / View / Edit states
-- Insurance Data Information appears in both View and Edit, collapsed by default
-- Insurance Previous Records stays expanded
-- Fuel still uses the accepted merged-screen behavior
-- Maintenance still uses the accepted merged-screen behavior
-- Back, Save, Cancel, Home, and New Entry behave correctly on Insurance
-
-### Post-Deployment Verification
-- confirm Insurance tap opens View on the unified screen
-- confirm Insurance long press opens Edit on the unified screen
-- confirm Insurance Save / Return To List / Back / Home all work correctly
-- confirm Fuel and Maintenance remain unchanged
-
-### Rollback Reference
-If Insurance merger behavior fails, revert to the prior accepted baseline:
-- `v2.1.5b`
+## Deployment note
+This package is rebuilt from the verified config-patched `v2.2.0` runtime and is intended to replace the build-candidate packaging for deployment use.

@@ -1,20 +1,13 @@
-# CHANGELOG.md
+# CHANGELOG
 
-## v2.1.6c — Insurance Screen Merger Release
-Date: 2026-06-12
+## v2.2.0
+- Introduced Firebase-aware application path for auth and Firestore integration
+- Added explicit create-account, sign-in, sign-out, cloud refresh, migrate-to-cloud, and load-from-cloud actions
+- Preserved accepted Fuel / Maintenance / Insurance merged-screen behavior through the centralized save flow
+- Retained import/export capability
+- Updated runtime asset/cache versioning to `220`
+- Inserted verified Firebase web config into `index.html`
 
-### Purpose
-This release applies the accepted merged-screen model to Insurance, completing the section merger work across Fuel, Maintenance, and Insurance.
-
-### Added / Changed
-- unified Insurance screen with Empty / View / Edit states
-- Insurance tap -> View
-- Insurance long press -> Edit
-- New button for new Insurance entry
-- Data Information available in Insurance View and Insurance Edit
-- Insurance-specific unsaved-change handling
-- Insurance-specific Save / Cancel / Back / Home prompt flow aligned to the accepted Fuel and Maintenance model
-- Insurance compatibility-aware field loading for legacy values
-
-### Scope Notes
-This release updates Insurance only. Fuel and Maintenance remain on their accepted merged-screen models.
+## Packaging update
+- Rebuilt the deployment package as a full `v2.2.0` install package instead of a build-candidate package
+- Corrected package-facing documentation to align with the deployed runtime version
