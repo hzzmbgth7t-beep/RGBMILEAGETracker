@@ -1,5 +1,5 @@
-const APP_NAME="RGB Mileage", VERSION="2.2.0", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-13", KEY="RGBM_DATA_v213d", FIREBASE_META_KEY="RGBM_FIREBASE_META_v220";
-function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
+const APP_NAME="RGB Mileage", VERSION="2.2.0a", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-14", KEY="RGBM_DATA_v213d", FIREBASE_META_KEY="RGBM_FIREBASE_META_v220a";
+function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${m}/${day}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
 let state, route={screen:"home"}, historyStack=[], longTimer=null, suppressTap=false, editSnapshot=null;
@@ -1493,7 +1493,29 @@ function saveQuickInsurance(vid,silent){
   }catch(e){ alert(e.message||String(e)); return false; }
 }
 
-function dataScreen(app){app.innerHTML=header("Data Management")+`<div class="card"><h2>Backup & Restore</h2><button class="wide primary" onclick="downloadBackup()">Create JSON Backup</button><label>Restore JSON<input type="file" id="restoreFile" accept=".json"></label><label>Restore Mode<select id="restoreMode"><option>Replace</option><option>Update</option><option>Duplicate</option><option>Skip</option></select></label><button class="wide" onclick="restoreBackup()">Restore JSON Backup</button><button class="wide ghost" onclick="if(confirm('Clear old RGB Mileage cached storage? Current active data may be removed.')){clearRGBMStorage(false);alert('Old RGB Mileage storage cleared.')}">Clear Old Cached Storage</button><pre id="dataStatus" class="small"></pre></div><div class="card"><h2>CSV Import</h2><p class="muted">CSV import supports Fuel and Maintenance records.</p><label>Vehicle<select id="importVehicle">${state.vehicles.filter(Boolean).map(v=>`<option value="${v.vehicleId}">${esc(vehicleLabel(v))}</option>`).join("")}</select></label><label>CSV File<input type="file" id="csvFile" accept=".csv"></label><label>Duplicate Mode<select id="importMode"><option>Skip</option><option>Update</option><option>Duplicate</option><option>Replace</option><option>Cancel</option></select></label><button class="wide" onclick="previewCSV()">Preview Import</button><button class="wide primary" onclick="savePreviewRows()">Save Previewed Rows</button><pre id="importStatus" class="small"></pre></div>`+bottomNav()+footer()}
+function dataScreen(app){
+  const authReady=firebaseState.initialized;
+  const signedIn=!!(firebaseState.user&&firebaseState.user.uid);
+  const cloudCard=`<div class="card"><h2>Firebase Cloud Sync</h2>
+    <p class="muted">Use Firebase Email/Password to connect Firestore cloud storage. Local device data remains available.</p>
+    <label>Email<input id="fbEmail" type="email" inputmode="email" autocomplete="username email" autocapitalize="off" spellcheck="false" placeholder="name@example.com" value="${esc(firebaseState.user&&firebaseState.user.email||"")}"></label>
+    <label>Password<input id="fbPassword" type="password" autocomplete="current-password" placeholder="Enter password"></label>
+    <div class="row">
+      <button class="wide" onclick="firebaseCreateAccount()">Create Account</button>
+      <button class="wide primary" onclick="firebaseSignIn()">Sign In</button>
+    </div>
+    <div class="row">
+      <button class="wide" onclick="firebaseSignOutUser()" ${signedIn?"":"disabled"}>Sign Out</button>
+      <button class="wide" onclick="refreshFirebaseRemoteStatus()" ${authReady?"":"disabled"}>Refresh Cloud Status</button>
+    </div>
+    <div class="row">
+      <button class="wide primary" onclick="migrateLocalDataToCloud()" ${(signedIn&&authReady)?"":"disabled"}>Migrate Local Data to Cloud</button>
+      <button class="wide" onclick="loadCloudDataToDevice()" ${(signedIn&&authReady)?"":"disabled"}>Load Cloud Data to Device</button>
+    </div>
+    <pre id="firebaseStatus" class="small">${esc(firebaseStatusText())}</pre>
+  </div>`;
+  app.innerHTML=header("Data Management")+cloudCard+`<div class="card"><h2>Backup & Restore</h2><button class="wide primary" onclick="downloadBackup()">Create JSON Backup</button><label>Restore JSON<input type="file" id="restoreFile" accept=".json"></label><label>Restore Mode<select id="restoreMode"><option>Replace</option><option>Update</option><option>Duplicate</option><option>Skip</option></select></label><button class="wide" onclick="restoreBackup()">Restore JSON Backup</button><button class="wide ghost" onclick="if(confirm('Clear old RGB Mileage cached storage? Current active data may be removed.')){clearRGBMStorage(false);alert('Old RGB Mileage storage cleared.')}">Clear Old Cached Storage</button><pre id="dataStatus" class="small"></pre></div><div class="card"><h2>CSV Import</h2><p class="muted">CSV import supports Fuel and Maintenance records.</p><label>Vehicle<select id="importVehicle">${state.vehicles.filter(Boolean).map(v=>`<option value="${v.vehicleId}">${esc(vehicleLabel(v))}</option>`).join("")}</select></label><label>CSV File<input type="file" id="csvFile" accept=".csv"></label><label>Duplicate Mode<select id="importMode"><option>Skip</option><option>Update</option><option>Duplicate</option><option>Replace</option><option>Cancel</option></select></label><button class="wide" onclick="previewCSV()">Preview Import</button><button class="wide primary" onclick="savePreviewRows()">Save Previewed Rows</button><pre id="importStatus" class="small"></pre></div>`+bottomNav()+footer()
+}
 function backupPayload(){const p=JSON.parse(JSON.stringify(state));p.app="RGB Mileage";p.schemaVersion=SCHEMA_VERSION;p.exportedAt=nowISO();p.exportedByVersion=VERSION;p.backupType="Full JSON";p.metadata={vehicleCount:state.vehicles.filter(Boolean).length,fuelRecordCount:state.fuelRecords.length,maintenanceRecordCount:state.maintenanceRecords.length,insuranceRecordCount:state.insuranceRecords.length,attachmentCount:state.attachments.length};return p} function downloadBackup(){const p=backupPayload(),txt=JSON.stringify(p,null,2);if(!confirm(`Backup Summary\nVehicles: ${p.metadata.vehicleCount}\nFuel: ${p.metadata.fuelRecordCount}\nMaintenance: ${p.metadata.maintenanceRecordCount}\nInsurance: ${p.metadata.insuranceRecordCount}\nEstimated Size: ${new Blob([txt]).size} bytes\n\nCreate backup?`))return;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));a.download=`RGBM_Backup_v${VERSION}_${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href);state.settings.lastBackupDate=nowISO();saveData()} function restoreBackup(){
   const f=$("restoreFile").files[0];
   if(!f)return alert("Choose a JSON backup first.");

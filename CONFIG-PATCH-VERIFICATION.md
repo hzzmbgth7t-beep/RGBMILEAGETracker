@@ -1,10 +1,10 @@
-# v2.2.0 Firebase Config Patch Verification
+# v2.2.0a Firebase Config Patch Verification
 
 Patch date: 2026-06-14T01:44:42.461356Z
 
 ## Source inputs
-- Baseline candidate: `RGBMileage_v2.2.0_build_candidate_1.zip`
-- Controlled config source: `RGBMileage_Firebase_Web_Config_v2.2.0.txt`
+- Baseline candidate: `RGBMileage_v2.2.0a_build_candidate_1.zip`
+- Controlled config source: `RGBMileage_Firebase_Web_Config_v2.2.0a.txt`
 
 ## Authorized target
 - `index.html` only

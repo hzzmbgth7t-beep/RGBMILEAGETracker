@@ -1,39 +1,29 @@
-# RGBMileage v2.2.0 Install Package
+# RGBMileage v2.2.0a Clean Install Package
 
-This package is the first Firebase-enabled full `v2.2.0` RGBMileage install package.
+This package is the minimum corrective release for RGBMileage `v2.2.0a`.
 
-## Build status
-- Previous stable baseline: `v2.1.6c`
-- Current package version: `v2.2.0`
-- Package type: full Firebase migration version
+## Release status
+- Previous release: `v2.2.0`
+- Current release: `v2.2.0a`
+- Package type: clean install corrective release
 - Hosting model retained: GitHub Pages / web PWA
 
-## Included scope
-- Firebase Email/Password authentication
-- Firestore connection
-- Explicit local-to-cloud migration flow
-- Preservation of accepted current behavior
-- Import/export retained
-
-## Out of scope in v2.2.0
-- Broad cleanup/refactor
-- UI redesign unrelated to Firebase migration
-- Hosting move away from GitHub Pages
-- Realtime Database adoption
-- Analytics / unrelated Firebase products
+## Corrective scope in v2.2.0a
+- Add missing Firebase/auth/cloud controls to the Data Management screen
+- Restore complete user-visible Firebase workflow using the already-present Firebase code path
+- Correct build-date display format from `DD/MM/YY` to `MM/DD/YY`
+- Preserve accepted current behavior
+- Retain import/export
 
 ## Deployment URLs
 - GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=220
+- Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=220a
 - GitHub repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
 
 ## Runtime identification
-Use these runtime indicators to confirm the active deployed version:
-- `index.html` title shows `RGB Mileage v2.2.0`
-- `index.html` loads `app.js?v=220`
-- `manifest.json` `start_url` includes `?v=220`
-- `sw.js` cache marker is aligned to `v2.2.0`
-- Firebase/cloud/auth controls are present in the app UI
-
-## Important note
-This package is the full-version deployment build assembled from the verified config-patched `v2.2.0` runtime.
+- `index.html` title shows `RGB Mileage v2.2.0a`
+- `index.html` loads `app.js?v=220a`
+- `manifest.json` `start_url` includes `?v=220a`
+- `sw.js` cache marker is aligned to `v2.2.0a`
+- Data Management screen includes Firebase/cloud/auth controls
+- Build date is displayed as `MM/DD/YY`

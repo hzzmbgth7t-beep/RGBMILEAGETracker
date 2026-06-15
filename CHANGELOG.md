@@ -1,13 +1,13 @@
 # CHANGELOG
 
-## v2.2.0
-- Introduced Firebase-aware application path for auth and Firestore integration
-- Added explicit create-account, sign-in, sign-out, cloud refresh, migrate-to-cloud, and load-from-cloud actions
-- Preserved accepted Fuel / Maintenance / Insurance merged-screen behavior through the centralized save flow
-- Retained import/export capability
-- Updated runtime asset/cache versioning to `220`
-- Inserted verified Firebase web config into `index.html`
+## v2.2.0a
+- Added visible Firebase Cloud Sync controls to the Data Management screen
+- Added email/password inputs for account creation and sign-in
+- Added visible actions for sign out, refresh cloud status, migrate local data to cloud, and load cloud data to device
+- Added visible Firebase/cloud status display sourced from runtime state
+- Corrected build-date display from `DD/MM/YY` to `MM/DD/YY`
+- Preserved Backup & Restore and CSV Import behavior
 
-## Packaging update
-- Rebuilt the deployment package as a full `v2.2.0` install package instead of a build-candidate package
-- Corrected package-facing documentation to align with the deployed runtime version
+## Reason for corrective release
+- `v2.2.0` contained Firebase code paths without complete user-visible controls
+- `v2.2.0` displayed build date in the wrong format relative to the desired `MM/DD/YY`
