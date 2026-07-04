@@ -1,5 +1,5 @@
-const APP_NAME="RGB Mileage", VERSION="2.2.0a", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-14", KEY="RGBM_DATA_v213d", FIREBASE_META_KEY="RGBM_FIREBASE_META_v220a";
-function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${m}/${day}/${String(y).slice(-2)}`:String(d||"");}
+const APP_NAME="RGB Mileage", VERSION="2.1.6d", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
+function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
 let state, route={screen:"home"}, historyStack=[], longTimer=null, suppressTap=false, editSnapshot=null;
@@ -140,286 +140,12 @@ function dedupeRecords(d){
     });
   });
 }
-
-let firebaseState={available:false,initialized:false,configPresent:false,user:null,auth:null,db:null,status:"Local-only mode.",remoteExists:false,cloudLinked:false,lastSyncAt:"",syncError:"",pendingSync:false,syncInFlight:false,lastLoadedRemoteModifiedAt:"",remoteModifiedAt:""};
-function cloneData(d){return JSON.parse(JSON.stringify(d))}
-function defaultFirebaseMeta(){return {linkedUid:"",lastSyncAt:"",lastLocalModifiedAt:"",lastLoadedRemoteModifiedAt:""}}
-function loadFirebaseMeta(){
-  try{
-    const parsed=JSON.parse(localStorage.getItem(FIREBASE_META_KEY)||"null");
-    return {...defaultFirebaseMeta(),...(parsed&&typeof parsed==="object"?parsed:{})};
-  }catch(e){
-    return defaultFirebaseMeta();
-  }
-}
-function saveFirebaseMeta(meta){
-  const merged={...defaultFirebaseMeta(),...(meta&&typeof meta==="object"?meta:{})};
-  localStorage.setItem(FIREBASE_META_KEY,JSON.stringify(merged));
-  return merged;
-}
-function clearFirebaseLinkForUser(uid){
-  const meta=loadFirebaseMeta();
-  if(!uid || meta.linkedUid===uid) saveFirebaseMeta(defaultFirebaseMeta());
-}
-function hasMeaningfulData(d=state){
-  if(!d || typeof d!=="object") return false;
-  return arr(d.vehicles).filter(Boolean).length>0
-    || arr(d.vehicleAcquisitionRecords).length>0
-    || arr(d.fuelRecords).length>0
-    || arr(d.maintenanceRecords).length>0
-    || arr(d.insuranceRecords).length>0;
-}
-function getFirebaseBridge(){return window.RGBM_FIREBASE||null}
-function firebaseConfigReady(){
-  const bridge=getFirebaseBridge();
-  const cfg=bridge&&bridge.config;
-  return !!(cfg&&cfg.apiKey&&cfg.authDomain&&cfg.projectId);
-}
-function updateFirebaseState(next={}){
-  firebaseState={...firebaseState,...next};
-}
-function currentFirebaseDocRef(){
-  if(!firebaseState.db || !firebaseState.user) return null;
-  const bridge=getFirebaseBridge();
-  return bridge.api.doc(firebaseState.db,"users",firebaseState.user.uid,"rgbm","main");
-}
-async function initFirebaseIntegration(){
-  const bridge=getFirebaseBridge();
-  updateFirebaseState({available:!!bridge,configPresent:firebaseConfigReady()});
-  if(!bridge || firebaseState.initialized) return;
-  if(!firebaseConfigReady()){
-    updateFirebaseState({initialized:false,status:"Firebase not configured. App remains local-only until a valid config is added."});
-    return;
-  }
-  try{
-    const api=bridge.api;
-    const app=(api.getApps&&api.getApps().length)?api.getApp():api.initializeApp(bridge.config);
-    const auth=api.getAuth(app);
-    const db=api.getFirestore(app);
-    updateFirebaseState({initialized:true,auth,db,status:"Firebase ready. Sign in to connect cloud storage."});
-    api.onAuthStateChanged(auth,async user=>{
-      const meta=loadFirebaseMeta();
-      updateFirebaseState({
-        user:user||null,
-        cloudLinked:!!(user&&meta.linkedUid===user.uid),
-        lastSyncAt:meta.lastSyncAt||"",
-        lastLoadedRemoteModifiedAt:meta.lastLoadedRemoteModifiedAt||"",
-        syncError:""
-      });
-      if(user){
-        await refreshFirebaseRemoteStatus(true);
-      }else{
-        updateFirebaseState({remoteExists:false,remoteModifiedAt:"",status:firebaseState.configPresent?"Signed out. Local-only mode active.":"Firebase not configured. App remains local-only."});
-      }
-      if(route.screen==="data") render();
-    });
-  }catch(e){
-    console.warn(e);
-    updateFirebaseState({initialized:false,status:"Firebase initialization failed. App remains local-only.",syncError:String(e&&e.message||e)});
-    if(route.screen==="data") render();
-  }
-}
-async function refreshFirebaseRemoteStatus(silent=false){
-  if(!firebaseState.initialized || !firebaseState.user){
-    updateFirebaseState({remoteExists:false,remoteModifiedAt:"",status:firebaseState.configPresent?"Sign in to view cloud status.":"Firebase not configured. App remains local-only."});
-    if(route.screen==="data") render();
-    return false;
-  }
-  try{
-    const bridge=getFirebaseBridge();
-    const snap=await bridge.api.getDoc(currentFirebaseDocRef());
-    if(snap.exists()){
-      const remote=snap.data()||{};
-      updateFirebaseState({
-        remoteExists:true,
-        remoteModifiedAt:remote.modifiedAt||"",
-        status:firebaseState.cloudLinked?"Cloud linked and ready.":"Cloud data detected. Choose Load Cloud or Migrate Local to resolve authority."
-      });
-    }else{
-      updateFirebaseState({remoteExists:false,remoteModifiedAt:"",status:firebaseState.cloudLinked?"Cloud linked and empty.":"No cloud data found for this account."});
-    }
-    if(!silent && route.screen==="data") render();
-    return true;
-  }catch(e){
-    console.warn(e);
-    updateFirebaseState({syncError:String(e&&e.message||e),status:"Cloud status check failed. Local-only mode remains available."});
-    if(route.screen==="data") render();
-    return false;
-  }
-}
-async function writeStateToCloud(payload,reason="manual"){
-  if(!firebaseState.initialized || !firebaseState.user) throw new Error("Sign in first.");
-  const bridge=getFirebaseBridge();
-  const data=normalizeData(cloneData(payload));
-  data.schemaVersion=SCHEMA_VERSION;
-  data.appVersion=VERSION;
-  data.modifiedAt=nowISO();
-  await bridge.api.setDoc(currentFirebaseDocRef(),{
-    ...data,
-    firebaseOwnerUid:firebaseState.user.uid,
-    firebaseUpdatedAt:bridge.api.serverTimestamp(),
-    cloudLinked:true,
-    cloudReason:reason
-  });
-  const meta=saveFirebaseMeta({
-    ...loadFirebaseMeta(),
-    linkedUid:firebaseState.user.uid,
-    lastSyncAt:data.modifiedAt,
-    lastLocalModifiedAt:data.modifiedAt,
-    lastLoadedRemoteModifiedAt:data.modifiedAt
-  });
-  updateFirebaseState({
-    cloudLinked:true,
-    remoteExists:true,
-    lastSyncAt:meta.lastSyncAt||"",
-    lastLoadedRemoteModifiedAt:meta.lastLoadedRemoteModifiedAt||"",
-    remoteModifiedAt:data.modifiedAt,
-    syncError:"",
-    status:"Cloud save complete."
-  });
-  return data;
-}
-async function syncStateToCloud(reason="save",payload=state){
-  if(!firebaseState.initialized || !firebaseState.user || !firebaseState.cloudLinked) return false;
-  if(firebaseState.syncInFlight){
-    updateFirebaseState({pendingSync:true});
-    return false;
-  }
-  updateFirebaseState({syncInFlight:true,pendingSync:false});
-  try{
-    const written=await writeStateToCloud(payload,reason);
-    updateFirebaseState({syncInFlight:false,status:reason==="save"?"Cloud save complete.":"Cloud sync complete."});
-    if(firebaseState.pendingSync){
-      updateFirebaseState({pendingSync:false});
-      return syncStateToCloud("queued-save",state);
-    }
-    if(route.screen==="data") render();
-    return written;
-  }catch(e){
-    console.warn(e);
-    updateFirebaseState({syncInFlight:false,syncError:String(e&&e.message||e),status:"Cloud save failed. Local data remains on this device."});
-    if(route.screen==="data") render();
-    return false;
-  }
-}
-async function firebaseCreateAccount(){
-  const email=cleanText($("fbEmail")?.value||"");
-  const password=String($("fbPassword")?.value||"");
-  if(!firebaseState.initialized) return alert(firebaseState.status||"Firebase is not ready.");
-  if(!email || !password) return alert("Email and password are required.");
-  try{
-    await getFirebaseBridge().api.createUserWithEmailAndPassword(firebaseState.auth,email,password);
-    alert("Account created and signed in.");
-  }catch(e){
-    alert("Create account failed: "+(e&&e.message?e.message:String(e)));
-  }
-}
-async function firebaseSignIn(){
-  const email=cleanText($("fbEmail")?.value||"");
-  const password=String($("fbPassword")?.value||"");
-  if(!firebaseState.initialized) return alert(firebaseState.status||"Firebase is not ready.");
-  if(!email || !password) return alert("Email and password are required.");
-  try{
-    await getFirebaseBridge().api.signInWithEmailAndPassword(firebaseState.auth,email,password);
-    alert("Signed in.");
-  }catch(e){
-    alert("Sign in failed: "+(e&&e.message?e.message:String(e)));
-  }
-}
-async function firebaseSignOutUser(){
-  if(!firebaseState.initialized || !firebaseState.auth) return;
-  try{
-    const uid=firebaseState.user&&firebaseState.user.uid;
-    await getFirebaseBridge().api.signOut(firebaseState.auth);
-    clearFirebaseLinkForUser(uid);
-    updateFirebaseState({cloudLinked:false,status:"Signed out. Local-only mode active."});
-  }catch(e){
-    alert("Sign out failed: "+(e&&e.message?e.message:String(e)));
-  }
-}
-async function migrateLocalDataToCloud(){
-  if(!firebaseState.initialized || !firebaseState.user) return alert("Sign in first.");
-  if(!hasMeaningfulData(state) && !confirm("This device appears to have little or no local data. Continue creating cloud data from the current local state?")) return;
-  const proceed=confirm("This will copy current local RGB Mileage data into Firestore for the signed-in account. Local device data will be retained. Continue?");
-  if(!proceed) return;
-  try{
-    await writeStateToCloud(state,"local-to-cloud-migration");
-    alert("Local data migrated to cloud. Future saves will sync to Firestore while signed in.");
-    if(route.screen==="data") render();
-  }catch(e){
-    alert("Migration failed: "+(e&&e.message?e.message:String(e)));
-  }
-}
-async function loadCloudDataToDevice(){
-  if(!firebaseState.initialized || !firebaseState.user) return alert("Sign in first.");
-  try{
-    const bridge=getFirebaseBridge();
-    const snap=await bridge.api.getDoc(currentFirebaseDocRef());
-    if(!snap.exists()) return alert("No cloud data exists for this account.");
-    const remote=normalizeData(snap.data());
-    if(!confirm("This will replace the current local device data with the signed-in account's cloud data. Continue?")) return;
-    saveData(remote,{skipCloudSync:true,reason:"cloud-load"});
-    const meta=saveFirebaseMeta({
-      ...loadFirebaseMeta(),
-      linkedUid:firebaseState.user.uid,
-      lastSyncAt:remote.modifiedAt||nowISO(),
-      lastLocalModifiedAt:remote.modifiedAt||nowISO(),
-      lastLoadedRemoteModifiedAt:remote.modifiedAt||nowISO()
-    });
-    updateFirebaseState({
-      cloudLinked:true,
-      remoteExists:true,
-      lastSyncAt:meta.lastSyncAt||"",
-      lastLoadedRemoteModifiedAt:meta.lastLoadedRemoteModifiedAt||"",
-      remoteModifiedAt:remote.modifiedAt||"",
-      syncError:"",
-      status:"Cloud data loaded to this device."
-    });
-    render();
-    alert("Cloud data loaded to this device.");
-  }catch(e){
-    alert("Load cloud failed: "+(e&&e.message?e.message:String(e)));
-  }
-}
-function firebaseStatusText(){
-  const lines=[
-    `Mode: ${firebaseState.cloudLinked?"Cloud-linked":"Local-first"}`,
-    `Firebase Config: ${firebaseState.configPresent?"Present":"Missing"}`,
-    `Auth: ${firebaseState.user?`Signed in as ${firebaseState.user.email||firebaseState.user.uid}`:"Signed out"}`,
-    `Cloud Document: ${firebaseState.remoteExists?"Present":"Not detected"}`,
-    `Last Cloud Sync: ${firebaseState.lastSyncAt||"Not yet synced"}`,
-    `Last Cloud Modified: ${firebaseState.remoteModifiedAt||"Unknown"}`,
-    `Status: ${firebaseState.status||"Ready"}`
-  ];
-  if(firebaseState.syncError) lines.push(`Last Error: ${firebaseState.syncError}`);
-  return lines.join("\n");
-}
-
-function loadData(){
-  let raw=localStorage.getItem(KEY);
-  if(raw){
-    try{return normalizeData(JSON.parse(raw))}catch(e){console.warn(e)}
-  }
-  for(const k of LEGACY_KEYS){
-    raw=localStorage.getItem(k);
-    if(raw){
-      try{
-        const d=normalizeData(JSON.parse(raw));
-        saveData(d,{skipCloudSync:true,reason:"legacy-local-recover"});
-        return d;
-      }catch(e){console.warn(e)}
-    }
-  }
-  const d=blankData();
-  saveData(d,{skipCloudSync:true,reason:"blank-local-init"});
-  return d;
-}
-function saveData(d=state,options={}){
-  const next=normalizeData(d);
-  next.schemaVersion=SCHEMA_VERSION;
-  next.appVersion=VERSION;
-  next.modifiedAt=nowISO();
-  const payload=JSON.stringify(next);
+function loadData(){let raw=localStorage.getItem(KEY); if(raw){try{return normalizeData(JSON.parse(raw))}catch(e){console.warn(e)}} for(const k of LEGACY_KEYS){raw=localStorage.getItem(k); if(raw){try{const d=normalizeData(JSON.parse(raw)); saveData(d); return d}catch(e){console.warn(e)}}} const d=blankData(); saveData(d); return d}
+function saveData(d=state){
+  d.schemaVersion=SCHEMA_VERSION;
+  d.appVersion=VERSION;
+  d.modifiedAt=nowISO();
+  const payload=JSON.stringify(d);
   try{
     localStorage.setItem(KEY,payload);
   }catch(e){
@@ -435,12 +161,7 @@ function saveData(d=state,options={}){
       throw e;
     }
   }
-  state=next;
-  const opts={skipCloudSync:false,reason:"save",...options};
-  if(!opts.skipCloudSync){
-    syncStateToCloud(opts.reason||"save",next).catch(err=>console.warn(err));
-  }
-  return next;
+  state=d;
 }
 function nextSeq(){const n=state.nextEntrySequence||1;state.nextEntrySequence=n+1;return n} function baseRecord(type,vid,source="Manual Entry"){return {recordId:uid(type.toUpperCase()),entrySequence:nextSeq(),recordType:type,vehicleId:vid,source,classificationTags:[],dataQuality:source==="Manual Entry"?"Verified":"Review",createdAt:nowISO(),modifiedAt:nowISO(),notes:""}}
 function normVehicle(v,i){return {vehicleId:v.vehicleId||v.id||uid("VEH"),id:v.vehicleId||v.id||uid("VEH"),slot:Number.isFinite(+v.slot)?+v.slot:i,displayName:v.displayName||[v.year,v.make,v.model].filter(Boolean).join(" ")||v.nickname||"Vehicle",nickname:v.nickname||"",year:v.year||"",make:v.make||"",model:v.model||"",badge:v.badge||"",vin:v.vin||"",plate:v.plate||"",plateState:v.plateState||"",status:v.status||"Active",primaryPhoto:v.primaryPhoto||v.photo||"",primaryPhotoZoom:Number(v.primaryPhotoZoom||v.photoZoom||1.25),primaryPhotoOffsetX:Number(v.primaryPhotoOffsetX||0),primaryPhotoOffsetY:Number(v.primaryPhotoOffsetY||0),acquisitionDate:v.acquisitionDate||v.purchaseDate||"",purchaseDate:v.purchaseDate||v.acquisitionDate||"",startingOdometer:v.startingOdometer||"",purchasePrice:v.purchasePrice||v.purchaseCost||"",purchaseCost:v.purchaseCost||v.purchasePrice||"",seller:v.seller||"",insCompany:v.insCompany||"",policyNumber:v.policyNumber||"",effectiveDate:v.effectiveDate||"",expirationDate:v.expirationDate||"",insuranceValue:v.insuranceValue||"",agreedValue:v.agreedValue||"",defaultFuelGrade:v.defaultFuelGrade||"",registration:v.registration||{},photos:arr(v.photos),createdAt:v.createdAt||nowISO(),modifiedAt:v.modifiedAt||nowISO()}}
@@ -668,7 +389,7 @@ function rowPressStart(type,recordId,e){
     startY:e&&typeof e.clientY==="number"?e.clientY:0,
     moved:false
   };
-  pressStart(()=>openRecordFlow(type,recordId,"edit"),e,650);
+  pressStart(()=>type==="Fuel"?fuelRowActions(recordId):openRecordFlow(type,recordId,"edit"),e,650);
 }
 function rowPressMove(e){
   if(!rowTouchState.active) return;
@@ -721,6 +442,58 @@ function entryRow(type,r){
     onpointerleave="rowPressCancel()"
     onclick="return rowTap('${type}','${r.recordId}',event)">
     <div class="entry-main"><span>${recordTitle(type,r)}</span><span class="muted">${esc(r.dataQuality||"")}</span></div><div class="badges">${b}</div></div>`;
+}
+
+function fuelRowActions(recordId){
+  const r=findRecord("Fuel",recordId);
+  if(!r) return false;
+  return showChoiceModal("Fuel Record Actions",[
+    {label:"Edit",className:"primary",onClick:()=>openRecordFlow("Fuel",recordId,"edit",true)},
+    {label:"Delete",className:"danger",onClick:()=>fuelDeleteChoices(recordId)},
+    {label:"Cancel",className:"ghost",onClick:()=>false}
+  ]);
+}
+function fuelDeleteChoices(recordId){
+  const r=findRecord("Fuel",recordId);
+  if(!r) return false;
+  return showChoiceModal("Delete Fuel Record",[
+    {label:"Delete Permanently",className:"danger",onClick:()=>fuelDeletePermanent(recordId)},
+    {label:"Archive Instead",className:"ghost",onClick:()=>fuelArchiveFromChoices(recordId)},
+    {label:"Cancel",className:"ghost",onClick:()=>false}
+  ]);
+}
+function fuelArchiveFromChoices(recordId){
+  const r=findRecord("Fuel",recordId);
+  if(!r) return false;
+  addTag(r,"Archived");
+  r.modifiedAt=nowISO();
+  saveData();
+  if(route.screen==="quickFuel"){
+    route={screen:"quickFuel",vehicleId:r.vehicleId,mode:"empty",returnTo:route.returnTo||cloneRoute(route)};
+    renderRoute();
+  }else{
+    renderRoute();
+  }
+  return false;
+}
+function fuelDeletePermanent(recordId){
+  const idx=state.fuelRecords.findIndex(r=>r.recordId===recordId);
+  if(idx<0) return false;
+  const r=state.fuelRecords[idx];
+  state.fuelRecords.splice(idx,1);
+  saveData();
+  editSnapshot=null;
+  if(route.screen==="quickFuel"){
+    route={screen:"quickFuel",vehicleId:r.vehicleId,mode:"empty",returnTo:route.returnTo||cloneRoute(route)};
+    renderRoute();
+  }else{
+    renderRoute();
+  }
+  return false;
+}
+function fuelDeleteFromEdit(){
+  if(route.screen!=="quickFuel" || route.mode!=="edit" || !route.recordId) return false;
+  return fuelDeleteChoices(route.recordId);
 }
 
 function circleHtml(v,i){const inner=v&&v.primaryPhoto?`<img src="${v.primaryPhoto}" alt="">`:esc(vehicleBadge(v)); const label=v?vehicleLabel(v):"Add Vehicle"; return `<div class="circle-wrap"><button class="circleBtn" onpointerdown="pressStart(()=>vehicleLong(${i}),event,500)" onpointerup="clearLP()" onpointercancel="clearLP()" onclick="vehicleTap(${i})">${inner}</button><div class="vehicle-label">${esc(label)}</div></div>`}
@@ -1022,7 +795,8 @@ function fuelActionButtons(){
   if(mode==="empty") return `<div class="fuel-actions single"><button class="primary" onclick="fuelNew()">New</button></div>`;
   if(mode==="view") return `<div class="fuel-actions"><button class="ghost" onclick="fuelNew()">New</button><button onclick="fuelToggleMode()">Edit</button><button class="ghost" onclick="fuelCancel()">Cancel</button></div>`;
   const toggleBtn=route.recordId?`<button onclick="fuelToggleMode()">View</button>`:'';
-  return `<div class="fuel-actions"><button class="ghost" onclick="fuelNew()">New</button>${toggleBtn}<button class="primary" onclick="saveQuickFuel('${route.vehicleId}')">Save</button><button class="ghost" onclick="fuelCancel()">Cancel</button></div>`;
+  const deleteBtn=route.recordId?`<button class="danger" onclick="fuelDeleteFromEdit()">Delete</button>`:'';
+  return `<div class="fuel-actions"><button class="ghost" onclick="fuelNew()">New</button>${toggleBtn}<button class="primary" onclick="saveQuickFuel('${route.vehicleId}')">Save</button>${deleteBtn}<button class="ghost" onclick="fuelCancel()">Cancel</button></div>`;
 }
 function quickFuel(app,vid){
   const v=getVehicle(vid);
@@ -1493,29 +1267,7 @@ function saveQuickInsurance(vid,silent){
   }catch(e){ alert(e.message||String(e)); return false; }
 }
 
-function dataScreen(app){
-  const authReady=firebaseState.initialized;
-  const signedIn=!!(firebaseState.user&&firebaseState.user.uid);
-  const cloudCard=`<div class="card"><h2>Firebase Cloud Sync</h2>
-    <p class="muted">Use Firebase Email/Password to connect Firestore cloud storage. Local device data remains available.</p>
-    <label>Email<input id="fbEmail" type="email" inputmode="email" autocomplete="username email" autocapitalize="off" spellcheck="false" placeholder="name@example.com" value="${esc(firebaseState.user&&firebaseState.user.email||"")}"></label>
-    <label>Password<input id="fbPassword" type="password" autocomplete="current-password" placeholder="Enter password"></label>
-    <div class="row">
-      <button class="wide" onclick="firebaseCreateAccount()">Create Account</button>
-      <button class="wide primary" onclick="firebaseSignIn()">Sign In</button>
-    </div>
-    <div class="row">
-      <button class="wide" onclick="firebaseSignOutUser()" ${signedIn?"":"disabled"}>Sign Out</button>
-      <button class="wide" onclick="refreshFirebaseRemoteStatus()" ${authReady?"":"disabled"}>Refresh Cloud Status</button>
-    </div>
-    <div class="row">
-      <button class="wide primary" onclick="migrateLocalDataToCloud()" ${(signedIn&&authReady)?"":"disabled"}>Migrate Local Data to Cloud</button>
-      <button class="wide" onclick="loadCloudDataToDevice()" ${(signedIn&&authReady)?"":"disabled"}>Load Cloud Data to Device</button>
-    </div>
-    <pre id="firebaseStatus" class="small">${esc(firebaseStatusText())}</pre>
-  </div>`;
-  app.innerHTML=header("Data Management")+cloudCard+`<div class="card"><h2>Backup & Restore</h2><button class="wide primary" onclick="downloadBackup()">Create JSON Backup</button><label>Restore JSON<input type="file" id="restoreFile" accept=".json"></label><label>Restore Mode<select id="restoreMode"><option>Replace</option><option>Update</option><option>Duplicate</option><option>Skip</option></select></label><button class="wide" onclick="restoreBackup()">Restore JSON Backup</button><button class="wide ghost" onclick="if(confirm('Clear old RGB Mileage cached storage? Current active data may be removed.')){clearRGBMStorage(false);alert('Old RGB Mileage storage cleared.')}">Clear Old Cached Storage</button><pre id="dataStatus" class="small"></pre></div><div class="card"><h2>CSV Import</h2><p class="muted">CSV import supports Fuel and Maintenance records.</p><label>Vehicle<select id="importVehicle">${state.vehicles.filter(Boolean).map(v=>`<option value="${v.vehicleId}">${esc(vehicleLabel(v))}</option>`).join("")}</select></label><label>CSV File<input type="file" id="csvFile" accept=".csv"></label><label>Duplicate Mode<select id="importMode"><option>Skip</option><option>Update</option><option>Duplicate</option><option>Replace</option><option>Cancel</option></select></label><button class="wide" onclick="previewCSV()">Preview Import</button><button class="wide primary" onclick="savePreviewRows()">Save Previewed Rows</button><pre id="importStatus" class="small"></pre></div>`+bottomNav()+footer()
-}
+function dataScreen(app){app.innerHTML=header("Data Management")+`<div class="card"><h2>Backup & Restore</h2><button class="wide primary" onclick="downloadBackup()">Create JSON Backup</button><label>Restore JSON<input type="file" id="restoreFile" accept=".json"></label><label>Restore Mode<select id="restoreMode"><option>Replace</option><option>Update</option><option>Duplicate</option><option>Skip</option></select></label><button class="wide" onclick="restoreBackup()">Restore JSON Backup</button><button class="wide ghost" onclick="if(confirm('Clear old RGB Mileage cached storage? Current active data may be removed.')){clearRGBMStorage(false);alert('Old RGB Mileage storage cleared.')}">Clear Old Cached Storage</button><pre id="dataStatus" class="small"></pre></div><div class="card"><h2>CSV Import</h2><p class="muted">CSV import supports Fuel and Maintenance records.</p><label>Vehicle<select id="importVehicle">${state.vehicles.filter(Boolean).map(v=>`<option value="${v.vehicleId}">${esc(vehicleLabel(v))}</option>`).join("")}</select></label><label>CSV File<input type="file" id="csvFile" accept=".csv"></label><label>Duplicate Mode<select id="importMode"><option>Skip</option><option>Update</option><option>Duplicate</option><option>Replace</option><option>Cancel</option></select></label><button class="wide" onclick="previewCSV()">Preview Import</button><button class="wide primary" onclick="savePreviewRows()">Save Previewed Rows</button><pre id="importStatus" class="small"></pre></div>`+bottomNav()+footer()}
 function backupPayload(){const p=JSON.parse(JSON.stringify(state));p.app="RGB Mileage";p.schemaVersion=SCHEMA_VERSION;p.exportedAt=nowISO();p.exportedByVersion=VERSION;p.backupType="Full JSON";p.metadata={vehicleCount:state.vehicles.filter(Boolean).length,fuelRecordCount:state.fuelRecords.length,maintenanceRecordCount:state.maintenanceRecords.length,insuranceRecordCount:state.insuranceRecords.length,attachmentCount:state.attachments.length};return p} function downloadBackup(){const p=backupPayload(),txt=JSON.stringify(p,null,2);if(!confirm(`Backup Summary\nVehicles: ${p.metadata.vehicleCount}\nFuel: ${p.metadata.fuelRecordCount}\nMaintenance: ${p.metadata.maintenanceRecordCount}\nInsurance: ${p.metadata.insuranceRecordCount}\nEstimated Size: ${new Blob([txt]).size} bytes\n\nCreate backup?`))return;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));a.download=`RGBM_Backup_v${VERSION}_${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href);state.settings.lastBackupDate=nowISO();saveData()} function restoreBackup(){
   const f=$("restoreFile").files[0];
   if(!f)return alert("Choose a JSON backup first.");
@@ -1563,5 +1315,4 @@ function initV213eStabilization(){
     window.addEventListener("orientationchange",()=>setTimeout(lock,50),{passive:true});
   }catch(e){}
 }
-initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();initFirebaseIntegration().catch(e=>console.warn(e));if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=220').catch(()=>{})}
-window.refreshFirebaseRemoteStatus=refreshFirebaseRemoteStatus;window.migrateLocalDataToCloud=migrateLocalDataToCloud;window.loadCloudDataToDevice=loadCloudDataToDevice;window.firebaseCreateAccount=firebaseCreateAccount;window.firebaseSignIn=firebaseSignIn;window.firebaseSignOutUser=firebaseSignOutUser;
+initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=215').catch(()=>{})}

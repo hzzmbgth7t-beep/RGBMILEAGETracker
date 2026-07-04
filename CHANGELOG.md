@@ -1,13 +1,26 @@
-# CHANGELOG
+# CHANGELOG.md
 
-## v2.2.0a
-- Added visible Firebase Cloud Sync controls to the Data Management screen
-- Added email/password inputs for account creation and sign-in
-- Added visible actions for sign out, refresh cloud status, migrate local data to cloud, and load cloud data to device
-- Added visible Firebase/cloud status display sourced from runtime state
-- Corrected build-date display from `DD/MM/YY` to `MM/DD/YY`
-- Preserved Backup & Restore and CSV Import behavior
+## v2.1.6d — Insurance Screen Merger Release
+Date: 2026-06-12
 
-## Reason for corrective release
-- `v2.2.0` contained Firebase code paths without complete user-visible controls
-- `v2.2.0` displayed build date in the wrong format relative to the desired `MM/DD/YY`
+### Purpose
+This release applies the accepted merged-screen model to Insurance, completing the section merger work across Fuel, Maintenance, and Insurance.
+
+### Added / Changed
+- unified Insurance screen with Empty / View / Edit states
+- Insurance tap -> View
+- Insurance long press -> Edit
+- New button for new Insurance entry
+- Data Information available in Insurance View and Insurance Edit
+- Insurance-specific unsaved-change handling
+- Insurance-specific Save / Cancel / Back / Home prompt flow aligned to the accepted Fuel and Maintenance model
+- Insurance compatibility-aware field loading for legacy values
+
+### Scope Notes
+This release updates Insurance only. Fuel and Maintenance remain on their accepted merged-screen models.
+
+
+## v2.1.6d Fuel Delete Workflow
+- Previous Fuel Records long press now opens a row actions modal with Edit / Delete / Cancel.
+- Choosing Delete opens a confirmation modal with Delete Permanently / Archive Instead / Cancel.
+- Fuel Edit screen now includes a Delete button for reviewing data before deleting.

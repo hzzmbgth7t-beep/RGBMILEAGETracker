@@ -1,21 +1,44 @@
-# DEPLOYMENT
+## v2.1.6d Deployment Notes
 
-## Package
-RGBMileage v2.2.0a clean install package
+### Release Type
+Insurance Screen Merger Release
 
-## Deployment target
-- GitHub Pages / web PWA retained
+### Purpose
+Deploy v2.1.6d only after confirming that the new unified Insurance screen works correctly and that Fuel and Maintenance still work as accepted.
 
-## Deployment URLs
-- GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=220a
-- GitHub repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
+### Links
+GitHub Pages: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/)
 
-## Runtime identification
-- `index.html` title: `RGB Mileage v2.2.0a`
-- `app.js` version: `2.2.0a`
-- `manifest.json` start URL: `./index.html?v=220a`
-- `sw.js` cache marker aligned to `v2.2.0a`
+Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c)
 
-## Deployment note
-This is the minimum corrective release for the incomplete Firebase UI workflow and incorrect build-date format in `v2.2.0`.
+Repository: [https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker](https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker)
+
+### Active Version
+- App version: `v2.1.6d`
+- Active cache-buster: `?v=216c`
+
+### Pre-Deployment Checks
+- version labels are aligned across docs and app files
+- Insurance opens on one unified screen
+- Insurance supports Empty / View / Edit states
+- Insurance Data Information appears in both View and Edit, collapsed by default
+- Insurance Previous Records stays expanded
+- Fuel still uses the accepted merged-screen behavior
+- Maintenance still uses the accepted merged-screen behavior
+- Back, Save, Cancel, Home, and New Entry behave correctly on Insurance
+
+### Post-Deployment Verification
+- confirm Insurance tap opens View on the unified screen
+- confirm Insurance long press opens Edit on the unified screen
+- confirm Insurance Save / Return To List / Back / Home all work correctly
+- confirm Fuel and Maintenance remain unchanged
+
+### Rollback Reference
+If Insurance merger behavior fails, revert to the prior accepted baseline:
+- `v2.1.5b`
+
+
+## v2.1.6d Fuel Delete Workflow
+- Previous Fuel Records long press now opens a row actions modal with Edit / Delete / Cancel.
+- Choosing Delete opens a confirmation modal with Delete Permanently / Archive Instead / Cancel.
+- Fuel Edit screen now includes a Delete button for reviewing data before deleting.

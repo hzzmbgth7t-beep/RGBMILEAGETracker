@@ -1,29 +1,60 @@
-# RGBMileage v2.2.0a Clean Install Package
+# RGB Mileage Tracker
 
-This package is the minimum corrective release for RGBMileage `v2.2.0a`.
+Version: **v2.1.6d**  
+Release type: **Insurance Screen Merger Release**
 
-## Release status
-- Previous release: `v2.2.0`
-- Current release: `v2.2.0a`
-- Package type: clean install corrective release
-- Hosting model retained: GitHub Pages / web PWA
+## Purpose
+This release applies the accepted Fuel and Maintenance merged-screen model to **Insurance**. Insurance now uses one screen with **Empty**, **View**, and **Edit** states. Fuel and Maintenance remain on their accepted merged models.
 
-## Corrective scope in v2.2.0a
-- Add missing Firebase/auth/cloud controls to the Data Management screen
-- Restore complete user-visible Firebase workflow using the already-present Firebase code path
-- Correct build-date display format from `DD/MM/YY` to `MM/DD/YY`
-- Preserve accepted current behavior
-- Retain import/export
+## Links
+GitHub Pages: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/)
 
-## Deployment URLs
-- GitHub Pages URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=220a
-- GitHub repository URL: https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker
+Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c)
 
-## Runtime identification
-- `index.html` title shows `RGB Mileage v2.2.0a`
-- `index.html` loads `app.js?v=220a`
-- `manifest.json` `start_url` includes `?v=220a`
-- `sw.js` cache marker is aligned to `v2.2.0a`
-- Data Management screen includes Firebase/cloud/auth controls
-- Build date is displayed as `MM/DD/YY`
+Repository: [https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker](https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker)
+
+## What This Release Changes
+- Insurance now uses one unified screen instead of separate Insurance View/Edit flows
+- Vehicle **Insurance Entry** opens Insurance in **Edit**
+- Insurance tap on Previous Records opens **View**
+- Insurance long press on Previous Records opens **Edit**
+- Insurance supports:
+  - **Empty** state
+  - **View** state
+  - **Edit** state
+- **Data Information** is available in both Insurance View and Insurance Edit
+- Insurance-specific unsaved-change handling, Save, Cancel, Back, Home, New Entry, and Return To List now follow the accepted merged-screen model
+
+## Insurance Field Model
+Insurance uses the accepted simplified field set:
+- Agency
+- Policy Number
+- Effective Date
+- Expiration Date
+- Agreed Value
+- Premium
+- Agent
+- Phone
+- Email
+- Notes
+
+Legacy values remain compatibility-aware in the code:
+- company -> agency when loading
+- coverageValue / insuranceValue -> agreedValue when loading
+- coverageNotes -> notes when loading
+
+## What This Release Does Not Change
+This release does **not**:
+- add Delete or Deleted Items
+- perform legacy-code cleanup
+- add broader responsive/orientation changes
+- alter the accepted Fuel or Maintenance workflows beyond shared merged-model reuse
+
+## Why This Release Exists
+This release completes the section-screen merger work for the three primary record types so development can pause for EMR update and evaluation before Wiki work and later deferred enhancements.
+
+
+## v2.1.6d Fuel Delete Workflow
+- Previous Fuel Records long press now opens a row actions modal with Edit / Delete / Cancel.
+- Choosing Delete opens a confirmation modal with Delete Permanently / Archive Instead / Cancel.
+- Fuel Edit screen now includes a Delete button for reviewing data before deleting.

@@ -1,6 +1,6 @@
 # USER-GUIDE.md
 
-## v2.1.6c User Guide Addendum
+## v2.1.6d User Guide Addendum
 Release type: **Insurance Screen Merger Release**
 
 ### What changed
@@ -28,3 +28,9 @@ Insurance now uses one screen for viewing and editing. The Insurance screen can 
 ### What did not change
 - Fuel remains on the accepted merged-screen model
 - Maintenance remains on the accepted merged-screen model
+
+
+## v2.1.6d Fuel Delete Workflow
+- Previous Fuel Records long press now opens a row actions modal with Edit / Delete / Cancel.
+- Choosing Delete opens a confirmation modal with Delete Permanently / Archive Instead / Cancel.
+- Fuel Edit screen now includes a Delete button for reviewing data before deleting.
