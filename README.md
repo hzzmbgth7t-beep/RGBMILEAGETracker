@@ -1,60 +1,79 @@
-# RGB Mileage Tracker
-
-Version: **v2.1.6d**  
-Release type: **Insurance Screen Merger Release**
+# RGBMileage v2.1.6e
 
 ## Purpose
-This release applies the accepted Fuel and Maintenance merged-screen model to **Insurance**. Insurance now uses one screen with **Empty**, **View**, and **Edit** states. Fuel and Maintenance remain on their accepted merged models.
 
-## Links
-GitHub Pages: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/)
+This release corrects the original v2.1.6e package and is the actual install package for the Fuel save-time calculation enhancement.
 
-Cache-buster URL: [https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c](https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216c)
+## Release Type
 
-Repository: [https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker](https://github.com/hzzmbgth7t-beep/RGBMILEAGETracker)
+Fuel Save-Time Calculation Release
 
 ## What This Release Changes
-- Insurance now uses one unified screen instead of separate Insurance View/Edit flows
-- Vehicle **Insurance Entry** opens Insurance in **Edit**
-- Insurance tap on Previous Records opens **View**
-- Insurance long press on Previous Records opens **Edit**
-- Insurance supports:
-  - **Empty** state
-  - **View** state
-  - **Edit** state
-- **Data Information** is available in both Insurance View and Insurance Edit
-- Insurance-specific unsaved-change handling, Save, Cancel, Back, Home, New Entry, and Return To List now follow the accepted merged-screen model
 
-## Insurance Field Model
-Insurance uses the accepted simplified field set:
-- Agency
-- Policy Number
-- Effective Date
-- Expiration Date
-- Agreed Value
-- Premium
-- Agent
-- Phone
-- Email
-- Notes
+This release updates **Fuel only**.
 
-Legacy values remain compatibility-aware in the code:
-- company -> agency when loading
-- coverageValue / insuranceValue -> agreedValue when loading
-- coverageNotes -> notes when loading
+New Fuel behavior:
+- At **Save**, if **Gallons** and **Total Cost** are entered but **Price/Gal** is blank, the app now offers:
+  - **Calculate Value**
+  - **Leave Field Blank**
+  - **Cancel**
+- At **Save**, if **Gallons** and **Price/Gal** are entered but **Total Cost** is blank, the app now offers:
+  - **Calculate Value**
+  - **Leave Field Blank**
+  - **Cancel**
+- If a previously **calculated** Fuel cost field is overwritten, the app offers:
+  - **Change The Value**
+  - **Keep The Value**
+  - **Cancel**
+- If a previously **calculated** Fuel cost field is cleared, the app offers:
+  - **Leave Field Blank**
+  - **Recalculate**
+  - **Restore Original Value**
 
-## What This Release Does Not Change
-This release does **not**:
-- add Delete or Deleted Items
-- perform legacy-code cleanup
-- add broader responsive/orientation changes
-- alter the accepted Fuel or Maintenance workflows beyond shared merged-model reuse
+## Stable Behavior Preserved
 
-## Why This Release Exists
-This release completes the section-screen merger work for the three primary record types so development can pause for EMR update and evaluation before Wiki work and later deferred enhancements.
+This release keeps the accepted:
+- Fuel merged screen
+- Maintenance merged screen
+- Insurance merged screen
+- Previous Records scroll guard
+- Fuel delete workflow added in v2.1.6d
 
+## Scope
 
-## v2.1.6d Fuel Delete Workflow
-- Previous Fuel Records long press now opens a row actions modal with Edit / Delete / Cancel.
-- Choosing Delete opens a confirmation modal with Delete Permanently / Archive Instead / Cancel.
-- Fuel Edit screen now includes a Delete button for reviewing data before deleting.
+In scope:
+- Fuel save-time calculation prompts
+- calculated-field overwrite / clear handling
+- Fuel source tracking for calculated vs entered cost fields
+
+Out of scope:
+- Maintenance calculation logic
+- Insurance calculation logic
+- Firebase/database migration
+- cleanup/disconnection work
+- broader UI redesign
+
+## URLs
+
+GitHub Pages URL:
+https://<YOUR-GITHUB-PAGES-URL>/
+
+Cache-buster URL for this release:
+https://<YOUR-GITHUB-PAGES-URL>/?v=216e
+
+## Install Notes
+
+Use this corrected v2.1.6e package in place of the earlier v2.1.6e attempt.
+The earlier v2.1.6e package should be treated as documentation-misaligned and not authoritative.
+
+## Required Review Focus
+
+1. Fuel save with Gallons + Total Cost and blank Price/Gal
+2. Fuel save with Gallons + Price/Gal and blank Total Cost
+3. Overwrite prompt for previously calculated values
+4. Clear-field prompt for previously calculated values
+5. Confirm Fuel / Maintenance / Insurance still behave as accepted
+
+## Documentation Rule Reminder
+
+All release documentation for this corrected package has been updated to match the actual change scope for v2.1.6e.

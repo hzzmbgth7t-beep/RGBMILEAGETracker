@@ -1,26 +1,21 @@
-# CHANGELOG.md
+# CHANGELOG
 
-## v2.1.6d — Insurance Screen Merger Release
-Date: 2026-06-12
+## v2.1.6e - 2026-06-12
+### Release Type
+Fuel Save-Time Calculation Release
 
-### Purpose
-This release applies the accepted merged-screen model to Insurance, completing the section merger work across Fuel, Maintenance, and Insurance.
+### Summary
+Corrected install package for the first v2.1.6e attempt. This package documents and delivers the actual Fuel save-time calculation enhancement.
 
-### Added / Changed
-- unified Insurance screen with Empty / View / Edit states
-- Insurance tap -> View
-- Insurance long press -> Edit
-- New button for new Insurance entry
-- Data Information available in Insurance View and Insurance Edit
-- Insurance-specific unsaved-change handling
-- Insurance-specific Save / Cancel / Back / Home prompt flow aligned to the accepted Fuel and Maintenance model
-- Insurance compatibility-aware field loading for legacy values
+### Changes
+- Added save-time prompt to calculate **Price/Gal** when **Gallons** and **Total Cost** are present and **Price/Gal** is blank
+- Added save-time prompt to calculate **Total Cost** when **Gallons** and **Price/Gal** are present and **Total Cost** is blank
+- Added overwrite prompt for previously calculated Fuel cost fields
+- Added clear-field prompt for previously calculated Fuel cost fields
+- Added persistence of Fuel cost field source state (entered / calculated / blank)
 
-### Scope Notes
-This release updates Insurance only. Fuel and Maintenance remain on their accepted merged-screen models.
-
-
-## v2.1.6d Fuel Delete Workflow
-- Previous Fuel Records long press now opens a row actions modal with Edit / Delete / Cancel.
-- Choosing Delete opens a confirmation modal with Delete Permanently / Archive Instead / Cancel.
-- Fuel Edit screen now includes a Delete button for reviewing data before deleting.
+### Not Changed
+- Maintenance behavior
+- Insurance behavior
+- Firebase/database behavior
+- cleanup/disconnection behavior

@@ -1,36 +1,29 @@
-# USER-GUIDE.md
+# USER GUIDE
 
-## v2.1.6d User Guide Addendum
-Release type: **Insurance Screen Merger Release**
+## v2.1.6e Addendum - Fuel Save-Time Calculation
 
-### What changed
-Insurance now uses one screen for viewing and editing. The Insurance screen can be empty, show a record in view mode, or show a record in edit mode.
+This version adds Fuel-only save-time calculation support.
 
-### Insurance basics
-- Open the Vehicle screen and tap **Insurance Entry** to open Insurance in Edit
-- Tap an Insurance record to open View
-- Long press an Insurance record to open Edit
-- Tap New to start a new Insurance record
-- Data Information is available in both Insurance View and Insurance Edit
+### When Price/Gal Is Blank
+If **Gallons** and **Total Cost** are entered and **Price/Gal** is blank, saving the record offers:
+- **Calculate Value**
+- **Leave Field Blank**
+- **Cancel**
 
-### Insurance fields
-- Agency
-- Policy Number
-- Effective Date
-- Expiration Date
-- Agreed Value
-- Premium
-- Agent
-- Phone
-- Email
-- Notes
+### When Total Cost Is Blank
+If **Gallons** and **Price/Gal** are entered and **Total Cost** is blank, saving the record offers:
+- **Calculate Value**
+- **Leave Field Blank**
+- **Cancel**
 
-### What did not change
-- Fuel remains on the accepted merged-screen model
-- Maintenance remains on the accepted merged-screen model
+### If You Change A Calculated Value
+If a Fuel cost field was calculated and you try to overwrite it, the app offers:
+- **Change The Value**
+- **Keep The Value**
+- **Cancel**
 
-
-## v2.1.6d Fuel Delete Workflow
-- Previous Fuel Records long press now opens a row actions modal with Edit / Delete / Cancel.
-- Choosing Delete opens a confirmation modal with Delete Permanently / Archive Instead / Cancel.
-- Fuel Edit screen now includes a Delete button for reviewing data before deleting.
+### If You Clear A Calculated Value
+If a Fuel cost field was calculated and you clear it, the app offers:
+- **Leave Field Blank**
+- **Recalculate**
+- **Restore Original Value**

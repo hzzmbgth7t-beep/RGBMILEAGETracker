@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.6d", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.6e", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -785,8 +785,8 @@ function fuelFormHtml(vid,r,readOnly){
     <label>Ethanol Free<select id="fef"><option ${String(r.ethanolFree||"")===""?"selected":""}></option><option ${String(r.ethanolFree||"")==="Yes"?"selected":""}>Yes</option><option ${String(r.ethanolFree||"")==="No"?"selected":""}>No</option></select></label>
     <label>Station<select id="fstation" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'stations')">${stationList.map(s=>`<option ${s===(r.station||"")?'selected':''}>${esc(s)}</option>`).join("")}</select></label>
     <label>Cost Source<select id="fcostsource"><option ${String(r.fuelCostSource||"")===""?"selected":""}></option><option ${String(r.fuelCostSource||"")==="Calculated"?"selected":""}>Calculated</option><option ${String(r.fuelCostSource||"")==="Entered"?"selected":""}>Entered</option></select></label>
-    <label>Price/Gal<input type="number" step="0.01" id="fprice" value="${esc(r.fuelPricePerGallon||"")}" oninput="calcCost()"></label>
-    <label>Total Cost<input type="number" step="0.01" id="fcost" value="${esc(r.totalFuelCost||"")}"></label>
+    <label>Price/Gal<input type="number" step="0.01" id="fprice" value="${esc(r.fuelPricePerGallon||"")}" data-source="${esc(r.fuelPriceSource||"Entered")}" data-original-value="${esc(r.fuelPricePerGallon||"")}" onfocus="fuelCalcFieldFocus('fprice')" onblur="fuelCalcFieldBlur('fprice','Price/Gal')" oninput="calcCost()"></label>
+    <label>Total Cost<input type="number" step="0.01" id="fcost" value="${esc(r.totalFuelCost||"")}" data-source="${esc(r.totalFuelCostSource||((r.totalFuelCost!==""&&r.totalFuelCost!=null)?"Entered":"Blank"))}" data-original-value="${esc(r.totalFuelCost||"")}" onfocus="fuelCalcFieldFocus('fcost')" onblur="fuelCalcFieldBlur('fcost','Total Cost')"></label>
     <label class="full">Notes<textarea id="fnotes">${esc(r.notes||"")}</textarea></label>
   </div>`;
 }
@@ -863,20 +863,109 @@ function otherCancel(){
 }
 
 function previousFuelOdo(vid,odo){const rows=records("Fuel",vid,false).filter(r=>r.odometer!==""&&Number(r.odometer)<Number(odo)).sort((a,b)=>Number(b.odometer)-Number(a.odometer));return rows[0]?.odometer??""} function calcFuel(vid){const odo=numVal($("fodo").value),prev=previousFuelOdo(vid,odo);if(odo!==""&&prev!=="")$("fmiles").value=(odo-prev).toFixed(2);calcMpg()} function calcMpg(){const m=numVal($("fmiles").value),g=numVal($("fgal").value);$("fmpg").value=(m!==""&&g>0)?(m/g).toFixed(2):"";calcCost()} function calcCost(){const g=numVal($("fgal")?.value),p=numVal($("fprice")?.value);if($("fcost")&&g!==""&&p!=="")$("fcost").value=(g*p).toFixed(2)} function calcEditCost(){const g=numVal($("efgal")?.value),p=numVal($("efprice")?.value);if($("efcost")&&g!==""&&p!=="")$("efcost").value=(g*p).toFixed(2)} 
-function saveQuickFuel(vid,silent){
+function fuelRound2(n){return Math.round(Number(n)*100)/100}
+function fuelCalcPrice(g,total){const gg=numVal(g),tt=numVal(total); if(gg===""||tt==="") return ""; if(Number(gg)<=0) return ""; return fuelRound2(Number(tt)/Number(gg)).toFixed(2)}
+function fuelCalcTotal(g,price){const gg=numVal(g),pp=numVal(price); if(gg===""||pp==="") return ""; if(Number(gg)<=0) return ""; return fuelRound2(Number(gg)*Number(pp)).toFixed(2)}
+function fuelToleranceMatch(g,price,total){
+  const calc=fuelCalcTotal(g,price);
+  if(calc===""||numVal(total)==="") return true;
+  return Math.abs(Number(calc)-Number(total))<=0.01;
+}
+function fuelSourceSummary(priceSource,totalSource){
+  if(priceSource==="Calculated" || totalSource==="Calculated") return "Calculated";
+  if(priceSource==="Entered" || totalSource==="Entered") return "Entered";
+  return "";
+}
+function fuelCalcFieldFocus(id){
+  const el=$(id); if(!el) return;
+  el.dataset.preFocusValue = String(el.value ?? "");
+}
+function fuelCalculatedOverwritePrompt(id,label){
+  const el=$(id); if(!el) return false;
+  const original=String(el.dataset.originalValue ?? "");
+  const current=String(el.value ?? "");
+  if(String(el.dataset.source||"")!=="Calculated") return false;
+  if(current===original) return false;
+  if(current==="") return fuelCalculatedBlankPrompt(id,label);
+  return showChoiceModal(label+" Was Calculated",[
+    {label:"Change The Value",className:"primary",onClick:()=>{el.dataset.source="Entered"; el.dataset.originalValue=String(el.value ?? "");}},
+    {label:"Keep The Value",className:"ghost",onClick:()=>{el.value=original; el.dataset.source="Calculated";}},
+    {label:"Cancel",className:"ghost",onClick:()=>{el.value=original; el.dataset.source="Calculated"; setTimeout(()=>el.focus(),0);}}
+  ]);
+}
+function fuelCalculatedBlankPrompt(id,label){
+  const el=$(id); if(!el) return false;
+  const original=String(el.dataset.originalValue ?? "");
+  const isPrice=id==="fprice";
+  const calc=isPrice?fuelCalcPrice($("fgal")?.value,$("fcost")?.value):fuelCalcTotal($("fgal")?.value,$("fprice")?.value);
+  return showChoiceModal(label+" Was Cleared",[
+    {label:"Leave Field Blank",className:"ghost",onClick:()=>{el.dataset.source="Blank"; el.dataset.originalValue="";}},
+    {label:"Recalculate",className:"primary",onClick:()=>{ if(calc!==""){ el.value=calc; el.dataset.source="Calculated"; el.dataset.originalValue=calc; }}},
+    {label:"Restore Original Value",className:"ghost",onClick:()=>{el.value=original; el.dataset.source="Calculated";}}
+  ]);
+}
+function fuelCalcFieldBlur(id,label){
+  const el=$(id); if(!el) return false;
+  if(String(el.dataset.source||"")!=="Calculated") return false;
+  const original=String(el.dataset.originalValue ?? "");
+  const current=String(el.value ?? "");
+  if(current===original) return false;
+  return current==="" ? fuelCalculatedBlankPrompt(id,label) : fuelCalculatedOverwritePrompt(id,label);
+}
+
+function saveQuickFuel(vid,silent,opts){
+  opts=opts||{};
   try{
     const date=requireValue($("fdate").value,"Date");
     const gallons=requirePositive($("fgal").value,"Gallons");
     const odometer=requireNonNegative($("fodo").value,"Odometer");
     const miles=requireNonNegative($("fmiles").value,"Miles");
-    const price=requireNonNegative($("fprice").value,"Price/Gal");
-    const total=requireNonNegative($("fcost").value,"Total Cost");
+    const rawPrice=cleanText($("fprice").value);
+    const rawTotal=cleanText($("fcost").value);
+    const canCalcPrice=(rawPrice==="" && rawTotal!=="" && gallons!=="");
+    const canCalcTotal=(rawTotal==="" && rawPrice!=="" && gallons!=="");
+    if(canCalcPrice && !opts.allowBlankPrice && !opts.didCalcPrice){
+      return showChoiceModal("Price/Gal Is Blank",[
+        {label:"Calculate Value",className:"primary",onClick:()=>{const calc=fuelCalcPrice($("fgal").value,$("fcost").value); if(calc!==""){ $("fprice").value=calc; $("fprice").dataset.source="Calculated"; $("fprice").dataset.originalValue=calc; saveQuickFuel(vid,silent,{didCalcPrice:true}); }}},
+        {label:"Leave Field Blank",className:"ghost",onClick:()=>saveQuickFuel(vid,silent,{allowBlankPrice:true})},
+        {label:"Cancel",className:"ghost",onClick:()=>false}
+      ]);
+    }
+    if(canCalcTotal && !opts.allowBlankTotal && !opts.didCalcTotal){
+      return showChoiceModal("Total Cost Is Blank",[
+        {label:"Calculate Value",className:"primary",onClick:()=>{const calc=fuelCalcTotal($("fgal").value,$("fprice").value); if(calc!==""){ $("fcost").value=calc; $("fcost").dataset.source="Calculated"; $("fcost").dataset.originalValue=calc; saveQuickFuel(vid,silent,{didCalcTotal:true}); }}},
+        {label:"Leave Field Blank",className:"ghost",onClick:()=>saveQuickFuel(vid,silent,{allowBlankTotal:true})},
+        {label:"Cancel",className:"ghost",onClick:()=>false}
+      ]);
+    }
+    if(rawPrice==="" && rawTotal==="") throw new Error("Enter Price/Gal, Total Cost, or both.");
+    const price=(rawPrice==="")?"":requireNonNegative(rawPrice,"Price/Gal");
+    const total=(rawTotal==="")?"":requireNonNegative(rawTotal,"Total Cost");
     let r=route.recordId?findRecord("Fuel",route.recordId):null;
     if(!r){
       r=baseRecord("Fuel",vid,"Manual Entry");
       state.fuelRecords.push(r);
     }
-    Object.assign(r,{date,time:$("ftime").value,odometer,miles,gallons,mpg:requireNonNegative($("fmpg").value,"MPG"),fuelGrade:cleanText($("fgrade").value),ethanolFree:cleanText($("fef").value),station:cleanText($("fstation").value),fuelPricePerGallon:price,totalFuelCost:total,fuelCostSource:cleanText($("fcostsource").value)||(total!==""?"Entered":price!==""?"Calculated":""),notes:cleanText($("fnotes").value),attachments:r.attachments||[]});
+    const priceSource=(rawPrice==="")?String($("fprice").dataset.source||"Blank"):String($("fprice").dataset.source||"Entered");
+    const totalSource=(rawTotal==="")?String($("fcost").dataset.source||"Blank"):String($("fcost").dataset.source||"Entered");
+    Object.assign(r,{
+      date,
+      time:$("ftime").value,
+      odometer,
+      miles,
+      gallons,
+      mpg:requireNonNegative($("fmpg").value,"MPG"),
+      fuelGrade:cleanText($("fgrade").value),
+      ethanolFree:cleanText($("fef").value),
+      station:cleanText($("fstation").value),
+      fuelPricePerGallon:price,
+      totalFuelCost:total,
+      fuelPriceSource:priceSource,
+      totalFuelCostSource:totalSource,
+      fuelCostSource:fuelSourceSummary(priceSource,totalSource),
+      notes:cleanText($("fnotes").value),
+      attachments:r.attachments||[]
+    });
     if(r.odometer!==""&&r.miles==="")addTag(r,"Historical");
     r.modifiedAt=nowISO();
     saveData();

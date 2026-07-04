@@ -1,26 +1,22 @@
-# FIXNOTES.md
+# FIXNOTES
 
-## v2.1.6d — Insurance Screen Merger Release Notes
+## v2.1.6e - Fuel Save-Time Calculation Release
 
-### Summary
-This build replaces the old Insurance view/edit split with one unified Insurance screen while leaving the accepted Fuel and Maintenance merged flows intact.
+### Reason For This Release
+The user wanted Fuel to support save-time calculation of a missing cost field when enough information is present, without forcing exact-match warnings for small rounding differences.
 
-### What Was Implemented
-- Empty / View / Edit Insurance states
-- Insurance-specific record open routing
-- Insurance-specific dirty-state handling
-- Data Information on Insurance View and Insurance Edit
-- Insurance Save / Cancel / Back / Home flow aligned to the accepted merged-screen model
-- compatibility-aware use of Agency, Agreed Value, and one Notes field
+### Fix Implemented
+Fuel now supports:
+- Save-time calculation prompt for blank **Price/Gal**
+- Save-time calculation prompt for blank **Total Cost**
+- source-aware overwrite prompt for calculated fields
+- source-aware clear prompt for calculated fields
 
-### Not Included
-- Delete / Deleted Items
-- legacy-code cleanup
-- broader responsive work
-- new fuel or maintenance workflow changes
+### Accepted Rules Applied
+- Calculation occurs **at Save**
+- Warn only when a blank field could be calculated
+- Do not warn over tiny rounding differences caused by two-decimal storage/display
+- If all fields are entered manually, do not force recalculation
 
-
-## v2.1.6d Fuel Delete Workflow
-- Previous Fuel Records long press now opens a row actions modal with Edit / Delete / Cancel.
-- Choosing Delete opens a confirmation modal with Delete Permanently / Archive Instead / Cancel.
-- Fuel Edit screen now includes a Delete button for reviewing data before deleting.
+### Package Correction Note
+This corrected package replaces the original v2.1.6e attempt because the first documentation set did not match the actual release scope.
