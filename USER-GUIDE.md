@@ -1,29 +1,14 @@
 # USER GUIDE
 
-## v2.1.6e Addendum - Fuel Save-Time Calculation
+## v2.1.6f Addendum - Fuel Edit Button Layout
 
-This version adds Fuel-only save-time calculation support.
+This version changes the Fuel edit-screen button layout for existing records.
 
-### When Price/Gal Is Blank
-If **Gallons** and **Total Cost** are entered and **Price/Gal** is blank, saving the record offers:
-- **Calculate Value**
-- **Leave Field Blank**
-- **Cancel**
+### Fuel Edit Screen Layout
+- Row 1: **New** | **View**
+- Row 2: **Delete** | **Save**
+- Row 3: **blank** | **Cancel**
 
-### When Total Cost Is Blank
-If **Gallons** and **Price/Gal** are entered and **Total Cost** is blank, saving the record offers:
-- **Calculate Value**
-- **Leave Field Blank**
-- **Cancel**
-
-### If You Change A Calculated Value
-If a Fuel cost field was calculated and you try to overwrite it, the app offers:
-- **Change The Value**
-- **Keep The Value**
-- **Cancel**
-
-### If You Clear A Calculated Value
-If a Fuel cost field was calculated and you clear it, the app offers:
-- **Leave Field Blank**
-- **Recalculate**
-- **Restore Original Value**
+### Behavior
+- Save behavior is unchanged
+- Delete behavior is unchanged

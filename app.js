@@ -796,7 +796,11 @@ function fuelActionButtons(){
   if(mode==="view") return `<div class="fuel-actions"><button class="ghost" onclick="fuelNew()">New</button><button onclick="fuelToggleMode()">Edit</button><button class="ghost" onclick="fuelCancel()">Cancel</button></div>`;
   const toggleBtn=route.recordId?`<button onclick="fuelToggleMode()">View</button>`:'';
   const deleteBtn=route.recordId?`<button class="danger" onclick="fuelDeleteFromEdit()">Delete</button>`:'';
-  return `<div class="fuel-actions"><button class="ghost" onclick="fuelNew()">New</button>${toggleBtn}<button class="primary" onclick="saveQuickFuel('${route.vehicleId}')">Save</button>${deleteBtn}<button class="ghost" onclick="fuelCancel()">Cancel</button></div>`;
+  const spacer=route.recordId?`<span class="fuel-action-spacer" aria-hidden="true" style="visibility:hidden"></span>`:'';
+  if(route.recordId){
+    return `<div class="fuel-actions"><button class="ghost" onclick="fuelNew()">New</button>${toggleBtn}${deleteBtn}<button class="primary" onclick="saveQuickFuel('${route.vehicleId}')">Save</button>${spacer}<button class="ghost" onclick="fuelCancel()">Cancel</button></div>`;
+  }
+  return `<div class="fuel-actions"><button class="ghost" onclick="fuelNew()">New</button>${toggleBtn}<button class="primary" onclick="saveQuickFuel('${route.vehicleId}')">Save</button><button class="ghost" onclick="fuelCancel()">Cancel</button></div>`;
 }
 function quickFuel(app,vid){
   const v=getVehicle(vid);

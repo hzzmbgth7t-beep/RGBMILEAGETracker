@@ -1,4 +1,4 @@
-# RGBMileage v2.1.6e
+# RGBMileage v2.1.6f
 
 ## URLs
 
@@ -6,74 +6,58 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this release:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216e
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216f
 
 ## Purpose
 
-This release corrects the original v2.1.6e package and is the actual install package for the Fuel save-time calculation enhancement.
+This release adjusts the Fuel edit-screen button layout after walkthrough review.
 
 ## Release Type
 
-Fuel Save-Time Calculation Release
+Fuel Edit Button Layout Adjustment
 
 ## What This Release Changes
 
-This release updates **Fuel only**.
+This release updates **Fuel Edit mode only**.
 
-New Fuel behavior:
-- At **Save**, if **Gallons** and **Total Cost** are entered but **Price/Gal** is blank, the app now offers:
-  - **Calculate Value**
-  - **Leave Field Blank**
-  - **Cancel**
-- At **Save**, if **Gallons** and **Price/Gal** are entered but **Total Cost** is blank, the app now offers:
-  - **Calculate Value**
-  - **Leave Field Blank**
-  - **Cancel**
-- If a previously **calculated** Fuel cost field is overwritten, the app offers:
-  - **Change The Value**
-  - **Keep The Value**
-  - **Cancel**
-- If a previously **calculated** Fuel cost field is cleared, the app offers:
-  - **Leave Field Blank**
-  - **Recalculate**
-  - **Restore Original Value**
+On the Fuel edit screen:
+- the **Save** and **Delete** button positions are swapped
+- the final row now places the blank space on the left and **Cancel** on the right
+
+Requested edit-screen order for existing Fuel records:
+- Row 1: **New** | **View**
+- Row 2: **Delete** | **Save**
+- Row 3: **blank** | **Cancel**
 
 ## Stable Behavior Preserved
 
 This release keeps the accepted:
-- Fuel merged screen
+- Fuel save-time calculation behavior from v2.1.6e
+- Fuel delete workflow
 - Maintenance merged screen
 - Insurance merged screen
 - Previous Records scroll guard
-- Fuel delete workflow added in v2.1.6d
 
 ## Scope
 
 In scope:
-- Fuel save-time calculation prompts
-- calculated-field overwrite / clear handling
-- Fuel source tracking for calculated vs entered cost fields
+- Fuel edit-screen button order/layout adjustment for existing records
 
 Out of scope:
-- Maintenance calculation logic
-- Insurance calculation logic
+- Maintenance button layout changes
+- Insurance button layout changes
 - Firebase/database migration
 - cleanup/disconnection work
 - broader UI redesign
 
-## Install Notes
-
-Use this corrected v2.1.6e package in place of the earlier v2.1.6e attempt.
-The earlier v2.1.6e package should be treated as documentation-misaligned and not authoritative.
-
 ## Required Review Focus
 
-1. Fuel save with Gallons + Total Cost and blank Price/Gal
-2. Fuel save with Gallons + Price/Gal and blank Total Cost
-3. Overwrite prompt for previously calculated values
-4. Clear-field prompt for previously calculated values
-5. Confirm Fuel / Maintenance / Insurance still behave as accepted
+1. Open an existing Fuel record in Edit mode
+2. Confirm Row 2 is **Delete** on the left and **Save** on the right
+3. Confirm Row 3 is blank on the left and **Cancel** on the right
+4. Confirm Save still works
+5. Confirm Delete still opens the same confirmation modal
 
 ## Documentation Rule Reminder
 
-All release documentation for this corrected package has been updated to match the actual change scope for v2.1.6e.
+All release documentation for this package has been updated to match the actual Fuel edit-button layout change.

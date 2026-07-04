@@ -1,21 +1,17 @@
 # CHANGELOG
 
-## v2.1.6e - 2026-06-12
+## v2.1.6f - 2026-06-12
 ### Release Type
-Fuel Save-Time Calculation Release
+Fuel Edit Button Layout Adjustment
 
 ### Summary
-Corrected install package for the first v2.1.6e attempt. This package documents and delivers the actual Fuel save-time calculation enhancement.
+Adjusted the Fuel edit-screen button order after walkthrough review.
 
 ### Changes
-- Added save-time prompt to calculate **Price/Gal** when **Gallons** and **Total Cost** are present and **Price/Gal** is blank
-- Added save-time prompt to calculate **Total Cost** when **Gallons** and **Price/Gal** are present and **Total Cost** is blank
-- Added overwrite prompt for previously calculated Fuel cost fields
-- Added clear-field prompt for previously calculated Fuel cost fields
-- Added persistence of Fuel cost field source state (entered / calculated / blank)
+- Swapped the positions of **Delete** and **Save** on the Fuel edit screen for existing records
+- Moved **Cancel** to the right side of the final row by inserting a left-side spacer
 
 ### Not Changed
+- Fuel save-time calculation logic
 - Maintenance behavior
 - Insurance behavior
-- Firebase/database behavior
-- cleanup/disconnection behavior
