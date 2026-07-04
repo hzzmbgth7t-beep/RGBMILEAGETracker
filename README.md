@@ -20,14 +20,10 @@ Fuel Edit Button Layout Adjustment
 
 This release updates **Fuel Edit mode only**.
 
-On the Fuel edit screen:
-- the **Save** and **Delete** button positions are swapped
-- the final row now places the blank space on the left and **Cancel** on the right
-
-Requested edit-screen order for existing Fuel records:
+For existing Fuel records in Edit mode:
 - Row 1: **New** | **View**
 - Row 2: **Delete** | **Save**
-- Row 3: **blank** | **Cancel**
+- Row 3: blank | **Cancel**
 
 ## Stable Behavior Preserved
 
@@ -57,7 +53,3 @@ Out of scope:
 3. Confirm Row 3 is blank on the left and **Cancel** on the right
 4. Confirm Save still works
 5. Confirm Delete still opens the same confirmation modal
-
-## Documentation Rule Reminder
-
-All release documentation for this package has been updated to match the actual Fuel edit-button layout change.

@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.6e", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.6f", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -796,7 +796,7 @@ function fuelActionButtons(){
   if(mode==="view") return `<div class="fuel-actions"><button class="ghost" onclick="fuelNew()">New</button><button onclick="fuelToggleMode()">Edit</button><button class="ghost" onclick="fuelCancel()">Cancel</button></div>`;
   const toggleBtn=route.recordId?`<button onclick="fuelToggleMode()">View</button>`:'';
   const deleteBtn=route.recordId?`<button class="danger" onclick="fuelDeleteFromEdit()">Delete</button>`:'';
-  const spacer=route.recordId?`<span class="fuel-action-spacer" aria-hidden="true" style="visibility:hidden"></span>`:'';
+  const spacer=route.recordId?`<div class="fuel-action-spacer" aria-hidden="true"></div>`:'';
   if(route.recordId){
     return `<div class="fuel-actions"><button class="ghost" onclick="fuelNew()">New</button>${toggleBtn}${deleteBtn}<button class="primary" onclick="saveQuickFuel('${route.vehicleId}')">Save</button>${spacer}<button class="ghost" onclick="fuelCancel()">Cancel</button></div>`;
   }
