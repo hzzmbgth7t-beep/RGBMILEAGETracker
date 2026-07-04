@@ -1,5 +1,13 @@
 # RGBMileage v2.1.6e
 
+## URLs
+
+GitHub Pages URL:
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+
+Cache-buster URL for this release:
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216e
+
 ## Purpose
 
 This release corrects the original v2.1.6e package and is the actual install package for the Fuel save-time calculation enhancement.
@@ -52,14 +60,6 @@ Out of scope:
 - Firebase/database migration
 - cleanup/disconnection work
 - broader UI redesign
-
-## URLs
-
-GitHub Pages URL:
-https://<YOUR-GITHUB-PAGES-URL>/
-
-Cache-buster URL for this release:
-https://<YOUR-GITHUB-PAGES-URL>/?v=216e
 
 ## Install Notes
 

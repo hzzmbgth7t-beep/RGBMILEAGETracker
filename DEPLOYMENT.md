@@ -5,6 +5,12 @@
 ### Release Type
 Fuel Save-Time Calculation Release
 
+### Deployment URL
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+
+### Cache-Buster URL
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216e
+
 ### Files That Must Be Deployed
 - index.html
 - app.js
@@ -14,10 +20,6 @@ Fuel Save-Time Calculation Release
 - DEPLOYMENT.md
 - USER-GUIDE.md
 - icons and root assets as already used by RGBMileage
-
-### Cache-Buster
-Use:
-?v=216e
 
 ### Post-Deployment Checks
 1. Open Fuel
