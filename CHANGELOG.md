@@ -1,13 +1,14 @@
 # CHANGELOG
 
-## v2.1.6k - 2026-06-12
+## v2.1.6l - 2026-06-12
 ### Release Type
-Migration Precedence Correction
+Insurance Label Model Rollout
 
 ### Summary
-Corrected origin precedence so undated converted legacy records resolve to Migration instead of Other Data.
+Rolled the accepted shared origin model into Insurance without inventing unapproved Insurance-specific Incomplete rules.
 
 ### Changes
-- Fuel undated records now resolve to Migration with higher precedence
-- Maintenance undated records now resolve to Migration with higher precedence
-- Preserved the Other Data import path for true non-migration imports
+- Applied Manual Entry / Migration / Other Data origin model to Insurance
+- Added undated legacy Insurance precedence => Migration
+- Preserved meaningful Review / Historical / Archived insurance states
+- Kept Manual Entry stored but not displayed as an origin badge

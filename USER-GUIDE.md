@@ -1,8 +1,18 @@
 # USER GUIDE
 
-## v2.1.6k Addendum - Migration Precedence Correction
+## v2.1.6l Addendum - Insurance Label Model Rollout
 
-For Fuel and Maintenance, undated legacy converted records now resolve to:
+Insurance now uses the accepted shared origin model:
+- Manual Entry
 - Migration
+- Other Data
 
-This rule takes precedence over older import-style markers for those undated converted records.
+Visible origin badges display only when meaningful:
+- Migration
+- Other Data
+
+Manual Entry remains stored but is not shown as a badge.
+Restore must not overwrite an existing record origin.
+Undated legacy Insurance entries are treated as Migration.
+
+This build preserves meaningful existing Insurance statuses such as Review and Historical without inventing new unapproved Insurance-specific Incomplete rules.
