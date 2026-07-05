@@ -1,14 +1,13 @@
 # CHANGELOG
 
-## v2.1.6j - 2026-06-12
+## v2.1.6k - 2026-06-12
 ### Release Type
-Origin Model and Import Prompt Refinement
+Migration Precedence Correction
 
 ### Summary
-Refined the shared origin model and added an import prompt so imported rows are categorized as Migrated Data or Other Data instead of using Import as both the process and the long-term record label.
+Corrected origin precedence so undated converted legacy records resolve to Migration instead of Other Data.
 
 ### Changes
-- Replaced stored/displayed Import origin with Other Data
-- Added Imported Data Type selector to CSV import
-- Kept Manual Entry stored but hidden as a badge
-- Preserved Migration fallback for missing-origin undated current entries
+- Fuel undated records now resolve to Migration with higher precedence
+- Maintenance undated records now resolve to Migration with higher precedence
+- Preserved the Other Data import path for true non-migration imports

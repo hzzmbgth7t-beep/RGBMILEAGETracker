@@ -1,4 +1,4 @@
-# RGBMileage v2.1.6j
+# RGBMileage v2.1.6k
 
 ## URLs
 
@@ -6,51 +6,41 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this release:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216j
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216k
 
 ## Purpose
 
-This release refines the record-origin model and the CSV import workflow so the import feature asks what kind of data is being brought in, while stored/displayed origins better reflect what the records actually are.
+This release corrects origin precedence so converted undated legacy records resolve to **Migration** instead of **Other Data**.
 
 ## Release Type
 
-Origin Model and Import Prompt Refinement
+Migration Precedence Correction
 
 ## What This Release Changes
 
-This release updates the shared origin model used by Fuel and Maintenance.
+This release updates shared origin assignment for Fuel and Maintenance.
 
-Stored origins are now:
-- Manual Entry
-- Migration
-- Other Data
+Corrected rule:
+- if a Fuel or Maintenance record has no date
+- treat it as **Migration**
 
-Visible origin badges now display only when meaningful:
-- Migration
-- Other Data
+This rule now takes precedence over older import-style markers for those undated legacy records.
 
-Manual Entry remains stored but is not displayed as a badge.
+## Stable Behavior Preserved
 
-Restore still must not overwrite an existing origin.
-
-## Import Workflow Change
-
-The CSV import feature now asks for the imported data type:
-- Migrated Data
-- Other Data
-
-That choice sets the long-term record origin rather than using Import as both the action and the record label.
-
-## Fallback Rule Preserved
-
-If explicit origin metadata is missing and a current entry has no date, the record falls back to:
-- Migration
+- stored origins remain:
+  - Manual Entry
+  - Migration
+  - Other Data
+- CSV import still asks:
+  - Migrated Data
+  - Other Data
+- Manual Entry remains stored but hidden as a badge
+- Restore still does not overwrite existing origin
 
 ## Review Focus
 
-1. Manual Entry records show no Manual Entry badge
-2. CSV import screen asks whether the import is Migrated Data or Other Data
-3. Choosing Migrated Data produces Migration records
-4. Choosing Other Data produces Other Data records
-5. Undated legacy converted entries still resolve to Migration where appropriate
-6. App shows v2.1.6j
+1. Undated converted Fuel records show Migration
+2. Undated converted Maintenance records show Migration
+3. Dated imported non-migration records can still show Other Data where appropriate
+4. App shows v2.1.6k

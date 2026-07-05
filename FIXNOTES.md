@@ -1,19 +1,12 @@
 # FIXNOTES
 
-## v2.1.6j - Origin Model and Import Prompt Refinement
+## v2.1.6k - Migration Precedence Correction
 
 ### Reason For This Release
-Import was being used both as the feature/action and as the long-term record label, which created confusion.
+Converted undated legacy records were still displaying Other Data instead of Migration.
 
 ### Fix Implemented
-The record-origin model now uses:
-- Manual Entry
-- Migration
-- Other Data
+For Fuel and Maintenance:
+- no date => Migration
 
-The import feature now asks whether imported rows are:
-- Migrated Data
-- Other Data
-
-### Important Rule
-Restore still must not overwrite an existing origin.
+This precedence now overrides older import-style markers on those undated converted records.

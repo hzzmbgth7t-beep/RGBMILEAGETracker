@@ -1,15 +1,15 @@
 # DEPLOYMENT
 
-## v2.1.6j Deployment Notes
+## v2.1.6k Deployment Notes
 
 ### Release Type
-Origin Model and Import Prompt Refinement
+Migration Precedence Correction
 
 ### Deployment URL
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 ### Cache-Buster URL
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216j
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216k
 
 ### Files That Must Be Deployed
 - index.html
@@ -23,9 +23,7 @@ https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216j
 - USER-GUIDE.md
 
 ### Post-Deployment Checks
-1. Confirm app shows v2.1.6j
-2. Confirm Manual Entry records show no Manual Entry badge
-3. Confirm CSV Import asks for Migrated Data or Other Data
-4. Confirm Migrated Data imports resolve to Migration
-5. Confirm Other Data imports resolve to Other Data
-6. Confirm undated current legacy entries still resolve to Migration where appropriate
+1. Confirm app shows v2.1.6k
+2. Confirm undated converted Fuel records show Migration
+3. Confirm undated converted Maintenance records show Migration
+4. Confirm true non-migration imported rows can still show Other Data where appropriate

@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.6j", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.6k", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], RECORD_ORIGINS=["Manual Entry","Other Data","Migration"], RECORD_STATUSES=["","Incomplete","Historical","Review"], RECORD_LIFECYCLES=["","Archived"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -35,7 +35,7 @@ function applyFuelLabelModel(d){
   const fuel=arr(d&&d.fuelRecords);
   fuel.forEach(r=>{
     const existingOrigin=canonicalOrigin(r);
-    if(!hasExplicitOriginMetadata(r) && !String(r.date||"").trim()){
+    if(!String(r.date||"").trim()){
       r.origin="Migration";
       r.source="Migration";
     }else{
@@ -70,7 +70,7 @@ function applyMaintenanceLabelModel(d){
   const maint=arr(d&&d.maintenanceRecords);
   maint.forEach(r=>{
     const existingOrigin=canonicalOrigin(r);
-    if(!hasExplicitOriginMetadata(r) && !String(r.date||r.dropOffDate||"").trim()){
+    if(!String(r.date||r.dropOffDate||"").trim()){
       r.origin="Migration";
       r.source="Migration";
     }else{
