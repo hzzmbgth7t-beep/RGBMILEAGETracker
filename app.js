@@ -1,13 +1,62 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.6f", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.6g", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
-const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], DATA_QUALITIES=["Verified","Review","Estimated","Historical"], FUEL_GRADES=["","87","89","90","91","93","Other"];
+const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], RECORD_ORIGINS=["Manual Entry","Import","Restore","Migration"], RECORD_STATUSES=["","Incomplete","Historical","Review"], RECORD_LIFECYCLES=["","Archived"], FUEL_GRADES=["","87","89","90","91","93","Other"];
 let state, route={screen:"home"}, historyStack=[], longTimer=null, suppressTap=false, editSnapshot=null;
 let rowInteraction={timer:null,long:false,type:null,recordId:null};
 let rowTouchState={active:false,pointerId:null,startX:0,startY:0,moved:false};
 let recentRowSuppressUntil=0;
 let pendingRecordOpen=null;
-function nowISO(){return new Date().toISOString()} function uid(p="ID"){return p+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)} function arr(v){return Array.isArray(v)?v:[]} function tags(v){return Array.isArray(v)?v:(v?[String(v)]:[])} function hasTag(r,t){return tags(r.classificationTags).includes(t)} function addTag(r,t){r.classificationTags=tags(r.classificationTags);if(!r.classificationTags.includes(t))r.classificationTags.push(t)} function numVal(v){if(v===null||v===undefined||v==="")return "";const n=Number(String(v).replace(/[$,]/g,""));return Number.isFinite(n)?n:""} function cleanText(v){return String(v??"").trim()} function requireValue(v,label){const s=cleanText(v);if(!s)throw new Error(`${label} is required.`);return s} function requireNonNegative(v,label){const n=numVal(v);if(n==="")return "";if(n<0)throw new Error(`${label} cannot be negative.`);return n} function requirePositive(v,label){const n=numVal(v);if(n==="")return "";if(n<=0)throw new Error(`${label} must be greater than zero.`);return n}
+function nowISO(){return new Date().toISOString()} function uid(p="ID"){return p+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)} function arr(v){return Array.isArray(v)?v:[]} function tags(v){return Array.isArray(v)?v:(v?[String(v)]:[])} function hasTag(r,t){return tags(r.classificationTags).includes(t)} function addTag(r,t){r.classificationTags=tags(r.classificationTags);if(!r.classificationTags.includes(t))r.classificationTags.push(t)} function removeTag(r,t){r.classificationTags=tags(r.classificationTags).filter(x=>x!==t)}
+function canonicalOrigin(r){
+  const raw=String((r&& (r.origin||r.source)) || "").trim();
+  const imported=hasTag(r,"Imported");
+  if(/^manual entry$/i.test(raw)) return "Manual Entry";
+  if(/restore/i.test(raw)) return "Restore";
+  if(imported || /import|csv|xlsx|file upload/i.test(raw)) return "Import";
+  if(/migration|legacy|normalized/i.test(raw)) return "Migration";
+  return raw || "Migration";
+}
+function canonicalLifecycle(r){
+  return hasTag(r,"Archived") || String(r.lifecycle||"")==="Archived" ? "Archived" : "";
+}
+function isFuelManualIncomplete(r){
+  return String(r.origin||canonicalOrigin(r))==="Manual Entry" && (r.odometer==="" || r.gallons==="");
+}
+function applyFuelLabelModel(d){
+  const fuel=arr(d&&d.fuelRecords);
+  const incompleteIds=fuel.filter(r=>canonicalLifecycle(r)!=="Archived" && isFuelManualIncomplete(r)).sort((a,b)=>previousSort("Fuel",a,b)).map(r=>r.recordId);
+  const currentIncomplete=incompleteIds.length?String(incompleteIds[0]):"";
+  fuel.forEach(r=>{
+    r.origin=canonicalOrigin(r);
+    r.source=r.origin;
+    r.lifecycle=canonicalLifecycle(r);
+    const hadReview = String(r.status||r.dataQuality||"")==="Review";
+    const hadHistorical = String(r.status||r.dataQuality||"")==="Historical" || hasTag(r,"Historical");
+    removeTag(r,"Imported");
+    removeTag(r,"Historical");
+    if(r.lifecycle==="Archived") addTag(r,"Archived"); else removeTag(r,"Archived");
+    if(hadReview){
+      r.status="Review";
+    }else if(isFuelManualIncomplete(r)){
+      r.status=String(r.recordId)===currentIncomplete ? "Incomplete" : "Historical";
+    }else if(hadHistorical){
+      r.status="Historical";
+    }else{
+      r.status="";
+    }
+    r.dataQuality=r.status||"";
+    r.classificationTags=tags(r.classificationTags).filter(t=>t==="Archived");
+  });
+  return d;
+}
+function applyRecordLabelModel(d){
+  if(!d || typeof d!=="object") return d;
+  applyFuelLabelModel(d);
+  return d;
+}
+function meaningfulStatus(r){return String((r&&r.status)||"").trim()}
+function numVal(v){if(v===null||v===undefined||v==="")return "";const n=Number(String(v).replace(/[$,]/g,""));return Number.isFinite(n)?n:""} function cleanText(v){return String(v??"").trim()} function requireValue(v,label){const s=cleanText(v);if(!s)throw new Error(`${label} is required.`);return s} function requireNonNegative(v,label){const n=numVal(v);if(n==="")return "";if(n<0)throw new Error(`${label} cannot be negative.`);return n} function requirePositive(v,label){const n=numVal(v);if(n==="")return "";if(n<=0)throw new Error(`${label} must be greater than zero.`);return n}
 
 
 
@@ -124,6 +173,7 @@ function normalizeData(input){
     }
   });
   dedupeRecords(d);
+  applyRecordLabelModel(d);
   let maxSeq=0;
   [...d.vehicleAcquisitionRecords,...d.fuelRecords,...d.maintenanceRecords,...d.insuranceRecords].forEach(r=>maxSeq=Math.max(maxSeq,Number(r.entrySequence)||0));
   d.nextEntrySequence=Math.max(d.nextEntrySequence||1,maxSeq+1);
@@ -142,6 +192,7 @@ function dedupeRecords(d){
 }
 function loadData(){let raw=localStorage.getItem(KEY); if(raw){try{return normalizeData(JSON.parse(raw))}catch(e){console.warn(e)}} for(const k of LEGACY_KEYS){raw=localStorage.getItem(k); if(raw){try{const d=normalizeData(JSON.parse(raw)); saveData(d); return d}catch(e){console.warn(e)}}} const d=blankData(); saveData(d); return d}
 function saveData(d=state){
+  applyRecordLabelModel(d);
   d.schemaVersion=SCHEMA_VERSION;
   d.appVersion=VERSION;
   d.modifiedAt=nowISO();
@@ -163,10 +214,10 @@ function saveData(d=state){
   }
   state=d;
 }
-function nextSeq(){const n=state.nextEntrySequence||1;state.nextEntrySequence=n+1;return n} function baseRecord(type,vid,source="Manual Entry"){return {recordId:uid(type.toUpperCase()),entrySequence:nextSeq(),recordType:type,vehicleId:vid,source,classificationTags:[],dataQuality:source==="Manual Entry"?"Verified":"Review",createdAt:nowISO(),modifiedAt:nowISO(),notes:""}}
+function nextSeq(){const n=state.nextEntrySequence||1;state.nextEntrySequence=n+1;return n} function baseRecord(type,vid,source="Manual Entry"){return {recordId:uid(type.toUpperCase()),entrySequence:nextSeq(),recordType:type,vehicleId:vid,source,origin:source,status:"",lifecycle:"",classificationTags:[],dataQuality:"",createdAt:nowISO(),modifiedAt:nowISO(),notes:""}}
 function normVehicle(v,i){return {vehicleId:v.vehicleId||v.id||uid("VEH"),id:v.vehicleId||v.id||uid("VEH"),slot:Number.isFinite(+v.slot)?+v.slot:i,displayName:v.displayName||[v.year,v.make,v.model].filter(Boolean).join(" ")||v.nickname||"Vehicle",nickname:v.nickname||"",year:v.year||"",make:v.make||"",model:v.model||"",badge:v.badge||"",vin:v.vin||"",plate:v.plate||"",plateState:v.plateState||"",status:v.status||"Active",primaryPhoto:v.primaryPhoto||v.photo||"",primaryPhotoZoom:Number(v.primaryPhotoZoom||v.photoZoom||1.25),primaryPhotoOffsetX:Number(v.primaryPhotoOffsetX||0),primaryPhotoOffsetY:Number(v.primaryPhotoOffsetY||0),acquisitionDate:v.acquisitionDate||v.purchaseDate||"",purchaseDate:v.purchaseDate||v.acquisitionDate||"",startingOdometer:v.startingOdometer||"",purchasePrice:v.purchasePrice||v.purchaseCost||"",purchaseCost:v.purchaseCost||v.purchasePrice||"",seller:v.seller||"",insCompany:v.insCompany||"",policyNumber:v.policyNumber||"",effectiveDate:v.effectiveDate||"",expirationDate:v.expirationDate||"",insuranceValue:v.insuranceValue||"",agreedValue:v.agreedValue||"",defaultFuelGrade:v.defaultFuelGrade||"",registration:v.registration||{},photos:arr(v.photos),createdAt:v.createdAt||nowISO(),modifiedAt:v.modifiedAt||nowISO()}}
-function normRecord(r,type,vid){const rec={...r};rec.recordType=rec.recordType||type;rec.vehicleId=rec.vehicleId||vid||"";rec.recordId=rec.recordId||rec.id||uid(type.toUpperCase());rec.entrySequence=Number(rec.entrySequence)||nextSeq();rec.source=rec.source||"JSON Restore";rec.classificationTags=tags(rec.classificationTags);rec.dataQuality=DATA_QUALITIES.includes(rec.dataQuality)?rec.dataQuality:"Review";rec.createdAt=rec.createdAt||nowISO();rec.modifiedAt=rec.modifiedAt||nowISO();rec.notes=rec.notes||"";return rec}
-function normFuel(r,vid){const rec=normRecord(r,"Fuel",vid);Object.assign(rec,{date:r.date||"",time:r.time||"",odometer:numVal(r.odometer),miles:numVal(r.miles||r.totalMiles),gallons:numVal(r.gallons),mpg:numVal(r.mpg),fuelGrade:r.fuelGrade||r.grade||"",ethanolFree:r.ethanolFree||"",station:r.station||"",fuelPricePerGallon:numVal(r.fuelPricePerGallon||r.price),totalFuelCost:numVal(r.totalFuelCost||r.cost),fuelCostSource:r.fuelCostSource||"",attachments:arr(r.attachments)}); if((rec.odometer!==""&&rec.miles==="")||(rec.mpg!==""&&(+rec.mpg>18||+rec.mpg<6)))addTag(rec,"Historical");return rec}
+function normRecord(r,type,vid){const rec={...r};rec.recordType=rec.recordType||type;rec.vehicleId=rec.vehicleId||vid||"";rec.recordId=rec.recordId||rec.id||uid(type.toUpperCase());rec.entrySequence=Number(rec.entrySequence)||nextSeq();rec.source=rec.source||rec.origin||"JSON Restore";rec.origin=rec.origin||rec.source||"JSON Restore";rec.classificationTags=tags(rec.classificationTags);rec.lifecycle=rec.lifecycle||canonicalLifecycle(rec);rec.status=RECORD_STATUSES.includes(rec.status)?rec.status:"";rec.dataQuality=rec.dataQuality||rec.status||"";rec.createdAt=rec.createdAt||nowISO();rec.modifiedAt=rec.modifiedAt||nowISO();rec.notes=rec.notes||"";return rec}
+function normFuel(r,vid){const rec=normRecord(r,"Fuel",vid);Object.assign(rec,{date:r.date||"",time:r.time||"",odometer:numVal(r.odometer),miles:numVal(r.miles||r.totalMiles),gallons:numVal(r.gallons),mpg:numVal(r.mpg),fuelGrade:r.fuelGrade||r.grade||"",ethanolFree:r.ethanolFree||"",station:r.station||"",fuelPricePerGallon:numVal(r.fuelPricePerGallon||r.price),totalFuelCost:numVal(r.totalFuelCost||r.cost),fuelCostSource:r.fuelCostSource||"",attachments:arr(r.attachments)}); if((rec.odometer!==""&&rec.miles==="")||(rec.mpg!==""&&(+rec.mpg>18||+rec.mpg<6))) rec.status=rec.status||"Historical"; return rec}
 function normMaint(r,vid){const rec=normRecord(r,"Maintenance",vid);Object.assign(rec,{date:r.date||r.dropOffDate||r.serviceDate||"",dropOffDate:r.dropOffDate||r.date||r.serviceDate||r.drop||"",pickUpDate:r.pickUpDate||r.pick||"",category:r.category||r.service||r.type||"Maintenance",status:r.status||"",odometer:numVal(r.odometer||r.mileage),location:r.location||r.shop||"",serviceProvider:r.serviceProvider||r.provider||r.vendor||"",provider:r.provider||r.serviceProvider||r.vendor||"",performedBy:r.performedBy||"",totalCost:numVal(r.totalCost||r.cost||r.amount),cost:numVal(r.totalCost||r.cost||r.amount),notes:r.notes||r.description||"",attachments:arr(r.attachments)});return rec}
 function normIns(r,vid){const rec=normRecord(r,"Insurance",vid);Object.assign(rec,{company:r.company||r.insCompany||"",policyNumber:r.policyNumber||r.policy||"",effectiveDate:r.effectiveDate||"",expirationDate:r.expirationDate||"",coverageValue:numVal(r.coverageValue||r.insuranceValue),insuranceValue:numVal(r.insuranceValue||r.coverageValue),agreedValue:numVal(r.agreedValue),premium:numVal(r.premium),agent:r.agent||r.agentName||"",agentName:r.agentName||r.agent||"",agency:r.agency||"",phone:r.phone||"",email:r.email||"",coverageNotes:r.coverageNotes||"",attachments:arr(r.attachments)});return rec}
 function $(id){return document.getElementById(id)} function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))} function fmt(v,d=2){return v!==""&&v!=null&&Number.isFinite(+v)?(+v).toFixed(d):""} function money(v){return v!==""&&v!=null&&Number.isFinite(+v)?"$"+(+v).toFixed(2):""}
@@ -433,7 +484,10 @@ function rowTap(type,recordId,e){
   return openRecordFlow(type,recordId,"view");
 }
 function entryRow(type,r){
-  const b=tags(r.classificationTags).map(t=>`<span class="badge ${t==='Historical'?'warn':t==='Archived'?'arch':''}">${esc(t)}</span>`).join("");
+  const status=meaningfulStatus(r);
+  const badges=[];
+  if(status) badges.push(`<span class="badge warn">${esc(status)}</span>`);
+  if(canonicalLifecycle(r)==="Archived") badges.push(`<span class="badge arch">Archived</span>`);
   return `<div class="entry-row" role="button" tabindex="0"
     onpointerdown="rowPressStart('${type}','${r.recordId}',event)"
     onpointermove="rowPressMove(event)"
@@ -441,7 +495,7 @@ function entryRow(type,r){
     onpointercancel="rowPressCancel()"
     onpointerleave="rowPressCancel()"
     onclick="return rowTap('${type}','${r.recordId}',event)">
-    <div class="entry-main"><span>${recordTitle(type,r)}</span><span class="muted">${esc(r.dataQuality||"")}</span></div><div class="badges">${b}</div></div>`;
+    <div class="entry-main"><span>${recordTitle(type,r)}</span><span class="muted"></span></div><div class="badges">${badges.join("")}</div></div>`;
 }
 
 function fuelRowActions(recordId){
@@ -528,7 +582,7 @@ function previousRecordsHtml(type,vid){const rows=records(type,vid,false);return
 
 
 
-function meta(r){return `<details class="card data-information"><summary><strong>Data Information</strong></summary><div class="readonly-grid"><div class="fieldbox"><b>Record ID</b><span>${esc(r.recordId)}</span></div><div class="fieldbox"><b>Sequence</b><span>${r.entrySequence}</span></div><div class="fieldbox"><b>Source</b><span>${esc(r.source)}</span></div><div class="fieldbox"><b>Quality</b><span>${esc(r.dataQuality)}</span></div><div class="fieldbox"><b>Tags</b><span>${esc(tags(r.classificationTags).join('; '))}</span></div></div></details>`} function roBox(label,val){return `<div class="fieldbox"><b>${esc(label)}</b><span>${esc(val??"")}</span></div>`}
+function meta(r){return `<details class="card data-information"><summary><strong>Data Information</strong></summary><div class="readonly-grid"><div class="fieldbox"><b>Record ID</b><span>${esc(r.recordId)}</span></div><div class="fieldbox"><b>Sequence</b><span>${r.entrySequence}</span></div><div class="fieldbox"><b>Origin</b><span>${esc(canonicalOrigin(r))}</span></div><div class="fieldbox"><b>Status</b><span>${esc(meaningfulStatus(r))}</span></div><div class="fieldbox"><b>Lifecycle</b><span>${esc(canonicalLifecycle(r))}</span></div></div></details>`} function roBox(label,val){return `<div class="fieldbox"><b>${esc(label)}</b><span>${esc(val??"")}</span></div>`}
 function findRecord(type,id){
   return recArray(type).find(r=>String(r.recordId)===String(id));
 }
@@ -771,6 +825,7 @@ function fuelFormHtml(vid,r,readOnly){
       ${roBox("Cost Source",r.fuelCostSource||"")}
       ${roBox("Price/Gal",money(r.fuelPricePerGallon))}
       ${roBox("Total Cost",money(r.totalFuelCost))}
+      ${roBox("Status",meaningfulStatus(r))}
       <div class="fieldbox full"><b>Notes</b><span>${esc(r.notes||"")}</span></div>
     </div>`;
   }
@@ -921,7 +976,7 @@ function saveQuickFuel(vid,silent,opts){
   opts=opts||{};
   try{
     const date=requireValue($("fdate").value,"Date");
-    const gallons=requirePositive($("fgal").value,"Gallons");
+    const gallons=requireNonNegative($("fgal").value,"Gallons");
     const odometer=requireNonNegative($("fodo").value,"Odometer");
     const miles=requireNonNegative($("fmiles").value,"Miles");
     const rawPrice=cleanText($("fprice").value);
@@ -942,9 +997,10 @@ function saveQuickFuel(vid,silent,opts){
         {label:"Cancel",className:"ghost",onClick:()=>false}
       ]);
     }
-    if(rawPrice==="" && rawTotal==="") throw new Error("Enter Price/Gal, Total Cost, or both.");
     const price=(rawPrice==="")?"":requireNonNegative(rawPrice,"Price/Gal");
     const total=(rawTotal==="")?"":requireNonNegative(rawTotal,"Total Cost");
+    const substantive=[odometer,gallons,miles,cleanText($("fstation").value),cleanText($("fgrade").value),cleanText($("fef").value),price,total,cleanText($("fnotes").value),requireNonNegative($("fmpg").value,"MPG")].some(v=>v!=="");
+    if(!substantive) throw new Error("Enter record details before saving.");
     let r=route.recordId?findRecord("Fuel",route.recordId):null;
     if(!r){
       r=baseRecord("Fuel",vid,"Manual Entry");
@@ -968,10 +1024,13 @@ function saveQuickFuel(vid,silent,opts){
       totalFuelCostSource:totalSource,
       fuelCostSource:fuelSourceSummary(priceSource,totalSource),
       notes:cleanText($("fnotes").value),
-      attachments:r.attachments||[]
+      attachments:r.attachments||[],
+      origin:"Manual Entry",
+      source:"Manual Entry",
+      lifecycle:canonicalLifecycle(r)
     });
-    if(r.odometer!==""&&r.miles==="")addTag(r,"Historical");
     r.modifiedAt=nowISO();
+    applyRecordLabelModel(state);
     saveData();
     editSnapshot=null;
     if(!silent) return fuelAfterSavePrompt();

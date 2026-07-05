@@ -1,7 +1,7 @@
 {
   "name": "RGB Mileage",
   "short_name": "RGB Mileage",
-  "start_url": "./index.html?v=216f",
+  "start_url": "./index.html?v=216g",
   "display": "standalone",
   "background_color": "#0a1324",
   "theme_color": "#0a1324",

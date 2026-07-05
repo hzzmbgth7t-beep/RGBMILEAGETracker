@@ -1,17 +1,16 @@
 # CHANGELOG
 
-## v2.1.6f - 2026-06-12
+## v2.1.6g - 2026-06-12
 ### Release Type
-Fuel Edit Button Layout Adjustment
+Fuel-First Label Model Cleanup
 
 ### Summary
-Adjusted the Fuel edit-screen button order after walkthrough review.
+Implemented the Fuel-first label model cleanup, removed Verified from Fuel, and normalized older Fuel records into the new shared model.
 
 ### Changes
-- Swapped the positions of **Delete** and **Save** on the Fuel edit screen for existing records
-- Moved **Cancel** to the right side of the final row by inserting a left-side spacer
-
-### Not Changed
-- Fuel save-time calculation logic
-- Maintenance behavior
-- Insurance behavior
+- Added shared label framework fields for Origin / Status / Lifecycle
+- Applied the framework to Fuel
+- Removed Verified from Fuel display behavior
+- Added Fuel status handling for Incomplete / Historical / Review
+- Preserved Archived as lifecycle
+- Added legacy Fuel normalization rules for older records

@@ -1,14 +1,14 @@
 # USER GUIDE
 
-## v2.1.6f Addendum - Fuel Edit Button Layout
+## v2.1.6g Addendum - Fuel Label Model Cleanup
 
-This version changes the Fuel edit-screen button layout for existing records.
+This version changes the Fuel record label model.
 
-### Fuel Edit Screen Layout
-- Row 1: **New** | **View**
-- Row 2: **Delete** | **Save**
-- Row 3: **blank** | **Cancel**
+### Fuel labels now mean:
+- **Incomplete**: current manual Fuel record is missing Odometer or Gallons
+- **Historical**: incomplete Fuel record is being kept as part of record history
+- **Review**: Fuel record appears to need human attention
+- **Archived**: hidden from normal Previous Records
 
-### Behavior
-- Save behavior is unchanged
-- Delete behavior is unchanged
+### Normal Fuel records
+A normal complete Fuel record now shows no unnecessary default status label.

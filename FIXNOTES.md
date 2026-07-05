@@ -1,14 +1,22 @@
 # FIXNOTES
 
-## v2.1.6f - Fuel Edit Button Layout Adjustment
+## v2.1.6g - Fuel-First Label Model Cleanup
 
 ### Reason For This Release
-The walkthrough passed, but the user requested a refinement to the Fuel edit-screen button placement.
+The previous Fuel labeling model mixed different concepts and did not clearly document what the labels meant.
 
 ### Fix Implemented
-For existing Fuel records in Edit mode:
-- Row 2 now places **Delete** on the left and **Save** on the right
-- Row 3 now places a blank spacer on the left and **Cancel** on the right
+Fuel now uses a structured label model:
+- Origin
+- Status / Condition
+- Lifecycle
 
-### Package Scope
-Fuel edit-screen button order only.
+### Fuel status meanings
+- Incomplete = temporary active incomplete manual Fuel record
+- Historical = retained incomplete Fuel record
+- Review = attention-needed Fuel record
+- Archived = lifecycle state only
+
+### Important cleanup
+- Verified removed from Fuel
+- older Fuel records normalized into the new model
