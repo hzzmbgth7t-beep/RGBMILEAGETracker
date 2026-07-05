@@ -1,11 +1,12 @@
 # FIXNOTES
 
-## v2.1.6m - Home Screen Circle and Label Styling Update
+## v2.1.6n - Home Screen Circle and Label Expansion Refinement
 
 ### Reason For This Release
-The Home Screen needed larger circles and more visually prominent circle labels.
+The initial Home Screen circle and label enlargement in v2.1.6m did not go far enough.
 
 ### Fix Implemented
-- Vehicle circles were enlarged
-- Vehicle labels were enlarged
-- Vehicle labels now use chrome styling consistent with the RGBMileage title
+- Vehicle circles were enlarged again
+- Vehicle labels were enlarged again
+- Vehicle area spacing was adjusted to better fill the vertical Home Screen space
+- Vehicle labels continue to use chrome styling consistent with the RGBMileage title
