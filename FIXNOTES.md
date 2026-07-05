@@ -1,19 +1,11 @@
 # FIXNOTES
 
-## v2.1.6l - Insurance Label Model Rollout
+## v2.1.6m - Home Screen Circle and Label Styling Update
 
 ### Reason For This Release
-Fuel and Maintenance already used the accepted origin model. Insurance needed the same shared framework before any later section-specific refinements.
+The Home Screen needed larger circles and more visually prominent circle labels.
 
 ### Fix Implemented
-Insurance now uses:
-- Manual Entry
-- Migration
-- Other Data
-
-Manual Entry remains stored but is not shown as a visible badge.
-Restore does not overwrite origin.
-Undated legacy Insurance entries resolve to Migration.
-
-### Scope Boundary
-This build does not invent Insurance-specific Incomplete rules.
+- Vehicle circles were enlarged
+- Vehicle labels were enlarged
+- Vehicle labels now use chrome styling consistent with the RGBMileage title

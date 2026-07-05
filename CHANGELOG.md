@@ -1,14 +1,13 @@
 # CHANGELOG
 
-## v2.1.6l - 2026-06-12
+## v2.1.6m - 2026-06-12
 ### Release Type
-Insurance Label Model Rollout
+Home Screen Circle and Label Styling Update
 
 ### Summary
-Rolled the accepted shared origin model into Insurance without inventing unapproved Insurance-specific Incomplete rules.
+Adjusted the Home Screen so the vehicle circles are larger and the circle labels are larger with chrome styling matching the RGBMileage title.
 
 ### Changes
-- Applied Manual Entry / Migration / Other Data origin model to Insurance
-- Added undated legacy Insurance precedence => Migration
-- Preserved meaningful Review / Historical / Archived insurance states
-- Kept Manual Entry stored but not displayed as an origin badge
+- Increased Home Screen circle size
+- Increased Home Screen circle label size
+- Applied chrome title-style treatment to Home Screen circle labels

@@ -1,18 +1,10 @@
 # USER GUIDE
 
-## v2.1.6l Addendum - Insurance Label Model Rollout
+## v2.1.6m Addendum - Home Screen Styling Update
 
-Insurance now uses the accepted shared origin model:
-- Manual Entry
-- Migration
-- Other Data
+The Home Screen now uses:
+- larger vehicle circles
+- larger vehicle labels
+- chrome-styled vehicle labels matching the RGBMileage title
 
-Visible origin badges display only when meaningful:
-- Migration
-- Other Data
-
-Manual Entry remains stored but is not shown as a badge.
-Restore must not overwrite an existing record origin.
-Undated legacy Insurance entries are treated as Migration.
-
-This build preserves meaningful existing Insurance statuses such as Review and Historical without inventing new unapproved Insurance-specific Incomplete rules.
+This update is limited to Home Screen presentation and is intended to preserve the accepted two-circle no-scroll layout.

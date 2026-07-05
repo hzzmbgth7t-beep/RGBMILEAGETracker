@@ -1,4 +1,4 @@
-# RGBMileage v2.1.6l
+# RGBMileage v2.1.6m
 
 ## URLs
 
@@ -6,55 +6,33 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this release:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216l
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216m
 
 ## Purpose
 
-This release rolls the accepted shared origin model into Insurance so Fuel, Maintenance, and Insurance all use the same refined origin framework before any future section-specific status refinements.
+This release adjusts the Home Screen presentation by making the vehicle circles larger and making the circle labels larger with the same chrome-style treatment used by the RGBMileage title.
 
 ## Release Type
 
-Insurance Label Model Rollout
+Home Screen Circle and Label Styling Update
 
 ## What This Release Changes
 
-This release updates **Insurance only**.
+This release updates the **Home Screen only**.
 
 Implemented:
-- applies the shared accepted origin model to Insurance:
-  - Manual Entry
-  - Migration
-  - Other Data
-- Manual Entry remains stored but is not displayed as a badge
-- only meaningful origin badges display:
-  - Migration
-  - Other Data
-- Restore does not act as a permanent visible origin
-- undated legacy Insurance records resolve to Migration
-- preserves meaningful Insurance statuses already present:
-  - Review
-  - Historical
-  - Archived
+- larger Home Screen vehicle circles
+- larger Home Screen vehicle labels
+- circle labels now use the same chrome-style visual treatment as the RGBMileage title
 
-## Important Scope Boundary
+## Important Layout Goal
 
-Insurance-specific Incomplete rules were not invented in this build because those criteria have not been separately locked.
-
-So this rollout implements the shared framework and accepted origin model for Insurance without guessing new section-specific Incomplete rules.
-
-## Stable Behavior Preserved
-
-- Fuel accepted origin model and migration precedence
-- Maintenance accepted origin model and migration precedence
-- CSV import prompt:
-  - Migrated Data
-  - Other Data
-- shared metadata panel structure
+This styling update is intended to preserve the accepted no-scroll two-circle Home Screen layout while increasing visual prominence.
 
 ## Review Focus
 
-1. Manual Entry insurance records show no Manual Entry badge
-2. Undated legacy converted Insurance entries show Migration
-3. True non-migration imported Insurance rows can still show Other Data where appropriate
-4. Existing meaningful Review/Historical statuses are preserved
-5. App shows v2.1.6l
+1. Home Screen circles are visibly larger
+2. Home Screen circle labels are visibly larger
+3. Circle labels use chrome styling like the RGBMileage title
+4. Two Home Screen circles still fit cleanly without unwanted scrolling
+5. App shows v2.1.6m
