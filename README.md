@@ -10,27 +10,30 @@ https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216n
 
 ## Purpose
 
-This release refines the Home Screen again so the vehicle circles and chrome labels are significantly larger and better fill the vertical space between the version line and the bottom menu.
+This corrected `v2.1.6n` package adjusts the Home Screen circles and labels to match the approved example size more closely after the prior `v2.1.6n` attempt oversized the circles and squeezed the labels.
 
 ## Release Type
 
-Home Screen Circle and Label Expansion Refinement
+Home Screen Size Correction
 
 ## What This Release Changes
 
 This release updates the **Home Screen only**.
 
 Implemented:
-- larger Home Screen vehicle circles than v2.1.6m
-- larger Home Screen circle labels than v2.1.6m
-- circle labels continue using the chrome-style visual treatment used by the RGBMileage title
-- vehicle area spacing adjusted so the top circle sits just below the version line and the bottom circle label sits just above the bottom menu with clear separation at both ends
+- reduced the Home Screen circles from the prior unaccepted `v2.1.6n` attempt
+- increased and preserved strong chrome-styled labels
+- rebalanced vertical spacing so the circles and labels better match the approved mockup size
+- retained the target spacing above the top circle and below the bottom label
+
+## Important Version Rule
+
+The version number remains `v2.1.6n` because the prior `v2.1.6n` attempt was not accepted or implemented.
 
 ## Review Focus
 
-1. Top circle sits just below the version line
-2. Bottom circle label sits just above the menu
-3. Circles are visibly larger than v2.1.6m
-4. Labels are visibly larger than v2.1.6m
-5. Chrome label styling remains consistent with the RGBMileage title
-6. App shows v2.1.6n
+1. Home Screen circle size matches the approved mockup more closely
+2. Home Screen labels remain large and readable
+3. Chrome label styling remains consistent with the RGBMileage title
+4. Spacing above the top circle and below the bottom label matches the approved mockup intent
+5. App shows v2.1.6n

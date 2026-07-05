@@ -1,11 +1,10 @@
 # USER GUIDE
 
-## v2.1.6n Addendum - Home Screen Expansion Refinement
+## v2.1.6n Addendum - Home Screen Size Correction
 
-The Home Screen now uses:
-- larger vehicle circles than v2.1.6m
-- larger vehicle labels than v2.1.6m
-- chrome-styled vehicle labels matching the RGBMileage title
-- spacing that places the top circle just below the version line and the bottom label just above the menu
+The corrected v2.1.6n Home Screen uses:
+- reduced circles relative to the prior unaccepted v2.1.6n attempt
+- large chrome-styled labels
+- rebalanced spacing to better match the approved Home Screen example
 
 This update is limited to Home Screen presentation.
