@@ -1,19 +1,19 @@
 # FIXNOTES
 
-## v2.1.6i - Maintenance Label Model Rollout
+## v2.1.6j - Origin Model and Import Prompt Refinement
 
 ### Reason For This Release
-Fuel already used the refined origin/status/lifecycle model. Maintenance needed the same shared framework before moving on to Insurance.
+Import was being used both as the feature/action and as the long-term record label, which created confusion.
 
 ### Fix Implemented
-Maintenance now uses:
+The record-origin model now uses:
 - Manual Entry
-- Import
 - Migration
+- Other Data
 
-Manual Entry remains stored but is not shown as a visible badge.
-Restore does not overwrite origin.
-Undated current Maintenance entries with missing origin metadata fall back to Migration.
+The import feature now asks whether imported rows are:
+- Migrated Data
+- Other Data
 
-### Scope Boundary
-This build does not invent Maintenance-specific Incomplete rules.
+### Important Rule
+Restore still must not overwrite an existing origin.

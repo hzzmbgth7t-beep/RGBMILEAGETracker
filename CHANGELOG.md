@@ -1,14 +1,14 @@
 # CHANGELOG
 
-## v2.1.6i - 2026-06-12
+## v2.1.6j - 2026-06-12
 ### Release Type
-Maintenance Label Model Rollout
+Origin Model and Import Prompt Refinement
 
 ### Summary
-Rolled the refined shared label model into Maintenance without inventing unapproved Maintenance-specific Incomplete rules.
+Refined the shared origin model and added an import prompt so imported rows are categorized as Migrated Data or Other Data instead of using Import as both the process and the long-term record label.
 
 ### Changes
-- Applied refined origin model to Maintenance
-- Added missing-origin undated current Maintenance fallback => Migration
-- Preserved meaningful Review / Historical / Archived maintenance states
-- Kept Manual Entry stored but not displayed as an origin badge
+- Replaced stored/displayed Import origin with Other Data
+- Added Imported Data Type selector to CSV import
+- Kept Manual Entry stored but hidden as a badge
+- Preserved Migration fallback for missing-origin undated current entries

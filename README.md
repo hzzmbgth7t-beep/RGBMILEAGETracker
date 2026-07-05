@@ -1,4 +1,4 @@
-# RGBMileage v2.1.6i
+# RGBMileage v2.1.6j
 
 ## URLs
 
@@ -6,55 +6,51 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this release:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216i
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216j
 
 ## Purpose
 
-This release rolls the refined label model into Maintenance so Fuel remains the completed template and Maintenance becomes the next section using the shared framework before Insurance.
+This release refines the record-origin model and the CSV import workflow so the import feature asks what kind of data is being brought in, while stored/displayed origins better reflect what the records actually are.
 
 ## Release Type
 
-Maintenance Label Model Rollout
+Origin Model and Import Prompt Refinement
 
 ## What This Release Changes
 
-This release updates **Maintenance only**.
+This release updates the shared origin model used by Fuel and Maintenance.
 
-Implemented:
-- applies the shared refined origin model to Maintenance:
-  - Manual Entry
-  - Import
-  - Migration
-- Manual Entry remains stored but is not displayed as a badge
-- only meaningful origin badges display:
-  - Import
-  - Migration
-- Restore does not act as a permanent visible origin
-- missing-origin undated current Maintenance entries fall back to Migration
-- removes default Verified-style display from Maintenance by normalizing into the shared status model
-- preserves meaningful Maintenance statuses already present:
-  - Review
-  - Historical
-  - Archived
+Stored origins are now:
+- Manual Entry
+- Migration
+- Other Data
 
-## Important Scope Boundary
+Visible origin badges now display only when meaningful:
+- Migration
+- Other Data
 
-Maintenance-specific Incomplete rules were not invented in this build because those criteria have not yet been separately locked.
+Manual Entry remains stored but is not displayed as a badge.
 
-So this rollout implements the shared framework and refined origin model for Maintenance without guessing new section-specific Incomplete rules.
+Restore still must not overwrite an existing origin.
 
-## Stable Behavior Preserved
+## Import Workflow Change
 
-- Fuel refined label model from v2.1.6h
-- Fuel save-time calculation
-- Fuel delete workflow
-- Fuel edit button layout
-- shared metadata panel structure
+The CSV import feature now asks for the imported data type:
+- Migrated Data
+- Other Data
+
+That choice sets the long-term record origin rather than using Import as both the action and the record label.
+
+## Fallback Rule Preserved
+
+If explicit origin metadata is missing and a current entry has no date, the record falls back to:
+- Migration
 
 ## Review Focus
 
-1. Manual Entry maintenance records show no Manual Entry badge
-2. Legacy converted maintenance entries show Migration where appropriate
-3. Missing-origin undated current Maintenance entries show Migration
-4. Existing meaningful Review/Historical maintenance statuses are preserved
-5. App shows v2.1.6i
+1. Manual Entry records show no Manual Entry badge
+2. CSV import screen asks whether the import is Migrated Data or Other Data
+3. Choosing Migrated Data produces Migration records
+4. Choosing Other Data produces Other Data records
+5. Undated legacy converted entries still resolve to Migration where appropriate
+6. App shows v2.1.6j

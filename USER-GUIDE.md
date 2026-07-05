@@ -1,18 +1,21 @@
 # USER GUIDE
 
-## v2.1.6i Addendum - Maintenance Label Model Rollout
+## v2.1.6j Addendum - Origin Model and Import Prompt
 
-Maintenance now uses the refined shared origin model:
+Stored origins now are:
 - Manual Entry
-- Import
 - Migration
+- Other Data
 
 Visible origin badges display only when meaningful:
-- Import
 - Migration
+- Other Data
 
 Manual Entry remains stored but is not shown as a badge.
-Restore must not overwrite an existing record origin.
-Undated current Maintenance entries with missing origin metadata are treated as Migration.
 
-This build preserves meaningful existing Maintenance statuses such as Review and Historical without inventing new unapproved Maintenance-specific Incomplete rules.
+The CSV import feature now asks whether the imported rows are:
+- Migrated Data
+- Other Data
+
+That choice determines the stored origin for the imported records.
+Restore must not overwrite an existing record origin.
