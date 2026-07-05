@@ -1,4 +1,4 @@
-# RGBMileage v2.1.6g
+# RGBMileage v2.1.6i
 
 ## URLs
 
@@ -6,69 +6,55 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this release:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216g
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216i
 
 ## Purpose
 
-This release implements the Fuel-first label model cleanup and legacy Fuel record transition.
+This release rolls the refined label model into Maintenance so Fuel remains the completed template and Maintenance becomes the next section using the shared framework before Insurance.
 
 ## Release Type
 
-Fuel-First Label Model Cleanup
+Maintenance Label Model Rollout
 
 ## What This Release Changes
 
-This release updates **Fuel only**.
+This release updates **Maintenance only**.
 
 Implemented:
-- removes **Verified** from the Fuel model
-- introduces shared label framework fields for:
-  - **Origin**
-  - **Status / Condition**
-  - **Lifecycle**
-- applies the new framework to Fuel
-- normalizes older Fuel records into the new model
-- uses:
-  - **Incomplete**
-  - **Historical**
-  - **Review**
-  - **Archived**
-- keeps the structure reusable for later Maintenance and Insurance rollout
+- applies the shared refined origin model to Maintenance:
+  - Manual Entry
+  - Import
+  - Migration
+- Manual Entry remains stored but is not displayed as a badge
+- only meaningful origin badges display:
+  - Import
+  - Migration
+- Restore does not act as a permanent visible origin
+- missing-origin undated current Maintenance entries fall back to Migration
+- removes default Verified-style display from Maintenance by normalizing into the shared status model
+- preserves meaningful Maintenance statuses already present:
+  - Review
+  - Historical
+  - Archived
 
-### Fuel meanings
-- **Incomplete** = newest active manual Fuel record missing Odometer or Gallons
-- **Historical** = retained incomplete Fuel record that may distort calculations if treated as normal
-- **Review** = Fuel record that already appears flagged as needing attention
-- **Archived** = lifecycle only, hidden from normal Previous Records
+## Important Scope Boundary
 
-## Transition Notes
+Maintenance-specific Incomplete rules were not invented in this build because those criteria have not yet been separately locked.
 
-Older Fuel records are normalized to:
-- remove **Verified**
-- preserve **Archived**
-- preserve meaningful **Review**
-- convert retained incomplete records to **Historical**
-- keep normal complete records unlabeled
+So this rollout implements the shared framework and refined origin model for Maintenance without guessing new section-specific Incomplete rules.
 
-## Scope
+## Stable Behavior Preserved
 
-In scope:
-- shared label-model framework
-- Fuel label assignment
-- Fuel label display
-- legacy Fuel transition
-
-Out of scope:
-- Maintenance label rollout
-- Insurance label rollout
-- Firebase/database migration
-- broader UI redesign
+- Fuel refined label model from v2.1.6h
+- Fuel save-time calculation
+- Fuel delete workflow
+- Fuel edit button layout
+- shared metadata panel structure
 
 ## Review Focus
 
-1. Complete manual Fuel record shows no unnecessary status label
-2. New incomplete manual Fuel record shows **Incomplete**
-3. Older retained incomplete Fuel record shows **Historical**
-4. Archived Fuel record still disappears from normal Previous Records
-5. Existing Fuel records no longer show **Verified**
-6. App version shows **v2.1.6g**
+1. Manual Entry maintenance records show no Manual Entry badge
+2. Legacy converted maintenance entries show Migration where appropriate
+3. Missing-origin undated current Maintenance entries show Migration
+4. Existing meaningful Review/Historical maintenance statuses are preserved
+5. App shows v2.1.6i

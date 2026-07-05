@@ -1,14 +1,18 @@
 # USER GUIDE
 
-## v2.1.6g Addendum - Fuel Label Model Cleanup
+## v2.1.6i Addendum - Maintenance Label Model Rollout
 
-This version changes the Fuel record label model.
+Maintenance now uses the refined shared origin model:
+- Manual Entry
+- Import
+- Migration
 
-### Fuel labels now mean:
-- **Incomplete**: current manual Fuel record is missing Odometer or Gallons
-- **Historical**: incomplete Fuel record is being kept as part of record history
-- **Review**: Fuel record appears to need human attention
-- **Archived**: hidden from normal Previous Records
+Visible origin badges display only when meaningful:
+- Import
+- Migration
 
-### Normal Fuel records
-A normal complete Fuel record now shows no unnecessary default status label.
+Manual Entry remains stored but is not shown as a badge.
+Restore must not overwrite an existing record origin.
+Undated current Maintenance entries with missing origin metadata are treated as Migration.
+
+This build preserves meaningful existing Maintenance statuses such as Review and Historical without inventing new unapproved Maintenance-specific Incomplete rules.

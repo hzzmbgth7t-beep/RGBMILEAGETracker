@@ -1,15 +1,15 @@
 # DEPLOYMENT
 
-## v2.1.6g Deployment Notes
+## v2.1.6i Deployment Notes
 
 ### Release Type
-Fuel-First Label Model Cleanup
+Maintenance Label Model Rollout
 
 ### Deployment URL
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 ### Cache-Buster URL
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216g
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216i
 
 ### Files That Must Be Deployed
 - index.html
@@ -23,8 +23,8 @@ https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216g
 - USER-GUIDE.md
 
 ### Post-Deployment Checks
-1. Confirm app shows v2.1.6g
-2. Confirm a normal complete Fuel record shows no Verified label
-3. Confirm an incomplete manual Fuel record shows Incomplete
-4. Confirm an older retained incomplete Fuel record shows Historical
-5. Confirm archived Fuel records still stay out of normal Previous Records
+1. Confirm app shows v2.1.6i
+2. Confirm normal manual Maintenance records show no Manual Entry badge
+3. Confirm legacy converted Maintenance entries show Migration where appropriate
+4. Confirm missing-origin undated current Maintenance entries show Migration
+5. Confirm meaningful Review/Historical statuses still appear where appropriate

@@ -1,7 +1,7 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.6g", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.6i", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
-const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], RECORD_ORIGINS=["Manual Entry","Import","Restore","Migration"], RECORD_STATUSES=["","Incomplete","Historical","Review"], RECORD_LIFECYCLES=["","Archived"], FUEL_GRADES=["","87","89","90","91","93","Other"];
+const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], RECORD_ORIGINS=["Manual Entry","Import","Migration"], RECORD_STATUSES=["","Incomplete","Historical","Review"], RECORD_LIFECYCLES=["","Archived"], FUEL_GRADES=["","87","89","90","91","93","Other"];
 let state, route={screen:"home"}, historyStack=[], longTimer=null, suppressTap=false, editSnapshot=null;
 let rowInteraction={timer:null,long:false,type:null,recordId:null};
 let rowTouchState={active:false,pointerId:null,startX:0,startY:0,moved:false};
@@ -12,10 +12,12 @@ function canonicalOrigin(r){
   const raw=String((r&& (r.origin||r.source)) || "").trim();
   const imported=hasTag(r,"Imported");
   if(/^manual entry$/i.test(raw)) return "Manual Entry";
-  if(/restore/i.test(raw)) return "Restore";
-  if(imported || /import|csv|xlsx|file upload/i.test(raw)) return "Import";
-  if(/migration|legacy|normalized/i.test(raw)) return "Migration";
-  return raw || "Migration";
+  if(imported || /^import$/i.test(raw) || /csv|xlsx|file upload/i.test(raw)) return "Import";
+  if(/migration|legacy|normalized|converted/i.test(raw)) return "Migration";
+  if(/restore/i.test(raw)) return String(r.previousOrigin||r.originBeforeRestore||"").trim() || "Migration";
+  if(raw==="Import" || raw==="Migration" || raw==="Manual Entry") return raw;
+  if(raw==="") return "";
+  return "Migration";
 }
 function canonicalLifecycle(r){
   return hasTag(r,"Archived") || String(r.lifecycle||"")==="Archived" ? "Archived" : "";
@@ -25,11 +27,19 @@ function isFuelManualIncomplete(r){
 }
 function applyFuelLabelModel(d){
   const fuel=arr(d&&d.fuelRecords);
+  fuel.forEach(r=>{
+    const existingOrigin=canonicalOrigin(r);
+    if(!existingOrigin && !String(r.date||"").trim()){
+      r.origin="Migration";
+      r.source="Migration";
+    }else{
+      r.origin=existingOrigin || "Migration";
+      r.source=r.origin;
+    }
+  });
   const incompleteIds=fuel.filter(r=>canonicalLifecycle(r)!=="Archived" && isFuelManualIncomplete(r)).sort((a,b)=>previousSort("Fuel",a,b)).map(r=>r.recordId);
   const currentIncomplete=incompleteIds.length?String(incompleteIds[0]):"";
   fuel.forEach(r=>{
-    r.origin=canonicalOrigin(r);
-    r.source=r.origin;
     r.lifecycle=canonicalLifecycle(r);
     const hadReview = String(r.status||r.dataQuality||"")==="Review";
     const hadHistorical = String(r.status||r.dataQuality||"")==="Historical" || hasTag(r,"Historical");
@@ -50,9 +60,41 @@ function applyFuelLabelModel(d){
   });
   return d;
 }
+function applyMaintenanceLabelModel(d){
+  const maint=arr(d&&d.maintenanceRecords);
+  maint.forEach(r=>{
+    const existingOrigin=canonicalOrigin(r);
+    if(!existingOrigin && !String(r.date||r.dropOffDate||"").trim()){
+      r.origin="Migration";
+      r.source="Migration";
+    }else{
+      r.origin=existingOrigin || "Migration";
+      r.source=r.origin;
+    }
+  });
+  maint.forEach(r=>{
+    r.lifecycle=canonicalLifecycle(r);
+    const hadReview = String(r.status||r.dataQuality||"")==="Review";
+    const hadHistorical = String(r.status||r.dataQuality||"")==="Historical" || hasTag(r,"Historical");
+    removeTag(r,"Imported");
+    removeTag(r,"Historical");
+    if(r.lifecycle==="Archived") addTag(r,"Archived"); else removeTag(r,"Archived");
+    if(hadReview){
+      r.status="Review";
+    }else if(hadHistorical){
+      r.status="Historical";
+    }else{
+      r.status="";
+    }
+    r.dataQuality=r.status||"";
+    r.classificationTags=tags(r.classificationTags).filter(t=>t==="Archived");
+  });
+  return d;
+}
 function applyRecordLabelModel(d){
   if(!d || typeof d!=="object") return d;
   applyFuelLabelModel(d);
+  applyMaintenanceLabelModel(d);
   return d;
 }
 function meaningfulStatus(r){return String((r&&r.status)||"").trim()}
@@ -485,7 +527,9 @@ function rowTap(type,recordId,e){
 }
 function entryRow(type,r){
   const status=meaningfulStatus(r);
+  const origin=canonicalOrigin(r);
   const badges=[];
+  if(origin && origin!=="Manual Entry") badges.push(`<span class="badge">${esc(origin)}</span>`);
   if(status) badges.push(`<span class="badge warn">${esc(status)}</span>`);
   if(canonicalLifecycle(r)==="Archived") badges.push(`<span class="badge arch">Archived</span>`);
   return `<div class="entry-row" role="button" tabindex="0"
@@ -1168,6 +1212,7 @@ function maintenanceFormHtml(vid,r,readOnly){
       ${roBox("Location",r.location||"")}
       ${roBox("Provider",r.serviceProvider||r.provider||"")}
       ${roBox("Performed By",r.performedBy||"")}
+      ${roBox("Status",meaningfulStatus(r))}
       <div class="fieldbox full"><b>Notes</b><span>${esc(r.notes||"")}</span></div>
     </div>`;
   }
@@ -1208,8 +1253,8 @@ function saveQuickMaintenance(vid,silent){
     const provider=cleanText($("mprov").value);
     let r=route.recordId?findRecord("Maintenance",route.recordId):null;
     if(!r){ r=baseRecord("Maintenance",vid,"Manual Entry"); state.maintenanceRecords.push(r); }
-    Object.assign(r,{date,dropOffDate:date,pickUpDate:cleanText($("mpick").value),category:cleanText($("mcat").value)||"Maintenance",odometer,totalCost,cost:totalCost,location:cleanText($("mloc").value),serviceProvider:provider,provider,performedBy:cleanText($("mperf").value),notes:cleanText($("mnotes").value),attachments:r.attachments||[]});
-    r.modifiedAt=nowISO(); saveData(); editSnapshot=null; if(!silent) return maintenanceAfterSavePrompt(); return true;
+    Object.assign(r,{date,dropOffDate:date,pickUpDate:cleanText($("mpick").value),category:cleanText($("mcat").value)||"Maintenance",odometer,totalCost,cost:totalCost,location:cleanText($("mloc").value),serviceProvider:provider,provider,performedBy:cleanText($("mperf").value),notes:cleanText($("mnotes").value),attachments:r.attachments||[],origin:"Manual Entry",source:"Manual Entry",lifecycle:canonicalLifecycle(r)});
+    r.modifiedAt=nowISO(); applyRecordLabelModel(state); saveData(); editSnapshot=null; if(!silent) return maintenanceAfterSavePrompt(); return true;
   }catch(e){alert(e.message||String(e));return false;}
 }
 
