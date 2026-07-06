@@ -10,7 +10,7 @@ https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216o
 
 ## Purpose
 
-This release implements the approved Home Screen layout as a fresh build from the last accepted baseline after the failed `v2.1.6n` attempts.
+This release implements the approved Home Screen layout as a fresh build from the last accepted baseline.
 
 ## Release Type
 
@@ -33,10 +33,6 @@ Implemented:
 - circles: `min(44dvh,61vw,268px)`
 - circle labels: `30px`
 - circle label minimum height: `38px`
-
-## Version Rule
-
-This is a new build version because all `v2.1.6n` attempts were rejected.
 
 ## Review Focus
 

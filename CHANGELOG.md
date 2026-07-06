@@ -5,7 +5,7 @@
 Approved Home Screen Layout Build
 
 ### Summary
-Built a fresh Home Screen layout version from the last accepted baseline after all v2.1.6n attempts were rejected.
+Built a fresh Home Screen layout version from the last accepted baseline using the approved Home Screen layout as the target.
 
 ### Changes
 - Increased Home Screen title to 33px
