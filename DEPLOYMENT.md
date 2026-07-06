@@ -1,15 +1,15 @@
 # DEPLOYMENT
 
-## v2.1.6r Deployment Notes
+## v2.1.6s Deployment Notes
 
 ### Release Type
-Evidence-Based Home Screen Corrective Build
+Menu Bottom Lock
 
 ### Deployment URL
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 ### Cache-Buster URL
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216r
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216s
 
 ### Files That Must Be Deployed
 - index.html
@@ -24,8 +24,8 @@ https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216r
 - USER-GUIDE.md
 
 ### Post-Deployment Checks
-1. Confirm app shows v2.1.6r
-2. Confirm lower label remains fully chrome
-3. Confirm labels are smaller than v2.1.6q and about 75% of title size
-4. Confirm lower label sits closer to the menu
-5. Confirm top and middle gaps remain unchanged
+1. Confirm app shows v2.1.6s
+2. Confirm bottom menu touches the visible bottom edge
+3. Confirm no blank space exists beneath the menu
+4. Confirm safe-area spacing is internal to the menu
+5. Confirm nothing above the menu changed

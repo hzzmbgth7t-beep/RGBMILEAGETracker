@@ -621,3 +621,25 @@ body.standalone-mode .screen.home .vehicle-label{
 body.standalone-mode .screen.home .circle-wrap:last-child .vehicle-label{
   transform:translateY(8px)
 }
+
+
+/* v2.1.6s Menu Bottom Lock: menu-only correction */
+.bottom-nav{
+  position:fixed!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  margin-bottom:0!important;
+  transform:none!important;
+  padding-bottom:max(8px, env(safe-area-inset-bottom))!important;
+}
+body.browser-mode .bottom-nav,
+body.standalone-mode .bottom-nav{
+  position:fixed!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  margin-bottom:0!important;
+  transform:none!important;
+  padding-bottom:max(8px, env(safe-area-inset-bottom))!important;
+}

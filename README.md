@@ -1,4 +1,4 @@
-# RGBMileage v2.1.6r
+# RGBMileage v2.1.6s
 
 ## URLs
 
@@ -6,52 +6,47 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this release:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216r
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216s
 
 ## Purpose
 
-This release is an evidence-based corrective build from `v2.1.6q` using the installed Home Screen screenshot as the controlling evidence.
+This release performs a menu-only correction to lock the bottom navigation flush to the bottom edge of the visible screen.
 
-## Controlling Evidence
+## Release Type
 
-- installed Home Screen screenshot showing:
-  - version correct
-  - top gap correct
-  - upper-label to lower-circle gap correct
-  - lower wrapped label not fully chrome
-  - labels too large
-  - lower label too far from the menu
+Menu Bottom Lock
 
-## Locked As Correct From Evidence
+## Source Build
 
-- version behavior
-- top gap above the upper circle
-- gap between the upper label and the lower circle
+- current source build: `v2.1.6r`
+
+## Controlling Scope
+
+Change only the bottom navigation/menu position so it sits flush with the bottom edge of the visible screen.
+
+If iPhone safe-area handling is required, it must be applied as internal padding inside the menu container, not as external margin or upward offset.
+
+## Do Not Change
+
+- title
+- version line
+- background
+- vehicle images
+- vehicle circles
 - circle sizes
-- title size and placement
-- chrome title styling
-- bottom navigation structure
+- circle positions
+- labels
+- label size
+- label chrome/effect
+- label wrapping
+- spacing above the menu
+- menu icon arrangement
+- menu text labels
 
-## Corrective Scope Only
+## Acceptance Standard
 
-- reduce circle label size to approximately 75% of title size
-- make chrome rendering robust for wrapped labels
-- move the lower label closer to the menu
-- do not change the validated top and middle gaps
-
-## Implemented Values
-
-Home Screen standalone mode:
-- title remains `33px`
-- circle labels reduced from `30px` to `25px`
-- label min-height remains `38px` to preserve the validated stack spacing
-- lower label rendered `8px` lower for tighter menu proximity
-- wrapped labels now use inline-block + transparent text fill + balanced wrapping
-
-## Review Focus
-
-1. label size is now approximately 75% of the title size
-2. lower label remains fully chrome even if wrapped
-3. lower label sits closer to the menu
-4. top and middle gaps remain unchanged
-5. app shows `v2.1.6r`
+1. bottom menu touches the visible bottom edge
+2. no unused blank space exists beneath the menu
+3. menu background extends to the bottom of the screen
+4. nothing above the menu changes
+5. app shows `v2.1.6s`

@@ -1,14 +1,14 @@
 # CHANGELOG
 
-## v2.1.6r - 2026-06-12
+## v2.1.6s - 2026-06-12
 ### Release Type
-Evidence-Based Home Screen Corrective Build
+Menu Bottom Lock
 
 ### Summary
-Applied only the corrective changes supported by the installed Home Screen evidence from v2.1.6q.
+Applied a menu-only correction so the bottom navigation sits flush with the visible bottom edge, with safe-area handling kept inside the menu container.
 
 ### Changes
-- Reduced standalone Home Screen label size from 30px to 25px
-- Kept standalone label min-height at 38px to avoid disturbing validated vertical spacing
-- Added wrapped-label chrome robustness with inline-block and transparent text fill
-- Lowered only the lower standalone label visually by 8px to tighten the menu gap
+- locked bottom navigation to `bottom: 0`
+- removed external bottom spacing behavior
+- applied safe-area handling as internal bottom padding only
+- left all non-menu Home Screen elements unchanged

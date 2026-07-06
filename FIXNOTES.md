@@ -1,21 +1,14 @@
 # FIXNOTES
 
-## v2.1.6r - Evidence-Based Home Screen Corrective Build
+## v2.1.6s - Menu Bottom Lock
 
 ### Reason For This Release
-The installed v2.1.6q Home Screen evidence showed three remaining defects:
-- lower wrapped label not fully chrome
-- labels too large
-- lower label too far from the menu
+The bottom menu was floating above the physical bottom edge of the visible screen and leaving unused blank space below it.
 
 ### Fix Implemented
-- reduced label size to the 75%-of-title target
-- strengthened chrome rendering behavior for wrapped labels
-- moved only the lower label closer to the menu
+- menu anchored flush to the bottom edge
+- no external bottom margin or upward offset
+- safe-area spacing handled as internal menu padding only
 
-### Preserved By Design
-- version behavior
-- top gap
-- upper-label to lower-circle gap
-- circle sizes
-- title size and placement
+### Scope Note
+This is a menu-only correction. No circles, labels, title, spacing above the menu, or other visual elements were changed intentionally.
