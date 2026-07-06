@@ -3,7 +3,7 @@
 ## v2.1.6n Deployment Notes
 
 ### Release Type
-Home Screen Size Correction
+Home Screen Phone-Referenced Size Refinement
 
 ### Deployment URL
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
@@ -25,7 +25,7 @@ https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216n
 
 ### Post-Deployment Checks
 1. Confirm app shows v2.1.6n
-2. Confirm circles are smaller than the prior unaccepted v2.1.6n attempt
-3. Confirm labels remain large and readable
-4. Confirm spacing above the top circle and below the bottom label matches the approved mockup intent
-5. Confirm chrome label styling remains consistent with the title
+2. Confirm title is larger than the last corrected v2.1.6n package
+3. Confirm circle labels are larger than the last corrected v2.1.6n package
+4. Confirm circles are larger than the last corrected v2.1.6n package
+5. Confirm the approved top and bottom spacing is still preserved

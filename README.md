@@ -10,30 +10,37 @@ https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216n
 
 ## Purpose
 
-This corrected `v2.1.6n` package adjusts the Home Screen circles and labels to match the approved example size more closely after the prior `v2.1.6n` attempt oversized the circles and squeezed the labels.
+This corrected reuse-version `v2.1.6n` package refines the Home Screen using the user's actual phone screenshot as the layout reference rather than a generic mockup.
 
 ## Release Type
 
-Home Screen Size Correction
+Home Screen Phone-Referenced Size Refinement
 
 ## What This Release Changes
 
 This release updates the **Home Screen only**.
 
 Implemented:
-- reduced the Home Screen circles from the prior unaccepted `v2.1.6n` attempt
-- increased and preserved strong chrome-styled labels
-- rebalanced vertical spacing so the circles and labels better match the approved mockup size
-- retained the target spacing above the top circle and below the bottom label
+- increased the Home Screen title by about 10%
+- increased the Home Screen circle labels by about 10%
+- increased the Home Screen circles further while preserving the approved top and bottom spacing intent from the user's actual phone screenshot
+- rebalanced Home Screen spacing for the iPhone screen reference rather than a generic Safari/mockup approximation
 
 ## Important Version Rule
 
-The version number remains `v2.1.6n` because the prior `v2.1.6n` attempt was not accepted or implemented.
+The version number remains `v2.1.6n` because prior `v2.1.6n` attempts were not accepted or implemented.
+
+## Implemented Home Screen Targets
+
+- title increased from `30px` to `33px`
+- circle labels increased from `27px` to `30px`
+- circle label minimum height increased from `34px` to `38px`
+- circles increased from `min(42dvh,58vw,252px)` to `min(44dvh,61vw,268px)`
 
 ## Review Focus
 
-1. Home Screen circle size matches the approved mockup more closely
-2. Home Screen labels remain large and readable
-3. Chrome label styling remains consistent with the RGBMileage title
-4. Spacing above the top circle and below the bottom label matches the approved mockup intent
-5. App shows v2.1.6n
+1. title appears about 10% larger
+2. circle labels appear about 10% larger
+3. circles are larger while still respecting the approved spacing
+4. top spacing and bottom spacing match the phone screenshot intent
+5. app shows v2.1.6n
