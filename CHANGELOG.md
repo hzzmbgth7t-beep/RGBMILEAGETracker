@@ -1,15 +1,13 @@
 # CHANGELOG
 
-## v2.1.6n - 2026-06-12
+## v2.1.6m - 2026-06-12
 ### Release Type
-Home Screen Phone-Referenced Size Refinement
+Home Screen Circle and Label Styling Update
 
 ### Summary
-Refined the corrected v2.1.6n Home Screen again using the user's actual phone screenshot as the reference instead of a generic mockup.
+Adjusted the Home Screen so the vehicle circles are larger and the circle labels are larger with chrome styling matching the RGBMileage title.
 
 ### Changes
-- Increased Home Screen title from 30px to 33px
-- Increased Home Screen circle labels from 27px to 30px
-- Increased Home Screen circle label minimum height from 34px to 38px
-- Increased Home Screen circles from min(42dvh,58vw,252px) to min(44dvh,61vw,268px)
-- Rebalanced top/title/vehicle spacing against the phone screenshot reference
+- Increased Home Screen circle size
+- Increased Home Screen circle label size
+- Applied chrome title-style treatment to Home Screen circle labels

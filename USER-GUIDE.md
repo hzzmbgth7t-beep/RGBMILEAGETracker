@@ -1,11 +1,10 @@
 # USER GUIDE
 
-## v2.1.6n Addendum - Home Screen Phone-Referenced Size Refinement
+## v2.1.6m Addendum - Home Screen Styling Update
 
-The corrected v2.1.6n Home Screen now uses:
-- a larger title
-- larger chrome-styled circle labels
-- larger circles
-- spacing refined against the user's actual phone screenshot
+The Home Screen now uses:
+- larger vehicle circles
+- larger vehicle labels
+- chrome-styled vehicle labels matching the RGBMileage title
 
-This update is limited to Home Screen presentation and still reuses v2.1.6n because earlier v2.1.6n attempts were not accepted.
+This update is limited to Home Screen presentation and is intended to preserve the accepted two-circle no-scroll layout.

@@ -1,4 +1,4 @@
-# RGBMileage v2.1.6n
+# RGBMileage v2.1.6m
 
 ## URLs
 
@@ -6,41 +6,33 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this release:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216n
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216m
 
 ## Purpose
 
-This corrected reuse-version `v2.1.6n` package refines the Home Screen using the user's actual phone screenshot as the layout reference rather than a generic mockup.
+This release adjusts the Home Screen presentation by making the vehicle circles larger and making the circle labels larger with the same chrome-style treatment used by the RGBMileage title.
 
 ## Release Type
 
-Home Screen Phone-Referenced Size Refinement
+Home Screen Circle and Label Styling Update
 
 ## What This Release Changes
 
 This release updates the **Home Screen only**.
 
 Implemented:
-- increased the Home Screen title by about 10%
-- increased the Home Screen circle labels by about 10%
-- increased the Home Screen circles further while preserving the approved top and bottom spacing intent from the user's actual phone screenshot
-- rebalanced Home Screen spacing for the iPhone screen reference rather than a generic Safari/mockup approximation
+- larger Home Screen vehicle circles
+- larger Home Screen vehicle labels
+- circle labels now use the same chrome-style visual treatment as the RGBMileage title
 
-## Important Version Rule
+## Important Layout Goal
 
-The version number remains `v2.1.6n` because prior `v2.1.6n` attempts were not accepted or implemented.
-
-## Implemented Home Screen Targets
-
-- title increased from `30px` to `33px`
-- circle labels increased from `27px` to `30px`
-- circle label minimum height increased from `34px` to `38px`
-- circles increased from `min(42dvh,58vw,252px)` to `min(44dvh,61vw,268px)`
+This styling update is intended to preserve the accepted no-scroll two-circle Home Screen layout while increasing visual prominence.
 
 ## Review Focus
 
-1. title appears about 10% larger
-2. circle labels appear about 10% larger
-3. circles are larger while still respecting the approved spacing
-4. top spacing and bottom spacing match the phone screenshot intent
-5. app shows v2.1.6n
+1. Home Screen circles are visibly larger
+2. Home Screen circle labels are visibly larger
+3. Circle labels use chrome styling like the RGBMileage title
+4. Two Home Screen circles still fit cleanly without unwanted scrolling
+5. App shows v2.1.6m
