@@ -1,4 +1,4 @@
-# RGBMileage v2.1.6m
+# RGBMileage v2.1.6o
 
 ## URLs
 
@@ -6,33 +6,42 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this release:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216m
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216o
 
 ## Purpose
 
-This release adjusts the Home Screen presentation by making the vehicle circles larger and making the circle labels larger with the same chrome-style treatment used by the RGBMileage title.
+This release implements the approved Home Screen layout as a fresh build from the last accepted baseline after the failed `v2.1.6n` attempts.
 
 ## Release Type
 
-Home Screen Circle and Label Styling Update
+Approved Home Screen Layout Build
 
 ## What This Release Changes
 
 This release updates the **Home Screen only**.
 
 Implemented:
-- larger Home Screen vehicle circles
-- larger Home Screen vehicle labels
-- circle labels now use the same chrome-style visual treatment as the RGBMileage title
+- larger chrome title
+- larger chrome-styled circle labels
+- larger circles
+- Home Screen spacing aligned to the approved layout reference
+- preserved top spacing above the first circle and bottom spacing below the second label
 
-## Important Layout Goal
+## Implemented Home Screen Layout
 
-This styling update is intended to preserve the accepted no-scroll two-circle Home Screen layout while increasing visual prominence.
+- title: `33px`
+- circles: `min(44dvh,61vw,268px)`
+- circle labels: `30px`
+- circle label minimum height: `38px`
+
+## Version Rule
+
+This is a new build version because all `v2.1.6n` attempts were rejected.
 
 ## Review Focus
 
-1. Home Screen circles are visibly larger
-2. Home Screen circle labels are visibly larger
-3. Circle labels use chrome styling like the RGBMileage title
-4. Two Home Screen circles still fit cleanly without unwanted scrolling
-5. App shows v2.1.6m
+1. title matches the approved Home Screen layout
+2. circles match the approved Home Screen layout
+3. circle labels match the approved Home Screen layout
+4. top and bottom spacing match the approved Home Screen layout
+5. app shows `v2.1.6o`

@@ -1,10 +1,11 @@
 # USER GUIDE
 
-## v2.1.6m Addendum - Home Screen Styling Update
+## v2.1.6o Addendum - Approved Home Screen Layout
 
 The Home Screen now uses:
-- larger vehicle circles
-- larger vehicle labels
-- chrome-styled vehicle labels matching the RGBMileage title
+- a larger chrome title
+- larger circles
+- larger chrome-styled circle labels
+- spacing aligned to the approved Home Screen layout
 
-This update is limited to Home Screen presentation and is intended to preserve the accepted two-circle no-scroll layout.
+This update is limited to Home Screen presentation.
