@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.6p", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
+const APP_NAME="RGB Mileage", VERSION="2.1.6q", SCHEMA_VERSION=VERSION, BUILD_DATE="2026-06-12", KEY="RGBM_DATA_v213d";
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=["RGBM_DATA_v213c","RGBM_DATA_v213b","RGBM_DATA_v213a","RGBM_DATA_v213","RGBM_DATA_v212d","RGBM_DATA_v212c","RGBM_DATA_v212b","RGBM_DATA_v212a","RGBM_DATA_v212","RGBM_DATA_v211","RGBM_DATA_v210","rgbMileage","rgbm_data_v110","rgbMileage_v2_0_6","rgbMileage_v2_0_7","rgbMileage_v2_0_8","rgbMileage_v2_0_9","rgbMileage_v2_0_10","rgbMileage_v2_0_11"];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], RECORD_ORIGINS=["Manual Entry","Other Data","Migration"], RECORD_STATUSES=["","Incomplete","Historical","Review"], RECORD_LIFECYCLES=["","Archived"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -1547,6 +1547,22 @@ function savePreviewRows(){if(!previewRows.length)return alert("Preview first.")
 function reportsHome(app){app.innerHTML=header("Reports")+`<div class="card report-menu"><h2>Report Menu</h2><button class="wide" onclick="openReport('reportFuel')">Fuel History Report</button><button class="wide" onclick="openReport('reportMPG')">MPG Report</button><button class="wide" onclick="openReport('reportMaintenance')">Maintenance Report</button><button class="wide" onclick="openReport('reportInsurance')">Insurance History Report</button><button class="wide" onclick="openReport('reportVehicle')">Vehicle Summary Report</button></div>`+bottomNav()+footer()} function reportDetail(app,s){let title="Report", rows=[]; if(s==="reportFuel"){title="Fuel History Report";rows=state.fuelRecords.filter(r=>!hasTag(r,"Archived")).sort((a,b)=>previousSort("Fuel",a,b)).map(r=>[r.date||"",getVehicle(r.vehicleId)?vehicleLabel(getVehicle(r.vehicleId)):"",fmt(r.odometer),fmt(r.miles),fmt(r.gallons,3),fmt(r.mpg)])} if(s==="reportMPG"){title="MPG Report";rows=state.fuelRecords.filter(r=>!hasTag(r,"Archived")&&!hasTag(r,"Historical")).sort((a,b)=>previousSort("Fuel",a,b)).map(r=>[r.date||"",fmt(r.odometer),fmt(r.miles),fmt(r.gallons,3),fmt(r.mpg)])} if(s==="reportMaintenance"){title="Maintenance Report";rows=state.maintenanceRecords.filter(r=>!hasTag(r,"Archived")).sort((a,b)=>previousSort("Maintenance",a,b)).map(r=>[r.dropOffDate||"",r.category||"",fmt(r.odometer),money(r.totalCost)])} if(s==="reportInsurance"){title="Insurance History Report";rows=state.insuranceRecords.filter(r=>!hasTag(r,"Archived")).sort((a,b)=>previousSort("Insurance",a,b)).map(r=>[r.company||"",r.policyNumber||"",r.effectiveDate||"",r.expirationDate||"",money(r.premium)])} if(s==="reportVehicle"){title="Vehicle Summary Report";rows=state.vehicles.filter(Boolean).map(v=>[vehicleLabel(v),v.status,state.fuelRecords.filter(r=>r.vehicleId===v.vehicleId&&!hasTag(r,"Archived")).length,state.maintenanceRecords.filter(r=>r.vehicleId===v.vehicleId&&!hasTag(r,"Archived")).length])} app.innerHTML=header(title)+`<div class="card"><p class="muted">Default views exclude Archived records. MPG report also excludes Historical records.</p><div style="overflow:auto"><table><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")||'<tr><td>No records.</td></tr>'}</tbody></table></div></div>`+bottomNav()+footer()}
 function settings(app){app.innerHTML=header("Settings")+`<div class="card"><h2>Vehicle Order</h2><button class="wide" onclick="swapVehicles()">Swap Vehicle Circles</button></div><div class="card"><h2>About</h2><p>RGB Mileage v${VERSION}<br>Build Date: ${formatBuildDate(BUILD_DATE)}<br>Schema: ${SCHEMA_VERSION}</p><button class="wide danger" onclick="if(confirm('Clear all local data?')){localStorage.removeItem(KEY);state=blankData();saveData();nav('home')}">Clear Local Data</button></div>`+bottomNav()+footer()} function swapVehicles(){[state.vehicles[0],state.vehicles[1]]=[state.vehicles[1],state.vehicles[0]];state.vehicles.forEach((v,i)=>{if(v)v.slot=i});saveData();alert("Vehicle order swapped.");nav("home")}
 
+
+function isStandaloneDisplayMode(){
+  try{
+    return !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone===true;
+  }catch(e){ return false; }
+}
+function applyDisplayModeClass(){
+  try{
+    const standalone=isStandaloneDisplayMode();
+    document.body.classList.toggle("standalone-mode",standalone);
+    document.body.classList.toggle("browser-mode",!standalone);
+    document.documentElement.classList.toggle("standalone-mode",standalone);
+    document.documentElement.classList.toggle("browser-mode",!standalone);
+  }catch(e){}
+}
+
 function initV213eStabilization(){
   try{
     document.addEventListener("touchmove",e=>{if(route&&route.screen==="home")e.preventDefault()},{passive:false});
@@ -1555,4 +1571,4 @@ function initV213eStabilization(){
     window.addEventListener("orientationchange",()=>setTimeout(lock,50),{passive:true});
   }catch(e){}
 }
-initV213aShell();initV213Shell();initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=215').catch(()=>{})}
+initV213aShell();initV213Shell();applyDisplayModeClass();window.addEventListener("resize",()=>setTimeout(applyDisplayModeClass,25),{passive:true});window.addEventListener("orientationchange",()=>setTimeout(applyDisplayModeClass,25),{passive:true});initV213eStabilization();state=loadData();render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=216q').catch(()=>{})}

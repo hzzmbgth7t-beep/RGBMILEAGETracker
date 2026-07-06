@@ -1,11 +1,14 @@
 # USER GUIDE
 
-## v2.1.6p Addendum - Phone Screenshot Home Screen Correction
+## v2.1.6q Addendum - Mode-Aware Home Screen Correction
 
-The Home Screen now uses:
-- a larger chrome title
-- larger circles
-- larger chrome-styled circle labels
-- adjusted Home Screen vertical spacing based on the user's phone screenshot
+The Home Screen now uses separate layout handling for:
+- Safari browser mode
+- Home Screen standalone mode
 
-This update is limited to Home Screen presentation.
+Both modes preserve:
+- chrome title styling
+- chrome circle label styling
+- two-circle Home Screen structure
+
+This update is limited to Home Screen presentation and mode handling.
