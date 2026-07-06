@@ -1,12 +1,21 @@
 # FIXNOTES
 
-## v2.1.6q - Mode-Aware Home Screen Correction
+## v2.1.6r - Evidence-Based Home Screen Corrective Build
 
 ### Reason For This Release
-Prior builds treated Safari browser view and Home Screen standalone view too similarly, which caused repeated layout mismatches.
+The installed v2.1.6q Home Screen evidence showed three remaining defects:
+- lower wrapped label not fully chrome
+- labels too large
+- lower label too far from the menu
 
 ### Fix Implemented
-- detect standalone/Home Screen mode
-- apply separate Home Screen sizing for browser mode and standalone mode
-- preserve chrome title and chrome labels
-- limit changes to Home Screen layout selectors and mode handling only
+- reduced label size to the 75%-of-title target
+- strengthened chrome rendering behavior for wrapped labels
+- moved only the lower label closer to the menu
+
+### Preserved By Design
+- version behavior
+- top gap
+- upper-label to lower-circle gap
+- circle sizes
+- title size and placement

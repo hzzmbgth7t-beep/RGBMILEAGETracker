@@ -1,14 +1,14 @@
 # CHANGELOG
 
-## v2.1.6q - 2026-06-12
+## v2.1.6r - 2026-06-12
 ### Release Type
-Mode-Aware Home Screen Correction
+Evidence-Based Home Screen Corrective Build
 
 ### Summary
-Built a mode-aware Home Screen correction so Safari browser mode and Home Screen standalone mode no longer share one guessed layout.
+Applied only the corrective changes supported by the installed Home Screen evidence from v2.1.6q.
 
 ### Changes
-- Added explicit browser-mode vs standalone-mode detection
-- Added Home Screen-specific standalone sizing
-- Preserved chrome title and chrome circle labels
-- Kept changes isolated to Home Screen selectors and mode detection support
+- Reduced standalone Home Screen label size from 30px to 25px
+- Kept standalone label min-height at 38px to avoid disturbing validated vertical spacing
+- Added wrapped-label chrome robustness with inline-block and transparent text fill
+- Lowered only the lower standalone label visually by 8px to tighten the menu gap

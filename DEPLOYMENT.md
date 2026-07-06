@@ -1,15 +1,15 @@
 # DEPLOYMENT
 
-## v2.1.6q Deployment Notes
+## v2.1.6r Deployment Notes
 
 ### Release Type
-Mode-Aware Home Screen Correction
+Evidence-Based Home Screen Corrective Build
 
 ### Deployment URL
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 ### Cache-Buster URL
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216q
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216r
 
 ### Files That Must Be Deployed
 - index.html
@@ -24,8 +24,8 @@ https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216q
 - USER-GUIDE.md
 
 ### Post-Deployment Checks
-1. Confirm app shows v2.1.6q
-2. Confirm Home Screen standalone mode uses the larger layout
-3. Confirm Safari browser mode uses the browser-specific layout
-4. Confirm title remains chrome
-5. Confirm circle labels remain chrome
+1. Confirm app shows v2.1.6r
+2. Confirm lower label remains fully chrome
+3. Confirm labels are smaller than v2.1.6q and about 75% of title size
+4. Confirm lower label sits closer to the menu
+5. Confirm top and middle gaps remain unchanged

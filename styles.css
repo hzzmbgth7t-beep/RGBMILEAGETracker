@@ -588,7 +588,9 @@ body.browser-mode .screen.home .circleBtn{
   box-shadow:0 10px 24px rgba(0,0,0,.35),inset 0 5px 12px rgba(255,255,255,.5)
 }
 body.browser-mode .screen.home .vehicle-label{
-  font-size:26px;font-weight:1000;min-height:34px;line-height:1.03;letter-spacing:-.03em;margin-top:2px
+  display:inline-block;width:auto;max-width:92vw;white-space:normal;text-wrap:balance;
+  font-size:23px;font-weight:1000;min-height:34px;line-height:1.03;letter-spacing:-.03em;margin-top:2px;
+  -webkit-text-fill-color:transparent;background-size:100% 100%;background-repeat:no-repeat
 }
 
 body.standalone-mode .screen.home{
@@ -612,5 +614,10 @@ body.standalone-mode .screen.home .circleBtn{
   box-shadow:0 10px 24px rgba(0,0,0,.35),inset 0 5px 12px rgba(255,255,255,.5)
 }
 body.standalone-mode .screen.home .vehicle-label{
-  font-size:30px;font-weight:1000;min-height:38px;line-height:1.03;letter-spacing:-.03em;margin-top:2px
+  display:inline-block;width:auto;max-width:92vw;white-space:normal;text-wrap:balance;
+  font-size:25px;font-weight:1000;min-height:38px;line-height:1.03;letter-spacing:-.03em;margin-top:2px;
+  -webkit-text-fill-color:transparent;background-size:100% 100%;background-repeat:no-repeat
+}
+body.standalone-mode .screen.home .circle-wrap:last-child .vehicle-label{
+  transform:translateY(8px)
 }

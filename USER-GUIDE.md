@@ -1,14 +1,10 @@
 # USER GUIDE
 
-## v2.1.6q Addendum - Mode-Aware Home Screen Correction
+## v2.1.6r Addendum - Evidence-Based Home Screen Correction
 
-The Home Screen now uses separate layout handling for:
-- Safari browser mode
-- Home Screen standalone mode
+This release corrects only the remaining Home Screen defects identified from the installed v2.1.6q evidence:
+- smaller circle labels
+- more robust chrome rendering for wrapped labels
+- lower label positioned closer to the menu
 
-Both modes preserve:
-- chrome title styling
-- chrome circle label styling
-- two-circle Home Screen structure
-
-This update is limited to Home Screen presentation and mode handling.
+Validated Home Screen elements such as the top gap, middle gap, circle sizes, and title placement were intentionally left unchanged.
