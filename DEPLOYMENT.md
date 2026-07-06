@@ -1,15 +1,15 @@
 # DEPLOYMENT
 
-## v2.1.6o Deployment Notes
+## v2.1.6p Deployment Notes
 
 ### Release Type
-Approved Home Screen Layout Build
+Phone Screenshot Home Screen Correction
 
 ### Deployment URL
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 ### Cache-Buster URL
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216o
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216p
 
 ### Files That Must Be Deployed
 - index.html
@@ -24,8 +24,8 @@ https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216o
 - USER-GUIDE.md
 
 ### Post-Deployment Checks
-1. Confirm app shows v2.1.6o
-2. Confirm title matches the approved Home Screen layout
-3. Confirm circles match the approved Home Screen layout
-4. Confirm labels match the approved Home Screen layout
-5. Confirm top and bottom spacing match the approved Home Screen layout
+1. Confirm app shows v2.1.6p
+2. Confirm title is larger and chrome
+3. Confirm circle labels are larger and chrome
+4. Confirm circles are larger
+5. Confirm top and bottom spacing still match the phone screenshot intent
