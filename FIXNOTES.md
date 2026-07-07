@@ -1,14 +1,11 @@
 # FIXNOTES
 
-## v2.1.6s - Menu Bottom Lock
+## v2.1.6u - Home Screen Menu Detection Lock
 
 ### Reason For This Release
-The bottom menu was floating above the physical bottom edge of the visible screen and leaving unused blank space below it.
+The prior menu-only correction still left blank space beneath the menu in Home Screen mode, suggesting that the app was still behaving as if browser-style bottom space was reserved.
 
 ### Fix Implemented
-- menu anchored flush to the bottom edge
-- no external bottom margin or upward offset
-- safe-area spacing handled as internal menu padding only
-
-### Scope Note
-This is a menu-only correction. No circles, labels, title, spacing above the menu, or other visual elements were changed intentionally.
+- strengthened standalone/Home Screen detection
+- applied standalone-specific menu-bottom anchoring
+- left circles, labels, title, and spacing above the menu unchanged intentionally

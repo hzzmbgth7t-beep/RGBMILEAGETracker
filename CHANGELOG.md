@@ -1,14 +1,13 @@
 # CHANGELOG
 
-## v2.1.6s - 2026-06-12
+## v2.1.6u - 2026-06-12
 ### Release Type
-Menu Bottom Lock
+Home Screen Menu Detection Lock
 
 ### Summary
-Applied a menu-only correction so the bottom navigation sits flush with the visible bottom edge, with safe-area handling kept inside the menu container.
+Applied a menu-only correction that strengthens standalone/Home Screen detection and applies the bottom-lock logic specifically to standalone mode.
 
 ### Changes
-- locked bottom navigation to `bottom: 0`
-- removed external bottom spacing behavior
-- applied safe-area handling as internal bottom padding only
-- left all non-menu Home Screen elements unchanged
+- strengthened standalone display-mode detection
+- reapplied standalone-specific bottom menu anchoring
+- limited the correction to menu/environment logic only

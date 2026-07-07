@@ -1,9 +1,9 @@
 # USER GUIDE
 
-## v2.1.6s Addendum - Menu Bottom Lock
+## v2.1.6u Addendum - Home Screen Menu Detection Lock
 
-The bottom navigation/menu is now locked flush to the bottom edge of the visible screen.
+This release is limited to a menu-only correction for Home Screen mode.
 
-Any iPhone safe-area spacing is handled as internal padding inside the menu container.
+It strengthens standalone/Home Screen detection and applies the bottom-lock logic specifically to the Home Screen environment.
 
-This release is intentionally limited to the menu position only.
+No other visual areas are intended to change.
