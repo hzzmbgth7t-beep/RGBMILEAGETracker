@@ -1,14 +1,14 @@
 # CHANGELOG
 
-## v2.1.6v - 2026-06-12
+## v2.1.7 - 2026-06-12
 ### Release Type
-Home Screen Menu Root-Cause Cleanup
+Radical Home Screen Shell / Bottom Rail Rebuild
 
 ### Summary
-Applied a menu-only correction that removes the standalone/Home Screen bottom reservation while keeping safe-area handling inside the menu.
+Stopped the prior menu-fix path and rebuilt the Home Screen standalone layout around an isolated content shell and dedicated bottom menu rail.
 
 ### Changes
-- cleared standalone-mode app bottom padding reservation
-- cleared standalone-mode Home Screen bottom reservation
-- kept menu anchored at the physical bottom edge
-- kept safe-area handling internal to the menu
+- created standalone Home Screen content shell
+- created standalone Home Screen bottom menu rail
+- moved Home Screen menu out of the legacy bottom-boundary path
+- kept safe-area handling inside the menu rail

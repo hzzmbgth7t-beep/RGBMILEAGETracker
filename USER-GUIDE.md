@@ -1,9 +1,9 @@
 # USER GUIDE
 
-## v2.1.6v Addendum - Home Screen Menu Root-Cause Cleanup
+## v2.1.7 Addendum - Radical Home Screen Shell / Bottom Rail Rebuild
 
-This release is limited to a menu-only correction for Home Screen mode.
+This release rebuilds the Home Screen standalone layout using:
+- a dedicated content shell
+- a dedicated bottom menu rail
 
-It removes the standalone/Home Screen bottom reservation that previously left visible space beneath the menu.
-
-No other visual areas are intended to change.
+This change is intended to correct the persistent Home Screen bottom-boundary failure.

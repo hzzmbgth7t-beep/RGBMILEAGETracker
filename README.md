@@ -1,4 +1,4 @@
-# RGBMileage v2.1.6v
+# RGBMileage v2.1.7
 
 ## URLs
 
@@ -6,50 +6,58 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this release:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216v
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=217
 
 ## Purpose
 
-This release is a menu-only root-cause correction for the Home Screen bottom boundary.
+This release abandons the prior layered menu-fix method and introduces a radical Home Screen standalone shell with a dedicated bottom menu rail.
 
 ## Release Type
 
-Home Screen Menu Root-Cause Cleanup
+Radical Home Screen Shell / Bottom Rail Rebuild
 
 ## Source Build
 
-- current source build: `v2.1.6u`
+- source build: `v2.1.6v`
 
 ## Controlling Evidence
 
-- Home Screen screenshot showing blank space still beneath the menu in `v2.1.6u`
+- installed Home Screen screenshots from `v2.1.6s`, `u`, and `v`
+- repeated failure of the legacy menu override path
 
-## Allowed Changes Only
+## Build Method
 
-- bottom menu location logic
-- Home Screen standalone container bottom reservation cleanup
-- internal safe-area handling inside the menu only
+This version does **not** continue the old menu override chain.  
+It creates:
+- a dedicated Home Screen standalone content shell
+- a dedicated Home Screen standalone bottom menu rail
 
-## Do Not Change
+The goal is to bypass the legacy bottom-boundary reservation logic for Home Screen mode rather than continuing to fight it with more overrides.
 
-- title
-- version line
+## Allowed Changes
+
+- Home Screen standalone shell structure
+- Home Screen bottom menu rail structure
+- Home Screen bottom boundary logic
+- internal safe-area handling inside the menu rail
+
+## Do Not Change Intentionally
+
+- title styling
+- version line styling
 - circles
-- circle sizes
-- circle positions
 - labels
-- label size
 - label chrome/effect
 - label wrapping
 - background
 - vehicle images
-- spacing above the menu
 - menu icon arrangement
 - menu text labels
 
 ## Acceptance Standard
 
 1. Home Screen menu touches the visible bottom edge
-2. no unused blank space exists beneath the menu in Home Screen mode
-3. nothing above the menu changes
-4. app shows `v2.1.6v`
+2. no unused blank space exists beneath the menu
+3. safe-area handling is internal to the menu rail
+4. Home Screen above-menu content remains substantially preserved
+5. app shows `v2.1.7`

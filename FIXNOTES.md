@@ -1,12 +1,11 @@
 # FIXNOTES
 
-## v2.1.6v - Home Screen Menu Root-Cause Cleanup
+## v2.1.7 - Radical Home Screen Shell / Bottom Rail Rebuild
 
 ### Reason For This Release
-Prior menu-only versions changed menu anchoring without removing the standalone-mode container reservation that kept blank space beneath the menu.
+Repeated menu-only fixes kept failing because the Home Screen still depended on stacked legacy bottom-padding and height-reservation rules.
 
 ### Fix Implemented
-- standalone-mode `#app` bottom reservation removed
-- standalone-mode `.screen.home` bottom reservation removed
-- standalone-mode menu remains fixed at `bottom: 0`
-- safe-area handling remains internal to the menu only
+- isolated the Home Screen standalone layout from the legacy bottom-boundary chain
+- created a dedicated bottom menu rail
+- kept menu safe-area handling internal to the rail
