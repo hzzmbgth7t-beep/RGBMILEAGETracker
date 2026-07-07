@@ -1,13 +1,14 @@
 # CHANGELOG
 
-## v2.1.6u - 2026-06-12
+## v2.1.6v - 2026-06-12
 ### Release Type
-Home Screen Menu Detection Lock
+Home Screen Menu Root-Cause Cleanup
 
 ### Summary
-Applied a menu-only correction that strengthens standalone/Home Screen detection and applies the bottom-lock logic specifically to standalone mode.
+Applied a menu-only correction that removes the standalone/Home Screen bottom reservation while keeping safe-area handling inside the menu.
 
 ### Changes
-- strengthened standalone display-mode detection
-- reapplied standalone-specific bottom menu anchoring
-- limited the correction to menu/environment logic only
+- cleared standalone-mode app bottom padding reservation
+- cleared standalone-mode Home Screen bottom reservation
+- kept menu anchored at the physical bottom edge
+- kept safe-area handling internal to the menu

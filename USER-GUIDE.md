@@ -1,9 +1,9 @@
 # USER GUIDE
 
-## v2.1.6u Addendum - Home Screen Menu Detection Lock
+## v2.1.6v Addendum - Home Screen Menu Root-Cause Cleanup
 
 This release is limited to a menu-only correction for Home Screen mode.
 
-It strengthens standalone/Home Screen detection and applies the bottom-lock logic specifically to the Home Screen environment.
+It removes the standalone/Home Screen bottom reservation that previously left visible space beneath the menu.
 
 No other visual areas are intended to change.
