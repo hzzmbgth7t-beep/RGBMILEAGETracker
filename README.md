@@ -1,4 +1,4 @@
-# RGBMileage v2.1.6l Working Copy
+# RGBMileage v2.1.6l-wc02 Working Copy
 
 ## Working Copy Status
 
@@ -14,7 +14,7 @@ It is **not**:
 - a promoted candidate version
 - an approved handoff release artifact
 
-The app version and cache-buster URLs remain at the locked baseline values because this working copy has **not** passed promotion.
+The app is visibly and technically labeled as `v2.1.6l-wc02` for test identification. This is still a working copy and not a promoted release version.
 
 ## URLs
 
@@ -22,7 +22,7 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this working copy test:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216l
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc02
 
 ## Purpose
 
@@ -58,7 +58,7 @@ It does **not**:
 
 ## Stable Behavior Preserved
 
-- baseline `v2.1.6l` version/cache identity
+- working-copy `v2.1.6l-wc02` visible/cache identity
 - Fuel accepted origin model and migration precedence
 - Maintenance accepted origin model and migration precedence
 - CSV import prompt:

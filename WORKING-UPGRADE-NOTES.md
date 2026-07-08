@@ -4,7 +4,7 @@
 WC-02
 
 ## Baseline reference
-v2.1.6l
+v2.1.6l-wc02
 
 ## Status
 This is a baseline-derived working-copy test package.
