@@ -1,14 +1,14 @@
 # CHANGELOG
 
-## v2.1.7b - 2026-06-12
+## v2.1.6l - 2026-06-12
 ### Release Type
-Home Screen Menu Hard Reset
+Insurance Label Model Rollout
 
 ### Summary
-Corrected the Home Screen shell-box defect and aligned the governed release documents and manifest to v2.1.7b.
+Rolled the accepted shared origin model into Insurance without inventing unapproved Insurance-specific Incomplete rules.
 
 ### Changes
-- corrected the Home Screen shell/rail layout-box defect
-- applied the Home Screen menu hard reset
-- aligned README, CHANGELOG, FIXNOTES, DEPLOYMENT, USER-GUIDE, and manifest to `v2.1.7b`
-- aligned the release cache token to `217a`
+- Applied Manual Entry / Migration / Other Data origin model to Insurance
+- Added undated legacy Insurance precedence => Migration
+- Preserved meaningful Review / Historical / Archived insurance states
+- Kept Manual Entry stored but not displayed as an origin badge

@@ -1,54 +1,75 @@
-# RGBMileage v2.1.7b
+# RGBMileage v2.1.6l Working Copy
+
+## Working Copy Status
+
+This package is a **baseline-derived working copy test package**.
+
+It is:
+- derived from the locked `v2.1.6l` baseline
+- intended for controlled verification
+- packaged as a single test ZIP for evaluation
+
+It is **not**:
+- a new release version
+- a promoted candidate version
+- an approved handoff release artifact
+
+The app version and cache-buster URLs remain at the locked baseline values because this working copy has **not** passed promotion.
 
 ## URLs
 
 GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-buster URL for this release:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=217b
+Cache-buster URL for this working copy test:
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216l
 
 ## Purpose
 
-This release is the corrected flat release package for v2.1.7b. It applies the Home Screen menu hard reset and aligns the governed release documents and manifest to the same version and cache token.
+This working copy preserves the `v2.1.6l` baseline release context while allowing controlled verification of the currently approved working-copy change scope.
 
-## Release Type
+## Working Copy Type
 
-Home Screen Menu Hard Reset
+Baseline-Derived Test Working Copy
 
-## Source Build
+## Current Working-Copy Change Scope
 
-- source build: `v2.1.7`
+This working copy includes the currently approved **nav-only cleanup** in `styles.css`.
 
-## Controlling Evidence
+Applied:
+- removed failed post-`l` duplicate bottom-nav override clusters
+- preserved the single baseline `.bottom-nav` source
+- left non-nav layout, circle, label, shell, rail, and governed versioning behavior untouched
 
-- installed iPhone 17 Pro Max Home Screen screenshot for `v2.1.7`
-- confirmed shell-box failure caused by `display: contents` on the Home Screen wrapper elements
+## Baseline Release Context
 
-## Allowed Changes
+The locked baseline `v2.1.6l` release rolls the accepted shared origin model into Insurance so Fuel, Maintenance, and Insurance all use the same refined origin framework before any future section-specific status refinements.
 
-- Home Screen standalone shell correction
-- Home Screen menu rail correction
-- governed document alignment
-- manifest and cache-token alignment
+## Locked Scope Boundary
 
-## Do Not Change Intentionally
+This working copy is limited to the approved restart correction boundary.
 
-- title styling
-- version line styling
-- circles
-- labels
-- label chrome/effect
-- label wrapping
-- background
-- vehicle images
-- menu icon arrangement
-- menu text labels
+It does **not**:
+- create a new version
+- change the baseline version label
+- change governed version/cache identity
+- broaden scope into shell, rail, height, grid, circle, or label work
+- serve as a release artifact
 
-## Acceptance Standard
+## Stable Behavior Preserved
 
-1. Home Screen menu touches the visible bottom edge
-2. no unused blank space exists beneath the menu
-3. safe-area handling is internal to the menu rail path
-4. governed release documents and manifest all match `v2.1.7b` and cache token `217a`
-5. app shows `v2.1.7b`
+- baseline `v2.1.6l` version/cache identity
+- Fuel accepted origin model and migration precedence
+- Maintenance accepted origin model and migration precedence
+- CSV import prompt:
+  - Migrated Data
+  - Other Data
+- shared metadata panel structure
+
+## Verification Focus
+
+1. Home Screen bottom menu position in standalone phone portrait
+2. Circle preservation relative to baseline `v2.1.6l`
+3. Label preservation relative to baseline `v2.1.6l`
+4. No unrelated Home geometry drift
+5. Working copy remains non-promoted and baseline-identity aligned
