@@ -12,3 +12,9 @@ Stopped the prior menu-fix path and rebuilt the Home Screen standalone layout ar
 - created standalone Home Screen bottom menu rail
 - moved Home Screen menu out of the legacy bottom-boundary path
 - kept safe-area handling inside the menu rail
+
+
+## v2.1.7a
+- Extreme Home Screen bottom rail reset for standalone mode.
+- Removes Home Screen bottom safe-area reservation from the menu rail.
+- Converts the Home Screen rail into a real layout box and resets the menu to a fixed-height bottom row.

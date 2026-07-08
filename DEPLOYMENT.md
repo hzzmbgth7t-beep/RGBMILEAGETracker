@@ -29,3 +29,9 @@ https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=217
 3. Confirm no blank space exists beneath the menu
 4. Confirm safe-area spacing is internal to the menu rail
 5. Confirm above-menu content remains substantially preserved
+
+
+## v2.1.7a
+- Extreme Home Screen bottom rail reset for standalone mode.
+- Removes Home Screen bottom safe-area reservation from the menu rail.
+- Converts the Home Screen rail into a real layout box and resets the menu to a fixed-height bottom row.
