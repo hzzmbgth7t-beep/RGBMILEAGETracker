@@ -1,4 +1,4 @@
-# RGBMileage v2.1.7a
+# RGBMileage v2.1.7b
 
 ## URLs
 
@@ -6,11 +6,11 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this release:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=217a
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=217b
 
 ## Purpose
 
-This release is the corrected flat release package for v2.1.7a. It applies the Home Screen menu hard reset and aligns the governed release documents and manifest to the same version and cache token.
+This release is the corrected flat release package for v2.1.7b. It applies the Home Screen menu hard reset and aligns the governed release documents and manifest to the same version and cache token.
 
 ## Release Type
 
@@ -50,5 +50,5 @@ Home Screen Menu Hard Reset
 1. Home Screen menu touches the visible bottom edge
 2. no unused blank space exists beneath the menu
 3. safe-area handling is internal to the menu rail path
-4. governed release documents and manifest all match `v2.1.7a` and cache token `217a`
-5. app shows `v2.1.7a`
+4. governed release documents and manifest all match `v2.1.7b` and cache token `217a`
+5. app shows `v2.1.7b`

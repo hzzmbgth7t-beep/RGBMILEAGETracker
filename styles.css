@@ -348,15 +348,7 @@ body {
   z-index: 9999 !important;
 }
 
-.bottom-nav::after {
-  content: "" !important;
-  position: fixed !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: -40px !important;
-  height: 40px !important;
-  background: inherit !important;
-}
+
 
 .form-grid,
 .view-grid {
@@ -410,7 +402,7 @@ body { position:fixed!important; inset:0!important; touch-action:manipulation!im
 .screen.home { width:100%!important; max-width:100%!important; height:calc(100svh - 72px - env(safe-area-inset-bottom))!important; min-height:calc(100svh - 72px - env(safe-area-inset-bottom))!important; max-height:calc(100svh - 72px - env(safe-area-inset-bottom))!important; overflow:hidden!important; overscroll-behavior:none!important; touch-action:manipulation!important; }
 .screen:not(.home) { overflow-x:hidden!important; }
 .bottom-nav { position:fixed!important; left:0!important; right:0!important; bottom:0!important; margin:0!important; transform:none!important; padding-bottom:0!important; border-bottom-left-radius:0!important; border-bottom-right-radius:0!important; z-index:9999!important; }
-.bottom-nav::after { content:""!important; position:fixed!important; left:0!important; right:0!important; bottom:-40px!important; height:40px!important; background:inherit!important; }
+
 .nav-control,.back-btn,button,.bottom-nav button { min-width:44px!important; min-height:44px!important; touch-action:manipulation!important; cursor:pointer!important; }
 .topbar { position:relative!important; z-index:20!important; display:flex!important; align-items:center!important; gap:8px!important; }
 .back-btn { padding:10px 12px!important; line-height:22px!important; flex:0 0 auto!important; position:relative!important; z-index:30!important; }
@@ -558,276 +550,9 @@ body {
 @media(max-width:385px){.choice-box{width:min(80vw,310px)}}
 
 
-/* v2.1.6q hard-gate Home Screen overrides: browser vs standalone */
-.screen.home .chrome-title{font-size:30px;line-height:1.05}
-.screen.home .vehicle-label{
-  background:linear-gradient(180deg,var(--chrome1),var(--chrome2) 42%,var(--chrome3) 58%,#eff4fb 100%);
-  -webkit-background-clip:text;
-  color:transparent;
-  text-shadow:0 2px 9px rgba(255,255,255,.22)
-}
-
-body.browser-mode .screen.home{
-  min-height:calc(100dvh - 68px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
-  height:calc(100dvh - 68px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
-  gap:3px!important
-}
-body.browser-mode .screen.home .chrome-title{font-size:31px;line-height:1.03;margin:6px 0 1px}
-body.browser-mode .screen.home .subtitle{margin:0 0 4px;font-size:12px}
-body.browser-mode .screen.home .vehicle-area{
-  min-height:0;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:space-between;
-  overflow:hidden;width:100%;padding:4px 0 3px
-}
-body.browser-mode .screen.home .circle-wrap{
-  text-align:center;width:100%;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start
-}
-body.browser-mode .screen.home .circleBtn{
-  width:min(41dvh,57vw,248px);height:min(41dvh,57vw,248px);margin:0 auto 4px;border-radius:50%;
-  border:4px solid #c7d4e2;background:radial-gradient(circle at 35% 25%,#fff,#b7c3cf 36%,#657587 55%,#f8fbff 82%);
-  color:#0b1324;display:flex;align-items:center;justify-content:center;font-weight:1000;font-size:46px;overflow:hidden;
-  box-shadow:0 10px 24px rgba(0,0,0,.35),inset 0 5px 12px rgba(255,255,255,.5)
-}
-body.browser-mode .screen.home .vehicle-label{
-  display:inline-block;width:auto;max-width:92vw;white-space:normal;text-wrap:balance;
-  font-size:23px;font-weight:1000;min-height:34px;line-height:1.03;letter-spacing:-.03em;margin-top:2px;
-  -webkit-text-fill-color:transparent;background-size:100% 100%;background-repeat:no-repeat
-}
-
-body.standalone-mode .screen.home{
-  min-height:calc(100dvh - 62px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
-  height:calc(100dvh - 62px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
-  gap:2px!important
-}
-body.standalone-mode .screen.home .chrome-title{font-size:33px;line-height:1.02;margin:2px 0 0}
-body.standalone-mode .screen.home .subtitle{margin:0 0 2px;font-size:12px}
-body.standalone-mode .screen.home .vehicle-area{
-  min-height:0;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:space-between;
-  overflow:hidden;width:100%;padding:2px 0 2px
-}
-body.standalone-mode .screen.home .circle-wrap{
-  text-align:center;width:100%;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start
-}
-body.standalone-mode .screen.home .circleBtn{
-  width:min(46dvh,63vw,280px);height:min(46dvh,63vw,280px);margin:0 auto 5px;border-radius:50%;
-  border:4px solid #c7d4e2;background:radial-gradient(circle at 35% 25%,#fff,#b7c3cf 36%,#657587 55%,#f8fbff 82%);
-  color:#0b1324;display:flex;align-items:center;justify-content:center;font-weight:1000;font-size:50px;overflow:hidden;
-  box-shadow:0 10px 24px rgba(0,0,0,.35),inset 0 5px 12px rgba(255,255,255,.5)
-}
-body.standalone-mode .screen.home .vehicle-label{
-  display:inline-block;width:auto;max-width:92vw;white-space:normal;text-wrap:balance;
-  font-size:25px;font-weight:1000;min-height:38px;line-height:1.03;letter-spacing:-.03em;margin-top:2px;
-  -webkit-text-fill-color:transparent;background-size:100% 100%;background-repeat:no-repeat
-}
-body.standalone-mode .screen.home .circle-wrap:last-child .vehicle-label{
-  transform:translateY(8px)
-}
 
 
-/* v2.1.6s Menu Bottom Lock: menu-only correction */
-.bottom-nav{
-  position:fixed!important;
-  left:0!important;
-  right:0!important;
-  bottom:0!important;
-  margin-bottom:0!important;
-  transform:none!important;
-  padding-bottom:max(8px, env(safe-area-inset-bottom))!important;
-}
-body.browser-mode .bottom-nav,
-body.standalone-mode .bottom-nav{
-  position:fixed!important;
-  left:0!important;
-  right:0!important;
-  bottom:0!important;
-  margin-bottom:0!important;
-  transform:none!important;
-  padding-bottom:max(8px, env(safe-area-inset-bottom))!important;
-}
-
-
-/* v2.1.6u Home Screen Menu Detection Lock: standalone-specific menu-bottom correction only */
-@media (display-mode: standalone), (display-mode: fullscreen), (display-mode: minimal-ui) {
-  .bottom-nav{
-    position:fixed!important;
-    left:0!important;
-    right:0!important;
-    bottom:calc(0px - env(safe-area-inset-bottom))!important;
-    margin:0!important;
-    transform:none!important;
-    padding-top:5px!important;
-    padding-right:7px!important;
-    padding-left:7px!important;
-    padding-bottom:calc(5px + env(safe-area-inset-bottom))!important;
-    border-bottom-left-radius:0!important;
-    border-bottom-right-radius:0!important;
-    z-index:99999!important;
-  }
-}
-html.standalone-mode .bottom-nav,
-body.standalone-mode .bottom-nav{
-  position:fixed!important;
-  left:0!important;
-  right:0!important;
-  bottom:calc(0px - env(safe-area-inset-bottom))!important;
-  margin:0!important;
-  transform:none!important;
-  padding-top:5px!important;
-  padding-right:7px!important;
-  padding-left:7px!important;
-  padding-bottom:calc(5px + env(safe-area-inset-bottom))!important;
-  border-bottom-left-radius:0!important;
-  border-bottom-right-radius:0!important;
-  z-index:99999!important;
-}
-
-
-/* v2.1.6v Root-Cause Menu Bottom Lock: standalone reservation cleanup */
-html.standalone-mode body,
-body.standalone-mode{
-  overflow:hidden!important;
-}
-html.standalone-mode #app,
-body.standalone-mode #app{
-  padding-bottom:0!important;
-  height:100dvh!important;
-  min-height:100dvh!important;
-  max-height:100dvh!important;
-}
-html.standalone-mode .screen.home,
-body.standalone-mode .screen.home{
-  height:calc(100dvh - env(safe-area-inset-top))!important;
-  min-height:calc(100dvh - env(safe-area-inset-top))!important;
-  max-height:calc(100dvh - env(safe-area-inset-top))!important;
-  padding-bottom:0!important;
-}
-html.standalone-mode .bottom-nav,
-body.standalone-mode .bottom-nav{
-  position:fixed!important;
-  left:0!important;
-  right:0!important;
-  bottom:0!important;
-  margin:0!important;
-  transform:none!important;
-  min-height:58px!important;
-  padding-top:4px!important;
-  padding-right:7px!important;
-  padding-left:7px!important;
-  padding-bottom:env(safe-area-inset-bottom)!important;
-  box-sizing:border-box!important;
-  border-bottom-left-radius:0!important;
-  border-bottom-right-radius:0!important;
-  z-index:99999!important;
-}
-html.standalone-mode .bottom-nav::after,
-body.standalone-mode .bottom-nav::after{
-  content:none!important;
-}
-
-
-/* v2.1.7 Radical Home Screen Shell: standalone-only isolated content shell + bottom menu rail */
-.home-content-shell{display:contents}
-.home-menu-rail{display:contents}
-
-html.standalone-mode #app,
-body.standalone-mode #app{
-  padding-bottom:0!important;
-  overflow:hidden!important;
-}
-
-html.standalone-mode .screen.home.home-shell,
-body.standalone-mode .screen.home.home-shell{
-  position:fixed!important;
-  inset:0!important;
-  width:100%!important;
-  max-width:540px!important;
-  height:100dvh!important;
-  min-height:100dvh!important;
-  max-height:100dvh!important;
-  margin:0 auto!important;
-  padding:0!important;
-  overflow:hidden!important;
-  display:block!important;
-  background:radial-gradient(circle at top,#243b5a 0,#0a1324 44%,#09101d 100%)!important;
-}
-
-html.standalone-mode .screen.home.home-shell .home-content-shell,
-body.standalone-mode .screen.home.home-shell .home-content-shell{
-  position:absolute!important;
-  top:calc(8px + env(safe-area-inset-top))!important;
-  left:12px!important;
-  right:12px!important;
-  bottom:calc(58px + env(safe-area-inset-bottom))!important;
-  overflow:hidden!important;
-  display:flex!important;
-  flex-direction:column!important;
-  gap:0!important;
-}
-
-html.standalone-mode .screen.home.home-shell .home-head,
-body.standalone-mode .screen.home.home-shell .home-head{
-  flex:0 0 auto!important;
-  min-height:0!important;
-}
-
-html.standalone-mode .screen.home.home-shell .vehicle-area,
-body.standalone-mode .screen.home.home-shell .vehicle-area{
-  flex:1 1 auto!important;
-  min-height:0!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:center!important;
-  justify-content:space-between!important;
-  gap:8px!important;
-  overflow:hidden!important;
-  width:100%!important;
-  padding:2px 0 2px!important;
-}
-
-html.standalone-mode .screen.home.home-shell .home-menu-rail,
-body.standalone-mode .screen.home.home-shell .home-menu-rail{
-  position:absolute!important;
-  left:0!important;
-  right:0!important;
-  bottom:0!important;
-  height:calc(58px + env(safe-area-inset-bottom))!important;
-  min-height:calc(58px + env(safe-area-inset-bottom))!important;
-  max-height:calc(58px + env(safe-area-inset-bottom))!important;
-  background:linear-gradient(180deg,rgba(23,37,58,.98),rgba(7,13,24,1))!important;
-  border-top:1px solid var(--line)!important;
-  box-sizing:border-box!important;
-  overflow:hidden!important;
-  z-index:99999!important;
-}
-
-html.standalone-mode .screen.home.home-shell .home-menu-rail .bottom-nav,
-body.standalone-mode .screen.home.home-shell .home-menu-rail .bottom-nav{
-  position:absolute!important;
-  left:0!important;
-  right:0!important;
-  bottom:0!important;
-  width:100%!important;
-  max-width:none!important;
-  margin:0!important;
-  transform:none!important;
-  min-height:58px!important;
-  padding:4px 7px env(safe-area-inset-bottom)!important;
-  box-sizing:border-box!important;
-  background:transparent!important;
-  border-top:0!important;
-  display:flex!important;
-  justify-content:space-around!important;
-  align-items:stretch!important;
-  gap:6px!important;
-  z-index:100000!important;
-}
-
-html.standalone-mode .screen.home.home-shell .home-menu-rail .bottom-nav::after,
-body.standalone-mode .screen.home.home-shell .home-menu-rail .bottom-nav::after{
-  content:none!important;
-}
-
-
-/* v2.1.7a Extreme Home Screen Menu Rail Hard Reset */
+/* v2.1.7b Authoritative Home Screen Standalone Path */
 html.standalone-mode,
 body.standalone-mode{
   height:100dvh!important;
@@ -835,7 +560,6 @@ body.standalone-mode{
   max-height:100dvh!important;
   overflow:hidden!important;
 }
-
 html.standalone-mode #app,
 body.standalone-mode #app{
   position:fixed!important;
@@ -850,7 +574,6 @@ body.standalone-mode #app{
   overflow:hidden!important;
   box-sizing:border-box!important;
 }
-
 html.standalone-mode .screen.home.home-shell,
 body.standalone-mode .screen.home.home-shell{
   position:absolute!important;
@@ -869,7 +592,6 @@ body.standalone-mode .screen.home.home-shell{
   overflow:hidden!important;
   background:radial-gradient(circle at top,#243b5a 0,#0a1324 44%,#09101d 100%)!important;
 }
-
 html.standalone-mode .screen.home.home-shell .home-content-shell,
 body.standalone-mode .screen.home.home-shell .home-content-shell{
   display:flex!important;
@@ -882,13 +604,11 @@ body.standalone-mode .screen.home.home-shell .home-content-shell{
   min-height:0!important;
   overflow:hidden!important;
 }
-
 html.standalone-mode .screen.home.home-shell .home-head,
 body.standalone-mode .screen.home.home-shell .home-head{
   flex:0 0 auto!important;
   min-height:0!important;
 }
-
 html.standalone-mode .screen.home.home-shell .vehicle-area,
 body.standalone-mode .screen.home.home-shell .vehicle-area{
   flex:1 1 auto!important;
@@ -902,7 +622,6 @@ body.standalone-mode .screen.home.home-shell .vehicle-area{
   width:100%!important;
   padding:2px 0 2px!important;
 }
-
 html.standalone-mode .screen.home.home-shell .home-menu-rail,
 body.standalone-mode .screen.home.home-shell .home-menu-rail{
   display:block!important;
@@ -921,7 +640,6 @@ body.standalone-mode .screen.home.home-shell .home-menu-rail{
   overflow:hidden!important;
   z-index:100000!important;
 }
-
 html.standalone-mode .screen.home.home-shell .home-menu-rail .bottom-nav,
 body.standalone-mode .screen.home.home-shell .home-menu-rail .bottom-nav{
   position:relative!important;
@@ -944,7 +662,6 @@ body.standalone-mode .screen.home.home-shell .home-menu-rail .bottom-nav{
   gap:6px!important;
   z-index:100001!important;
 }
-
 html.standalone-mode .screen.home.home-shell .home-menu-rail .bottom-nav button,
 body.standalone-mode .screen.home.home-shell .home-menu-rail .bottom-nav button{
   width:100%!important;
@@ -960,15 +677,9 @@ body.standalone-mode .screen.home.home-shell .home-menu-rail .bottom-nav button{
   justify-content:center!important;
   border-radius:12px!important;
 }
-
 html.standalone-mode .screen.home.home-shell .home-menu-rail .bottom-nav button span,
 body.standalone-mode .screen.home.home-shell .home-menu-rail .bottom-nav button span{
   display:block!important;
   font-size:16px!important;
   line-height:1!important;
-}
-
-html.standalone-mode .screen.home.home-shell .home-menu-rail .bottom-nav::after,
-body.standalone-mode .screen.home.home-shell .home-menu-rail .bottom-nav::after{
-  content:none!important;
 }
