@@ -1,7 +1,7 @@
 {
-  "name": "RGB Mileage v2.1.6l-wc02",
-  "short_name": "RGBM wc02",
-  "start_url": "./index.html?v=216lwc02",
+  "name": "RGB Mileage v2.1.6l-wc03",
+  "short_name": "RGBM wc03",
+  "start_url": "./index.html?v=216lwc03",
   "display": "standalone",
   "background_color": "#0a1324",
   "theme_color": "#0a1324",

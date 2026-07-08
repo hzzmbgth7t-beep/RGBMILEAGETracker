@@ -4,7 +4,7 @@
 WC-02
 
 ## Baseline reference
-v2.1.6l-wc02
+v2.1.6l
 
 ## Status
 This is a baseline-derived working-copy test package.
@@ -31,3 +31,12 @@ The next smallest approved scope is Home/menu interaction only.
 - circle preservation
 - label preservation
 - no unrelated geometry drift
+
+
+## WC-03
+- Base: v2.1.6l baseline-derived full install
+- Identity: v2.1.6l-wc03
+- Scope: Home/menu interaction only
+- Approved change: #app bottom reservation removed from padding shorthand
+- Retained state: one .screen.home block with min-height only
+- Excluded: circles, labels, shell, rail, app.js logic changes beyond identity labeling
