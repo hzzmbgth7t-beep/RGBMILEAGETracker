@@ -1,6 +1,8 @@
 # USER GUIDE
 
-## v2.1.6l Addendum - Insurance Label Model Rollout
+**Status:** Baseline-derived working copy `v2.1.6l-wc03` (not a promoted release)
+
+## v2.1.6l-wc03 Addendum - Insurance Label Model Rollout
 
 Insurance now uses the accepted shared origin model:
 - Manual Entry

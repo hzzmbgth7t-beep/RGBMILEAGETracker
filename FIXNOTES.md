@@ -1,6 +1,8 @@
 # FIXNOTES
 
-## v2.1.6l - Insurance Label Model Rollout
+**Status:** Baseline-derived working copy `v2.1.6l-wc03` (not a promoted release)
+
+## v2.1.6l-wc03 - Insurance Label Model Rollout
 
 ### Reason For This Release
 Fuel and Maintenance already used the accepted origin model. Insurance needed the same shared framework before any later section-specific refinements.

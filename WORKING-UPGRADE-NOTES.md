@@ -4,7 +4,7 @@
 WC-02
 
 ## Baseline reference
-v2.1.6l
+v2.1.6l-wc03
 
 ## Status
 This is a baseline-derived working-copy test package.
@@ -34,8 +34,8 @@ The next smallest approved scope is Home/menu interaction only.
 
 
 ## WC-03
-- Base: v2.1.6l baseline-derived full install
-- Identity: v2.1.6l-wc03
+- Base: v2.1.6l-wc03 baseline-derived full install
+- Identity: v2.1.6l-wc03-wc03
 - Scope: Home/menu interaction only
 - Approved change: #app bottom reservation removed from padding shorthand
 - Retained state: one .screen.home block with min-height only

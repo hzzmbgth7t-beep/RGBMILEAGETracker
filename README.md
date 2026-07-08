@@ -1,11 +1,11 @@
-# RGBMileage v2.1.6l Working Copy
+# RGBMileage v2.1.6l-wc03 Working Copy
 
 ## Working Copy Status
 
 This package is a **baseline-derived working copy test package**.
 
 It is:
-- derived from the locked `v2.1.6l` baseline
+- derived from the locked `v2.1.6l-wc03` baseline
 - intended for controlled verification
 - packaged as a single test ZIP for evaluation
 
@@ -22,11 +22,11 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this working copy test:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216l
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc03
 
 ## Purpose
 
-This working copy preserves the `v2.1.6l` baseline release context while allowing controlled verification of the currently approved working-copy change scope.
+This working copy preserves the `v2.1.6l-wc03` baseline release context while allowing controlled verification of the currently approved working-copy change scope.
 
 ## Working Copy Type
 
@@ -43,7 +43,7 @@ Applied:
 
 ## Baseline Release Context
 
-The locked baseline `v2.1.6l` release rolls the accepted shared origin model into Insurance so Fuel, Maintenance, and Insurance all use the same refined origin framework before any future section-specific status refinements.
+The locked baseline `v2.1.6l-wc03` release rolls the accepted shared origin model into Insurance so Fuel, Maintenance, and Insurance all use the same refined origin framework before any future section-specific status refinements.
 
 ## Locked Scope Boundary
 
@@ -58,7 +58,7 @@ It does **not**:
 
 ## Stable Behavior Preserved
 
-- baseline `v2.1.6l` version/cache identity
+- baseline `v2.1.6l-wc03` version/cache identity
 - Fuel accepted origin model and migration precedence
 - Maintenance accepted origin model and migration precedence
 - CSV import prompt:
@@ -69,8 +69,8 @@ It does **not**:
 ## Verification Focus
 
 1. Home Screen bottom menu position in standalone phone portrait
-2. Circle preservation relative to baseline `v2.1.6l`
-3. Label preservation relative to baseline `v2.1.6l`
+2. Circle preservation relative to baseline `v2.1.6l-wc03`
+3. Label preservation relative to baseline `v2.1.6l-wc03`
 4. No unrelated Home geometry drift
 5. Working copy remains non-promoted and baseline-identity aligned
 
@@ -80,7 +80,7 @@ It does **not**:
 This package is part of a numbered **working-copy test series**.  
 Use working-copy numbers to distinguish test packages without implying a promoted release version.
 
-- Baseline release version remains: `v2.1.6l`
+- Baseline release version remains: `v2.1.6l-wc03`
 - Working-copy package sequence for this ZIP: `WC-02`
 - Package type: `baseline-derived working-copy test ZIP`
 

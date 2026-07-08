@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## v2.1.6l - 2026-06-12
+**Status:** Baseline-derived working copy `v2.1.6l-wc03` (not a promoted release)
+
+## v2.1.6l-wc03 - 2026-06-12
 ### Release Type
 Insurance Label Model Rollout
 
