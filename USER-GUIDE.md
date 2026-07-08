@@ -1,9 +1,7 @@
 # USER GUIDE
 
-## v2.1.7 Addendum - Radical Home Screen Shell / Bottom Rail Rebuild
+## v2.1.7a Addendum - Home Screen Menu Hard Reset
 
-This release rebuilds the Home Screen standalone layout using:
-- a dedicated content shell
-- a dedicated bottom menu rail
+This release updates the Home Screen standalone layout to use the corrected menu hard reset path.
 
-This change is intended to correct the persistent Home Screen bottom-boundary failure.
+It also aligns the governed release documents and manifest to the `v2.1.7a` release version and `217a` cache token.

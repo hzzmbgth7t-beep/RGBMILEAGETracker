@@ -1,15 +1,15 @@
 # DEPLOYMENT
 
-## v2.1.7 Deployment Notes
+## v2.1.7a Deployment Notes
 
 ### Release Type
-Radical Home Screen Shell / Bottom Rail Rebuild
+Home Screen Menu Hard Reset
 
 ### Deployment URL
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 ### Cache-Buster URL
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=217
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=217a
 
 ### Files That Must Be Deployed
 - index.html
@@ -22,16 +22,11 @@ https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=217
 - FIXNOTES.md
 - DEPLOYMENT.md
 - USER-GUIDE.md
+- RGBM-v2.1.7a-Verification.md
 
 ### Post-Deployment Checks
-1. Confirm app shows v2.1.7
+1. Confirm app shows `v2.1.7a`
 2. Confirm Home Screen menu touches the visible bottom edge
 3. Confirm no blank space exists beneath the menu
-4. Confirm safe-area spacing is internal to the menu rail
-5. Confirm above-menu content remains substantially preserved
-
-
-## v2.1.7a
-- Extreme Home Screen bottom rail reset for standalone mode.
-- Removes Home Screen bottom safe-area reservation from the menu rail.
-- Converts the Home Screen rail into a real layout box and resets the menu to a fixed-height bottom row.
+4. Confirm safe-area handling is internal to the Home Screen menu rail path
+5. Confirm the manifest start URL uses `?v=217a`

@@ -1,4 +1,4 @@
-# RGBMileage v2.1.7
+# RGBMileage v2.1.7a
 
 ## URLs
 
@@ -6,40 +6,31 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this release:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=217
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=217a
 
 ## Purpose
 
-This release abandons the prior layered menu-fix method and introduces a radical Home Screen standalone shell with a dedicated bottom menu rail.
+This release is the corrected flat release package for v2.1.7a. It applies the Home Screen menu hard reset and aligns the governed release documents and manifest to the same version and cache token.
 
 ## Release Type
 
-Radical Home Screen Shell / Bottom Rail Rebuild
+Home Screen Menu Hard Reset
 
 ## Source Build
 
-- source build: `v2.1.6v`
+- source build: `v2.1.7`
 
 ## Controlling Evidence
 
-- installed Home Screen screenshots from `v2.1.6s`, `u`, and `v`
-- repeated failure of the legacy menu override path
-
-## Build Method
-
-This version does **not** continue the old menu override chain.  
-It creates:
-- a dedicated Home Screen standalone content shell
-- a dedicated Home Screen standalone bottom menu rail
-
-The goal is to bypass the legacy bottom-boundary reservation logic for Home Screen mode rather than continuing to fight it with more overrides.
+- installed iPhone 17 Pro Max Home Screen screenshot for `v2.1.7`
+- confirmed shell-box failure caused by `display: contents` on the Home Screen wrapper elements
 
 ## Allowed Changes
 
-- Home Screen standalone shell structure
-- Home Screen bottom menu rail structure
-- Home Screen bottom boundary logic
-- internal safe-area handling inside the menu rail
+- Home Screen standalone shell correction
+- Home Screen menu rail correction
+- governed document alignment
+- manifest and cache-token alignment
 
 ## Do Not Change Intentionally
 
@@ -58,12 +49,6 @@ The goal is to bypass the legacy bottom-boundary reservation logic for Home Scre
 
 1. Home Screen menu touches the visible bottom edge
 2. no unused blank space exists beneath the menu
-3. safe-area handling is internal to the menu rail
-4. Home Screen above-menu content remains substantially preserved
-5. app shows `v2.1.7`
-
-
-## v2.1.7a
-- Extreme Home Screen bottom rail reset for standalone mode.
-- Removes Home Screen bottom safe-area reservation from the menu rail.
-- Converts the Home Screen rail into a real layout box and resets the menu to a fixed-height bottom row.
+3. safe-area handling is internal to the menu rail path
+4. governed release documents and manifest all match `v2.1.7a` and cache token `217a`
+5. app shows `v2.1.7a`
