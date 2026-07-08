@@ -35,7 +35,6 @@ body {
 }
 .screen.home {
   min-height:calc(100dvh - 68px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
-  height:calc(100dvh - 68px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
   overflow:hidden!important;display:grid!important;grid-template-rows:auto 1fr auto!important;
   gap:3px!important;touch-action:manipulation!important;
 }

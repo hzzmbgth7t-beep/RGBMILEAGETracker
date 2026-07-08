@@ -73,3 +73,39 @@ It does **not**:
 3. Label preservation relative to baseline `v2.1.6l`
 4. No unrelated Home geometry drift
 5. Working copy remains non-promoted and baseline-identity aligned
+
+
+## Working Copy Sequence
+
+This package is part of a numbered **working-copy test series**.  
+Use working-copy numbers to distinguish test packages without implying a promoted release version.
+
+- Baseline release version remains: `v2.1.6l`
+- Working-copy package sequence for this ZIP: `WC-02`
+- Package type: `baseline-derived working-copy test ZIP`
+
+## Current Working-Copy Update
+
+This working-copy package includes the second approved restart-scope change:
+
+- retained the cleaned baseline nav-only state from the prior working-copy package
+- removed the explicit `.screen.home` fixed `height` declaration from the active Home/menu interaction block
+- preserved the existing `.screen.home` `min-height` rule
+- kept the change inside `styles.css` only
+- did not change circles, labels, app.js, index.html, manifest.json, sw.js, or release versioning
+
+## Upgrade Notes
+
+Purpose of this package:
+- test whether Home/menu interaction is causing the visible gap beneath the fixed bottom menu in standalone phone portrait
+
+This package is still:
+- **not** a new release version
+- **not** a promoted candidate version
+- **not** a final handoff artifact
+
+Judgment remains controlled by:
+- Home Screen standalone
+- phone
+- portrait
+- locked acceptance criteria
