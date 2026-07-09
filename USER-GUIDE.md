@@ -1,9 +1,9 @@
 # USER GUIDE
 
-**Status:** Baseline-derived diagnostic working copy `v2.1.6l-wc04` (not a promoted release)
+**Status:** Baseline-derived correction working copy `v2.1.6l-wc05` (not a promoted release)
 
 ## Purpose
-Explain how to collect runtime layout evidence from WC-04.
+Explain what WC-05 changes and how to test it.
 
 ## URLs
 
@@ -11,16 +11,11 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this working copy:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc04
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc05
 
 ## What This Working Copy Changes
-- Adds a diagnostics copy action in Settings
-- Adds a Home-screen debug overlay toggle
-- Leaves menu and circle behavior unmodified for clean measurement
+- Uses runtime proof from WC-04
+- Leaves bottom-nav anchoring unchanged
+- Leaves circle and label sizing unchanged
+- Changes only `.vehicle-area` vertical alignment from centered to top-driven
 
-## Diagnostic usage
-- Open **Settings**
-- Tap **Copy Layout Diagnostics**
-- Go back to **Home**
-- Tap the version subtitle 5 times to toggle the diagnostics overlay
-- Capture screenshot plus copied diagnostics text

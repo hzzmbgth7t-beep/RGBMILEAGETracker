@@ -1,9 +1,9 @@
 # FIXNOTES
 
-**Status:** Baseline-derived diagnostic working copy `v2.1.6l-wc04` (not a promoted release)
+**Status:** Baseline-derived correction working copy `v2.1.6l-wc05` (not a promoted release)
 
 ## Purpose
-Record why WC-04 exists and what it changes relative to the locked baseline.
+Record the exact proven cause and the single approved correction.
 
 ## URLs
 
@@ -11,10 +11,11 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this working copy:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc04
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc05
 
 ## What This Working Copy Changes
-- Replaced speculative correction attempts with a diagnostic-only build
-- Added on-demand layout diagnostics copy action
-- Added on-demand visual overlay for viewport, app, home, and nav boundaries
-- Locked scope: evidence capture only
+- Uses runtime proof from WC-04
+- Leaves bottom-nav anchoring unchanged
+- Leaves circle and label sizing unchanged
+- Changes only `.vehicle-area` vertical alignment from centered to top-driven
+

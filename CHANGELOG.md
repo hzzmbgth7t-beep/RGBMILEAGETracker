@@ -1,9 +1,9 @@
 # CHANGELOG
 
-**Status:** Baseline-derived diagnostic working copy `v2.1.6l-wc04` (not a promoted release)
+**Status:** Baseline-derived correction working copy `v2.1.6l-wc05` (not a promoted release)
 
 ## Purpose
-Track the diagnostic-only changes included in WC-04.
+Track the first runtime-evidence-based correction build.
 
 ## URLs
 
@@ -11,10 +11,11 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this working copy:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc04
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc05
 
 ## What This Working Copy Changes
-### v2.1.6l-wc04
-- Added diagnostic-only runtime layout capture tools
-- Added WC-04 visible identity and cache isolation
-- No menu or circle correction applied in this build
+- Uses runtime proof from WC-04
+- Leaves bottom-nav anchoring unchanged
+- Leaves circle and label sizing unchanged
+- Changes only `.vehicle-area` vertical alignment from centered to top-driven
+
