@@ -1,21 +1,9 @@
 # FIXNOTES
 
-**Status:** Baseline-derived working copy `v2.1.6l-wc03` (not a promoted release)
+**Status:** Baseline-derived diagnostic working copy `v2.1.6l-wc04` (not a promoted release)
 
-## v2.1.6l-wc03 - Insurance Label Model Rollout
-
-### Reason For This Release
-Fuel and Maintenance already used the accepted origin model. Insurance needed the same shared framework before any later section-specific refinements.
-
-### Fix Implemented
-Insurance now uses:
-- Manual Entry
-- Migration
-- Other Data
-
-Manual Entry remains stored but is not shown as a visible badge.
-Restore does not overwrite origin.
-Undated legacy Insurance entries resolve to Migration.
-
-### Scope Boundary
-This build does not invent Insurance-specific Incomplete rules.
+## v2.1.6l-wc04
+- Replaced speculative correction loop with a diagnostic-only build
+- Added on-demand layout diagnostics copy action
+- Added on-demand visual overlay for viewport, app, home, and nav boundaries
+- Locked scope: evidence capture only

@@ -1,16 +1,8 @@
 # CHANGELOG
 
-**Status:** Baseline-derived working copy `v2.1.6l-wc03` (not a promoted release)
+**Status:** Baseline-derived diagnostic working copy `v2.1.6l-wc04` (not a promoted release)
 
-## v2.1.6l-wc03 - 2026-06-12
-### Release Type
-Insurance Label Model Rollout
-
-### Summary
-Rolled the accepted shared origin model into Insurance without inventing unapproved Insurance-specific Incomplete rules.
-
-### Changes
-- Applied Manual Entry / Migration / Other Data origin model to Insurance
-- Added undated legacy Insurance precedence => Migration
-- Preserved meaningful Review / Historical / Archived insurance states
-- Kept Manual Entry stored but not displayed as an origin badge
+## v2.1.6l-wc04
+- Added diagnostic-only runtime layout capture tools
+- Added WC-04 visible identity and cache isolation
+- No menu or circle correction applied in this build
