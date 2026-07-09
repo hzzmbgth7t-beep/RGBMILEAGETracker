@@ -6,6 +6,11 @@
 Track the diagnostic-only changes included in WC-04.
 
 ## URLs
+
+GitHub Pages URL:
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+
+Cache-buster URL for this working copy:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc04
 
 ## What This Working Copy Changes

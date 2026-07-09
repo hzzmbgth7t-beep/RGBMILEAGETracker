@@ -6,6 +6,11 @@
 This package is a diagnostic-only build created to capture runtime layout evidence in the controlling environment instead of applying another speculative menu or circle correction.
 
 ## URLs
+
+GitHub Pages URL:
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+
+Cache-buster URL for this working copy:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc04
 
 ## What This Working Copy Changes
