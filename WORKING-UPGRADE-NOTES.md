@@ -1,6 +1,13 @@
 # WORKING UPGRADE NOTES
 
-## WC-04
+## Purpose
+Summarize the diagnostic-only working-copy scope for WC-04.
+
+## URLs
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc04
+
+## What This Working Copy Changes
+### WC-04
 - Base: locked baseline `v2.1.6l`
 - Identity: `v2.1.6l-wc04`
 - Type: diagnostic-only working copy
