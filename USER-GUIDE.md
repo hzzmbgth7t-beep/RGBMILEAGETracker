@@ -1,9 +1,10 @@
 # USER GUIDE
 
-**Status:** Baseline-derived bottom-dock rebuild working copy `v2.1.6l-wc07` (not a promoted release)
+**Status:** `v2.1.6l-wc08` diagnostic implementation candidate
+**Governance:** RGBM Governance v1.1
 
 ## Purpose
-Explain what WC-07 changes and how to validate the new dock behavior.
+Explain the WC-08 Home layout behavior and evidence capture controls.
 
 ## URLs
 
@@ -11,10 +12,15 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this working copy:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc07
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc08
 
 ## What This Working Copy Changes
-- Dock touches the bottom edge like a native app bar
-- Safe-area bottom region becomes part of the dock
-- Buttons sit inside the dock instead of floating above it
-- All major screens should now terminate above the dock cleanly
+- Portrait: vehicles are stacked vertically and sized from available geometry
+- Landscape: Vehicle 1 moves left and Vehicle 2 moves right
+- Circles remain perfectly circular and use the same calculated diameter
+- Labels move with their circles
+- Dock owns the bottom edge and safe area
+- Title, labels, and circle borders use the shared chrome family
+
+## Diagnostics
+Open Settings and tap **Copy Home Layout Diagnostics**.

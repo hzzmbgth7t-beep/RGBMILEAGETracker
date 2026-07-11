@@ -1,9 +1,10 @@
 # CHANGELOG
 
-**Status:** Baseline-derived bottom-dock rebuild working copy `v2.1.6l-wc07` (not a promoted release)
+**Status:** Baseline-derived diagnostic implementation candidate `v2.1.6l-wc08`  
+**Governance:** RGBM Governance v1.1
 
 ## Purpose
-Track the first true bottom-dock contract build from the locked baseline.
+Track the first implementation governed by the approved deterministic Home-and-dock specification.
 
 ## URLs
 
@@ -11,10 +12,12 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this working copy:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc07
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc08
 
 ## What This Working Copy Changes
-- New `.bottom-dock` outer container
-- New `.bottom-dock-inner` button row
-- Full-width bottom ownership
-- Integrated safe-area bottom padding inside the dock
+- Fresh `v2.1.6l` baseline extraction
+- Integrated Home + dock rebuild
+- Runtime deterministic circle sizing
+- Portrait vertical and landscape left/right vehicle layouts
+- Shared neutral chrome material system
+- Runtime geometric diagnostics

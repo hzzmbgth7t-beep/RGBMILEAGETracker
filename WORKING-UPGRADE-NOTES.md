@@ -1,7 +1,7 @@
 # WORKING UPGRADE NOTES
 
 ## Purpose
-Summarize the WC-07 bottom-dock rebuild scope and implementation boundary.
+Summarize WC-08 source, scope, governance, and validation status.
 
 ## URLs
 
@@ -9,14 +9,15 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this working copy:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc07
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc08
 
 ## What This Working Copy Changes
-### WC-07
-- Base: locked baseline `v2.1.6l`
-- Identity: `v2.1.6l-wc07`
-- Type: bottom-dock rebuild working copy
-- Nav contract replaced with `.bottom-dock` + `.bottom-dock-inner`
-- Dock owns the bottom edge and safe area
-- Screen-to-dock coexistence spacing updated globally
-- Home-specific visual refinements intentionally deferred
+### WC-08
+- Base: fresh locked baseline `v2.1.6l`
+- Governance: approved RGBM Governance v1.1
+- Identity: `v2.1.6l-wc08`
+- Type: diagnostic implementation candidate
+- Home and dock rebuilt as one integrated deterministic system
+- Failed working-copy source reuse: prohibited and not used
+- Static verification: required before handoff
+- Real-device portrait and landscape acceptance: pending user evidence

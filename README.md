@@ -1,9 +1,11 @@
-# RGBMileage v2.1.6l-wc07 Working Copy
+# RGBMileage v2.1.6l-wc08 Working Copy
 
-**Status:** Baseline-derived bottom-dock rebuild working copy `v2.1.6l-wc07` (not a promoted release)
+**Status:** Baseline-derived diagnostic implementation candidate `v2.1.6l-wc08` (not a promoted release)  
+**Governance:** RGBM Governance v1.1  
+**Source:** Fresh extraction of locked baseline `v2.1.6l`
 
 ## Purpose
-Replace the floating-style bottom navigation with a true full-width bottom dock that owns the bottom edge and safe area like a native app bar.
+Implement the approved integrated deterministic Home-screen and bottom-dock system without reusing any failed working-copy source.
 
 ## URLs
 
@@ -11,12 +13,17 @@ GitHub Pages URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-buster URL for this working copy:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc07
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc08
 
 ## What This Working Copy Changes
-- Replaces the floating nav markup with a structural bottom dock
-- Adds a full-width dock background that reaches the bottom edge
-- Integrates the bottom safe area into the dock itself
-- Rebuilds button layout inside the dock
-- Updates app-wide bottom spacing so Home, Reports, Data, and Settings end above the dock cleanly
-- Leaves routing, data logic, icons, and non-nav business logic unchanged
+- Replaces the contaminated Home layout contract with one explicit Home structure
+- Treats each circle and label as one vehicle unit
+- Calculates one maximum valid circle diameter from measured geometry and fixed clearances
+- Recalculates on viewport resize and orientation change
+- Uses vertical vehicle units in portrait and left/right units in landscape
+- Replaces the old floating nav contract with a true bottom dock
+- Applies one neutral chrome family to the title, vehicle labels, and circle borders
+- Adds Home layout diagnostics in Settings
+
+## Required validation
+WC-08 remains a diagnostic implementation candidate until the iPhone 17 Pro Max standalone portrait and landscape matrices both pass.

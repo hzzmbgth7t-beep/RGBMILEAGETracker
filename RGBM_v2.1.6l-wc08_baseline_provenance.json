@@ -1,0 +1,21 @@
+{
+  "baseline_zip": "RGBM_v2.1.6l_2026-06-12_insurance_label_model_rollout.zip",
+  "baseline_zip_sha256": "74855830d31df5d37c00e14f53e259b5fb77d7953511a0bb0a4bf5950079dcb7",
+  "baseline_app_sha256": "b182bf38a1105d24846207fc604283d5f97fbb2c227aa073ed375d9d29836321",
+  "baseline_styles_sha256": "faa61d064367c7f71eb5f5030b88a0a6e6d06b97d7fadf4027c91a83bfe054fd",
+  "working_copy": "v2.1.6l-wc08",
+  "nav_renderer_replacements": 1,
+  "home_renderer_replacements": 1,
+  "removed_selector_blocks": {
+    "#app": 9,
+    ".screen.home": 5,
+    ".home-head": 1,
+    ".vehicle-area": 2,
+    ".circleBtn": 4,
+    ".vehicle-label": 2,
+    ".bottom-nav": 6,
+    ".bottom-nav button": 4,
+    ".bottom-nav button span": 3
+  },
+  "removed_bottom_nav_after_blocks": 2
+}
