@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", VERSION="2.1.6l-wc10", SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, BUILD_DATE="2026-07-25", KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", VERSION="2.1.6l-wc10", SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, BUILD_DATE="2026-07-26", KEY=RGBMDataV3.ACTIVE_KEY;
 function formatBuildDate(d){const [y,m,day]=String(d||"").split("-");return y&&m&&day?`${day}/${m}/${String(y).slice(-2)}`:String(d||"");}
 const LEGACY_KEYS=[...RGBMDataV3.LEGACY_KEYS];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], RECORD_ORIGINS=["Manual Entry","Other Data","Migration"], RECORD_STATUSES=["","Incomplete","Historical","Review"], RECORD_LIFECYCLES=["","Archived"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -285,7 +285,53 @@ function vehicleBadge(v){
   return s.split(/\s+/).map(x=>x[0]).join("").slice(0,6).toUpperCase()||"+";
 }
 function getVehicle(id){return RGBMDataV3.getVehicleById(state,id)}
-function render(){const app=$("app"),s=route.screen; app.className="app-screen screen-"+String(s||"home"); document.body.classList.toggle("home-active",s==="home"); if(s==="home")return home(app); if(s==="vehicleView")return vehicleView(app,route.vehicleId); if(s==="vehicleEdit")return vehicleEdit(app,route.vehicleId); if(s==="quickFuel")return quickFuel(app,route.vehicleId); if(s==="quickMaintenance")return quickMaintenance(app,route.vehicleId); if(s==="quickInsurance")return quickInsurance(app,route.vehicleId); if(s==="recordView")return recordView(app,route.type,route.recordId); if(s==="recordEdit")return recordEdit(app,route.type,route.recordId); if(s==="data")return dataScreen(app); if(s==="reports")return reportsHome(app); if(s.startsWith("report"))return reportDetail(app,s); if(s==="settings")return settings(app)}
+function applyNonHomeViewport(){
+  if(!route||route.screen==="home")return null;
+  const app=$("app");
+  if(!app||!app.style)return null;
+  const viewport=window.visualViewport;
+  const width=Math.max(1,Math.round(viewport&&viewport.width?viewport.width:window.innerWidth||document.documentElement.clientWidth||1));
+  const height=Math.max(1,Math.round(viewport&&viewport.height?viewport.height:window.innerHeight||document.documentElement.clientHeight||1));
+  app.style.setProperty("--non-home-viewport-width",`${width}px`);
+  app.style.setProperty("--non-home-viewport-height",`${height}px`);
+  app.dataset.orientation=width>height?"landscape":"portrait";
+  return {width,height,orientation:app.dataset.orientation};
+}
+function finalizeNonHomeShell(app,screen){
+  if(!app||screen==="home"||typeof app.querySelector!=="function")return;
+  const topbar=app.querySelector(":scope > .topbar");
+  const dock=app.querySelector(":scope > .bottom-nav");
+  if(!dock)return;
+  const scroll=document.createElement("main");
+  scroll.className="non-home-scroll";
+  scroll.setAttribute("data-screen",String(screen||""));
+  scroll.setAttribute("aria-label",`${String(screen||"Application")} content`);
+  const movable=[...app.childNodes].filter(node=>node!==topbar&&node!==dock);
+  movable.forEach(node=>scroll.appendChild(node));
+  app.insertBefore(scroll,dock);
+  scroll.scrollTop=0;
+  applyNonHomeViewport();
+}
+function render(){
+  const app=$("app"),s=route.screen;
+  app.className="app-screen screen-"+String(s||"home");
+  document.body.classList.toggle("home-active",s==="home");
+  document.body.classList.toggle("non-home-active",s!=="home");
+  if(s==="home"){home(app);return}
+  if(s==="vehicleView")vehicleView(app,route.vehicleId);
+  else if(s==="vehicleEdit")vehicleEdit(app,route.vehicleId);
+  else if(s==="quickFuel")quickFuel(app,route.vehicleId);
+  else if(s==="quickMaintenance")quickMaintenance(app,route.vehicleId);
+  else if(s==="quickInsurance")quickInsurance(app,route.vehicleId);
+  else if(s==="recordView")recordView(app,route.type,route.recordId);
+  else if(s==="recordEdit")recordEdit(app,route.type,route.recordId);
+  else if(s==="data")dataScreen(app);
+  else if(s==="reports")reportsHome(app);
+  else if(s.startsWith("report"))reportDetail(app,s);
+  else if(s==="settings")settings(app);
+  else{home(app);return}
+  finalizeNonHomeShell(app,s);
+}
 
 
 
@@ -381,7 +427,7 @@ function otherSaveToList(){if(!pendingOtherSelect)return;const val=otherEnteredV
 
 function clearEditForm(type){if(type==="Fuel")clearInputs(["efdate","eftime","efodo","efmiles","efgal","efmpg","efgrade","efstation","efnotes"]);if(type==="Maintenance")clearInputs(["emdate","emcat","emodo","emcost","emloc","emprov","emnotes"]);if(type==="Insurance")clearInputs(["eicomp","eipol","eieff","eiexp","eicov","eiprem","eiagent","eiphone","eiemail","eiagency","einotes"])}
 function saveRecordEdit(type,recordId,goBackAfterSave=false){try{const a=recArray(type);const r=a.find(x=>x.recordId===recordId);if(!r)return alert("Record not found.");if(type==="Fuel"){const date=requireValue($("efdate").value,"Date");const gallons=requirePositive($("efgal").value,"Gallons");const odometer=requireNonNegative($("efodo").value,"Odometer");const miles=requireNonNegative($("efmiles").value,"Miles");const price=requireNonNegative($("efprice").value,"Price/Gal");const total=requireNonNegative($("efcost").value,"Total Cost");Object.assign(r,{date,time:$("eftime").value,odometer,miles,gallons,mpg:requireNonNegative($("efmpg").value,"MPG"),fuelGrade:cleanText($("efgrade").value),ethanolFree:cleanText($("efef").value),station:cleanText($("efstation").value),fuelCostSource:cleanText($("efcostsource").value)||(total!==""?"Entered":price!==""?"Calculated":""),fuelPricePerGallon:price,totalFuelCost:total,notes:cleanText($("efnotes").value),modifiedAt:nowISO()})}else if(type==="Maintenance"){const date=requireValue($("emdate").value,"Date");const odometer=requireNonNegative($("emodo").value,"Odometer");const totalCost=requireNonNegative($("emcost").value,"Cost");const provider=cleanText($("emprov").value);Object.assign(r,{date,dropOffDate:date,pickUpDate:cleanText($("empick").value),category:cleanText($("emcat").value)||"Maintenance",odometer,totalCost,cost:totalCost,location:cleanText($("emloc").value),serviceProvider:provider,provider,performedBy:cleanText($("emperf").value),notes:cleanText($("emnotes").value),modifiedAt:nowISO()})}else if(type==="Insurance"){const agency=cleanText($("eiagency").value);const policyNumber=cleanText($("eipol").value);const effectiveDate=cleanText($("eieff").value);const expirationDate=cleanText($("eiexp").value);if(expirationDate&&expirationDate<effectiveDate)throw new Error("Expiration Date cannot be earlier than Effective Date.");const agreedValue=requireNonNegative($("eiagree").value,"Agreed Value");const premium=requireNonNegative($("eiprem").value,"Premium");const agent=cleanText($("eiagent").value);const notes=cleanText($("einotes").value);Object.assign(r,{company:agency,agency,policyNumber,effectiveDate,expirationDate,agreedValue,coverageValue:agreedValue,insuranceValue:agreedValue,premium,agent,agentName:agent,phone:cleanText($("eiphone").value),email:cleanText($("eiemail").value),notes,coverageNotes:notes,modifiedAt:nowISO()})}saveData();editSnapshot=null;showToast("Edit saved.");if(goBackAfterSave){performBackNavigation();return true}clearEditForm(type);return true}catch(e){alert(e.message||String(e));return false}}
-function vehicleView(app,vid){const v=getVehicle(vid);if(!v)return nav("home");const acq=getAcq(vid);app.innerHTML=header(vehicleLabel(v))+`<div class="card"><div class="vehicle-view-photo">${v.primaryPhoto?`<div class="circleBtn"><img src="${v.primaryPhoto}" alt=""></div>`:`<div class="circleBtn"><span>${vehicleInitials(v)}</span></div>`}</div><div class="view-grid">${viewField("Year",v.year||"")}${viewField("Make",v.make||"")}${viewField("Model",v.model||"")}${viewField("Badge",v.badge||"")}${viewField("Acquisition Date",acq.acquisitionDate||"")}${viewField("Starting Odometer",acq.startingOdometer||"")}${viewField("Purchase Price",acq.purchasePrice||"")}${viewField("Status",v.status||"Active")}${viewField("Seller",acq.seller||"",true)}</div><button class="wide primary nav-control" type="button" onclick="nav('vehicleEdit',{vehicleId:'${vid}'})">Edit Vehicle</button><button class="wide nav-control" type="button" onclick="openFuelFromVehicle('${vid}')">Fuel Entry</button><button class="wide nav-control" type="button" onclick="openMaintenanceFromVehicle('${vid}')">Maintenance Entry</button><button class="wide nav-control" type="button" onclick="openInsuranceFromVehicle('${vid}')">Insurance Entry</button></div>`+previousRecordsHtml("Fuel",vid)+previousRecordsHtml("Maintenance",vid)+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}
+function vehicleView(app,vid){const v=getVehicle(vid);if(!v)return nav("home");const acq=getAcq(vid);app.innerHTML=header(vehicleLabel(v))+`<div class="card vehicle-detail-card"><div class="vehicle-view-photo">${v.primaryPhoto?`<div class="vehicle-detail-photo-frame"><img src="${v.primaryPhoto}" alt="${esc(vehicleLabel(v))}"></div>`:`<div class="vehicle-detail-photo-frame vehicle-detail-photo-placeholder"><span>${vehicleInitials(v)}</span></div>`}</div><div class="view-grid">${viewField("Year",v.year||"")}${viewField("Make",v.make||"")}${viewField("Model",v.model||"")}${viewField("Badge",v.badge||"")}${viewField("Acquisition Date",acq.acquisitionDate||"")}${viewField("Starting Odometer",acq.startingOdometer||"")}${viewField("Purchase Price",acq.purchasePrice||"")}${viewField("Status",v.status||"Active")}${viewField("Seller",acq.seller||"",true)}</div><div class="vehicle-detail-actions"><button class="wide primary nav-control" type="button" onclick="nav('vehicleEdit',{vehicleId:'${vid}'})">Edit Vehicle</button><button class="wide nav-control" type="button" onclick="openFuelFromVehicle('${vid}')">Fuel Entry</button><button class="wide nav-control" type="button" onclick="openMaintenanceFromVehicle('${vid}')">Maintenance Entry</button><button class="wide nav-control" type="button" onclick="openInsuranceFromVehicle('${vid}')">Insurance Entry</button></div></div>`+previousRecordsHtml("Fuel",vid)+previousRecordsHtml("Maintenance",vid)+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}
 function recordEdit(app,type,recordId){const r=records(type,null,true).find(x=>x.recordId===recordId);if(!r)return nav("home");const vid=r.vehicleId;if(type==="Fuel"){app.innerHTML=header("Edit Fuel Record")+`<div class="card"><div class="form-grid"><label>Date<input type="date" id="efdate" value="${esc(r.date||"")}"></label><label>Time<input type="time" id="eftime" value="${esc(r.time||"")}"></label><label>Odometer<input type="number" step="0.01" id="efodo" value="${esc(r.odometer||"")}"></label><label>Miles<input type="number" step="0.01" id="efmiles" value="${esc(r.miles||"")}"></label><label>Gallons<input type="number" step="0.001" id="efgal" value="${esc(r.gallons||"")}"></label><label>MPG<input type="number" step="0.01" id="efmpg" value="${esc(r.mpg||"")}"></label><label>Fuel Grade<select id="efgrade" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'fuelGrades')">${activeList("fuelGrades").map(g=>`<option ${g===(r.fuelGrade||"")?"selected":""}>${esc(g)}</option>`).join("")}</select></label><label>Ethanol Free<select id="efef"><option ${String(r.ethanolFree||"")===""?"selected":""}></option><option ${String(r.ethanolFree||"")==="Yes"?"selected":""}>Yes</option><option ${String(r.ethanolFree||"")==="No"?"selected":""}>No</option></select></label><label>Station<select id="efstation" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'stations')">${activeList("stations").map(s=>`<option ${s===(r.station||"")?"selected":""}>${esc(s)}</option>`).join("")}</select></label><label>Cost Source<select id="efcostsource"><option ${String(r.fuelCostSource||"")===""?"selected":""}></option><option ${String(r.fuelCostSource||"")==="Calculated"?"selected":""}>Calculated</option><option ${String(r.fuelCostSource||"")==="Entered"?"selected":""}>Entered</option></select></label><label>Price/Gal<input type="number" step="0.01" id="efprice" value="${esc(r.fuelPricePerGallon||"")}" oninput="calcEditCost()"></label><label>Total Cost<input type="number" step="0.01" id="efcost" value="${esc(r.totalFuelCost||"")}"></label><label class="full">Notes<textarea id="efnotes">${esc(r.notes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Fuel','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Fuel",vid)+bottomNav()+footer();setEditSnapshot(type,recordId);return}if(type==="Maintenance"){app.innerHTML=header("Edit Maintenance Record")+`<div class="card"><div class="form-grid"><label>Date<input type="date" id="emdate" value="${esc(r.dropOffDate||r.date||"")}"></label><label>Pickup Date<input type="date" id="empick" value="${esc(r.pickUpDate||"")}"></label><label>Category<select id="emcat" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'maintenanceCategories')">${activeList("maintenanceCategories").map(c=>`<option ${c===(r.category||"")?"selected":""}>${esc(c)}</option>`).join("")}</select></label><label>Odometer<input type="number" step="0.01" id="emodo" value="${esc(r.odometer||"")}"></label><label>Cost<input type="number" step="0.01" id="emcost" value="${esc(r.totalCost||r.cost||"")}"></label><label>Location<input id="emloc" value="${esc(r.location||"")}"></label><label>Provider<input id="emprov" value="${esc(r.serviceProvider||r.provider||"")}"></label><label>Performed By<input id="emperf" value="${esc(r.performedBy||"")}"></label><label class="full">Notes<textarea id="emnotes">${esc(r.notes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Maintenance','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Maintenance",vid)+bottomNav()+footer();setEditSnapshot(type,recordId);return}if(type==="Insurance"){app.innerHTML=header("Edit Insurance Record")+`<div class="card"><div class="form-grid"><label>Agency<input id="eiagency" value="${esc(r.agency||r.company||"")}"></label><label>Policy Number<input id="eipol" value="${esc(r.policyNumber||"")}"></label><label>Effective Date<input type="date" id="eieff" value="${esc(r.effectiveDate||"")}"></label><label>Expiration Date<input type="date" id="eiexp" value="${esc(r.expirationDate||"")}"></label><label>Agreed Value<input type="number" step="0.01" id="eiagree" value="${esc((r.agreedValue!==""&&r.agreedValue!=null)?r.agreedValue:(r.coverageValue!==""&&r.coverageValue!=null?r.coverageValue:r.insuranceValue||""))}"></label><label>Premium<input type="number" step="0.01" id="eiprem" value="${esc(r.premium||"")}"></label><label>Agent<input id="eiagent" value="${esc(r.agent||r.agentName||"")}"></label><label>Phone<input id="eiphone" value="${esc(r.phone||"")}"></label><label>Email<input type="email" id="eiemail" value="${esc(r.email||"")}"></label><label class="full">Notes<textarea id="einotes">${esc(r.notes||r.coverageNotes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Insurance','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}}
 
 
@@ -657,7 +703,7 @@ function circleHtml(v,i){
   const inner=configured&&v.primaryPhoto?`<img src="${v.primaryPhoto}" alt="">`:esc(vehicleBadge(v));
   const label=configured?vehicleLabel(v):"Add Vehicle";
   const accessible=esc(label);
-  return `<button class="circle-wrap" type="button" data-position="${i+1}" aria-label="${accessible}" onpointerdown="pressStart(()=>vehicleLong(${i}),event,500)" onpointerup="clearLP()" onpointercancel="clearLP()" onclick="vehicleTap(${i})"><span class="circleBtn" aria-hidden="true">${inner}</span><span class="vehicle-label">${esc(label)}</span></button>`;
+  return `<button class="circle-wrap" type="button" data-position="${i+1}" aria-label="${accessible}" onpointerdown="pressStart(()=>vehicleLong(${i}),event,500)" onpointerup="clearLP()" onpointercancel="clearLP()" onclick="vehicleTap(${i})"><span class="home-circle-visual" aria-hidden="true">${inner}</span><span class="vehicle-label">${esc(label)}</span></button>`;
 }
 function vehicleTap(i){
   if(suppressTap){suppressTap=false;return}
@@ -679,7 +725,7 @@ function vehicleEdit(app,vid){
   if(!v){alert("Vehicle position not found.");return nav("home")}
   const configured=isVehicleConfigured(v);
   const acq=getAcq(v.vehicleId);
-  const currentImg=v.primaryPhoto?`<div class="edit-image-preview"><div class="circleBtn imagePreviewCircle"><img src="${v.primaryPhoto}" alt=""></div><div class="muted">Current vehicle image saved</div></div>`:`<div class="muted">No vehicle image saved</div>`;
+  const currentImg=v.primaryPhoto?`<div class="edit-image-preview"><div class="vehicle-edit-photo-frame"><img src="${v.primaryPhoto}" alt="${esc(vehicleLabel(v))}"></div><div class="muted">Current vehicle image saved</div></div>`:`<div class="muted">No vehicle image saved</div>`;
   app.innerHTML=header(configured?"Edit Vehicle":"Add Vehicle")+`<div class="card"><div class="form-grid"><label>Year<input id="vehYear" value="${esc(v.year||"")}"></label><label>Make<input id="vehMake" value="${esc(v.make||"")}"></label><label>Model<input id="vehModel" value="${esc(v.model||"")}"></label><label>Badge<input id="vehBadge" value="${esc(v.badge||"")}"></label></div><div class="image-edit-block"><h3>Vehicle Image</h3>${currentImg}<label>Replace Image<input type="file" id="vehPhoto" accept="image/*"></label><div class="muted">Saved image data: ${v.primaryPhoto?"Present":"None"}</div></div><h3>Vehicle Acquisition Record</h3><div class="form-grid"><label>Acquisition Date<input type="date" id="acqDate" value="${esc(acq.acquisitionDate||"")}"></label><label>Starting Odometer<input type="number" step="0.01" id="startOdo" value="${esc(acq.startingOdometer||"")}"></label><label>Purchase Price<input type="number" step="0.01" id="purchasePrice" value="${esc(acq.purchasePrice||"")}"></label><label>Status<select id="vehStatus"><option ${v.status==="Active"?"selected":""}>Active</option><option ${v.status==="Archived"?"selected":""}>Archived</option></select></label><label class="full">Seller<input id="seller" value="${esc(acq.seller||"")}"></label></div><button class="wide primary" onclick="saveVehicle('${v.vehicleId}')">Save Vehicle</button><button class="wide ghost" onclick="clearVehicleFormExit()">Clear & Exit</button></div>`+bottomNav()+footer();
 }
 async function imgData(file){return new Promise(resolve=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height,sc=Math.min(1,1200/Math.max(w,h));const c=document.createElement("canvas");c.width=Math.round(w*sc);c.height=Math.round(h*sc);c.getContext("2d").drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL("image/jpeg",.85))};img.onerror=()=>resolve(e.target.result);img.src=e.target.result};r.readAsDataURL(file)})}
@@ -1775,7 +1821,7 @@ function dataDiagnostics(){
 function initV213eStabilization(){
   try{
     document.addEventListener("touchmove",e=>{if(route&&route.screen==="home")e.preventDefault()},{passive:false});
-    const refresh=()=>setTimeout(()=>{if(route&&route.screen==="home")scheduleHomeGeometry()},60);
+    const refresh=()=>setTimeout(()=>{if(route&&route.screen==="home")scheduleHomeGeometry();else applyNonHomeViewport()},60);
     window.addEventListener("resize",refresh,{passive:true});
     window.addEventListener("orientationchange",refresh,{passive:true});
     if(window.visualViewport)window.visualViewport.addEventListener("resize",refresh,{passive:true});
@@ -1795,4 +1841,4 @@ try{
   render()
 }
 catch(e){console.error(e);renderDataFatal(e)}
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=216lwc10flat2').catch(()=>{})}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=216lwc10flat3').catch(()=>{})}

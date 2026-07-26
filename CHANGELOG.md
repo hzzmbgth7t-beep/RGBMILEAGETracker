@@ -1,27 +1,26 @@
 # RGB Mileage Tracker Changelog
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat02`  
+**Package revision:** `flat03`  
 **Status:** CURRENT  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat2
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat3
 
-## 2026-07-26 — Clean-install packaging rebuild
+## 2026-07-26 — flat03 non-Home correction
 
-- Locked Governance v1.5.
-- Reduced the blank-install GitHub root to exactly 17 files.
-- Retained eight runtime files.
-- Retained four currently referenced icons at root.
-- Retained five review documents at root.
-- Moved detailed documentation, tests, fixtures, evidence, audits, references, templates, and icon copies into categorized support folders.
-- Preserved the exact tested flat02 runtime bytes.
-- Updated tests to run from the organized archive.
-- Prohibited runtime dependencies on support folders.
-- Locked icon filenames and references against unapproved changes.
+- Replaced global `circleBtn` ownership with a Home-only visual class.
+- Added dedicated circular vehicle-detail and edit-preview photo frames.
+- Enforced `aspect-ratio: 1 / 1` and `object-fit: cover`.
+- Added a non-Home header/content/dock shell.
+- Kept Back and the dock outside the scrolling content layer.
+- Added visual-viewport sizing for portrait and landscape browser states.
+- Added a two-column landscape vehicle-detail card.
+- Preserved the accepted Home portrait and landscape geometry.
+- Added 18 non-Home regression tests.
+- Total executable tests: 88 PASS, 0 FAIL.
+- Added synthetic browser hit-testing and geometry evidence.
 
-## 2026-07-25 — flat02 Home correction
+## 2026-07-25 — flat02
 
-- Added governed responsive three-vehicle Home geometry.
-- Corrected portrait and landscape placement.
-- Removed portrait orientation restrictions.
-- Added Home-layout and integration tests.
+- Implemented the accepted three-position Home layout.
+- Added schema-3 migration, ordering, restore, and evidence behavior.

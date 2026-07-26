@@ -589,7 +589,7 @@ body.home-active {
   grid-row: 2 !important;
 }
 
-.circleBtn {
+#app.screen-home .home-circle-visual {
   width: var(--unit-diameter) !important;
   height: var(--unit-diameter) !important;
   min-width: 0 !important;
@@ -625,7 +625,7 @@ body.home-active {
   transform: none !important;
 }
 
-.circleBtn img {
+#app.screen-home .home-circle-visual img {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
@@ -661,8 +661,8 @@ body.home-active {
   outline: none !important;
 }
 
-.circle-wrap:focus-visible .circleBtn,
-.circle-wrap[aria-pressed="true"] .circleBtn {
+#app.screen-home .circle-wrap:focus-visible .home-circle-visual,
+#app.screen-home .circle-wrap[aria-pressed="true"] .home-circle-visual {
   outline: 3px solid rgba(255,255,255,.9) !important;
   outline-offset: 3px !important;
   box-shadow:
@@ -788,5 +788,264 @@ body.home-active {
 
   .bottom-nav {
     max-width: none !important;
+  }
+}
+
+/* RGBM v2.1.6l-wc10 flat03: authoritative non-Home shell and photo geometry */
+body.non-home-active {
+  touch-action: auto !important;
+  overflow: hidden !important;
+}
+
+#app.app-screen:not(.screen-home) {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  max-width: 540px !important;
+  height: var(--non-home-viewport-height, 100dvh) !important;
+  min-height: 0 !important;
+  max-height: var(--non-home-viewport-height, 100dvh) !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  overflow: hidden !important;
+  background:
+    radial-gradient(
+      circle at top,
+      #243b5a 0,
+      #0a1324 44%,
+      #09101d 100%
+    ) !important;
+  box-sizing: border-box !important;
+  isolation: isolate !important;
+  touch-action: auto !important;
+}
+
+#app.app-screen:not(.screen-home) > .topbar {
+  grid-row: 1 !important;
+  position: relative !important;
+  z-index: 30 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding:
+    calc(8px + env(safe-area-inset-top))
+    12px
+    8px !important;
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 10px !important;
+  box-sizing: border-box !important;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(25, 46, 72, .98),
+      rgba(20, 39, 63, .94)
+    ) !important;
+  pointer-events: auto !important;
+}
+
+#app.app-screen:not(.screen-home) > .topbar h1 {
+  min-width: 0 !important;
+  margin: 0 !important;
+  font-size: clamp(27px, 7vw, 38px) !important;
+  line-height: 1.05 !important;
+  text-align: right !important;
+  overflow-wrap: anywhere !important;
+}
+
+#app.app-screen:not(.screen-home) > .topbar .back-btn {
+  position: relative !important;
+  z-index: 31 !important;
+  margin: 0 !important;
+  pointer-events: auto !important;
+}
+
+.non-home-scroll {
+  grid-row: 2 !important;
+  position: relative !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding:
+    0
+    12px
+    16px !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-x: none !important;
+  overscroll-behavior-y: contain !important;
+  scroll-behavior: auto !important;
+  touch-action: pan-y !important;
+  box-sizing: border-box !important;
+}
+
+#app.app-screen:not(.screen-home) > .bottom-nav {
+  grid-row: 3 !important;
+  position: relative !important;
+  inset: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-height: calc(58px + env(safe-area-inset-bottom)) !important;
+  margin: 0 !important;
+  z-index: 40 !important;
+  pointer-events: auto !important;
+  flex: none !important;
+  transform: none !important;
+  isolation: isolate !important;
+}
+
+#app.app-screen:not(.screen-home) > .bottom-nav button,
+#app.app-screen:not(.screen-home) .nav-control,
+#app.app-screen:not(.screen-home) input,
+#app.app-screen:not(.screen-home) select,
+#app.app-screen:not(.screen-home) textarea {
+  position: relative !important;
+  pointer-events: auto !important;
+}
+
+.vehicle-view-photo {
+  width: 100% !important;
+  min-width: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+}
+
+.vehicle-detail-photo-frame,
+.vehicle-edit-photo-frame {
+  position: relative !important;
+  width: min(100%, 420px) !important;
+  max-width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  flex: 0 0 auto !important;
+  border: 4px solid #c7d4e2 !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      #fff,
+      #b7c3cf 36%,
+      #657587 55%,
+      #f8fbff 82%
+    ) !important;
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.35),
+    inset 0 5px 12px rgba(255,255,255,.5) !important;
+}
+
+.vehicle-detail-photo-frame img,
+.vehicle-edit-photo-frame img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+
+.vehicle-detail-photo-placeholder {
+  display: grid !important;
+  place-items: center !important;
+  color: #0b1324 !important;
+  font-size: clamp(36px, 18vw, 78px) !important;
+  font-weight: 1000 !important;
+}
+
+.vehicle-edit-photo-frame {
+  width: min(48vw, 180px) !important;
+}
+
+.vehicle-detail-actions {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 8px !important;
+}
+
+.vehicle-detail-actions .wide {
+  margin-top: 0 !important;
+}
+
+@media (orientation: landscape) {
+  #app.app-screen:not(.screen-home) {
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  #app.app-screen:not(.screen-home) > .topbar {
+    padding:
+      calc(4px + env(safe-area-inset-top))
+      calc(12px + env(safe-area-inset-right))
+      6px
+      calc(12px + env(safe-area-inset-left)) !important;
+  }
+
+  #app.app-screen:not(.screen-home) > .topbar h1 {
+    font-size: clamp(24px, 4.1vw, 36px) !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .non-home-scroll {
+    padding:
+      0
+      calc(12px + env(safe-area-inset-right))
+      12px
+      calc(12px + env(safe-area-inset-left)) !important;
+  }
+
+  #app.screen-vehicleView .vehicle-detail-card {
+    display: grid !important;
+    grid-template-columns:
+      minmax(190px, .85fr)
+      minmax(0, 1.15fr) !important;
+    gap: 12px !important;
+    align-items: start !important;
+  }
+
+  #app.screen-vehicleView .vehicle-view-photo {
+    grid-column: 1 !important;
+    grid-row: 1 / span 2 !important;
+    align-self: start !important;
+  }
+
+  #app.screen-vehicleView .vehicle-detail-photo-frame {
+    width: min(52dvh, 32vw, 300px) !important;
+  }
+
+  #app.screen-vehicleView .view-grid,
+  #app.screen-vehicleView .vehicle-detail-actions {
+    grid-column: 2 !important;
+  }
+
+  #app.screen-vehicleView .vehicle-detail-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  #app.screen-vehicleEdit .card {
+    margin-top: 6px !important;
+  }
+
+  #app.screen-vehicleEdit .vehicle-edit-photo-frame {
+    width: min(40dvh, 160px) !important;
+  }
+
+  #app.app-screen:not(.screen-home) .card {
+    margin-top: 6px !important;
+    margin-bottom: 8px !important;
   }
 }

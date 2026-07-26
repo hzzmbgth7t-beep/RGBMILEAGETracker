@@ -1,29 +1,32 @@
-# RGB Mileage Tracker Fix Notes
+# RGB Mileage Tracker flat03 Fix Notes
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat02`  
+**Package revision:** `flat03`  
 **Status:** CURRENT  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat2
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat3
 
-## Layout correction
+## Device defects corrected
 
-flat02 replaces the rejected vertical three-circle layout with:
+flat02 device evidence showed:
 
-- one large top circle and two equal lower circles in portrait
-- three equal circles in one row in landscape
-- runtime viewport-based sizing
-- visible labels and dock clearance
-- no portrait lock
-- no 430-pixel landscape cap
+- elliptical vehicle-detail images
+- non-Home landscape content hidden behind the dock
+- Back and dock controls temporarily failing hit tests
+- Add Vehicle landscape sizing failure
 
-## Packaging correction
+## Root causes
 
-Earlier packages were either too large at the GitHub root or too narrow for review.
+- Home circle CSS was global.
+- The fixed dock was inside the same scrolling application layer.
+- Non-Home screens used the application element itself as the scroller.
+- landscape sizing did not use a dedicated header/content/dock shell.
 
-The locked method is now:
+## flat03 implementation
 
-- 17 root files for a blank clean install
-- 13 root files for a normal update when icons are unchanged
-- organized support folders retained in every archive
-- no runtime dependency on support folders
+- Home visuals now use `home-circle-visual`.
+- Detail photos use `vehicle-detail-photo-frame`.
+- Edit previews use `vehicle-edit-photo-frame`.
+- Back and dock are direct application children.
+- Only `non-home-scroll` scrolls.
+- visual viewport height governs the non-Home shell.
