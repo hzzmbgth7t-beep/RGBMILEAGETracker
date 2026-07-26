@@ -1,21 +1,22 @@
-# WC-10 Flat Test Plan and Results
+# WC-10 Flat02 Test Plan and Results
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat01`  
+**Package revision:** `flat02`  
 **Date:** 2026-07-25  
 **Classification:** CURRENT  
 **Status:** PASS  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat2
 
-## Executed for this exact flat package
+Executed for the exact flat02 source:
 
-- JavaScript syntax checks: PASS
-- Migration/data tests: 32 PASS, 0 FAIL
-- Migration-evidence tests: 8 PASS, 0 FAIL
-- Application-integration tests: 10 PASS, 0 FAIL
-- Total executable tests: 50 PASS, 0 FAIL
+- data/migration: 32 PASS
+- migration evidence: 8 PASS
+- integration: 12 PASS
+- Home layout: 18 PASS
+- total executable tests: 70 PASS
+- JavaScript syntax: PASS
+- Chromium portrait render: PASS
+- Chromium landscape render: PASS
 
-No result was inferred from a partial run. Each command completed with exit code `0`, and its stdout/stderr is preserved in the root-level audit files.
-
-Real-device tests remain N/A.
+Real-device results remain N/A.

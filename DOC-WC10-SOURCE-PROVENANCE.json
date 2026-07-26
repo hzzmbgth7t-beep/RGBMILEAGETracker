@@ -1,16 +1,29 @@
 {
   "build": "v2.1.6l-wc10",
-  "packageRevision": "flat01",
+  "packageRevision": "flat02",
   "classification": "CURRENT",
   "status": "SOURCE PROVENANCE",
   "normalUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/",
-  "cacheBusterUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1",
-  "sourcePackage": "RGBM_v2.1.6l-wc10_migration_verification_full_install_v1.0_2026-07-25.zip",
-  "sourcePackageSha256": "94692065ded88424363321909d4835d097b931ae13b57a754a5ea941704be901",
+  "cacheBusterUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat2",
+  "sourcePackage": "RGBM_v2.1.6l-wc10-flat01_full_install_2026-07-25.zip",
+  "sourcePackageSha256": "966102cd278eed2b8db88d799ef62370ff20e8b8cdc7e44925615015eae94520",
   "governancePackage": "REFERENCE-GOVERNANCE-v1.2.zip",
   "governancePackageSha256": "9c6934a74663f4b80523cccaeffc7a4611a46fd09ee0f16d342b39f7b24475fe",
-  "runtimeCodeOrigin": "Previously tested WC-10 migration-verification source",
-  "homeGeometryChanged": false,
-  "orientationChanged": false,
-  "stylesChanged": false
+  "preservedModules": [
+    "rgbm-data-v3.js",
+    "rgbm-wc10-evidence.js"
+  ],
+  "changedRuntimeFiles": [
+    "app.js",
+    "styles.css",
+    "index.html",
+    "manifest.json",
+    "sw.js"
+  ],
+  "addedRuntimeFiles": [
+    "rgbm-home-layout.js"
+  ],
+  "flat01VisualStatus": "FAIL",
+  "flat02AutomatedLayoutStatus": "PASS",
+  "realDeviceLayoutStatus": "N/A"
 }

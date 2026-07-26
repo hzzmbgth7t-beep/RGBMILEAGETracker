@@ -1,0 +1,25 @@
+{
+  "build": "v2.1.6l-wc10",
+  "packageRevision": "flat02",
+  "classification": "CURRENT",
+  "status": "PASS",
+  "normalUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/",
+  "cacheBusterUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat2",
+  "checks": {
+    "evidence_status_pass": true,
+    "synthetic_data_only": true,
+    "portrait_mode": true,
+    "portrait_top_larger": true,
+    "portrait_lower_equal": true,
+    "portrait_dock_clearance_positive": true,
+    "portrait_fits": true,
+    "landscape_mode": true,
+    "landscape_equal": true,
+    "landscape_maximum_shared_diameter": true,
+    "landscape_dock_clearance_positive": true,
+    "landscape_fits": true,
+    "portrait_screenshot_present": true,
+    "landscape_screenshot_present": true
+  },
+  "deviceAcceptance": "N/A"
+}

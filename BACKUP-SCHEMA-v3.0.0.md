@@ -1,19 +1,20 @@
 # RGB Mileage Backup Schema v3.0.0
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat01`  
+**Package revision:** `flat02`  
 **Date:** 2026-07-25  
 **Classification:** CURRENT  
 **Status:** CURRENT BACKUP CONTRACT  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat2
 
-Backups include schema version, migration version, three vehicle records, `vehicleOrder`, operational collections, attachments, settings, and metadata.
+Backups preserve:
 
-Restore rules:
+- schema and migration versions
+- three vehicle records
+- `vehicleOrder`
+- acquisition, fuel, maintenance, and insurance records
+- attachments and settings
+- configured and total position counts
 
-- Replace validates and adopts the incoming state.
-- Update and Skip merge vehicle definitions by `vehicleId`.
-- Duplicate applies only to operational records.
-- Vehicle definitions are never merged by array index.
-- More than three source vehicle positions fails without truncation.
+Vehicle definitions merge by `vehicleId`, never array position.

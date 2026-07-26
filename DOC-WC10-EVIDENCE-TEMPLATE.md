@@ -1,44 +1,35 @@
-# WC-10 Device Evidence Template
+# WC-10 Flat02 Device Evidence Template
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat01`  
+**Package revision:** `flat02`  
 **Date:** 2026-07-25  
 **Classification:** CURRENT  
 **Status:** NOT YET COMPLETED  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat2
 
-## Environment
+## Portrait
 
-- Device:
-- iOS:
-- Display Zoom:
-- Standalone:
-- Exact package SHA-256:
+- screenshot:
+- top diameter:
+- lower-left diameter:
+- lower-right diameter:
+- labels visible:
+- dock clearance:
 
-## First launch
+## Landscape
 
-- Evidence JSON:
-- Settings screenshot:
-- Overall:
-- Migration acceptance:
-- Existing IDs:
-- Record fingerprints:
-- Order:
-- Blank count:
+- screenshot:
+- left diameter:
+- center diameter:
+- right diameter:
+- one horizontal row:
+- full viewport used:
+- dock clearance:
 
-## Relaunch
+## Migration and persistence
 
-- Evidence JSON:
-- IDs unchanged:
-- Counts unchanged:
-- Fingerprints unchanged:
-- Order unchanged:
-
-## Non-Home
-
-- Settings:
-- Data selector:
-- Vehicle Summary:
-- Backup metadata:
-- Blank setup routing:
+- first-launch evidence JSON:
+- relaunch evidence JSON:
+- order unchanged:
+- record fingerprints unchanged:

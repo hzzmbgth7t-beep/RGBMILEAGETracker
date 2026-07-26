@@ -1,0 +1,105 @@
+{
+  "build": "v2.1.6l-wc10",
+  "packageRevision": "flat02",
+  "classification": "CURRENT SYNTHETIC BROWSER EVIDENCE",
+  "status": "PASS",
+  "date": "2026-07-25",
+  "layoutVersion": "wc10-three-vehicle-home-v1",
+  "runtime": "Headless Chromium",
+  "privacy": {
+    "usesSyntheticVehicles": true,
+    "containsUserData": false,
+    "deviceAcceptance": "N/A"
+  },
+  "portrait": {
+    "viewport": {
+      "width": 430,
+      "height": 932
+    },
+    "mode": "portrait",
+    "contentWidth": 406,
+    "vehicleAreaHeight": 799,
+    "topDiameter": 381,
+    "lowerDiameter": 195,
+    "lowerDiametersEqual": true,
+    "circleRects": [
+      {
+        "x": 24.5,
+        "y": 131.703125,
+        "width": 381,
+        "height": 381
+      },
+      {
+        "x": 12.25,
+        "y": 568.703125,
+        "width": 195,
+        "height": 195
+      },
+      {
+        "x": 222.75,
+        "y": 568.703125,
+        "width": 195,
+        "height": 195
+      }
+    ],
+    "dock": {
+      "y": 873,
+      "height": 59,
+      "bottom": 932
+    },
+    "lowestLabelBottom": 805.703125,
+    "dockClearance": 67.296875,
+    "fitsWidth": true,
+    "fitsHeight": true,
+    "screenshot": "EVIDENCE-WC10-HOME-PORTRAIT.png"
+  },
+  "landscape": {
+    "viewport": {
+      "width": 932,
+      "height": 430
+    },
+    "mode": "landscape",
+    "contentWidth": 908,
+    "vehicleAreaHeight": 304,
+    "sharedDiameter": 277,
+    "allDiametersEqual": true,
+    "widthLimit": 289,
+    "heightLimit": 277,
+    "circleRects": [
+      {
+        "x": 18.15625,
+        "y": 62.796875,
+        "width": 277,
+        "height": 277
+      },
+      {
+        "x": 327.484375,
+        "y": 62.796875,
+        "width": 277,
+        "height": 277
+      },
+      {
+        "x": 636.828125,
+        "y": 62.796875,
+        "width": 277,
+        "height": 277
+      }
+    ],
+    "dock": {
+      "y": 371,
+      "height": 59,
+      "bottom": 430
+    },
+    "lowestLabelBottom": 366.796875,
+    "dockClearance": 4.203125,
+    "maximumSharedDiameter": true,
+    "fitsWidth": true,
+    "fitsHeight": true,
+    "screenshot": "EVIDENCE-WC10-HOME-LANDSCAPE.png"
+  },
+  "acceptanceBoundary": {
+    "automatedBrowserGeometry": "PASS",
+    "realIPhoneStandalone": "N/A",
+    "productionPromotion": "FAIL"
+  }
+}

@@ -1,14 +1,19 @@
-RGBM v2.1.6l-wc10 flat01
+RGBM v2.1.6l-wc10 flat02
 Classification: CURRENT
 Status: HANDOFF AUTHORIZATION
 Normal URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1
+Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat2
 
-automated_and_static_compliance: PASS
+static_automated_browser_compliance: PASS
 flat_source_compliance: PASS
 controlled_device_testing_authorized: PASS
 real_device_migration_acceptance: N/A
-home_layout_acceptance: N/A
+iphone_portrait_acceptance: N/A
+iphone_landscape_acceptance: N/A
 production_promotion: FAIL
 
-The package may be used only for controlled existing-data migration and non-Home device verification.
+Authorized next evidence:
+- first-launch migration JSON
+- relaunch migration JSON
+- iPhone standalone portrait screenshot
+- iPhone standalone landscape screenshot

@@ -1,21 +1,20 @@
-# WC-10 Risk and Stop Rules
+# WC-10 Flat02 Risk and Stop Rules
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat01`  
+**Package revision:** `flat02`  
 **Date:** 2026-07-25  
 **Classification:** CURRENT  
 **Status:** CURRENT  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat2
 
-Stop deployment or testing when:
+Stop when:
 
-- any automated or flat-package check fails
-- a recovery screen appears
-- either existing vehicle loses records
-- record ownership changes
-- a fourth position appears
-- repeated launch adds another blank record
-- order changes without user action
-- an unconfigured position accepts operational records
-- any required document or manifest entry is missing
+- portrait does not show one large and two lower units
+- landscape does not show three equal units
+- any label touches or crosses the dock
+- landscape remains narrow or centered in a fixed column
+- a fourth vehicle appears
+- records move to another vehicle
+- migration evidence fails
+- any automated, document, manifest, or flat-package gate fails

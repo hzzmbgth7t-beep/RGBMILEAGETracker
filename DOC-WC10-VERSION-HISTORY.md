@@ -1,14 +1,14 @@
-# WC-10 Flat Version History
+# WC-10 Version History
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat01`  
+**Package revision:** `flat02`  
 **Date:** 2026-07-25  
 **Classification:** CURRENT  
 **Status:** CURRENT  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat2
 
-| Revision | Date | Status | Description |
-|---|---|---|---|
-| migration-verification v1.0 | 2026-07-25 | Withdrawn for packaging | Nested folders violated Governance v1.2 |
-| flat01 | 2026-07-25 | Current controlled-test candidate | Root-only rebuild with tests rerun |
+| Revision | Status | Description |
+|---|---|---|
+| flat01 | Rejected for visual use | Data layer passed; Home remained old two-vehicle layout |
+| flat02 | Current candidate | Complete portrait and landscape three-vehicle Home correction |

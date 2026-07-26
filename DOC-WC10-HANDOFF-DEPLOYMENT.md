@@ -1,19 +1,18 @@
-# WC-10 Flat Handoff and Deployment Boundary
+# WC-10 Flat02 Handoff Boundary
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat01`  
+**Package revision:** `flat02`  
 **Date:** 2026-07-25  
 **Classification:** CURRENT  
-**Status:** CONTROLLED TESTING ONLY  
+**Status:** CONTROLLED DEVICE TESTING ONLY  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat2
 
-A compliant static/automated package authorizes controlled standalone migration testing only.
+This build may be deployed for:
 
-It does not authorize:
+- existing-data migration verification
+- portrait and landscape standalone review
+- reorder persistence
+- non-Home three-vehicle verification
 
-- production promotion
-- final Home layout acceptance
-- orientation unlock acceptance
-- portrait or landscape acceptance
-- shell, dock, or chrome acceptance
+It is not promoted until the controlling iPhone evidence passes.

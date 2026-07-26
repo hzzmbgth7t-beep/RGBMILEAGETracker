@@ -6,6 +6,7 @@ const path = require("node:path");
 const vm = require("node:vm");
 const dataV3 = require("./rgbm-data-v3.js");
 const evidenceApi = require("./rgbm-wc10-evidence.js");
+const homeLayout = require("./rgbm-home-layout.js");
 
 const appSource = fs.readFileSync(
   path.join(__dirname, "app.js"),
@@ -164,7 +165,7 @@ function createRuntime(initialStorage = {}) {
       },
     },
     history: {},
-    location: { href: "https://example.test/?v=216lwc10mv1" },
+    location: { href: "https://example.test/?v=216lwc10flat2" },
     screen: {
       orientation: {
         type: "portrait-primary",
@@ -195,6 +196,7 @@ function createRuntime(initialStorage = {}) {
     },
     RGBMDataV3: dataV3,
     RGBMWC10Evidence: evidenceApi,
+    RGBMHomeLayout: homeLayout,
   };
 
   context.window = context;
@@ -350,6 +352,51 @@ test("Vehicle Summary report excludes the unconfigured position", () => {
   assert.equal(html.includes("Alpha"), true);
   assert.equal(html.includes("Bravo"), true);
   assert.equal(html.includes("Add Vehicle"), false);
+});
+
+
+test("Home uses three whole-unit selectable buttons", () => {
+  const runtime = createRuntime();
+  const html = runtime.appElement.innerHTML;
+
+  assert.equal((html.match(/class="circle-wrap"/g) || []).length, 3);
+  assert.equal((html.match(/class="circleBtn"/g) || []).length, 3);
+  assert.equal(html.includes('<button class="circleBtn"'), false);
+  assert.equal(
+    (html.match(/data-position="[123]"/g) || []).length,
+    3,
+  );
+});
+
+test("Home layout model is available to the application runtime", () => {
+  const runtime = createRuntime();
+  const portrait = runtime.context.RGBMHomeLayout.calculateHomeLayout({
+    viewportWidth: 430,
+    viewportHeight: 932,
+    paddingTop: 55,
+    paddingRight: 12,
+    paddingBottom: 0,
+    paddingLeft: 12,
+    headerHeight: 76,
+    dockHeight: 92,
+    orientation: "portrait",
+  });
+  const landscape = runtime.context.RGBMHomeLayout.calculateHomeLayout({
+    viewportWidth: 932,
+    viewportHeight: 430,
+    paddingTop: 4,
+    paddingRight: 12,
+    paddingBottom: 0,
+    paddingLeft: 12,
+    headerHeight: 52,
+    dockHeight: 79,
+    orientation: "landscape",
+  });
+
+  assert.equal(portrait.topDiameter > portrait.lowerDiameter, true);
+  assert.equal(landscape.sharedDiameter > 0, true);
+  assert.equal(portrait.fitsHeight && portrait.fitsWidth, true);
+  assert.equal(landscape.fitsHeight && landscape.fitsWidth, true);
 });
 
 test("Settings exposes the migration evidence controls", () => {

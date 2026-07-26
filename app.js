@@ -385,7 +385,71 @@ function vehicleView(app,vid){const v=getVehicle(vid);if(!v)return nav("home");c
 function recordEdit(app,type,recordId){const r=records(type,null,true).find(x=>x.recordId===recordId);if(!r)return nav("home");const vid=r.vehicleId;if(type==="Fuel"){app.innerHTML=header("Edit Fuel Record")+`<div class="card"><div class="form-grid"><label>Date<input type="date" id="efdate" value="${esc(r.date||"")}"></label><label>Time<input type="time" id="eftime" value="${esc(r.time||"")}"></label><label>Odometer<input type="number" step="0.01" id="efodo" value="${esc(r.odometer||"")}"></label><label>Miles<input type="number" step="0.01" id="efmiles" value="${esc(r.miles||"")}"></label><label>Gallons<input type="number" step="0.001" id="efgal" value="${esc(r.gallons||"")}"></label><label>MPG<input type="number" step="0.01" id="efmpg" value="${esc(r.mpg||"")}"></label><label>Fuel Grade<select id="efgrade" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'fuelGrades')">${activeList("fuelGrades").map(g=>`<option ${g===(r.fuelGrade||"")?"selected":""}>${esc(g)}</option>`).join("")}</select></label><label>Ethanol Free<select id="efef"><option ${String(r.ethanolFree||"")===""?"selected":""}></option><option ${String(r.ethanolFree||"")==="Yes"?"selected":""}>Yes</option><option ${String(r.ethanolFree||"")==="No"?"selected":""}>No</option></select></label><label>Station<select id="efstation" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'stations')">${activeList("stations").map(s=>`<option ${s===(r.station||"")?"selected":""}>${esc(s)}</option>`).join("")}</select></label><label>Cost Source<select id="efcostsource"><option ${String(r.fuelCostSource||"")===""?"selected":""}></option><option ${String(r.fuelCostSource||"")==="Calculated"?"selected":""}>Calculated</option><option ${String(r.fuelCostSource||"")==="Entered"?"selected":""}>Entered</option></select></label><label>Price/Gal<input type="number" step="0.01" id="efprice" value="${esc(r.fuelPricePerGallon||"")}" oninput="calcEditCost()"></label><label>Total Cost<input type="number" step="0.01" id="efcost" value="${esc(r.totalFuelCost||"")}"></label><label class="full">Notes<textarea id="efnotes">${esc(r.notes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Fuel','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Fuel",vid)+bottomNav()+footer();setEditSnapshot(type,recordId);return}if(type==="Maintenance"){app.innerHTML=header("Edit Maintenance Record")+`<div class="card"><div class="form-grid"><label>Date<input type="date" id="emdate" value="${esc(r.dropOffDate||r.date||"")}"></label><label>Pickup Date<input type="date" id="empick" value="${esc(r.pickUpDate||"")}"></label><label>Category<select id="emcat" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'maintenanceCategories')">${activeList("maintenanceCategories").map(c=>`<option ${c===(r.category||"")?"selected":""}>${esc(c)}</option>`).join("")}</select></label><label>Odometer<input type="number" step="0.01" id="emodo" value="${esc(r.odometer||"")}"></label><label>Cost<input type="number" step="0.01" id="emcost" value="${esc(r.totalCost||r.cost||"")}"></label><label>Location<input id="emloc" value="${esc(r.location||"")}"></label><label>Provider<input id="emprov" value="${esc(r.serviceProvider||r.provider||"")}"></label><label>Performed By<input id="emperf" value="${esc(r.performedBy||"")}"></label><label class="full">Notes<textarea id="emnotes">${esc(r.notes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Maintenance','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Maintenance",vid)+bottomNav()+footer();setEditSnapshot(type,recordId);return}if(type==="Insurance"){app.innerHTML=header("Edit Insurance Record")+`<div class="card"><div class="form-grid"><label>Agency<input id="eiagency" value="${esc(r.agency||r.company||"")}"></label><label>Policy Number<input id="eipol" value="${esc(r.policyNumber||"")}"></label><label>Effective Date<input type="date" id="eieff" value="${esc(r.effectiveDate||"")}"></label><label>Expiration Date<input type="date" id="eiexp" value="${esc(r.expirationDate||"")}"></label><label>Agreed Value<input type="number" step="0.01" id="eiagree" value="${esc((r.agreedValue!==""&&r.agreedValue!=null)?r.agreedValue:(r.coverageValue!==""&&r.coverageValue!=null?r.coverageValue:r.insuranceValue||""))}"></label><label>Premium<input type="number" step="0.01" id="eiprem" value="${esc(r.premium||"")}"></label><label>Agent<input id="eiagent" value="${esc(r.agent||r.agentName||"")}"></label><label>Phone<input id="eiphone" value="${esc(r.phone||"")}"></label><label>Email<input type="email" id="eiemail" value="${esc(r.email||"")}"></label><label class="full">Notes<textarea id="einotes">${esc(r.notes||r.coverageNotes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Insurance','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}}
 
 
-function home(app){app.innerHTML=`<div class="screen home"><div class="home-head"><h1 class="chrome-title">${APP_NAME}</h1><div class="subtitle version-subtitle">v${VERSION} • Build ${formatBuildDate(BUILD_DATE)}</div></div><div class="vehicle-area">${orderedVehicles().map((v,i)=>circleHtml(v,i)).join("")}</div></div>${bottomNav()}`}
+let homeGeometryFrame=0;
+function pxValue(value){
+  const parsed=Number.parseFloat(value);
+  return Number.isFinite(parsed)?parsed:0;
+}
+function homeViewport(){
+  const viewport=window.visualViewport;
+  return {
+    width:Math.max(1,Math.round(viewport&&viewport.width?viewport.width:window.innerWidth||document.documentElement.clientWidth||1)),
+    height:Math.max(1,Math.round(viewport&&viewport.height?viewport.height:window.innerHeight||document.documentElement.clientHeight||1))
+  };
+}
+function applyHomeGeometry(){
+  if(!route||route.screen!=="home"||!window.RGBMHomeLayout)return null;
+  const app=$("app");
+  if(!app||typeof app.querySelector!=="function")return null;
+  const homeScreen=app.querySelector(".screen.home");
+  const homeHead=app.querySelector(".home-head");
+  const vehicleArea=app.querySelector(".vehicle-area");
+  const dock=app.querySelector(".bottom-nav");
+  if(!homeScreen||!homeHead||!vehicleArea||!dock)return null;
+  const viewport=homeViewport();
+  const appStyle=getComputedStyle(app);
+  const orientation=viewport.width>viewport.height?"landscape":"portrait";
+  const layout=RGBMHomeLayout.calculateHomeLayout({
+    viewportWidth:viewport.width,
+    viewportHeight:viewport.height,
+    paddingTop:pxValue(appStyle.paddingTop),
+    paddingRight:pxValue(appStyle.paddingRight),
+    paddingBottom:pxValue(appStyle.paddingBottom),
+    paddingLeft:pxValue(appStyle.paddingLeft),
+    headerHeight:Math.ceil(homeHead.getBoundingClientRect().height),
+    headerGap:orientation==="landscape"?4:6,
+    dockHeight:Math.ceil(dock.getBoundingClientRect().height),
+    dockGap:4,
+    orientation
+  });
+  homeScreen.dataset.layoutMode=layout.mode;
+  homeScreen.style.setProperty("--home-content-height",`${layout.homeContentHeight}px`);
+  homeScreen.style.setProperty("--home-vehicle-height",`${layout.vehicleAreaHeight}px`);
+  homeScreen.style.setProperty("--home-column-gap",`${layout.columnGap}px`);
+  homeScreen.style.setProperty("--home-row-gap",`${layout.rowGap}px`);
+  homeScreen.style.setProperty("--home-label-height",`${layout.labelHeight}px`);
+  if(layout.mode==="portrait"){
+    homeScreen.style.setProperty("--home-top-diameter",`${layout.topDiameter}px`);
+    homeScreen.style.setProperty("--home-lower-diameter",`${layout.lowerDiameter}px`);
+  }else{
+    homeScreen.style.setProperty("--home-shared-diameter",`${layout.sharedDiameter}px`);
+  }
+  window.__RGBM_HOME_LAYOUT_DIAGNOSTICS={
+    ...layout,
+    titleRect:homeHead.getBoundingClientRect().toJSON?homeHead.getBoundingClientRect().toJSON():null,
+    dockRect:dock.getBoundingClientRect().toJSON?dock.getBoundingClientRect().toJSON():null
+  };
+  return layout;
+}
+function scheduleHomeGeometry(){
+  if(homeGeometryFrame&&window.cancelAnimationFrame)cancelAnimationFrame(homeGeometryFrame);
+  const run=()=>{homeGeometryFrame=0;applyHomeGeometry()};
+  homeGeometryFrame=window.requestAnimationFrame?requestAnimationFrame(run):setTimeout(run,0);
+}
+function home(app){
+  app.innerHTML=`<div class="screen home"><div class="home-head"><h1 class="chrome-title">${APP_NAME}</h1><div class="subtitle version-subtitle">v${VERSION} • Build ${formatBuildDate(BUILD_DATE)}</div></div><div class="vehicle-area">${orderedVehicles().map((v,i)=>circleHtml(v,i)).join("")}</div></div>${bottomNav()}`;
+  scheduleHomeGeometry();
+}
 
 function pressStart(cb,e,delay=750){
   clearLP();
@@ -593,7 +657,7 @@ function circleHtml(v,i){
   const inner=configured&&v.primaryPhoto?`<img src="${v.primaryPhoto}" alt="">`:esc(vehicleBadge(v));
   const label=configured?vehicleLabel(v):"Add Vehicle";
   const accessible=esc(label);
-  return `<div class="circle-wrap"><button class="circleBtn" aria-label="${accessible}" onpointerdown="pressStart(()=>vehicleLong(${i}),event,500)" onpointerup="clearLP()" onpointercancel="clearLP()" onclick="vehicleTap(${i})">${inner}</button><div class="vehicle-label">${esc(label)}</div></div>`;
+  return `<button class="circle-wrap" type="button" data-position="${i+1}" aria-label="${accessible}" onpointerdown="pressStart(()=>vehicleLong(${i}),event,500)" onpointerup="clearLP()" onpointercancel="clearLP()" onclick="vehicleTap(${i})"><span class="circleBtn" aria-hidden="true">${inner}</span><span class="vehicle-label">${esc(label)}</span></button>`;
 }
 function vehicleTap(i){
   if(suppressTap){suppressTap=false;return}
@@ -1711,9 +1775,10 @@ function dataDiagnostics(){
 function initV213eStabilization(){
   try{
     document.addEventListener("touchmove",e=>{if(route&&route.screen==="home")e.preventDefault()},{passive:false});
-    const lock=()=>{try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock("portrait").catch(()=>{})}catch(e){}};
-    lock();
-    window.addEventListener("orientationchange",()=>setTimeout(lock,50),{passive:true});
+    const refresh=()=>setTimeout(()=>{if(route&&route.screen==="home")scheduleHomeGeometry()},60);
+    window.addEventListener("resize",refresh,{passive:true});
+    window.addEventListener("orientationchange",refresh,{passive:true});
+    if(window.visualViewport)window.visualViewport.addEventListener("resize",refresh,{passive:true});
   }catch(e){}
 }
 function renderDataFatal(error){
@@ -1730,4 +1795,4 @@ try{
   render()
 }
 catch(e){console.error(e);renderDataFatal(e)}
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=216lwc10flat1').catch(()=>{})}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=216lwc10flat2').catch(()=>{})}

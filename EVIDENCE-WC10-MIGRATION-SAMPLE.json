@@ -9,7 +9,7 @@
     "userAgent": "Synthetic flat-package sample",
     "standalone": true,
     "orientation": "portrait-primary",
-    "url": "https://example.invalid/?v=216lwc10flat1",
+    "url": "https://example.invalid/?v=216lwc10flat2",
     "visibilityState": "visible"
   },
   "storage": {
@@ -297,6 +297,8 @@
     "containsRecordAmounts": false,
     "recordEvidence": "counts and deterministic record-ID fingerprints only"
   },
-  "packageRevision": "flat01",
-  "classification": "CURRENT SYNTHETIC EVIDENCE"
+  "packageRevision": "flat02",
+  "classification": "CURRENT SYNTHETIC MIGRATION EVIDENCE",
+  "homeLayoutVersion": "wc10-three-vehicle-home-v1",
+  "status": "PASS"
 }
