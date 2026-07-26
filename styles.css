@@ -1049,3 +1049,194 @@ body.non-home-active {
     margin-bottom: 8px !important;
   }
 }
+
+/* RGBM v2.1.6l-wc10 flat04: recovery-only standalone console */
+body.recovery-active {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100dvh !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  background: #09111f !important;
+  touch-action: auto !important;
+}
+
+#app.screen-recovery {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  max-height: 100dvh !important;
+  margin: 0 !important;
+  padding:
+    calc(16px + env(safe-area-inset-top))
+    calc(14px + env(safe-area-inset-right))
+    calc(24px + env(safe-area-inset-bottom))
+    calc(14px + env(safe-area-inset-left)) !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain !important;
+  touch-action: pan-y !important;
+  box-sizing: border-box !important;
+  background:
+    radial-gradient(
+      circle at top,
+      #243b5a 0,
+      #0a1324 42%,
+      #09101d 100%
+    ) !important;
+}
+
+.recovery-console {
+  width: min(100%, 760px) !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  display: grid !important;
+  gap: 14px !important;
+}
+
+.recovery-card {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 18px !important;
+  border: 1px solid rgba(150, 184, 220, .48) !important;
+  border-radius: 20px !important;
+  box-sizing: border-box !important;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(36, 61, 92, .98),
+      rgba(27, 47, 75, .98)
+    ) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .28) !important;
+}
+
+.recovery-warning {
+  border-color: rgba(239, 203, 132, .72) !important;
+}
+
+.recovery-kicker {
+  margin: 0 0 6px !important;
+  color: #d6e4f3 !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase !important;
+}
+
+.recovery-card h1,
+.recovery-card h2 {
+  margin: 0 0 12px !important;
+  line-height: 1.08 !important;
+}
+
+.recovery-card h1 {
+  font-size: clamp(30px, 8vw, 46px) !important;
+}
+
+.recovery-card h2 {
+  font-size: clamp(22px, 5.5vw, 30px) !important;
+}
+
+.recovery-card p {
+  margin: 8px 0 !important;
+  line-height: 1.42 !important;
+}
+
+.recovery-key-row {
+  display: grid !important;
+  grid-template-columns: minmax(120px, .42fr) minmax(0, 1fr) !important;
+  gap: 10px !important;
+  padding: 10px 0 !important;
+  border-bottom: 1px solid rgba(174, 196, 220, .2) !important;
+  align-items: start !important;
+}
+
+.recovery-key-row:last-of-type {
+  border-bottom: 0 !important;
+}
+
+.recovery-key-row strong,
+.recovery-key-row span {
+  min-width: 0 !important;
+  overflow-wrap: anywhere !important;
+}
+
+.recovery-confirm {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  margin-top: 12px !important;
+  font-weight: 850 !important;
+}
+
+.recovery-confirm input {
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  margin: 0 !important;
+}
+
+.recovery-card input[type="file"] {
+  width: 100% !important;
+  min-height: 52px !important;
+  margin-top: 7px !important;
+  padding: 8px !important;
+  box-sizing: border-box !important;
+}
+
+.recovery-card button[disabled] {
+  opacity: .48 !important;
+  cursor: not-allowed !important;
+}
+
+.recovery-status {
+  width: 100% !important;
+  min-height: 54px !important;
+  margin: 0 !important;
+  padding: 14px !important;
+  border: 1px solid rgba(150, 184, 220, .48) !important;
+  border-radius: 14px !important;
+  box-sizing: border-box !important;
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere !important;
+  color: #f7f2e8 !important;
+  background: rgba(12, 24, 41, .96) !important;
+}
+
+.recovery-status.pass {
+  border-color: rgba(124, 214, 156, .72) !important;
+}
+
+.recovery-status.fail {
+  border-color: rgba(255, 139, 139, .82) !important;
+}
+
+@media (orientation: landscape) {
+  #app.screen-recovery {
+    padding:
+      calc(8px + env(safe-area-inset-top))
+      calc(14px + env(safe-area-inset-right))
+      calc(12px + env(safe-area-inset-bottom))
+      calc(14px + env(safe-area-inset-left)) !important;
+  }
+
+  .recovery-console {
+    width: min(100%, 1080px) !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    align-items: start !important;
+  }
+
+  .recovery-warning,
+  .recovery-status {
+    grid-column: 1 / -1 !important;
+  }
+
+  .recovery-card {
+    padding: 14px !important;
+  }
+}

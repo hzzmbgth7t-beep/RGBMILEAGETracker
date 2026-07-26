@@ -1,38 +1,54 @@
-# RGB Mileage Tracker — WC-10 flat03
+# RGB Mileage Tracker — WC-10 flat04 recovery
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat03`  
+**Package revision:** `flat04`  
 **Packaging governance:** `v1.5`  
-**Status:** CONTROLLED DEVICE RETESTING ONLY
+**Status:** CONTROLLED STANDALONE RECOVERY ONLY
 
 ## Review links
 
 - Normal application URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat3
+- Recovery cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat4
 
-## flat03 correction
+## Purpose
 
-flat03 preserves the accepted three-position Home layout and corrects the non-Home regressions found during device testing:
+flat04 addresses the standalone `RECOVERY_REQUIRED` screen without clearing, deleting, or automatically overwriting storage.
 
-- vehicle-detail photos use a dedicated circular frame
-- Home circle rules cannot affect detail or edit screens
-- Back remains outside the scrolling content layer
-- the dock remains outside the scrolling content layer
-- non-Home landscape uses the available viewport
-- Add Vehicle and vehicle-detail screens scroll between the fixed header and dock
-- pointer hit testing remains active for Back and dock controls
+The recovery screen:
 
-## Clean installation
+- inspects active, pending, and retained legacy storage
+- does not mutate storage during inspection
+- downloads an exact recovery snapshot before recovery
+- validates pending migration data
+- validates a selected full JSON backup
+- avoids active/pending duplicate storage during promotion
+- restores exact active and pending values when a transaction fails
+- never deletes retained legacy keys
 
-Upload exactly the 17 files at this archive’s root to a blank GitHub application folder.
+## Known external backup target
 
-Do not upload the support folders. Retain them locally for tests, evidence, maintenance, and future handoffs.
+The latest known three-vehicle backup is:
+
+`RGBM_Backup_v2.1.6l-wc10_2026-07-26 3.json`
+
+Expected summary:
+
+- configured vehicles: 3
+- vehicle positions: 3
+- fuel records: 41
+- maintenance records: 3
+- insurance records: 5
+
+The earlier file ending in `2.json` is the pre-third-vehicle backup.
+
+## Clean install
+
+Upload exactly the 17 files at this archive's root to the blank GitHub application folder. Retain the support folders locally.
 
 ## Acceptance boundary
 
-- Home three-position layout: retained
-- Automated regression tests: PASS
-- Synthetic non-Home browser geometry: PASS
-- Real iPhone flat03 retest: N/A
-- Third-vehicle entry: NOT STARTED
-- Production promotion: FAIL
+- automated tests: PASS
+- storage rollback tests: PASS
+- quota-safe pending promotion: PASS
+- real Home Screen recovery: N/A
+- production promotion: FAIL

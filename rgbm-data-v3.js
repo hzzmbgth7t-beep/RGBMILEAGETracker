@@ -13,6 +13,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function createRGBMDataV3() {
   const SCHEMA_VERSION = "3.0.0";
   const MIGRATION_VERSION = "wc10-three-vehicle-v1";
+  const RECOVERY_SNAPSHOT_VERSION = "wc10-recovery-snapshot-v1";
   const ACTIVE_KEY = "RGBM_DATA_v3";
   const PENDING_KEY = "RGBM_DATA_v3_pending";
   const LEGACY_KEYS = [
@@ -1274,6 +1275,408 @@
     });
   }
 
+
+  function fingerprintText(value) {
+    const text = String(value || "");
+    let hash = 2166136261;
+
+    for (let index = 0; index < text.length; index += 1) {
+      hash ^= text.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+
+    return (hash >>> 0).toString(16).padStart(8, "0");
+  }
+
+  function recoveryKeyNames(storage, context = {}) {
+    const keys = new Set([
+      ACTIVE_KEY,
+      PENDING_KEY,
+      ...LEGACY_KEYS,
+      ...asArray(context.legacyKeys),
+    ]);
+
+    try {
+      for (let index = 0; index < storage.length; index += 1) {
+        const key = storage.key(index);
+        if (
+          key
+          && (
+            key.startsWith("RGBM_")
+            || key.startsWith("rgbMileage")
+            || key.startsWith("rgbm_data_")
+          )
+        ) {
+          keys.add(key);
+        }
+      }
+    } catch (error) {
+      throw new RGBMDataError(
+        "STORAGE_READ_FAILED",
+        "Unable to enumerate RGB Mileage storage keys.",
+        { cause: String(error) },
+      );
+    }
+
+    return Array.from(keys).sort();
+  }
+
+  function recoveryStateSummary(state) {
+    if (!isObject(state)) {
+      return null;
+    }
+
+    return {
+      schemaVersion: cleanText(state.schemaVersion),
+      migrationVersion: cleanText(state.migrationVersion),
+      vehicleCount: asArray(state.vehicles).length,
+      configuredCount: asArray(state.vehicles).filter(
+        (vehicle) => vehicle && vehicle.setupComplete === true,
+      ).length,
+      vehicleOrder: clone(asArray(state.vehicleOrder)),
+      fuelRecordCount: asArray(state.fuelRecords).length,
+      maintenanceRecordCount: asArray(
+        state.maintenanceRecords,
+      ).length,
+      insuranceRecordCount: asArray(
+        state.insuranceRecords,
+      ).length,
+      acquisitionRecordCount: asArray(
+        state.vehicleAcquisitionRecords,
+      ).length,
+      attachmentCount: asArray(state.attachments).length,
+    };
+  }
+
+  function inspectRecoveryRaw(raw, key, context = {}) {
+    const entry = {
+      key,
+      present: raw !== null && raw !== undefined,
+      characterCount: raw ? String(raw).length : 0,
+      fingerprint: raw ? fingerprintText(raw) : null,
+      parses: false,
+      canonicalValid: false,
+      migratable: false,
+      error: null,
+      summary: null,
+    };
+
+    if (!entry.present) {
+      return entry;
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+      entry.parses = true;
+    } catch (error) {
+      entry.error = `Invalid JSON: ${String(error)}`;
+      return entry;
+    }
+
+    try {
+      if (cleanText(parsed.schemaVersion) === SCHEMA_VERSION) {
+        assertValidStateV3(parsed);
+        entry.canonicalValid = true;
+        entry.migratable = true;
+        entry.summary = recoveryStateSummary(parsed);
+        return entry;
+      }
+
+      const migrated = migrateToV3(parsed, {
+        ...context,
+        sourceKey: key,
+      });
+      assertValidStateV3(migrated.state);
+      entry.migratable = true;
+      entry.summary = recoveryStateSummary(migrated.state);
+    } catch (error) {
+      entry.error = error && error.message
+        ? error.message
+        : String(error);
+    }
+
+    return entry;
+  }
+
+  function inspectRecoveryStorage(storage, context = {}) {
+    const keys = recoveryKeyNames(storage, context);
+    const entries = keys.map((key) => {
+      const raw = storageGet(storage, key);
+      return inspectRecoveryRaw(raw, key, context);
+    });
+    const entryByKey = Object.fromEntries(
+      entries.map((entry) => [entry.key, entry]),
+    );
+    const active = entryByKey[ACTIVE_KEY]
+      || inspectRecoveryRaw(null, ACTIVE_KEY, context);
+    const pending = entryByKey[PENDING_KEY]
+      || inspectRecoveryRaw(null, PENDING_KEY, context);
+    const legacy = entries.filter(
+      (entry) => (
+        entry.key !== ACTIVE_KEY
+        && entry.key !== PENDING_KEY
+        && entry.present
+      ),
+    );
+
+    let recommendedAction = "RESTORE_BACKUP";
+    if (active.canonicalValid) {
+      recommendedAction = "USE_ACTIVE";
+    } else if (pending.canonicalValid) {
+      recommendedAction = "RECOVER_PENDING";
+    } else if (legacy.some((entry) => entry.migratable)) {
+      recommendedAction = "RESTORE_LEGACY_OR_BACKUP";
+    }
+
+    return {
+      recoverySnapshotVersion: RECOVERY_SNAPSHOT_VERSION,
+      inspectedAt: nowISO(context),
+      activeKey: ACTIVE_KEY,
+      pendingKey: PENDING_KEY,
+      active,
+      pending,
+      legacy,
+      entries,
+      recommendedAction,
+      requiresRecovery: (
+        (active.present && !active.canonicalValid)
+        || (!active.canonicalValid && pending.present)
+      ),
+    };
+  }
+
+  function buildRecoverySnapshot(storage, context = {}) {
+    const inspection = inspectRecoveryStorage(storage, context);
+    const storageEntries = inspection.entries
+      .filter((entry) => entry.present)
+      .map((entry) => ({
+        key: entry.key,
+        raw: storageGet(storage, entry.key),
+        characterCount: entry.characterCount,
+        fingerprint: entry.fingerprint,
+      }));
+
+    return {
+      app: "RGB Mileage",
+      recoverySnapshotVersion: RECOVERY_SNAPSHOT_VERSION,
+      generatedAt: nowISO(context),
+      appVersion: cleanText(context.appVersion) || "2.1.6l-wc10",
+      inspection,
+      storageEntries,
+      instructions: {
+        preserveFile: true,
+        doNotClearStorage: true,
+        containsExactStoredValues: true,
+      },
+    };
+  }
+
+  function requireRecoverySnapshotConfirmation(context = {}) {
+    if (context.snapshotConfirmed !== true) {
+      throw new RGBMDataError(
+        "RECOVERY_SNAPSHOT_REQUIRED",
+        "Download and confirm the recovery snapshot before changing storage.",
+      );
+    }
+  }
+
+  function validateRecoveryCandidate(input, context = {}) {
+    const migrated = migrateToV3(input, {
+      ...context,
+      sourceKey: cleanText(context.sourceKey) || "recovery-backup",
+    });
+    assertValidStateV3(migrated.state);
+
+    return {
+      state: migrated.state,
+      report: migrated.report,
+      summary: recoveryStateSummary(migrated.state),
+    };
+  }
+
+  function restoreVolatileRecoveryKeys(storage, originals) {
+    const result = {
+      activeRestored: originals.activeRaw === null,
+      pendingRestored: originals.pendingRaw === null,
+      errors: [],
+    };
+
+    storageRemove(storage, ACTIVE_KEY);
+    storageRemove(storage, PENDING_KEY);
+
+    if (originals.activeRaw !== null) {
+      try {
+        storageSet(
+          storage,
+          ACTIVE_KEY,
+          originals.activeRaw,
+          "RECOVERY_ROLLBACK_FAILED",
+        );
+        result.activeRestored = (
+          storageGet(storage, ACTIVE_KEY) === originals.activeRaw
+        );
+      } catch (error) {
+        result.errors.push(String(error));
+      }
+    }
+
+    if (originals.pendingRaw !== null) {
+      try {
+        storageSet(
+          storage,
+          PENDING_KEY,
+          originals.pendingRaw,
+          "RECOVERY_ROLLBACK_FAILED",
+        );
+        result.pendingRestored = (
+          storageGet(storage, PENDING_KEY) === originals.pendingRaw
+        );
+      } catch (error) {
+        result.errors.push(String(error));
+      }
+    }
+
+    result.success = (
+      result.activeRestored
+      && result.pendingRestored
+      && result.errors.length === 0
+    );
+    return result;
+  }
+
+  function promoteRecoveryPayload(
+    storage,
+    payload,
+    context = {},
+  ) {
+    requireRecoverySnapshotConfirmation(context);
+
+    let parsed;
+    try {
+      parsed = JSON.parse(payload);
+      assertValidStateV3(parsed);
+    } catch (error) {
+      throw new RGBMDataError(
+        "INVALID_RECOVERY_CANDIDATE",
+        "The selected recovery data is not a valid schema-3 state.",
+        { cause: String(error) },
+      );
+    }
+
+    const originals = {
+      activeRaw: storageGet(storage, ACTIVE_KEY),
+      pendingRaw: storageGet(storage, PENDING_KEY),
+    };
+
+    storageRemove(storage, ACTIVE_KEY);
+    storageRemove(storage, PENDING_KEY);
+
+    try {
+      storageSet(
+        storage,
+        ACTIVE_KEY,
+        payload,
+        "RECOVERY_ACTIVE_WRITE_FAILED",
+      );
+      const readBackRaw = storageGet(storage, ACTIVE_KEY);
+      const readBack = JSON.parse(readBackRaw);
+      assertValidStateV3(readBack);
+
+      return {
+        state: readBack,
+        report: {
+          recovered: true,
+          source: cleanText(context.sourceKey) || "recovery",
+          pendingRemoved: storageGet(storage, PENDING_KEY) === null,
+          legacyKeysRetained: LEGACY_KEYS.filter(
+            (key) => storageGet(storage, key) !== null,
+          ),
+          previousActivePresent: originals.activeRaw !== null,
+          previousPendingPresent: originals.pendingRaw !== null,
+        },
+      };
+    } catch (error) {
+      const rollback = restoreVolatileRecoveryKeys(
+        storage,
+        originals,
+      );
+      throw new RGBMDataError(
+        "RECOVERY_TRANSACTION_FAILED",
+        "Recovery failed and the original active and pending values were restored.",
+        {
+          cause: String(error),
+          rollback,
+        },
+      );
+    }
+  }
+
+  function promotePendingRecovery(storage, context = {}) {
+    const pendingRaw = storageGet(storage, PENDING_KEY);
+    if (!pendingRaw) {
+      throw new RGBMDataError(
+        "NO_PENDING_DATA",
+        "No pending migration is available for recovery.",
+      );
+    }
+
+    try {
+      const pending = JSON.parse(pendingRaw);
+      assertValidStateV3(pending);
+    } catch (error) {
+      throw new RGBMDataError(
+        "INVALID_PENDING_DATA",
+        "The pending migration is invalid and cannot be promoted.",
+        { cause: String(error) },
+      );
+    }
+
+    return promoteRecoveryPayload(
+      storage,
+      pendingRaw,
+      {
+        ...context,
+        sourceKey: PENDING_KEY,
+      },
+    );
+  }
+
+  function restoreRecoveryBackup(
+    storage,
+    backup,
+    context = {},
+  ) {
+    requireRecoverySnapshotConfirmation(context);
+    const candidate = validateRecoveryCandidate(
+      backup,
+      {
+        ...context,
+        sourceKey: cleanText(context.sourceKey)
+          || "recovery-backup",
+      },
+    );
+    const payload = JSON.stringify(candidate.state);
+    const promoted = promoteRecoveryPayload(
+      storage,
+      payload,
+      {
+        ...context,
+        snapshotConfirmed: true,
+        sourceKey: cleanText(context.sourceKey)
+          || "recovery-backup",
+      },
+    );
+
+    return {
+      ...promoted,
+      candidate: {
+        summary: candidate.summary,
+        migrationReport: candidate.report,
+      },
+    };
+  }
+
   function loadCanonicalState(storage, context = {}) {
     const activeRaw = storageGet(storage, ACTIVE_KEY);
 
@@ -1358,6 +1761,7 @@
   return Object.freeze({
     SCHEMA_VERSION,
     MIGRATION_VERSION,
+    RECOVERY_SNAPSHOT_VERSION,
     ACTIVE_KEY,
     PENDING_KEY,
     LEGACY_KEYS: Object.freeze(LEGACY_KEYS.slice()),
@@ -1381,6 +1785,11 @@
     commitMigratedState,
     saveActiveState,
     recoverPendingMigration,
+    inspectRecoveryStorage,
+    buildRecoverySnapshot,
+    validateRecoveryCandidate,
+    promotePendingRecovery,
+    restoreRecoveryBackup,
     loadCanonicalState,
   });
 });

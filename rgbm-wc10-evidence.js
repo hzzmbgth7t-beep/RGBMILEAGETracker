@@ -346,8 +346,14 @@
           JSON.stringify(expectedExistingOrder)
           === JSON.stringify(actualExistingOrder)
         );
-        const blankCountPreserved = (
-          expectedSummary.blankCount === canonical.blankCount
+        const thirdPositionStateValid = (
+          canonical.vehicleCount === expectedSummary.vehicleCount
+          && canonical.configuredCount >= expectedSummary.configuredCount
+          && canonical.blankCount <= expectedSummary.blankCount
+          && (
+            canonical.configuredCount + canonical.blankCount
+            === canonical.vehicleCount
+          )
         );
         const legacyRetained = Boolean(
           getStorageValue(storage, legacy.key),
@@ -372,11 +378,15 @@
             },
           ),
           result(
-            "expected_blank_vehicle_count",
-            blankCountPreserved ? "PASS" : "FAIL",
+            "third_position_state_valid",
+            thirdPositionStateValid ? "PASS" : "FAIL",
             {
-              expected: expectedSummary.blankCount,
-              actual: canonical.blankCount,
+              expectedMinimumConfigured:
+                expectedSummary.configuredCount,
+              actualConfigured: canonical.configuredCount,
+              expectedMaximumBlank: expectedSummary.blankCount,
+              actualBlank: canonical.blankCount,
+              configuredThirdVehicleAllowed: true,
             },
           ),
         );
@@ -386,7 +396,7 @@
             legacyRetained
             && allVehicleComparisonsPass(comparisons)
             && orderPreserved
-            && blankCountPreserved
+            && thirdPositionStateValid
           ) ? "PASS" : "FAIL",
           sourceKey: legacy.key,
           expectedConfiguredCount: expectedSummary.configuredCount,

@@ -1,26 +1,26 @@
 # RGB Mileage Tracker Changelog
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat03`  
+**Package revision:** `flat04`  
 **Status:** CURRENT  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat3
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat4
 
-## 2026-07-26 — flat03 non-Home correction
+## 2026-07-26 — flat04 recovery-only correction
 
-- Replaced global `circleBtn` ownership with a Home-only visual class.
-- Added dedicated circular vehicle-detail and edit-preview photo frames.
-- Enforced `aspect-ratio: 1 / 1` and `object-fit: cover`.
-- Added a non-Home header/content/dock shell.
-- Kept Back and the dock outside the scrolling content layer.
-- Added visual-viewport sizing for portrait and landscape browser states.
-- Added a two-column landscape vehicle-detail card.
-- Preserved the accepted Home portrait and landscape geometry.
-- Added 18 non-Home regression tests.
-- Total executable tests: 88 PASS, 0 FAIL.
-- Added synthetic browser hit-testing and geometry evidence.
+- Added non-mutating active, pending, and legacy storage inspection.
+- Added exact recovery-snapshot export.
+- Added snapshot-confirmation gate before mutation.
+- Added quota-safe pending promotion that does not require simultaneous active and pending copies.
+- Added exact rollback of active and pending values on failure.
+- Added validated full-backup recovery.
+- Retained all legacy storage keys.
+- Added a dedicated standalone recovery console.
+- Corrected migration evidence so a configured third vehicle is accepted after the original two vehicles and records remain preserved.
+- Added 14 recovery transaction tests.
+- Expanded integration tests for the recovery console.
+- Total executable tests: 107 PASS, 0 FAIL.
 
-## 2026-07-25 — flat02
+## 2026-07-26 — flat03
 
-- Implemented the accepted three-position Home layout.
-- Added schema-3 migration, ordering, restore, and evidence behavior.
+- Corrected circular detail images, non-Home landscape sizing, and Back/dock hit testing.

@@ -1,33 +1,38 @@
-# RGB Mileage Tracker Deployment
+# RGB Mileage Tracker flat04 Deployment and Recovery
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat03`  
-**Status:** CONTROLLED DEVICE RETEST  
+**Package revision:** `flat04`  
+**Status:** CONTROLLED STANDALONE RECOVERY  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat3
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat4
 
-## Blank GitHub clean install
+## Upload
 
-1. Keep the complete archive locally.
-2. Start with a blank GitHub application folder.
-3. Upload only the 17 files at the archive root.
-4. Do not upload `AUDITS/`, `DOCUMENTATION/`, `EVIDENCE/`, `FIXTURES/`, `ICONS/`, `REFERENCES/`, `TEMPLATES/`, or `TESTS/`.
-5. Wait for GitHub Pages deployment.
-6. Open the cache-buster URL.
-7. Confirm the build line shows `Build 26/07/26`.
-8. Do not remove the existing Home Screen app.
-9. Do not clear Safari website data.
-10. Do not add the third vehicle until the flat03 detail, landscape, Back, and dock retest passes.
+1. Retain the complete archive locally.
+2. Upload only the 17 files at the archive root.
+3. Do not upload the support folders.
+4. Wait for GitHub Pages deployment.
+5. Open the cache-buster URL once in Safari.
+6. Close Safari.
+7. Launch the existing Home Screen app.
 
-## Root upload count
+## Recovery sequence
 
-Exactly **17 files**.
+1. On the recovery screen, review the active and pending summaries.
+2. Download the Recovery Snapshot.
+3. Save that file outside the app.
+4. Check `I saved the recovery snapshot file`.
+5. Use pending recovery only when its summary matches the data you intend to recover.
+6. When pending data does not include all three vehicles, select:
+   `RGBM_Backup_v2.1.6l-wc10_2026-07-26 3.json`
+7. Confirm that the selected backup reports 3 vehicles, 41 fuel, 3 maintenance, and 5 insurance records.
+8. Choose Restore Validated Backup.
+9. Allow the app to reload.
+10. Verify all three vehicles before entering or changing data.
 
-## Icon rule
+## Prohibited actions
 
-The referenced icon names remain unchanged and locked:
-
-- `apple-touch-icon.png`
-- `favicon.png`
-- `icon-192x192.png`
-- `icon-512x512.png`
+- do not delete the Home Screen app
+- do not clear Safari website data
+- do not use the pre-third backup unless intentionally reverting
+- do not edit records before recovery verification

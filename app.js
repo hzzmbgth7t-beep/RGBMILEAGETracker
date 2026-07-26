@@ -1827,11 +1827,211 @@ function initV213eStabilization(){
     if(window.visualViewport)window.visualViewport.addEventListener("resize",refresh,{passive:true});
   }catch(e){}
 }
-function renderDataFatal(error){
+let recoverySnapshotDownloaded=false;
+let recoveryBackupCandidate=null;
+let recoveryInspection=null;
+let recoveryFatalError=null;
+
+function recoveryEntrySummary(entry){
+  if(!entry)return "Not inspected";
+  if(!entry.present)return "Not present";
+  const validity=entry.canonicalValid
+    ?"Valid schema-3 data"
+    :entry.migratable
+      ?"Migratable data"
+      :entry.parses
+        ?"Parsed but invalid"
+        :"Invalid JSON";
+  const summary=entry.summary;
+  const counts=summary
+    ?` • ${summary.configuredCount} configured vehicle${summary.configuredCount===1?"":"s"} • ${summary.fuelRecordCount} fuel • ${summary.maintenanceRecordCount} maintenance • ${summary.insuranceRecordCount} insurance`
+    :"";
+  return `${validity} • ${entry.characterCount} characters • ${entry.fingerprint||"no fingerprint"}${counts}`;
+}
+function recoveryLegacyHtml(entries){
+  const present=(entries||[]).filter(entry=>entry.present);
+  if(!present.length)return `<div class="recovery-key-row"><strong>Legacy keys</strong><span>None detected</span></div>`;
+  return present.map(entry=>`<div class="recovery-key-row"><strong>${esc(entry.key)}</strong><span>${esc(recoveryEntrySummary(entry))}</span></div>`).join("");
+}
+function setRecoveryStatus(message,result="info"){
+  const target=$("recoveryStatus");
+  if(!target)return;
+  target.className=`recovery-status ${result}`;
+  target.textContent=message;
+}
+function recoveryConfirmed(){
+  return recoverySnapshotDownloaded&&$("recoverySnapshotConfirmed")?.checked===true;
+}
+function updateRecoveryControls(){
+  const ready=recoveryConfirmed();
+  const pendingButton=$("recoverPendingButton");
+  const restoreButton=$("restoreRecoveryButton");
+  if(pendingButton)pendingButton.disabled=!ready;
+  if(restoreButton)restoreButton.disabled=!(ready&&recoveryBackupCandidate);
+}
+function downloadRecoverySnapshot(){
+  try{
+    const snapshot=RGBMDataV3.buildRecoverySnapshot(
+      localStorage,
+      dataContext("standalone-recovery-snapshot")
+    );
+    const text=JSON.stringify(snapshot,null,2);
+    const anchor=document.createElement("a");
+    anchor.href=URL.createObjectURL(
+      new Blob([text],{type:"application/json"})
+    );
+    anchor.download=`RGBM_Recovery_Snapshot_${new Date().toISOString().replace(/[:.]/g,"-")}.json`;
+    anchor.click();
+    URL.revokeObjectURL(anchor.href);
+    recoverySnapshotDownloaded=true;
+    setRecoveryStatus("Recovery snapshot downloaded. Check the confirmation box before changing storage.","pass");
+    updateRecoveryControls();
+  }catch(error){
+    setRecoveryStatus(`Snapshot failed: ${error&&error.message?error.message:String(error)}`,"fail");
+  }
+}
+function recoverPendingStorage(){
+  if(!recoveryConfirmed()){
+    return alert("Download the recovery snapshot and confirm it before recovery.");
+  }
+  if(!confirm("Promote the validated pending migration to active storage? The exact current active and pending values will be restored if the transaction fails. Legacy keys will not be deleted."))return;
+  try{
+    const result=RGBMDataV3.promotePendingRecovery(
+      localStorage,
+      {
+        ...dataContext("standalone-pending-recovery"),
+        snapshotConfirmed:true
+      }
+    );
+    setRecoveryStatus(`Pending recovery completed with ${result.state.vehicles.length} vehicle positions. Reloading…`,"pass");
+    setTimeout(()=>location.reload(),250);
+  }catch(error){
+    const details=error&&error.details&&error.details.rollback
+      ?` Rollback success: ${error.details.rollback.success===true?"yes":"no"}.`
+      :"";
+    setRecoveryStatus(`Pending recovery failed: ${error&&error.message?error.message:String(error)}${details}`,"fail");
+  }
+}
+function previewRecoveryBackup(){
+  const file=$("recoveryBackupFile")?.files?.[0];
+  if(!file)return alert("Choose a full JSON backup first.");
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const raw=JSON.parse(reader.result);
+      const candidate=RGBMDataV3.validateRecoveryCandidate(
+        raw,
+        dataContext("standalone-backup-preview")
+      );
+      recoveryBackupCandidate={raw,fileName:file.name,summary:candidate.summary};
+      const summary=candidate.summary;
+      setRecoveryStatus(
+        `Backup validated: ${summary.configuredCount} configured vehicles, ${summary.fuelRecordCount} fuel, ${summary.maintenanceRecordCount} maintenance, ${summary.insuranceRecordCount} insurance records.`,
+        "pass"
+      );
+      updateRecoveryControls();
+    }catch(error){
+      recoveryBackupCandidate=null;
+      setRecoveryStatus(`Backup validation failed: ${error&&error.message?error.message:String(error)}`,"fail");
+      updateRecoveryControls();
+    }
+  };
+  reader.onerror=()=>{
+    recoveryBackupCandidate=null;
+    setRecoveryStatus("The selected backup could not be read.","fail");
+    updateRecoveryControls();
+  };
+  reader.readAsText(file);
+}
+function restoreSelectedRecoveryBackup(){
+  if(!recoveryConfirmed()){
+    return alert("Download the recovery snapshot and confirm it before recovery.");
+  }
+  if(!recoveryBackupCandidate){
+    return alert("Choose and validate a full JSON backup first.");
+  }
+  const summary=recoveryBackupCandidate.summary;
+  if(!confirm(`Restore ${recoveryBackupCandidate.fileName} to standalone active storage?\n\nConfigured vehicles: ${summary.configuredCount}\nFuel: ${summary.fuelRecordCount}\nMaintenance: ${summary.maintenanceRecordCount}\nInsurance: ${summary.insuranceRecordCount}\n\nCurrent active and pending values will be restored if the transaction fails. Legacy keys will not be deleted.`))return;
+  try{
+    const result=RGBMDataV3.restoreRecoveryBackup(
+      localStorage,
+      recoveryBackupCandidate.raw,
+      {
+        ...dataContext("standalone-backup-recovery"),
+        snapshotConfirmed:true
+      }
+    );
+    setRecoveryStatus(`Backup recovery completed with ${result.state.vehicles.length} vehicle positions. Reloading…`,"pass");
+    setTimeout(()=>location.reload(),250);
+  }catch(error){
+    const details=error&&error.details&&error.details.rollback
+      ?` Rollback success: ${error.details.rollback.success===true?"yes":"no"}.`
+      :"";
+    setRecoveryStatus(`Backup recovery failed: ${error&&error.message?error.message:String(error)}${details}`,"fail");
+  }
+}
+function renderRecoveryConsole(error){
   const app=$("app");
+  recoveryFatalError=error||null;
+  recoverySnapshotDownloaded=false;
+  recoveryBackupCandidate=null;
+  document.body.classList.remove("home-active","non-home-active");
+  document.body.classList.add("recovery-active");
+  app.className="app-screen screen-recovery";
   const code=error&&error.code?error.code:"DATA_LOAD_FAILED";
   const message=error&&error.message?error.message:String(error||"Unknown data error");
-  if(app)app.innerHTML=`<div class="card"><h1>Data Recovery Required</h1><p><strong>${esc(code)}</strong></p><p>${esc(message)}</p><p>Your legacy data has not been deleted. Do not clear storage before creating a backup or recovery plan.</p></div>`;
+  try{
+    recoveryInspection=RGBMDataV3.inspectRecoveryStorage(
+      localStorage,
+      dataContext("standalone-recovery-inspection")
+    );
+  }catch(inspectError){
+    recoveryInspection={
+      active:{present:false},
+      pending:{present:false},
+      legacy:[],
+      recommendedAction:"RESTORE_BACKUP",
+      inspectionError:inspectError&&inspectError.message?inspectError.message:String(inspectError)
+    };
+  }
+  const pendingValid=recoveryInspection.pending&&recoveryInspection.pending.canonicalValid===true;
+  app.innerHTML=`<main class="recovery-console">
+    <section class="recovery-card recovery-warning">
+      <p class="recovery-kicker">RGB Mileage flat04 recovery</p>
+      <h1>Data Recovery Required</h1>
+      <p><strong>${esc(code)}</strong></p>
+      <p>${esc(message)}</p>
+      <p><strong>Do not delete the Home Screen app and do not clear Safari website data.</strong></p>
+      <p>This screen only inspects storage until you download a recovery snapshot and explicitly approve a recovery action.</p>
+    </section>
+    <section class="recovery-card">
+      <h2>Standalone storage inspection</h2>
+      <div class="recovery-key-row"><strong>Active: ${esc(RGBMDataV3.ACTIVE_KEY)}</strong><span>${esc(recoveryEntrySummary(recoveryInspection.active))}</span></div>
+      <div class="recovery-key-row"><strong>Pending: ${esc(RGBMDataV3.PENDING_KEY)}</strong><span>${esc(recoveryEntrySummary(recoveryInspection.pending))}</span></div>
+      ${recoveryLegacyHtml(recoveryInspection.legacy)}
+      <p class="muted">Recommended action: ${esc(recoveryInspection.recommendedAction||"RESTORE_BACKUP")}</p>
+    </section>
+    <section class="recovery-card">
+      <h2>Step 1 — preserve standalone storage</h2>
+      <button class="wide primary" type="button" onclick="downloadRecoverySnapshot()">Download Recovery Snapshot</button>
+      <label class="recovery-confirm"><input id="recoverySnapshotConfirmed" type="checkbox" onchange="updateRecoveryControls()"> I saved the recovery snapshot file.</label>
+    </section>
+    <section class="recovery-card">
+      <h2>Step 2A — recover the pending migration</h2>
+      <p>${pendingValid?"The pending value is valid schema-3 data and can be promoted without keeping duplicate active and pending copies in storage.":"No valid pending migration was detected. Use the backup recovery option."}</p>
+      <button id="recoverPendingButton" class="wide primary" type="button" onclick="recoverPendingStorage()" ${pendingValid?"disabled":"disabled hidden"}>Recover Valid Pending Migration</button>
+    </section>
+    <section class="recovery-card">
+      <h2>Step 2B — restore a full JSON backup</h2>
+      <p>Use the latest three-vehicle backup when pending recovery is unavailable or does not contain the expected data.</p>
+      <label>Full JSON backup<input id="recoveryBackupFile" type="file" accept=".json,application/json" onchange="previewRecoveryBackup()"></label>
+      <button id="restoreRecoveryButton" class="wide primary" type="button" onclick="restoreSelectedRecoveryBackup()" disabled>Restore Validated Backup</button>
+    </section>
+    <pre id="recoveryStatus" class="recovery-status info">No storage value has been changed.</pre>
+  </main>`;
+}
+function renderDataFatal(error){
+  renderRecoveryConsole(error);
 }
 initV213aShell();initV213Shell();initV213eStabilization();
 try{
@@ -1841,4 +2041,4 @@ try{
   render()
 }
 catch(e){console.error(e);renderDataFatal(e)}
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=216lwc10flat3').catch(()=>{})}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=216lwc10flat4').catch(()=>{})}
