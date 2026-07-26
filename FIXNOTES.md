@@ -1,30 +1,29 @@
-# WC-10 Flat02 Fix Notes
+# RGB Mileage Tracker Fix Notes
 
 **Build:** `v2.1.6l-wc10`  
 **Package revision:** `flat02`  
-**Date:** 2026-07-25  
-**Classification:** CURRENT  
 **Status:** CURRENT  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
 **Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat2
 
-## Confirmed flat01 failure
+## Layout correction
 
-The device screenshots showed:
+flat02 replaces the rejected vertical three-circle layout with:
 
-- all circles stacked vertically in portrait
-- all circles stacked vertically in landscape
-- hidden labels
-- dock overlap
-- a narrow centered landscape application column
+- one large top circle and two equal lower circles in portrait
+- three equal circles in one row in landscape
+- runtime viewport-based sizing
+- visible labels and dock clearance
+- no portrait lock
+- no 430-pixel landscape cap
 
-The cause was the unchanged two-vehicle Home CSS and retained portrait restrictions.
+## Packaging correction
 
-## flat02 correction
+Earlier packages were either too large at the GitHub root or too narrow for review.
 
-- Old Home/circle/dock selector ownership was removed before the new contract was added.
-- Portrait and landscape use separate governed grid definitions.
-- Runtime geometry measures the actual viewport, header, application padding, and dock.
-- Circle sizes are written through CSS variables.
-- Labels and dock clearance are included in the calculation.
-- Data migration and record ownership logic are unchanged.
+The locked method is now:
+
+- 17 root files for a blank clean install
+- 13 root files for a normal update when icons are unchanged
+- organized support folders retained in every archive
+- no runtime dependency on support folders

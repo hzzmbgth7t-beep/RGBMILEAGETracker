@@ -1,32 +1,40 @@
-# WC-10 Flat02 Deployment Instructions
+# RGB Mileage Tracker Deployment
 
 **Build:** `v2.1.6l-wc10`  
 **Package revision:** `flat02`  
-**Date:** 2026-07-25  
-**Classification:** CURRENT  
-**Status:** CONTROLLED DEVICE TESTING ONLY  
+**Status:** CLEAN-INSTALL PACKAGE  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
 **Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat2
 
-## Upload
+## Complete clean install for a blank GitHub folder
 
-Extract the ZIP and upload every root-level file. No folders must be created.
+1. Keep the complete archive locally.
+2. Open the extracted archive.
+3. Select only the 17 files at the archive root.
+4. Upload those 17 files to the blank GitHub application folder.
+5. Do not upload any support folder.
+6. Wait for GitHub Pages deployment to complete.
+7. Open the cache-buster URL.
+8. Confirm the build line shows `v2.1.6l-wc10`.
+9. Close Safari and launch the existing standalone app.
+10. Stop if `Data Recovery Required` appears.
+11. Export migration evidence before entering the new Jeep.
 
-## Existing-data safeguards
+## Root upload count
 
-1. Create a full JSON backup.
-2. Do not remove the existing iPhone Home Screen app.
-3. Do not clear Safari website data.
-4. Upload all flat02 root files.
-5. Open the cache-buster URL once to confirm deployment.
-6. Close Safari.
-7. Launch the existing standalone app.
-8. Stop if `Data Recovery Required` appears.
-9. Export migration evidence before entering the new Jeep.
-10. Capture portrait and landscape screenshots.
+Exactly **17 files** are required for this blank clean install.
 
-## Runtime identity
+## Support-folder rule
 
-- Manifest start URL: `./index.html?v=216lwc10flat2`
-- Service-worker cache: `rgbm-v2.1.6l-wc10-flat02-2026-07-25`
-- Orientation: `any`
+The archive support folders are retained locally for future maintenance and handoff. The application does not reference them.
+
+## Icon rule
+
+The currently referenced icon filenames are locked:
+
+- `apple-touch-icon.png`
+- `favicon.png`
+- `icon-192x192.png`
+- `icon-512x512.png`
+
+Do not rename them or change runtime references without owner approval.
