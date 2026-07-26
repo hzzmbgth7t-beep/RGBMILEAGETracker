@@ -1,0 +1,12 @@
+{
+  "legacy-two-configured.json": "PASS",
+  "legacy-one-configured-one-null.json": "PASS",
+  "legacy-two-null.json": "PASS",
+  "legacy-reversed-slots.json": "PASS",
+  "legacy-missing-vehicle-id.json": "PASS",
+  "valid-v3-three-vehicles.json": "PASS",
+  "restore-reordered-three-vehicles.json": "PASS",
+  "invalid-four-vehicles.json": "FAIL: TOO_MANY_VEHICLES",
+  "invalid-duplicate-vehicle-ids.json": "FAIL: DUPLICATE_VEHICLE_ID",
+  "invalid-orphan-record.json": "FAIL: ORPHAN_VEHICLE_REFERENCE"
+}

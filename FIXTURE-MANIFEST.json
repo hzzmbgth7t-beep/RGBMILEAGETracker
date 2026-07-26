@@ -1,0 +1,76 @@
+{
+  "build": "v2.1.6l-wc10",
+  "packageRevision": "flat01",
+  "classification": "CURRENT",
+  "status": "PASS",
+  "normalUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/",
+  "cacheBusterUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1",
+  "fixtures": [
+    {
+      "name": "FIXTURE-expected-results.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "sizeBytes": 498,
+      "sha256": "8678b60d3145c9631c8a124edc40c757de0cee0cafd794dfe675f286fee1ac18"
+    },
+    {
+      "name": "FIXTURE-invalid-duplicate-vehicle-ids.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "sizeBytes": 822,
+      "sha256": "048c6471e23a999463a4f89c83f8aa61a461d0e6ad1337c74896b44988bd3537"
+    },
+    {
+      "name": "FIXTURE-invalid-four-vehicles.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "sizeBytes": 1294,
+      "sha256": "5255c884fbff0447de51af30671a840248110741d4b71c6cc21dc4be7831d5f5"
+    },
+    {
+      "name": "FIXTURE-invalid-orphan-record.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "sizeBytes": 913,
+      "sha256": "b313c1ae763f15aa38560725ace60a422e45629c6d4c1d2adf912a63fd40f5dc"
+    },
+    {
+      "name": "FIXTURE-legacy-missing-vehicle-id.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "sizeBytes": 864,
+      "sha256": "f9184294178f55ad52173e437e3d0ef3e8fb64d618edfdd08738de9a8c1c9e89"
+    },
+    {
+      "name": "FIXTURE-legacy-one-configured-one-null.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "sizeBytes": 586,
+      "sha256": "0800877f1d347be428d4326fb8c4eadb08b36c73350306d26f51e4d90b9ee3b9"
+    },
+    {
+      "name": "FIXTURE-legacy-reversed-slots.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "sizeBytes": 814,
+      "sha256": "64988f96cef556cd3c4511173c6c469e85f2018fc15ce533ba4bb803df0fd863"
+    },
+    {
+      "name": "FIXTURE-legacy-two-configured.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "sizeBytes": 1010,
+      "sha256": "455b17e759e0eef0c3301a240e4e0057e88e88cfdeb4f18ad18ada4b07b2fe77"
+    },
+    {
+      "name": "FIXTURE-legacy-two-null.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "sizeBytes": 358,
+      "sha256": "5bc7381dfdffc6ed5a59d0e8ec21910fb5a1e249fa58af86d101bdd8e328e2fe"
+    },
+    {
+      "name": "FIXTURE-restore-reordered-three-vehicles.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "sizeBytes": 2062,
+      "sha256": "84c72f5a44852522de60393b2ed832aac5c71bf4bf6988ff6b1833492ac0fe5c"
+    },
+    {
+      "name": "FIXTURE-valid-v3-three-vehicles.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "sizeBytes": 2037,
+      "sha256": "b00ae5e9014e56bc6a649473f6930ff33889a2515ef937788683f058729cbad9"
+    }
+  ]
+}

@@ -1,23 +1,21 @@
-# CHANGELOG
+# WC-10 Flat Package Changelog
 
-**Status:** Baseline-derived diagnostic implementation candidate `v2.1.6l-wc08`  
-**Governance:** RGBM Governance v1.1
+**Build:** `v2.1.6l-wc10`  
+**Package revision:** `flat01`  
+**Date:** 2026-07-25  
+**Classification:** CURRENT  
+**Status:** CURRENT  
+**Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1
 
-## Purpose
-Track the first implementation governed by the approved deterministic Home-and-dock specification.
+## flat01 — 2026-07-25
 
-## URLs
-
-GitHub Pages URL:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-
-Cache-buster URL for this working copy:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc08
-
-## What This Working Copy Changes
-- Fresh `v2.1.6l` baseline extraction
-- Integrated Home + dock rebuild
-- Runtime deterministic circle sizing
-- Portrait vertical and landscape left/right vehicle layouts
-- Shared neutral chrome material system
-- Runtime geometric diagnostics
+- Rebuilt the tested WC-10 source as a root-only install.
+- Removed every install subfolder and nested ZIP path.
+- Renamed test scripts and fixtures with root-level prefixes.
+- Updated test imports and fixture paths for flat execution.
+- Updated manifest, script cache-busters, service-worker registration, and cache identity.
+- Added Governance v1.2 as a root-level reference ZIP.
+- Recreated all current release documentation at the root.
+- Excluded obsolete unclassified historical documents.
+- Reran all automated, JSON, documentation, manifest, and archive checks.

@@ -1,0 +1,27 @@
+{
+  "build": "v2.1.6l-wc10",
+  "packageRevision": "flat01",
+  "classification": "CURRENT",
+  "status": "PASS",
+  "normalUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/",
+  "cacheBusterUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1",
+  "checks": {
+    "all_50_executable_tests_pass": true,
+    "migration_data_32_pass": true,
+    "evidence_8_pass": true,
+    "integration_10_pass": true,
+    "evidence_module_loaded_before_app": true,
+    "flat_cache_buster_in_index": true,
+    "flat_manifest_start_url": true,
+    "flat_service_worker_registration": true,
+    "flat_service_worker_cache": true,
+    "flat_service_worker_assets": true,
+    "evidence_version_present": true,
+    "settings_evidence_controls_present": true,
+    "styles_unchanged_from_tested_source": true,
+    "home_geometry_not_changed": true,
+    "orientation_unlock_not_claimed": true,
+    "test_scripts_use_root_modules": true,
+    "test_scripts_use_root_fixtures": true
+  }
+}

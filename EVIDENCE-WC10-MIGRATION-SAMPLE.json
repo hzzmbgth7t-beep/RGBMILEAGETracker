@@ -1,0 +1,302 @@
+{
+  "evidenceVersion": "wc10-migration-evidence-v1",
+  "generatedAt": "2026-07-25T12:00:00.000Z",
+  "build": "v2.1.6l-wc10",
+  "phase": "migration verification",
+  "result": "PASS",
+  "migrationAcceptance": "PASS",
+  "environment": {
+    "userAgent": "Synthetic flat-package sample",
+    "standalone": true,
+    "orientation": "portrait-primary",
+    "url": "https://example.invalid/?v=216lwc10flat1",
+    "visibilityState": "visible"
+  },
+  "storage": {
+    "activeKey": "RGBM_DATA_v3",
+    "activeKeyPresent": true,
+    "pendingKey": "RGBM_DATA_v3_pending",
+    "pendingKeyPresent": false,
+    "legacySourceKey": "RGBM_DATA_v213d",
+    "legacySourcePresent": true
+  },
+  "canonical": {
+    "schemaVersion": "3.0.0",
+    "migrationVersion": "wc10-three-vehicle-v1",
+    "vehicleCount": 3,
+    "configuredCount": 2,
+    "blankCount": 1,
+    "vehicleOrder": [
+      "VEH-A",
+      "VEH-B",
+      "VEH-FLAT-001"
+    ],
+    "vehicles": [
+      {
+        "position": 1,
+        "vehicleId": "VEH-A",
+        "setupComplete": true,
+        "collections": {
+          "vehicleAcquisitionRecords": {
+            "count": 0,
+            "fingerprint": "811c9dc5"
+          },
+          "fuelRecords": {
+            "count": 1,
+            "fingerprint": "bae84a26"
+          },
+          "maintenanceRecords": {
+            "count": 0,
+            "fingerprint": "811c9dc5"
+          },
+          "insuranceRecords": {
+            "count": 0,
+            "fingerprint": "811c9dc5"
+          }
+        }
+      },
+      {
+        "position": 2,
+        "vehicleId": "VEH-B",
+        "setupComplete": true,
+        "collections": {
+          "vehicleAcquisitionRecords": {
+            "count": 0,
+            "fingerprint": "811c9dc5"
+          },
+          "fuelRecords": {
+            "count": 1,
+            "fingerprint": "42eb5ed5"
+          },
+          "maintenanceRecords": {
+            "count": 0,
+            "fingerprint": "811c9dc5"
+          },
+          "insuranceRecords": {
+            "count": 0,
+            "fingerprint": "811c9dc5"
+          }
+        }
+      },
+      {
+        "position": 3,
+        "vehicleId": "VEH-FLAT-001",
+        "setupComplete": false,
+        "collections": {
+          "vehicleAcquisitionRecords": {
+            "count": 0,
+            "fingerprint": "811c9dc5"
+          },
+          "fuelRecords": {
+            "count": 0,
+            "fingerprint": "811c9dc5"
+          },
+          "maintenanceRecords": {
+            "count": 0,
+            "fingerprint": "811c9dc5"
+          },
+          "insuranceRecords": {
+            "count": 0,
+            "fingerprint": "811c9dc5"
+          }
+        }
+      }
+    ],
+    "validation": {
+      "valid": true,
+      "errors": []
+    }
+  },
+  "legacyComparison": {
+    "result": "PASS",
+    "sourceKey": "RGBM_DATA_v213d",
+    "expectedConfiguredCount": 2,
+    "actualConfiguredCount": 2,
+    "expectedBlankCount": 1,
+    "actualBlankCount": 1,
+    "expectedExistingOrder": [
+      "VEH-A",
+      "VEH-B"
+    ],
+    "actualExistingOrder": [
+      "VEH-A",
+      "VEH-B"
+    ],
+    "existingVehicleComparisons": [
+      {
+        "vehicleId": "VEH-A",
+        "idPreserved": "PASS",
+        "setupState": "PASS",
+        "collections": {
+          "vehicleAcquisitionRecords": {
+            "result": "PASS",
+            "expected": {
+              "count": 0,
+              "fingerprint": "811c9dc5"
+            },
+            "actual": {
+              "count": 0,
+              "fingerprint": "811c9dc5"
+            }
+          },
+          "fuelRecords": {
+            "result": "PASS",
+            "expected": {
+              "count": 1,
+              "fingerprint": "bae84a26"
+            },
+            "actual": {
+              "count": 1,
+              "fingerprint": "bae84a26"
+            }
+          },
+          "maintenanceRecords": {
+            "result": "PASS",
+            "expected": {
+              "count": 0,
+              "fingerprint": "811c9dc5"
+            },
+            "actual": {
+              "count": 0,
+              "fingerprint": "811c9dc5"
+            }
+          },
+          "insuranceRecords": {
+            "result": "PASS",
+            "expected": {
+              "count": 0,
+              "fingerprint": "811c9dc5"
+            },
+            "actual": {
+              "count": 0,
+              "fingerprint": "811c9dc5"
+            }
+          }
+        }
+      },
+      {
+        "vehicleId": "VEH-B",
+        "idPreserved": "PASS",
+        "setupState": "PASS",
+        "collections": {
+          "vehicleAcquisitionRecords": {
+            "result": "PASS",
+            "expected": {
+              "count": 0,
+              "fingerprint": "811c9dc5"
+            },
+            "actual": {
+              "count": 0,
+              "fingerprint": "811c9dc5"
+            }
+          },
+          "fuelRecords": {
+            "result": "PASS",
+            "expected": {
+              "count": 1,
+              "fingerprint": "42eb5ed5"
+            },
+            "actual": {
+              "count": 1,
+              "fingerprint": "42eb5ed5"
+            }
+          },
+          "maintenanceRecords": {
+            "result": "PASS",
+            "expected": {
+              "count": 0,
+              "fingerprint": "811c9dc5"
+            },
+            "actual": {
+              "count": 0,
+              "fingerprint": "811c9dc5"
+            }
+          },
+          "insuranceRecords": {
+            "result": "PASS",
+            "expected": {
+              "count": 0,
+              "fingerprint": "811c9dc5"
+            },
+            "actual": {
+              "count": 0,
+              "fingerprint": "811c9dc5"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "canonical_validation",
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "name": "exactly_three_vehicle_records",
+      "result": "PASS",
+      "actual": 3
+    },
+    {
+      "name": "exactly_three_order_entries",
+      "result": "PASS",
+      "actual": [
+        "VEH-A",
+        "VEH-B",
+        "VEH-FLAT-001"
+      ]
+    },
+    {
+      "name": "active_v3_key_present",
+      "result": "PASS",
+      "key": "RGBM_DATA_v3"
+    },
+    {
+      "name": "pending_key_absent",
+      "result": "PASS",
+      "key": "RGBM_DATA_v3_pending"
+    },
+    {
+      "name": "legacy_source_retained",
+      "result": "PASS",
+      "key": "RGBM_DATA_v213d"
+    },
+    {
+      "name": "existing_vehicle_ids_and_records_preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "existing_vehicle_relative_order_preserved",
+      "result": "PASS",
+      "expected": [
+        "VEH-A",
+        "VEH-B"
+      ],
+      "actual": [
+        "VEH-A",
+        "VEH-B"
+      ]
+    },
+    {
+      "name": "expected_blank_vehicle_count",
+      "result": "PASS",
+      "expected": 1,
+      "actual": 1
+    },
+    {
+      "name": "active_state_idempotency",
+      "result": "PASS",
+      "error": null
+    }
+  ],
+  "privacy": {
+    "containsImages": false,
+    "containsVin": false,
+    "containsPlate": false,
+    "containsRecordAmounts": false,
+    "recordEvidence": "counts and deterministic record-ID fingerprints only"
+  },
+  "packageRevision": "flat01",
+  "classification": "CURRENT SYNTHETIC EVIDENCE"
+}

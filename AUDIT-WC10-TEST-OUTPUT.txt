@@ -1,0 +1,115 @@
+RGBM v2.1.6l-wc10 flat01
+Classification: CURRENT
+Status: TEST OUTPUT
+Normal URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1
+
+$ node --check /mnt/data/RGBM_v2.1.6l-wc10-flat01_2026-07-25/rgbm-data-v3.js
+result: PASS
+
+
+
+$ node --check /mnt/data/RGBM_v2.1.6l-wc10-flat01_2026-07-25/rgbm-wc10-evidence.js
+result: PASS
+
+
+
+$ node --check /mnt/data/RGBM_v2.1.6l-wc10-flat01_2026-07-25/app.js
+result: PASS
+
+
+
+$ node --check /mnt/data/RGBM_v2.1.6l-wc10-flat01_2026-07-25/sw.js
+result: PASS
+
+
+
+$ node --check /mnt/data/RGBM_v2.1.6l-wc10-flat01_2026-07-25/TEST-WC10-DATA.js
+result: PASS
+
+
+
+$ node --check /mnt/data/RGBM_v2.1.6l-wc10-flat01_2026-07-25/TEST-WC10-EVIDENCE.js
+result: PASS
+
+
+
+$ node --check /mnt/data/RGBM_v2.1.6l-wc10-flat01_2026-07-25/TEST-WC10-INTEGRATION.js
+result: PASS
+
+
+
+$ node /mnt/data/RGBM_v2.1.6l-wc10-flat01_2026-07-25/TEST-WC10-DATA.js
+result: PASS
+PASS MT-01 preserves two configured vehicles and appends one blank
+PASS MT-02 converts one null position and appends another blank
+PASS MT-03 converts two null positions into three explicit blanks
+PASS MT-04 preserves visible order from legacy slot values
+PASS MT-05 preserves source-array order when legacy slots are missing
+PASS MT-11 assigns a missing vehicle ID once
+PASS MT-06 and MT-07 are idempotent
+PASS MT-08 rejects more than three source positions
+PASS MT-09 rejects duplicate vehicle IDs
+PASS MT-10 rejects orphan operational records
+PASS MT-12 does not fabricate acquisition records
+PASS migration does not mutate its input
+PASS OT-01 through OT-05 change only vehicleOrder
+PASS OT-06 updates by vehicle ID after reorder
+PASS moveVehicle persists a valid three-ID order
+PASS RT-01 Replace migrates a legacy two-vehicle backup
+PASS RT-02 Replace preserves a valid three-vehicle backup
+PASS RT-03 update merges matching vehicle definitions by ID
+PASS RT-04 unmatched configured vehicle consumes a local blank
+PASS RT-05 capacity conflict fails without a local blank
+PASS RT-06 reordered backups do not cross-merge vehicle identities
+PASS RT-07 Duplicate mode does not duplicate vehicle definitions
+PASS RT-08 invalid incoming order is rejected
+PASS OT-07 order persists through active storage save and load
+PASS TX-01 validation failure leaves the legacy key unchanged
+PASS TX-02 pending write failure creates no active v3 key
+PASS TX-03 active promotion failure retains the legacy source
+PASS TX-04 valid pending data can be recovered
+PASS TX-05 invalid active v3 data requires recovery
+PASS loadCanonicalState migrates, commits, and retains the legacy key
+PASS blank vehicles cannot own operational records
+PASS saveActiveState validates read-back state
+
+Tests: 32
+Passed: 32
+Failed: 0
+
+
+$ node /mnt/data/RGBM_v2.1.6l-wc10-flat01_2026-07-25/TEST-WC10-EVIDENCE.js
+result: PASS
+PASS EV-01 valid two-vehicle migration evidence passes
+PASS EV-02 reversed legacy slot order is verified
+PASS EV-03 changed record ownership fails comparison
+PASS EV-04 new installation reports legacy comparison as N/A
+PASS EV-05 evidence excludes sensitive vehicle content
+PASS EV-06 pending migration data fails the evidence gate
+PASS EV-07 active state idempotency is verified
+PASS EV-08 summary text contains only governed result fields
+
+Evidence tests: 8
+Passed: 8
+Failed: 0
+
+
+$ node /mnt/data/RGBM_v2.1.6l-wc10-flat01_2026-07-25/TEST-WC10-INTEGRATION.js
+result: PASS
+PASS new installation creates three explicit Add Vehicle units
+PASS legacy two-vehicle data migrates without deleting the legacy key
+PASS Settings exposes three-position non-drag reorder controls
+PASS Data selectors exclude the unconfigured third vehicle
+PASS backup metadata distinguishes configured vehicles and positions
+PASS blank third vehicle opens setup instead of operational entry
+PASS Vehicle Summary report excludes the unconfigured position
+PASS Settings exposes the migration evidence controls
+PASS global migration evidence export reports preserved data
+PASS invalid legacy data renders recovery guidance and preserves source
+
+Integration tests: 10
+Passed: 10
+Failed: 0
+
+

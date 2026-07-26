@@ -1,22 +1,20 @@
-# FIXNOTES
+# WC-10 Flat Package Fix Notes
 
-**Status:** Baseline-derived diagnostic implementation candidate `v2.1.6l-wc08`  
-**Governance:** RGBM Governance v1.1
+**Build:** `v2.1.6l-wc10`  
+**Package revision:** `flat01`  
+**Date:** 2026-07-25  
+**Classification:** CURRENT  
+**Status:** CURRENT  
+**Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1
 
-## Purpose
-Record the precise WC-08 implementation boundary and evidence controls.
+## Corrected release defects
 
-## URLs
+- Nested `tests/`, fixture, documentation, and reference folders are removed.
+- Prior unclassified legacy documents are not included.
+- Reference packages are root-level ZIP files.
+- Test harnesses run directly from the install root.
+- Every included file is classified in the current document index.
+- Flat-source and flat-archive checks are build-blocking.
 
-GitHub Pages URL:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-
-Cache-buster URL for this working copy:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc08
-
-## What This Working Copy Changes
-- Removes duplicated baseline Home, circle, label, and nav selector blocks
-- Adds one replacement contract for each removed layout responsibility
-- Uses fixed-clearance constants that do not scale with circle diameter
-- Calculates equal circle width and height
-- Keeps failed WC-01 through WC-07 code out of the implementation source
+No Home geometry, orientation, dock, shell, or chrome change is included.

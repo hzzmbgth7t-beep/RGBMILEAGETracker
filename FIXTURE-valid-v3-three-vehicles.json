@@ -1,0 +1,84 @@
+{
+  "app": "RGB Mileage",
+  "schemaVersion": "3.0.0",
+  "appVersion": "2.1.6l-wc10",
+  "migrationVersion": "wc10-three-vehicle-v1",
+  "migrationHistory": [
+    {
+      "version": "wc10-three-vehicle-v1",
+      "completedAt": "2026-07-25T12:00:00.000Z",
+      "sourceSchemaVersion": "2.1.6l",
+      "sourceKey": "RGBM_DATA_v213d"
+    }
+  ],
+  "settings": {},
+  "vehicleOrder": [
+    "VEH-A",
+    "VEH-B",
+    "VEH-C"
+  ],
+  "vehicles": [
+    {
+      "vehicleId": "VEH-A",
+      "id": "VEH-A",
+      "setupComplete": true,
+      "status": "Active",
+      "year": "2020",
+      "make": "Alpha",
+      "model": "Test",
+      "nickname": "",
+      "displayName": "2020 Alpha Test",
+      "badge": "",
+      "primaryPhoto": "",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "modifiedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "vehicleId": "VEH-B",
+      "id": "VEH-B",
+      "setupComplete": true,
+      "status": "Active",
+      "year": "2020",
+      "make": "Bravo",
+      "model": "Test",
+      "nickname": "",
+      "displayName": "2020 Bravo Test",
+      "badge": "",
+      "primaryPhoto": "",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "modifiedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "vehicleId": "VEH-C",
+      "id": "VEH-C",
+      "setupComplete": false,
+      "status": "Active",
+      "year": "",
+      "make": "",
+      "model": "",
+      "nickname": "",
+      "displayName": "",
+      "badge": "",
+      "primaryPhoto": "",
+      "createdAt": "2026-07-25T12:00:00.000Z",
+      "modifiedAt": "2026-07-25T12:00:00.000Z"
+    }
+  ],
+  "vehicleAcquisitionRecords": [],
+  "fuelRecords": [
+    {
+      "recordId": "FUEL-A1",
+      "vehicleId": "VEH-A",
+      "recordType": "Fuel",
+      "entrySequence": 1,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "modifiedAt": "2026-01-10T00:00:00.000Z"
+    }
+  ],
+  "maintenanceRecords": [],
+  "insuranceRecords": [],
+  "attachments": [],
+  "nextEntrySequence": 2,
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "modifiedAt": "2026-07-25T12:00:00.000Z"
+}

@@ -1,0 +1,47 @@
+RGBM v2.1.6l-wc10 flat01
+Classification: CURRENT
+Status: INTERNAL COMPLIANCE AUDIT
+Normal URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1
+
+all_50_executable_tests_pass: PASS
+migration_data_32_pass: PASS
+evidence_8_pass: PASS
+integration_10_pass: PASS
+evidence_module_loaded_before_app: PASS
+flat_cache_buster_in_index: PASS
+flat_manifest_start_url: PASS
+flat_service_worker_registration: PASS
+flat_service_worker_cache: PASS
+flat_service_worker_assets: PASS
+evidence_version_present: PASS
+settings_evidence_controls_present: PASS
+styles_unchanged_from_tested_source: PASS
+home_geometry_not_changed: PASS
+orientation_unlock_not_claimed: PASS
+test_scripts_use_root_modules: PASS
+test_scripts_use_root_fixtures: PASS
+document_audit_pass: PASS
+json_parse_audit_pass: PASS
+source_directory_exists: PASS
+source_has_zero_subdirectories: PASS
+every_source_entry_is_a_file: PASS
+no_source_filename_contains_forward_slash: PASS
+no_source_filename_contains_backslash: PASS
+runtime_files_present: PASS
+root_test_harnesses_present: PASS
+root_fixture_files_present: PASS
+root_reference_zips_present: PASS
+document_index_present: PASS
+sample_evidence_pass: PASS
+all_files_classified_in_index: PASS
+
+real_device_first_launch: N/A
+real_device_relaunch: N/A
+standalone_migration_acceptance: N/A
+portrait_home_acceptance: N/A
+landscape_home_acceptance: N/A
+shell_dock_chrome_acceptance: N/A
+production_promotion: FAIL
+
+overall_pre_archive: PASS

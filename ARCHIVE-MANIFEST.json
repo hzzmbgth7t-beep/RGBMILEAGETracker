@@ -1,0 +1,521 @@
+{
+  "package": "RGBM_v2.1.6l-wc10-flat01_full_install_2026-07-25.zip",
+  "build": "v2.1.6l-wc10",
+  "packageRevision": "flat01",
+  "classification": "CURRENT",
+  "status": "CONTROLLED DEVICE TESTING ONLY",
+  "date": "2026-07-25",
+  "normalUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/",
+  "cacheBusterUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1",
+  "flatPackageRequired": true,
+  "subfoldersAllowed": false,
+  "schemaVersion": "3.0.0",
+  "migrationVersion": "wc10-three-vehicle-v1",
+  "evidenceVersion": "wc10-migration-evidence-v1",
+  "tests": {
+    "migrationData": {
+      "count": 32,
+      "result": "PASS"
+    },
+    "evidence": {
+      "count": 8,
+      "result": "PASS"
+    },
+    "integration": {
+      "count": 10,
+      "result": "PASS"
+    },
+    "total": {
+      "count": 50,
+      "result": "PASS"
+    }
+  },
+  "realDeviceAcceptance": "N/A",
+  "promotion": "FAIL",
+  "manifestSelfHash": "OMITTED",
+  "files": [
+    {
+      "name": "app.js",
+      "classification": "CURRENT RUNTIME",
+      "purpose": "Application runtime",
+      "sizeBytes": 118044,
+      "sha256": "1e5659ba1270bf41b916cd15c8b21d1622c72e9cde8865ddde90704df52314f7"
+    },
+    {
+      "name": "apple-touch-icon.png",
+      "classification": "CURRENT RUNTIME ASSET",
+      "purpose": "Application icon or image asset",
+      "sizeBytes": 66523,
+      "sha256": "ec45917775e37a4d2c1e79e368ed66cea8ca3d6dd75b3a041c7e237a00b07696"
+    },
+    {
+      "name": "AUDIT-WC10-DOCUMENTS.json",
+      "classification": "CURRENT AUDIT",
+      "purpose": "Machine-readable or captured audit evidence",
+      "sizeBytes": 5709,
+      "sha256": "109bebc5ca66aa2e419dc8c3ece1633c1bf4309caeaa6d48fc51ed657c5084d4"
+    },
+    {
+      "name": "AUDIT-WC10-FLAT-PACKAGE.json",
+      "classification": "CURRENT AUDIT",
+      "purpose": "Machine-readable or captured audit evidence",
+      "sizeBytes": 838,
+      "sha256": "6a794fb65edd53c2cc17db1cf25f74ad2cbc9cbbbf2d8dc6a00ad6db7e9781de"
+    },
+    {
+      "name": "AUDIT-WC10-JSON-PARSE.json",
+      "classification": "CURRENT AUDIT",
+      "purpose": "Machine-readable or captured audit evidence",
+      "sizeBytes": 1319,
+      "sha256": "e065c0b5dbaa4f332da283d0da6be473241d5caac8e79d6ceae2972d5c4951c7"
+    },
+    {
+      "name": "AUDIT-WC10-STATIC.json",
+      "classification": "CURRENT AUDIT",
+      "purpose": "Machine-readable or captured audit evidence",
+      "sizeBytes": 987,
+      "sha256": "3e6e924696abb23a866854365b30d637f35e880b0e5c815c0ec0ffe36c43af37"
+    },
+    {
+      "name": "AUDIT-WC10-TEST-OUTPUT.json",
+      "classification": "CURRENT AUDIT",
+      "purpose": "Machine-readable or captured audit evidence",
+      "sizeBytes": 5677,
+      "sha256": "d32d106d0c10d61fa665e0bc69b16a69834190f8cb14fa0386e78c87871d314d"
+    },
+    {
+      "name": "AUDIT-WC10-TEST-OUTPUT.txt",
+      "classification": "CURRENT AUDIT",
+      "purpose": "Machine-readable or captured audit evidence",
+      "sizeBytes": 4109,
+      "sha256": "39f5c19acedae92d078b757e3109d993e5715d42e11066a476df738996690512"
+    },
+    {
+      "name": "BACKUP-SCHEMA-v3.0.0.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 804,
+      "sha256": "580b6b1de3a992032307857cec4a11c9b521c134fb4ee49aa2e105b15d9db163"
+    },
+    {
+      "name": "CHANGELOG.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 927,
+      "sha256": "aa95404a681a5653009cf7ffd4d23cf9867ce018692297869cb1af1120700451"
+    },
+    {
+      "name": "DATA-MODEL-v3.0.0.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 881,
+      "sha256": "2d44536dcc65b3f7941b193020ba3a74f379937552c4c54c55156e7850ac1067"
+    },
+    {
+      "name": "DEPLOYMENT.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 1034,
+      "sha256": "5abbabca01b41e4e053fa40e020272931d1741730dca512d227be49f42126617"
+    },
+    {
+      "name": "DOC-WC10-ACCEPTANCE-CRITERIA.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 845,
+      "sha256": "231b0c77730a7aa6b145f4eac4697338d35aca299be4c1ae0bef60a58a9f88e9"
+    },
+    {
+      "name": "DOC-WC10-DEVICE-TEST-PROTOCOL.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 933,
+      "sha256": "9836a55071109c89e83127501bb2c0e15db6a4c48fe9d0217a8bf4d99b02c774"
+    },
+    {
+      "name": "DOC-WC10-EVIDENCE-CONTRACT.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 633,
+      "sha256": "38ac4e28e2f966bee91a4714ae293339df7326ff47bf11912a2233cb150ea893"
+    },
+    {
+      "name": "DOC-WC10-EVIDENCE-TEMPLATE.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 804,
+      "sha256": "fb6e37a9c89e917562ee1de76829b6be30d77557f44f641b13502b72af91517c"
+    },
+    {
+      "name": "DOC-WC10-GOVERNANCE-CHECKLIST.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 816,
+      "sha256": "6a03f2841ac39c673ac7e5738b1e0bae71339ca13de0a2931eba2bb7dfac85bb"
+    },
+    {
+      "name": "DOC-WC10-HANDOFF-DEPLOYMENT.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 637,
+      "sha256": "49da607635ceed1370a15bb8df75f95385d647d70e54957d5cf05314a19bea27"
+    },
+    {
+      "name": "DOC-WC10-NON-HOME-VERIFICATION.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 750,
+      "sha256": "ab10bb711c818de07dc3a9d348121447119895830a05012d638a4f0a1de80d05"
+    },
+    {
+      "name": "DOC-WC10-REQUIREMENTS.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 837,
+      "sha256": "d871eedc9d0a96cfe62f76fd86a835a404d5d1a7e02585083868744ea37ae655"
+    },
+    {
+      "name": "DOC-WC10-RISK-STOP-RULES.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 717,
+      "sha256": "d689441e46756bfb06fec36048e21ddbbfe542d720f51a975771d169c67987d7"
+    },
+    {
+      "name": "DOC-WC10-SOURCE-PROVENANCE.json",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 799,
+      "sha256": "56bdf7ba0cc3920c7c3eac366dd89da6d7e4f4e3b290478078161d67226c6c6d"
+    },
+    {
+      "name": "DOC-WC10-STATIC-CHANGE-AUDIT.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 866,
+      "sha256": "48a0119065f7c6dc11a9bc3d29798f1a42eccca4d7fbfca47818ea696a6ca854"
+    },
+    {
+      "name": "DOC-WC10-TEST-PLAN-RESULTS.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 764,
+      "sha256": "3791b285ed14739fb53df8eeefc48e27a08ba473c9bb08e7b9f323ae846aefa3"
+    },
+    {
+      "name": "DOC-WC10-TRACEABILITY.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 847,
+      "sha256": "92480ed40a920428f9d036ad3270fd0e90445a4106cafba904265c21ec5ec413"
+    },
+    {
+      "name": "DOC-WC10-VERSION-HISTORY.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 600,
+      "sha256": "f57eb540b3b065ebbc9cae086bc069f13157d36bda8135cac4ee3a6a65b0e888"
+    },
+    {
+      "name": "DOCUMENT-INDEX.md",
+      "classification": "CURRENT INDEX",
+      "purpose": "Complete file classification and purpose",
+      "sizeBytes": 6499,
+      "sha256": "d180d7a1164c9025c0b610dfd748fc2b67aabf4e404c2e28a6eb069856054086"
+    },
+    {
+      "name": "EVIDENCE-WC10-MIGRATION-SAMPLE.json",
+      "classification": "CURRENT SYNTHETIC EVIDENCE",
+      "purpose": "Synthetic privacy-safe evidence sample",
+      "sizeBytes": 7225,
+      "sha256": "adcee05b8e2ca328f5d67ad1a12199327ae9c508fa32cd8dc021453ebefffa26"
+    },
+    {
+      "name": "favicon-32x32.png",
+      "classification": "CURRENT RUNTIME ASSET",
+      "purpose": "Application icon or image asset",
+      "sizeBytes": 2696,
+      "sha256": "0af5af9fad3bc5c26eb51cf553d2cbf09d2f0286b2b0eb57254835dc8f0caea2"
+    },
+    {
+      "name": "favicon.png",
+      "classification": "CURRENT RUNTIME ASSET",
+      "purpose": "Application icon or image asset",
+      "sizeBytes": 2696,
+      "sha256": "0af5af9fad3bc5c26eb51cf553d2cbf09d2f0286b2b0eb57254835dc8f0caea2"
+    },
+    {
+      "name": "FIXNOTES.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 795,
+      "sha256": "2d45b6f06a854fa782345549c090694949fbbbb2b9e7d2bf81f4aac2cc114a56"
+    },
+    {
+      "name": "FIXTURE-expected-results.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "purpose": "Synthetic automated-test data",
+      "sizeBytes": 498,
+      "sha256": "8678b60d3145c9631c8a124edc40c757de0cee0cafd794dfe675f286fee1ac18"
+    },
+    {
+      "name": "FIXTURE-invalid-duplicate-vehicle-ids.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "purpose": "Synthetic automated-test data",
+      "sizeBytes": 822,
+      "sha256": "048c6471e23a999463a4f89c83f8aa61a461d0e6ad1337c74896b44988bd3537"
+    },
+    {
+      "name": "FIXTURE-invalid-four-vehicles.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "purpose": "Synthetic automated-test data",
+      "sizeBytes": 1294,
+      "sha256": "5255c884fbff0447de51af30671a840248110741d4b71c6cc21dc4be7831d5f5"
+    },
+    {
+      "name": "FIXTURE-invalid-orphan-record.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "purpose": "Synthetic automated-test data",
+      "sizeBytes": 913,
+      "sha256": "b313c1ae763f15aa38560725ace60a422e45629c6d4c1d2adf912a63fd40f5dc"
+    },
+    {
+      "name": "FIXTURE-legacy-missing-vehicle-id.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "purpose": "Synthetic automated-test data",
+      "sizeBytes": 864,
+      "sha256": "f9184294178f55ad52173e437e3d0ef3e8fb64d618edfdd08738de9a8c1c9e89"
+    },
+    {
+      "name": "FIXTURE-legacy-one-configured-one-null.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "purpose": "Synthetic automated-test data",
+      "sizeBytes": 586,
+      "sha256": "0800877f1d347be428d4326fb8c4eadb08b36c73350306d26f51e4d90b9ee3b9"
+    },
+    {
+      "name": "FIXTURE-legacy-reversed-slots.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "purpose": "Synthetic automated-test data",
+      "sizeBytes": 814,
+      "sha256": "64988f96cef556cd3c4511173c6c469e85f2018fc15ce533ba4bb803df0fd863"
+    },
+    {
+      "name": "FIXTURE-legacy-two-configured.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "purpose": "Synthetic automated-test data",
+      "sizeBytes": 1010,
+      "sha256": "455b17e759e0eef0c3301a240e4e0057e88e88cfdeb4f18ad18ada4b07b2fe77"
+    },
+    {
+      "name": "FIXTURE-legacy-two-null.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "purpose": "Synthetic automated-test data",
+      "sizeBytes": 358,
+      "sha256": "5bc7381dfdffc6ed5a59d0e8ec21910fb5a1e249fa58af86d101bdd8e328e2fe"
+    },
+    {
+      "name": "FIXTURE-MANIFEST.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "purpose": "Synthetic automated-test data",
+      "sizeBytes": 2742,
+      "sha256": "acacadbcd5c4fe80c07a23da26f9dd8953bf35da5039ef4a92fb3aa517e44b37"
+    },
+    {
+      "name": "FIXTURE-restore-reordered-three-vehicles.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "purpose": "Synthetic automated-test data",
+      "sizeBytes": 2062,
+      "sha256": "84c72f5a44852522de60393b2ed832aac5c71bf4bf6988ff6b1833492ac0fe5c"
+    },
+    {
+      "name": "FIXTURE-valid-v3-three-vehicles.json",
+      "classification": "CURRENT TEST FIXTURE",
+      "purpose": "Synthetic automated-test data",
+      "sizeBytes": 2037,
+      "sha256": "b00ae5e9014e56bc6a649473f6930ff33889a2515ef937788683f058729cbad9"
+    },
+    {
+      "name": "FULL-COMPLIANCE-AUDIT.txt",
+      "classification": "CURRENT GOVERNANCE",
+      "purpose": "Internal release governance record",
+      "sizeBytes": 1523,
+      "sha256": "fd372236f6196564b97a1add1a4f0e717afad3abae182989210ea9c42953cef0"
+    },
+    {
+      "name": "HANDOFF-AUTHORIZATION.txt",
+      "classification": "CURRENT GOVERNANCE",
+      "purpose": "Internal release governance record",
+      "sizeBytes": 538,
+      "sha256": "79712323a31bbedbb742409fcac12adae5ca8ea0485361486c7eeedc4e130c74"
+    },
+    {
+      "name": "icon-1024x1024.jpg",
+      "classification": "CURRENT RUNTIME ASSET",
+      "purpose": "Application icon or image asset",
+      "sizeBytes": 250683,
+      "sha256": "241bb6e2944f84e5c33802c38f01ff69a6a5b41c7a36d8ece510dc8f94afaf7c"
+    },
+    {
+      "name": "icon-180x180.png",
+      "classification": "CURRENT RUNTIME ASSET",
+      "purpose": "Application icon or image asset",
+      "sizeBytes": 66523,
+      "sha256": "ec45917775e37a4d2c1e79e368ed66cea8ca3d6dd75b3a041c7e237a00b07696"
+    },
+    {
+      "name": "icon-192x192.png",
+      "classification": "CURRENT RUNTIME ASSET",
+      "purpose": "Application icon or image asset",
+      "sizeBytes": 75239,
+      "sha256": "719100e0974780c6f90ba84443d910e9d595bd905ac18139ff28584094bf78f5"
+    },
+    {
+      "name": "icon-512x512.png",
+      "classification": "CURRENT RUNTIME ASSET",
+      "purpose": "Application icon or image asset",
+      "sizeBytes": 535617,
+      "sha256": "c248cadae1988099fd93fe2d4ca8e5064163ea2b10046ffe16cab9098b9ab39b"
+    },
+    {
+      "name": "icon.png",
+      "classification": "CURRENT RUNTIME ASSET",
+      "purpose": "Application icon or image asset",
+      "sizeBytes": 535617,
+      "sha256": "c248cadae1988099fd93fe2d4ca8e5064163ea2b10046ffe16cab9098b9ab39b"
+    },
+    {
+      "name": "index.html",
+      "classification": "CURRENT RUNTIME",
+      "purpose": "Application runtime",
+      "sizeBytes": 826,
+      "sha256": "ea5447b2d71e8a0ecc640ce5e84c5151dfe185d9b19b52fa383b3826fc3cd727"
+    },
+    {
+      "name": "Jeep_CJ7_Mileage_v2.1.0_Import.xlsx",
+      "classification": "CURRENT USER TEMPLATE",
+      "purpose": "CSV/XLSX import reference template",
+      "sizeBytes": 16741,
+      "sha256": "610fb640e9c7172affaf859307faa4c8835d2eabbb1261302bc5dc9dded5a39e"
+    },
+    {
+      "name": "manifest.json",
+      "classification": "CURRENT RUNTIME",
+      "purpose": "Application runtime",
+      "sizeBytes": 538,
+      "sha256": "7c76c6001937cad6900c4c38f997bdeb15ff4549f11f2a448543839f3cc3b429"
+    },
+    {
+      "name": "MIGRATION-PLAN-v3.0.0.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 666,
+      "sha256": "60bea2f9695c6737e05d7bd2ef7b416b198331e7ae86cbfedeb7bb0f2cc8ec52"
+    },
+    {
+      "name": "README.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 1244,
+      "sha256": "8e38fda2434277ac602f6db45dfb2919e6710879434e91993f5c00bb874c4d51"
+    },
+    {
+      "name": "REFERENCE-GOVERNANCE-v1.2.zip",
+      "classification": "CURRENT REFERENCE ZIP",
+      "purpose": "Governed reference package; keep zipped at root",
+      "sizeBytes": 17804,
+      "sha256": "9c6934a74663f4b80523cccaeffc7a4611a46fd09ee0f16d342b39f7b24475fe"
+    },
+    {
+      "name": "REFERENCE-THREE-VEHICLE-SPEC-v1.0.zip",
+      "classification": "CURRENT REFERENCE ZIP",
+      "purpose": "Governed reference package; keep zipped at root",
+      "sizeBytes": 21708,
+      "sha256": "8a07ba8281314229a37f2245211b4734cfe0c06d5a16674fb8055fea2806fb18"
+    },
+    {
+      "name": "REFERENCE-WC10-BASELINE-AUDIT-v1.0.zip",
+      "classification": "CURRENT REFERENCE ZIP",
+      "purpose": "Governed reference package; keep zipped at root",
+      "sizeBytes": 24755,
+      "sha256": "ac067649d06fb1af0a0daf348780059beb66b7afab84e610e5448bf4e18c07ae"
+    },
+    {
+      "name": "REFERENCE-WC10-DATA-ORDER-DESIGN-v1.0.zip",
+      "classification": "CURRENT REFERENCE ZIP",
+      "purpose": "Governed reference package; keep zipped at root",
+      "sizeBytes": 28502,
+      "sha256": "39e8187568c940d19b513f5334b81e0b5faea764686c2696f9ef0b87d04c4d8f"
+    },
+    {
+      "name": "rgbm-data-v3.js",
+      "classification": "CURRENT RUNTIME",
+      "purpose": "Application runtime",
+      "sizeBytes": 39094,
+      "sha256": "1377081e2a9d1691746f44823a3c75927b8303ee8ec8715128e66f545f5cb4cb"
+    },
+    {
+      "name": "rgbm-wc10-evidence.js",
+      "classification": "CURRENT RUNTIME",
+      "purpose": "Application runtime",
+      "sizeBytes": 14349,
+      "sha256": "91a7c2b6b3797ef3df50b03695306145ceb91d7383011b570f98ac28c4def5a6"
+    },
+    {
+      "name": "styles.css",
+      "classification": "CURRENT RUNTIME",
+      "purpose": "Application runtime",
+      "sizeBytes": 25407,
+      "sha256": "faa61d064367c7f71eb5f5030b88a0a6e6d06b97d7fadf4027c91a83bfe054fd"
+    },
+    {
+      "name": "sw.js",
+      "classification": "CURRENT RUNTIME",
+      "purpose": "Application runtime",
+      "sizeBytes": 708,
+      "sha256": "5d8f5edcbaea6dd7f5d049137182a23ab69c58a44c83c0eb89298e4667c28886"
+    },
+    {
+      "name": "TEST-README.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 584,
+      "sha256": "a145665bf08f1a91c8bb47456c2de76d825ba7744ecb3c31130e7577bd4a53fd"
+    },
+    {
+      "name": "TEST-WC10-DATA.js",
+      "classification": "CURRENT TEST HARNESS",
+      "purpose": "Executable automated test",
+      "sizeBytes": 18699,
+      "sha256": "e5d2bd2681f8e116f49a0302c1bda127e172d077378f3ea513e8686782516c70"
+    },
+    {
+      "name": "TEST-WC10-EVIDENCE.js",
+      "classification": "CURRENT TEST HARNESS",
+      "purpose": "Executable automated test",
+      "sizeBytes": 6970,
+      "sha256": "940f58572af81773e3f6320ed7f08ef0157791e2537114c5e50cda54b70fe30f"
+    },
+    {
+      "name": "TEST-WC10-INTEGRATION.js",
+      "classification": "CURRENT TEST HARNESS",
+      "purpose": "Executable automated test",
+      "sizeBytes": 10577,
+      "sha256": "1a71f8c124e15500a9c8578840ba0ef296c40fb1df27f24b07b15096570048f2"
+    },
+    {
+      "name": "USER-GUIDE.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 1041,
+      "sha256": "f33486be784a749dfa2e70cbabaf8193e199b59518746e224cca1446964af9a8"
+    },
+    {
+      "name": "WORKING-UPGRADE-NOTES.md",
+      "classification": "CURRENT DOCUMENT",
+      "purpose": "Current build documentation",
+      "sizeBytes": 780,
+      "sha256": "e3654fffdd82ee1e6913db26f8b0e9a519d6ed777d0813b3d1ee8a6280153f70"
+    }
+  ]
+}

@@ -1,29 +1,33 @@
-# RGBMileage v2.1.6l-wc08 Working Copy
+# RGB Mileage WC-10 Flat Migration-Verification Install
 
-**Status:** Baseline-derived diagnostic implementation candidate `v2.1.6l-wc08` (not a promoted release)  
-**Governance:** RGBM Governance v1.1  
-**Source:** Fresh extraction of locked baseline `v2.1.6l`
+**Build:** `v2.1.6l-wc10`  
+**Package revision:** `flat01`  
+**Date:** 2026-07-25  
+**Classification:** CURRENT  
+**Status:** CONTROLLED DEVICE TESTING ONLY — NOT PROMOTED  
+**Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1
 
-## Purpose
-Implement the approved integrated deterministic Home-screen and bottom-dock system without reusing any failed working-copy source.
+This package rebuilds the tested WC-10 migration-verification code under Governance v1.2.
 
-## URLs
+## Flat-package guarantee
 
-GitHub Pages URL:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+- Every file is at the install root.
+- There are no folders.
+- The ZIP contains no directory entries or nested member paths.
+- Test scripts, fixtures, documentation, audits, and reference ZIPs use root-level prefixed filenames.
 
-Cache-buster URL for this working copy:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc08
+## Implemented
 
-## What This Working Copy Changes
-- Replaces the contaminated Home layout contract with one explicit Home structure
-- Treats each circle and label as one vehicle unit
-- Calculates one maximum valid circle diameter from measured geometry and fixed clearances
-- Recalculates on viewport resize and orientation change
-- Uses vertical vehicle units in portrait and left/right units in landscape
-- Replaces the old floating nav contract with a true bottom dock
-- Applies one neutral chrome family to the title, vehicle labels, and circle borders
-- Adds Home layout diagnostics in Settings
+- schema `3.0.0`
+- stable `vehicleId`
+- separate persistent `vehicleOrder`
+- explicit blank third vehicle
+- ID-based restore and save behavior
+- migration evidence export
+- three-position non-drag reorder controls
+- privacy-safe migration comparison
 
-## Required validation
-WC-08 remains a diagnostic implementation candidate until the iPhone 17 Pro Max standalone portrait and landscape matrices both pass.
+## Acceptance boundary
+
+Automated and archive tests are rerun for this exact flat package. Real iPhone standalone migration, relaunch, portrait, landscape, shell, dock, and production acceptance remain N/A or blocked until performed.

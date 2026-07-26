@@ -1,0 +1,31 @@
+{
+  "build": "v2.1.6l-wc10",
+  "packageRevision": "flat01",
+  "classification": "CURRENT",
+  "status": "PASS",
+  "normalUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/",
+  "cacheBusterUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1",
+  "scope": "All root JSON files present before ARCHIVE-MANIFEST.json creation",
+  "results": {
+    "AUDIT-WC10-DOCUMENTS.json": "PASS",
+    "AUDIT-WC10-FLAT-PACKAGE.json": "PASS",
+    "AUDIT-WC10-JSON-PARSE.json": "PASS",
+    "AUDIT-WC10-STATIC.json": "PASS",
+    "AUDIT-WC10-TEST-OUTPUT.json": "PASS",
+    "DOC-WC10-SOURCE-PROVENANCE.json": "PASS",
+    "EVIDENCE-WC10-MIGRATION-SAMPLE.json": "PASS",
+    "FIXTURE-expected-results.json": "PASS",
+    "FIXTURE-invalid-duplicate-vehicle-ids.json": "PASS",
+    "FIXTURE-invalid-four-vehicles.json": "PASS",
+    "FIXTURE-invalid-orphan-record.json": "PASS",
+    "FIXTURE-legacy-missing-vehicle-id.json": "PASS",
+    "FIXTURE-legacy-one-configured-one-null.json": "PASS",
+    "FIXTURE-legacy-reversed-slots.json": "PASS",
+    "FIXTURE-legacy-two-configured.json": "PASS",
+    "FIXTURE-legacy-two-null.json": "PASS",
+    "FIXTURE-MANIFEST.json": "PASS",
+    "FIXTURE-restore-reordered-three-vehicles.json": "PASS",
+    "FIXTURE-valid-v3-three-vehicles.json": "PASS",
+    "manifest.json": "PASS"
+  }
+}

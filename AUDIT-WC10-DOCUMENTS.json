@@ -1,0 +1,226 @@
+{
+  "build": "v2.1.6l-wc10",
+  "packageRevision": "flat01",
+  "classification": "CURRENT",
+  "status": "PASS",
+  "normalUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/",
+  "cacheBusterUrl": "https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1",
+  "documents": {
+    "AUDIT-WC10-TEST-OUTPUT.txt": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "BACKUP-SCHEMA-v3.0.0.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "CHANGELOG.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DATA-MODEL-v3.0.0.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DEPLOYMENT.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DOC-WC10-ACCEPTANCE-CRITERIA.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DOC-WC10-DEVICE-TEST-PROTOCOL.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DOC-WC10-EVIDENCE-CONTRACT.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DOC-WC10-EVIDENCE-TEMPLATE.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DOC-WC10-GOVERNANCE-CHECKLIST.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DOC-WC10-HANDOFF-DEPLOYMENT.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DOC-WC10-NON-HOME-VERIFICATION.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DOC-WC10-REQUIREMENTS.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DOC-WC10-RISK-STOP-RULES.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DOC-WC10-STATIC-CHANGE-AUDIT.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DOC-WC10-TEST-PLAN-RESULTS.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DOC-WC10-TRACEABILITY.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DOC-WC10-VERSION-HISTORY.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "DOCUMENT-INDEX.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "FIXNOTES.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "FULL-COMPLIANCE-AUDIT.txt": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "HANDOFF-AUTHORIZATION.txt": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "MIGRATION-PLAN-v3.0.0.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "README.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "TEST-README.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "USER-GUIDE.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    },
+    "WORKING-UPGRADE-NOTES.md": {
+      "nonempty": true,
+      "buildIdentity": true,
+      "classification": true,
+      "normalUrl": true,
+      "cacheBusterUrl": true,
+      "indexed": true
+    }
+  }
+}

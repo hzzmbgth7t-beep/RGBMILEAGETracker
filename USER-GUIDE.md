@@ -1,26 +1,30 @@
-# USER GUIDE
+# WC-10 Flat Controlled-Test User Guide
 
-**Status:** `v2.1.6l-wc08` diagnostic implementation candidate
-**Governance:** RGBM Governance v1.1
+**Build:** `v2.1.6l-wc10`  
+**Package revision:** `flat01`  
+**Date:** 2026-07-25  
+**Classification:** CURRENT  
+**Status:** CURRENT  
+**Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1
 
-## Purpose
-Explain the WC-08 Home layout behavior and evidence capture controls.
+## Migration evidence
 
-## URLs
+1. Launch the standalone app.
+2. Open Settings.
+3. Confirm three vehicle positions are shown.
+4. Confirm `Current check: PASS`.
+5. Confirm `Migration acceptance: PASS`.
+6. Download the migration-evidence JSON.
+7. Close and relaunch the standalone app.
+8. Download a second evidence JSON.
 
-GitHub Pages URL:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+Do not configure the new Jeep before the first evidence file passes.
 
-Cache-buster URL for this working copy:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc08
+## Blank third vehicle
 
-## What This Working Copy Changes
-- Portrait: vehicles are stacked vertically and sized from available geometry
-- Landscape: Vehicle 1 moves left and Vehicle 2 moves right
-- Circles remain perfectly circular and use the same calculated diameter
-- Labels move with their circles
-- Dock owns the bottom edge and safe area
-- Title, labels, and circle borders use the shared chrome family
+The unconfigured third position shows `Add Vehicle` and opens vehicle setup. It must not appear in operational import selectors or configured-vehicle reports.
 
-## Diagnostics
-Open Settings and tap **Copy Home Layout Diagnostics**.
+## Reordering
+
+Settings provides Move Up and Move Down. Reordering changes display position, not vehicle identity or record ownership.

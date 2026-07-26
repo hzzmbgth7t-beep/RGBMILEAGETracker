@@ -1,0 +1,17 @@
+{
+  "app": "RGB Mileage",
+  "schemaVersion": "2.1.6l",
+  "appVersion": "2.1.6l",
+  "settings": {},
+  "vehicleAcquisitionRecords": [],
+  "fuelRecords": [],
+  "maintenanceRecords": [],
+  "insuranceRecords": [],
+  "attachments": [],
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "modifiedAt": "2026-01-01T00:00:00.000Z",
+  "vehicles": [
+    null,
+    null
+  ]
+}

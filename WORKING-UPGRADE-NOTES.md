@@ -1,23 +1,15 @@
-# WORKING UPGRADE NOTES
+# WC-10 Flat Upgrade Notes
 
-## Purpose
-Summarize WC-08 source, scope, governance, and validation status.
+**Build:** `v2.1.6l-wc10`  
+**Package revision:** `flat01`  
+**Date:** 2026-07-25  
+**Classification:** CURRENT  
+**Status:** CURRENT  
+**Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat1
 
-## URLs
+The app reads valid `RGBM_DATA_v3` data first. Otherwise it migrates retained legacy data beginning with `RGBM_DATA_v213d`.
 
-GitHub Pages URL:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+Migration is performed in memory, validated, written to `RGBM_DATA_v3_pending`, read back, promoted to `RGBM_DATA_v3`, and validated again. The legacy key is retained.
 
-Cache-buster URL for this working copy:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc08
-
-## What This Working Copy Changes
-### WC-08
-- Base: fresh locked baseline `v2.1.6l`
-- Governance: approved RGBM Governance v1.1
-- Identity: `v2.1.6l-wc08`
-- Type: diagnostic implementation candidate
-- Home and dock rebuilt as one integrated deterministic system
-- Failed working-copy source reuse: prohibited and not used
-- Static verification: required before handoff
-- Real-device portrait and landscape acceptance: pending user evidence
+The canonical result contains exactly three explicit vehicle records and three unique `vehicleOrder` entries. Existing records remain attached by `vehicleId`.

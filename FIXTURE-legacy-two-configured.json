@@ -1,0 +1,48 @@
+{
+  "app": "RGB Mileage",
+  "schemaVersion": "2.1.6l",
+  "appVersion": "2.1.6l",
+  "settings": {},
+  "vehicleAcquisitionRecords": [],
+  "fuelRecords": [
+    {
+      "recordId": "FUEL-A1",
+      "vehicleId": "VEH-A",
+      "date": "2026-01-10"
+    },
+    {
+      "recordId": "FUEL-B1",
+      "vehicleId": "VEH-B",
+      "date": "2026-01-11"
+    }
+  ],
+  "maintenanceRecords": [],
+  "insuranceRecords": [],
+  "attachments": [],
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "modifiedAt": "2026-01-01T00:00:00.000Z",
+  "vehicles": [
+    {
+      "vehicleId": "VEH-A",
+      "id": "VEH-A",
+      "slot": 0,
+      "year": "2020",
+      "make": "Alpha",
+      "model": "Test",
+      "displayName": "2020 Alpha Test",
+      "status": "Active",
+      "primaryPhoto": ""
+    },
+    {
+      "vehicleId": "VEH-B",
+      "id": "VEH-B",
+      "slot": 1,
+      "year": "2020",
+      "make": "Bravo",
+      "model": "Test",
+      "displayName": "2020 Bravo Test",
+      "status": "Active",
+      "primaryPhoto": ""
+    }
+  ]
+}
