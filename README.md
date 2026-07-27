@@ -1,53 +1,58 @@
-# RGB Mileage Tracker — WC-10 flat05 recovery UI
+# RGB Mileage Tracker — WC-10 flat06 reconciled recovery
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat05`  
+**Package revision:** `flat06`  
 **Packaging governance:** `v1.5`  
-**Status:** CONTROLLED SNAPSHOT COLLECTION ONLY
+**Status:** CONTROLLED RECONCILED RESTORE
 
 ## Review links
 
 - Normal application URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Recovery cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat5
+- Reconciliation cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat6
 
 ## Purpose
 
-flat05 corrects the clipped flat04 recovery page.
+flat06 restores the third vehicle without discarding the larger standalone record set.
 
-- `Download Recovery Snapshot` appears before storage inspection.
-- The recovery page uses native document scrolling.
-- Pending recovery is locked when fewer than three vehicles are configured.
-- Backup restore is locked when a backup would reduce standalone record counts.
-- Inspection and backup comparison do not mutate storage.
-
-## Current preservation conflict
-
-The Home Screen storage inspection showed:
+The verified standalone snapshot contains:
 
 - 2 configured vehicles
 - 46 fuel records
 - 13 maintenance records
 - 7 insurance records
+- 1 acquisition record
 
-The latest Safari three-vehicle evidence contains:
+The Safari three-vehicle backup contains the configured 2018 Jeep Wrangler Unlimited but fewer operational records.
+
+The reconciled candidate contains:
 
 - 3 configured vehicles
-- 41 fuel records
-- 3 maintenance records
-- 5 insurance records
+- 48 fuel records
+- 13 maintenance records
+- 8 insurance records
+- 1 corrected acquisition record
 
-A direct pending promotion would omit vehicle 3. A direct backup restore would reduce record counts. flat05 therefore collects the exact standalone snapshot before reconciliation.
+## Controlled candidate
 
-## Required next action
+`RGBM_Reconciled_Recovery_Candidate_3Vehicles_48Fuel_13Maintenance_8Insurance_2026-07-27.json`
 
-Deploy flat05, launch the existing Home Screen app, tap `Download Recovery Snapshot`, and preserve that file.
+SHA-256: `c259641e38f07f9c87161a1615329269981c478e30765006ea697d3d04f0814e`
 
-Do not recover pending data and do not restore a backup yet.
+The candidate is not embedded in the deployment archive. Select it from Files on the recovery screen.
+
+## Transaction safety
+
+- validates the pending and legacy fingerprints against the uploaded snapshot
+- preserves the first two vehicle IDs and order
+- blocks any record-count reduction
+- requires a fresh external snapshot
+- removes pending and legacy local copies before writing the larger active state
+- restores the exact original keys when writing or read-back validation fails
+- records reconciliation provenance inside the active state
 
 ## Acceptance boundary
 
 - automated tests: PASS
-- synthetic recovery UI audit: PASS
-- actual iPhone standalone scrolling: N/A
-- data reconciliation: NOT STARTED
+- actual-data transaction simulation: PASS
+- actual Home Screen restore: N/A
 - production promotion: FAIL

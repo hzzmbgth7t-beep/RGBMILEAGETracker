@@ -1918,14 +1918,12 @@ function updateRecoveryControls(){
   const ready=recoveryConfirmed();
   const pendingButton=$("recoverPendingButton");
   const restoreButton=$("restoreRecoveryButton");
-  const pendingSafety=pendingRecoverySafety();
-  if(pendingButton)pendingButton.disabled=!(ready&&pendingSafety.safe);
+  if(pendingButton)pendingButton.disabled=true;
   if(restoreButton){
     restoreButton.disabled=!(
       ready
       &&recoveryBackupCandidate
-      &&recoveryBackupCandidate.safety
-      &&recoveryBackupCandidate.safety.safe
+      &&recoveryBackupCandidate.reconciled===true
     );
   }
 }
@@ -1978,76 +1976,91 @@ function recoverPendingStorage(){
 }
 function previewRecoveryBackup(){
   const file=$("recoveryBackupFile")?.files?.[0];
-  if(!file)return alert("Choose a full JSON backup first.");
+  if(!file)return alert("Choose the reconciled recovery candidate JSON first.");
   const reader=new FileReader();
   reader.onload=()=>{
     try{
       const raw=JSON.parse(reader.result);
-      const candidate=RGBMDataV3.validateRecoveryCandidate(
+      const validated=RGBMDataV3.validateReconciledRecoveryCandidate(
+        localStorage,
         raw,
-        dataContext("standalone-backup-preview")
+        dataContext("standalone-reconciled-preview")
       );
-      const summary=candidate.summary;
-      const safety=recoveryCandidateSafety(summary);
+      const summary=validated.summary;
       recoveryBackupCandidate={
         raw,
         fileName:file.name,
         summary,
-        safety
+        reconciled:true,
+        sourceMatch:validated.sourceMatch,
+        floor:validated.floor
       };
-      if(safety.safe){
-        setRecoveryStatus(
-          `Backup validated and is non-reducing: ${summary.configuredCount} configured vehicles, ${summary.fuelRecordCount} fuel, ${summary.maintenanceRecordCount} maintenance, ${summary.insuranceRecordCount} insurance records.`,
-          "pass"
-        );
-      }else{
-        setRecoveryStatus(
-          `Backup validated for comparison but direct restore is locked: ${safety.deficits.join("; ")}. Download the recovery snapshot and return it for reconciliation.`,
-          "fail"
-        );
-      }
+      setRecoveryStatus(
+        `Reconciled candidate verified: ${summary.configuredCount} configured vehicles, ${summary.fuelRecordCount} fuel, ${summary.maintenanceRecordCount} maintenance, ${summary.insuranceRecordCount} insurance. Source fingerprints match the saved standalone snapshot.`,
+        "pass"
+      );
       updateRecoveryControls();
     }catch(error){
       recoveryBackupCandidate=null;
-      setRecoveryStatus(`Backup validation failed: ${error&&error.message?error.message:String(error)}`,"fail");
+      const details=error&&error.details&&error.details.deficits
+        ?` ${error.details.deficits.join("; ")}.`
+        :"";
+      setRecoveryStatus(
+        `Reconciled candidate rejected: ${error&&error.message?error.message:String(error)}${details}`,
+        "fail"
+      );
       updateRecoveryControls();
     }
   };
   reader.onerror=()=>{
     recoveryBackupCandidate=null;
-    setRecoveryStatus("The selected backup could not be read.","fail");
+    setRecoveryStatus("The selected reconciliation file could not be read.","fail");
     updateRecoveryControls();
   };
   reader.readAsText(file);
 }
 function restoreSelectedRecoveryBackup(){
   if(!recoveryConfirmed()){
-    return alert("Download the recovery snapshot and confirm it before recovery.");
+    return alert("Download the recovery snapshot and confirm it before reconciliation.");
   }
-  if(!recoveryBackupCandidate){
-    return alert("Choose and validate a full JSON backup first.");
-  }
-  if(!recoveryBackupCandidate.safety||!recoveryBackupCandidate.safety.safe){
-    return alert(`Direct restore is locked because the backup would omit standalone data: ${(recoveryBackupCandidate.safety&&recoveryBackupCandidate.safety.deficits||["unknown mismatch"]).join("; ")}.`);
+  if(!recoveryBackupCandidate||recoveryBackupCandidate.reconciled!==true){
+    return alert("Choose and validate the reconciled recovery candidate first.");
   }
   const summary=recoveryBackupCandidate.summary;
-  if(!confirm(`Restore ${recoveryBackupCandidate.fileName} to standalone active storage?\n\nConfigured vehicles: ${summary.configuredCount}\nFuel: ${summary.fuelRecordCount}\nMaintenance: ${summary.maintenanceRecordCount}\nInsurance: ${summary.insuranceRecordCount}\n\nCurrent active and pending values will be restored if the transaction fails. Legacy keys will not be deleted.`))return;
+  if(!confirm(
+    `Restore the reconciled candidate?\n\n`
+    +`Configured vehicles: ${summary.configuredCount}\n`
+    +`Fuel: ${summary.fuelRecordCount}\n`
+    +`Maintenance: ${summary.maintenanceRecordCount}\n`
+    +`Insurance: ${summary.insuranceRecordCount}\n\n`
+    +`The saved recovery snapshot remains the external archive. `
+    +`The pending and legacy local-storage keys will be removed before the larger active state is written. `
+    +`If the write or read-back validation fails, the exact original keys will be restored.`
+  ))return;
   try{
-    const result=RGBMDataV3.restoreRecoveryBackup(
+    const result=RGBMDataV3.archiveAndRestoreReconciledBackup(
       localStorage,
       recoveryBackupCandidate.raw,
       {
-        ...dataContext("standalone-backup-recovery"),
-        snapshotConfirmed:true
+        ...dataContext("standalone-reconciled-recovery"),
+        snapshotConfirmed:true,
+        archiveConfirmed:true
       }
     );
-    setRecoveryStatus(`Backup recovery completed with ${result.state.vehicles.length} vehicle positions. Reloading…`,"pass");
-    setTimeout(()=>location.reload(),250);
+    setRecoveryStatus(
+      `Reconciled recovery completed: ${result.report.summary.configuredCount} vehicles, ${result.report.summary.fuelRecordCount} fuel, ${result.report.summary.maintenanceRecordCount} maintenance, ${result.report.summary.insuranceRecordCount} insurance. Reloading…`,
+      "pass"
+    );
+    setTimeout(()=>location.reload(),400);
   }catch(error){
-    const details=error&&error.details&&error.details.rollback
-      ?` Rollback success: ${error.details.rollback.success===true?"yes":"no"}.`
+    const rollback=error&&error.details&&error.details.rollback;
+    const details=rollback
+      ?` Rollback exact match: ${rollback.exactMatch===true?"yes":"no"}.`
       :"";
-    setRecoveryStatus(`Backup recovery failed: ${error&&error.message?error.message:String(error)}${details}`,"fail");
+    setRecoveryStatus(
+      `Reconciled recovery failed: ${error&&error.message?error.message:String(error)}${details}`,
+      "fail"
+    );
   }
 }
 function renderRecoveryConsole(error){
@@ -2070,55 +2083,51 @@ function renderRecoveryConsole(error){
       active:{present:false},
       pending:{present:false},
       legacy:[],
-      recommendedAction:"RESTORE_BACKUP",
+      recommendedAction:"RECONCILED_CANDIDATE_REQUIRED",
       inspectionError:inspectError&&inspectError.message?inspectError.message:String(inspectError)
     };
   }
-  const pendingSafety=pendingRecoverySafety();
-  const pendingSafe=pendingSafety.safe===true;
-  const floor=pendingSafety.floor;
+  const floor=recoveryStandaloneFloor(recoveryInspection);
   app.innerHTML=`<main class="recovery-console">
     <section class="recovery-card recovery-warning">
-      <p class="recovery-kicker">RGB Mileage flat05 recovery</p>
-      <h1>Data Recovery Required</h1>
+      <p class="recovery-kicker">RGB Mileage flat06 reconciliation</p>
+      <h1>Reconciled Recovery Required</h1>
       <p><strong>${esc(code)}</strong> — ${esc(message)}</p>
       <p><strong>Do not delete the Home Screen app or clear Safari website data.</strong></p>
     </section>
 
     <section class="recovery-card recovery-primary-actions">
-      <h2>Preserve storage first</h2>
-      <p>Download an exact snapshot before any recovery decision.</p>
+      <h2>1 — Preserve storage</h2>
+      <p>Download a fresh exact snapshot before the reconciliation transaction.</p>
       <button id="downloadRecoverySnapshotButton" class="wide primary" type="button" onclick="downloadRecoverySnapshot()">Download Recovery Snapshot</button>
       <label class="recovery-confirm"><input id="recoverySnapshotConfirmed" type="checkbox" onchange="updateRecoveryControls()"> I saved the recovery snapshot file.</label>
     </section>
 
     <section class="recovery-card recovery-backup-card">
-      <h2>Compare the latest backup</h2>
-      <p>Select the post-third-vehicle JSON backup. Validation does not change storage.</p>
-      <label>Full JSON backup<input id="recoveryBackupFile" type="file" accept=".json,application/json" onchange="previewRecoveryBackup()"></label>
-      <button id="restoreRecoveryButton" class="wide primary" type="button" onclick="restoreSelectedRecoveryBackup()" disabled>Restore Only When Non-Reducing</button>
-      <p class="muted">Direct restore remains locked when a backup contains fewer records than standalone storage.</p>
+      <h2>2 — Select reconciled candidate</h2>
+      <p>Select <strong>RGBM_Reconciled_Recovery_Candidate_3Vehicles_48Fuel_13Maintenance_8Insurance_2026-07-27.json</strong>.</p>
+      <label>Reconciled JSON candidate<input id="recoveryBackupFile" type="file" accept=".json,application/json" onchange="previewRecoveryBackup()"></label>
+      <button id="restoreRecoveryButton" class="wide primary" type="button" onclick="restoreSelectedRecoveryBackup()" disabled>Archive Source Keys and Restore Reconciled Data</button>
+      <p class="muted">The button activates only after the candidate matches the standalone pending and legacy fingerprints and does not reduce any preserved count.</p>
     </section>
 
     <pre id="recoveryStatus" class="recovery-status info">No storage value has been changed.</pre>
 
     <section class="recovery-card recovery-inspection-card">
-      <h2>Standalone storage inspection</h2>
+      <h2>Standalone preservation floor</h2>
+      <p><strong>${floor.configuredCount}</strong> configured vehicles • <strong>${floor.fuelRecordCount}</strong> fuel • <strong>${floor.maintenanceRecordCount}</strong> maintenance • <strong>${floor.insuranceRecordCount}</strong> insurance</p>
       <div class="recovery-key-row"><strong>Active: ${esc(RGBMDataV3.ACTIVE_KEY)}</strong><span>${esc(recoveryEntrySummary(recoveryInspection.active))}</span></div>
       <div class="recovery-key-row"><strong>Pending: ${esc(RGBMDataV3.PENDING_KEY)}</strong><span>${esc(recoveryEntrySummary(recoveryInspection.pending))}</span></div>
       ${recoveryLegacyHtml(recoveryInspection.legacy)}
-      <p class="muted">Standalone preservation floor: ${floor.configuredCount} configured vehicles, ${floor.fuelRecordCount} fuel, ${floor.maintenanceRecordCount} maintenance, ${floor.insuranceRecordCount} insurance.</p>
     </section>
 
     <section class="recovery-card recovery-pending-card">
-      <h2>Pending migration</h2>
-      <p>${pendingSafe
-        ?"The pending state meets the non-reduction gate."
-        :`Pending promotion is locked: ${esc(pendingSafety.deficits.join("; "))}.`}</p>
-      <button id="recoverPendingButton" class="wide primary" type="button" onclick="recoverPendingStorage()" disabled>Recover Pending Migration</button>
+      <h2>Direct pending recovery remains locked</h2>
+      <p>The pending state contains only two configured vehicles. It cannot restore the third vehicle.</p>
+      <button id="recoverPendingButton" class="wide primary" type="button" disabled>Pending Recovery Locked</button>
     </section>
 
-    <div class="recovery-scroll-end" aria-hidden="true">End of recovery details</div>
+    <div class="recovery-scroll-end" aria-hidden="true">End of reconciliation details</div>
   </main>`;
   updateRecoveryControls();
 }
@@ -2133,4 +2142,4 @@ try{
   render()
 }
 catch(e){console.error(e);renderDataFatal(e)}
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=216lwc10flat5').catch(()=>{})}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=216lwc10flat6').catch(()=>{})}

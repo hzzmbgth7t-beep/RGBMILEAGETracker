@@ -14,6 +14,7 @@
   const SCHEMA_VERSION = "3.0.0";
   const MIGRATION_VERSION = "wc10-three-vehicle-v1";
   const RECOVERY_SNAPSHOT_VERSION = "wc10-recovery-snapshot-v1";
+  const RECONCILIATION_VERSION = "wc10-standalone-safari-reconciliation-v1";
   const ACTIVE_KEY = "RGBM_DATA_v3";
   const PENDING_KEY = "RGBM_DATA_v3_pending";
   const LEGACY_KEYS = [
@@ -1677,6 +1678,431 @@
     };
   }
 
+
+  function recoveryPreservationFloor(inspection) {
+    const entries = [
+      inspection && inspection.active,
+      inspection && inspection.pending,
+      ...asArray(inspection && inspection.legacy),
+    ].filter(
+      (entry) => (
+        entry
+        && entry.summary
+        && (entry.canonicalValid || entry.migratable)
+      ),
+    );
+
+    return entries.reduce(
+      (floor, entry) => {
+        const summary = entry.summary;
+        return {
+          configuredCount: Math.max(
+            floor.configuredCount,
+            Number(summary.configuredCount) || 0,
+          ),
+          fuelRecordCount: Math.max(
+            floor.fuelRecordCount,
+            Number(summary.fuelRecordCount) || 0,
+          ),
+          maintenanceRecordCount: Math.max(
+            floor.maintenanceRecordCount,
+            Number(summary.maintenanceRecordCount) || 0,
+          ),
+          insuranceRecordCount: Math.max(
+            floor.insuranceRecordCount,
+            Number(summary.insuranceRecordCount) || 0,
+          ),
+          acquisitionRecordCount: Math.max(
+            floor.acquisitionRecordCount,
+            Number(summary.acquisitionRecordCount) || 0,
+          ),
+          attachmentCount: Math.max(
+            floor.attachmentCount,
+            Number(summary.attachmentCount) || 0,
+          ),
+        };
+      },
+      {
+        configuredCount: 0,
+        fuelRecordCount: 0,
+        maintenanceRecordCount: 0,
+        insuranceRecordCount: 0,
+        acquisitionRecordCount: 0,
+        attachmentCount: 0,
+      },
+    );
+  }
+
+  function reconciliationMetadata(state) {
+    return isObject(state && state.recoveryReconciliation)
+      ? state.recoveryReconciliation
+      : null;
+  }
+
+  function validateReconciledRecoveryCandidate(
+    storage,
+    backup,
+    context = {},
+  ) {
+    const candidate = validateRecoveryCandidate(
+      backup,
+      {
+        ...context,
+        sourceKey: cleanText(context.sourceKey)
+          || "reconciled-recovery-candidate",
+      },
+    );
+    const reconciliation = reconciliationMetadata(
+      candidate.state,
+    );
+
+    if (
+      !reconciliation
+      || cleanText(reconciliation.version)
+        !== RECONCILIATION_VERSION
+      || cleanText(reconciliation.status)
+        !== "READY_FOR_CONTROLLED_RESTORE"
+    ) {
+      throw new RGBMDataError(
+        "RECONCILIATION_METADATA_REQUIRED",
+        "Select the controlled reconciled recovery candidate, not a normal backup.",
+      );
+    }
+
+    const inspection = inspectRecoveryStorage(
+      storage,
+      context,
+    );
+    const sourceSnapshot = isObject(
+      reconciliation.sourceSnapshot,
+    )
+      ? reconciliation.sourceSnapshot
+      : {};
+    const expectedPendingKey = cleanText(
+      sourceSnapshot.pendingKey,
+    ) || PENDING_KEY;
+    const expectedLegacyKey = cleanText(
+      sourceSnapshot.legacyKey,
+    );
+    const pendingEntry = inspection.entries.find(
+      (entry) => entry.key === expectedPendingKey,
+    );
+    const legacyEntry = inspection.entries.find(
+      (entry) => entry.key === expectedLegacyKey,
+    );
+    const sourceErrors = [];
+
+    if (
+      !pendingEntry
+      || !pendingEntry.present
+      || pendingEntry.fingerprint
+        !== cleanText(sourceSnapshot.pendingFingerprint)
+    ) {
+      sourceErrors.push(
+        "pending storage fingerprint does not match the recovery snapshot",
+      );
+    }
+
+    if (
+      !legacyEntry
+      || !legacyEntry.present
+      || legacyEntry.fingerprint
+        !== cleanText(sourceSnapshot.legacyFingerprint)
+    ) {
+      sourceErrors.push(
+        "legacy storage fingerprint does not match the recovery snapshot",
+      );
+    }
+
+    const preservedIds = asArray(
+      reconciliation
+        && reconciliation.preservationDecisions
+        && reconciliation.preservationDecisions
+          .firstTwoVehicleIdsPreserved,
+    );
+    const pendingOrder = pendingEntry
+      && pendingEntry.summary
+      && asArray(pendingEntry.summary.vehicleOrder);
+    const candidateOrder = asArray(
+      candidate.state.vehicleOrder,
+    );
+
+    if (
+      preservedIds.length !== 2
+      || pendingOrder.length < 2
+      || candidateOrder.length < 3
+      || preservedIds[0] !== pendingOrder[0]
+      || preservedIds[1] !== pendingOrder[1]
+      || candidateOrder[0] !== pendingOrder[0]
+      || candidateOrder[1] !== pendingOrder[1]
+    ) {
+      sourceErrors.push(
+        "the original two vehicle IDs or their order do not match",
+      );
+    }
+
+    if (sourceErrors.length > 0) {
+      throw new RGBMDataError(
+        "RECOVERY_SOURCE_MISMATCH",
+        "The reconciled candidate does not match the current standalone storage.",
+        {
+          errors: sourceErrors,
+          inspection,
+        },
+      );
+    }
+
+    const floor = recoveryPreservationFloor(
+      inspection,
+    );
+    const summary = candidate.summary;
+    const deficits = [];
+
+    if ((Number(summary.configuredCount) || 0) < 3) {
+      deficits.push("configured vehicles must be at least 3");
+    }
+
+    for (const [key, label] of [
+      ["fuelRecordCount", "fuel"],
+      ["maintenanceRecordCount", "maintenance"],
+      ["insuranceRecordCount", "insurance"],
+      ["acquisitionRecordCount", "acquisition"],
+      ["attachmentCount", "attachments"],
+    ]) {
+      const actual = Number(summary[key]) || 0;
+      const minimum = Number(floor[key]) || 0;
+      if (actual < minimum) {
+        deficits.push(`${label} ${actual} < standalone ${minimum}`);
+      }
+    }
+
+    const declaredCounts = isObject(
+      reconciliation.candidateCounts,
+    )
+      ? reconciliation.candidateCounts
+      : {};
+    for (const key of [
+      "configuredCount",
+      "fuelRecordCount",
+      "maintenanceRecordCount",
+      "insuranceRecordCount",
+      "acquisitionRecordCount",
+      "attachmentCount",
+    ]) {
+      if (
+        Number(declaredCounts[key]) !== Number(summary[key])
+      ) {
+        deficits.push(
+          `declared ${key} does not match the candidate`,
+        );
+      }
+    }
+
+    if (deficits.length > 0) {
+      throw new RGBMDataError(
+        "RECONCILIATION_REDUCTION_BLOCKED",
+        "The reconciled candidate would omit required standalone data.",
+        {
+          deficits,
+          floor,
+          summary,
+        },
+      );
+    }
+
+    return {
+      ...candidate,
+      inspection,
+      floor,
+      reconciliation,
+      sourceMatch: {
+        pendingKey: expectedPendingKey,
+        pendingFingerprint: pendingEntry.fingerprint,
+        legacyKey: expectedLegacyKey,
+        legacyFingerprint: legacyEntry.fingerprint,
+      },
+    };
+  }
+
+  function exactRecoveryEntries(
+    storage,
+    context = {},
+  ) {
+    return recoveryKeyNames(storage, context)
+      .map((key) => ({
+        key,
+        raw: storageGet(storage, key),
+      }))
+      .filter((entry) => entry.raw !== null);
+  }
+
+  function restoreExactRecoveryEntries(
+    storage,
+    originals,
+    context = {},
+  ) {
+    const keys = new Set([
+      ACTIVE_KEY,
+      PENDING_KEY,
+      ...recoveryKeyNames(storage, context),
+      ...asArray(originals).map((entry) => entry.key),
+    ]);
+    const result = {
+      restoredKeys: [],
+      failedKeys: [],
+      exactMatch: false,
+      success: false,
+    };
+
+    for (const key of keys) {
+      storageRemove(storage, key);
+    }
+
+    for (const entry of asArray(originals)) {
+      try {
+        storageSet(
+          storage,
+          entry.key,
+          entry.raw,
+          "RECONCILIATION_ROLLBACK_FAILED",
+        );
+        if (storageGet(storage, entry.key) === entry.raw) {
+          result.restoredKeys.push(entry.key);
+        } else {
+          result.failedKeys.push(entry.key);
+        }
+      } catch (error) {
+        result.failedKeys.push(entry.key);
+      }
+    }
+
+    result.exactMatch = (
+      result.failedKeys.length === 0
+      && result.restoredKeys.length
+        === asArray(originals).length
+    );
+    result.success = result.exactMatch;
+    return result;
+  }
+
+  function archiveAndRestoreReconciledBackup(
+    storage,
+    backup,
+    context = {},
+  ) {
+    requireRecoverySnapshotConfirmation(context);
+
+    if (context.archiveConfirmed !== true) {
+      throw new RGBMDataError(
+        "RECOVERY_ARCHIVE_CONFIRMATION_REQUIRED",
+        "Confirm that the exact recovery snapshot is saved before archiving local source keys.",
+      );
+    }
+
+    const validated = validateReconciledRecoveryCandidate(
+      storage,
+      backup,
+      {
+        ...context,
+        sourceKey: cleanText(context.sourceKey)
+          || "reconciled-recovery-candidate",
+      },
+    );
+    const originals = exactRecoveryEntries(
+      storage,
+      context,
+    );
+    const archivedKeys = originals.map(
+      (entry) => entry.key,
+    );
+    const archivedCharacterCount = originals.reduce(
+      (total, entry) => total + entry.raw.length,
+      0,
+    );
+    const payload = JSON.stringify(validated.state);
+    const keysToRemove = new Set([
+      ACTIVE_KEY,
+      PENDING_KEY,
+      ...archivedKeys,
+    ]);
+
+    for (const key of keysToRemove) {
+      storageRemove(storage, key);
+    }
+
+    try {
+      storageSet(
+        storage,
+        ACTIVE_KEY,
+        payload,
+        "RECONCILIATION_ACTIVE_WRITE_FAILED",
+      );
+      const readBackRaw = storageGet(
+        storage,
+        ACTIVE_KEY,
+      );
+      const readBack = JSON.parse(readBackRaw);
+      assertValidStateV3(readBack);
+
+      const readBackReconciliation = reconciliationMetadata(
+        readBack,
+      );
+      if (
+        !readBackReconciliation
+        || cleanText(readBackReconciliation.version)
+          !== RECONCILIATION_VERSION
+      ) {
+        throw new RGBMDataError(
+          "RECONCILIATION_READBACK_FAILED",
+          "The restored state lost its reconciliation metadata.",
+        );
+      }
+
+      return {
+        state: readBack,
+        report: {
+          recovered: true,
+          reconciled: true,
+          reconciliationVersion: RECONCILIATION_VERSION,
+          source: cleanText(context.sourceKey)
+            || "reconciled-recovery-candidate",
+          archivedKeysRemoved: archivedKeys.filter(
+            (key) => key !== ACTIVE_KEY,
+          ),
+          archivedCharacterCount,
+          activeCharacterCount: readBackRaw.length,
+          pendingRemoved: (
+            storageGet(storage, PENDING_KEY) === null
+          ),
+          legacyKeysRemoved: archivedKeys.filter(
+            (key) => (
+              key !== ACTIVE_KEY
+              && key !== PENDING_KEY
+            ),
+          ),
+          externalSnapshotRequired: true,
+          sourceMatch: validated.sourceMatch,
+          floor: validated.floor,
+          summary: validated.summary,
+        },
+      };
+    } catch (error) {
+      const rollback = restoreExactRecoveryEntries(
+        storage,
+        originals,
+        context,
+      );
+      throw new RGBMDataError(
+        "RECONCILIATION_TRANSACTION_FAILED",
+        "Reconciled recovery failed and the exact original storage values were restored.",
+        {
+          cause: String(error),
+          rollback,
+        },
+      );
+    }
+  }
+
   function loadCanonicalState(storage, context = {}) {
     const activeRaw = storageGet(storage, ACTIVE_KEY);
 
@@ -1762,6 +2188,7 @@
     SCHEMA_VERSION,
     MIGRATION_VERSION,
     RECOVERY_SNAPSHOT_VERSION,
+    RECONCILIATION_VERSION,
     ACTIVE_KEY,
     PENDING_KEY,
     LEGACY_KEYS: Object.freeze(LEGACY_KEYS.slice()),
@@ -1788,8 +2215,10 @@
     inspectRecoveryStorage,
     buildRecoverySnapshot,
     validateRecoveryCandidate,
+    validateReconciledRecoveryCandidate,
     promotePendingRecovery,
     restoreRecoveryBackup,
+    archiveAndRestoreReconciledBackup,
     loadCanonicalState,
   });
 });

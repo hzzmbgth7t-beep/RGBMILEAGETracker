@@ -410,11 +410,156 @@
         migrationAcceptance = legacyComparison.result;
       }
     } else {
-      checks.push(
-        result("legacy_source_retained", "N/A", {
-          reason: "No legacy storage key was found.",
-        }),
+      const reconciliation = state
+        && typeof state.recoveryReconciliation === "object"
+        ? state.recoveryReconciliation
+        : null;
+      const reconciliationVersion = cleanText(
+        reconciliation && reconciliation.version,
       );
+      const sourceSnapshot = reconciliation
+        && typeof reconciliation.sourceSnapshot === "object"
+        ? reconciliation.sourceSnapshot
+        : {};
+      const sourceCounts = reconciliation
+        && reconciliation.sourceCounts
+        && typeof reconciliation.sourceCounts.standalone === "object"
+        ? reconciliation.sourceCounts.standalone
+        : {};
+      const candidateCounts = reconciliation
+        && typeof reconciliation.candidateCounts === "object"
+        ? reconciliation.candidateCounts
+        : {};
+      const preservation = reconciliation
+        && typeof reconciliation.preservationDecisions === "object"
+        ? reconciliation.preservationDecisions
+        : {};
+      const preservedIds = asArray(
+        preservation.firstTwoVehicleIdsPreserved,
+      );
+      const thirdVehicleId = cleanText(
+        preservation.thirdVehicleIdAdded,
+      );
+      const archiveMetadataPresent = Boolean(
+        cleanText(sourceSnapshot.sha256)
+        && cleanText(sourceSnapshot.pendingFingerprint)
+        && cleanText(sourceSnapshot.legacyFingerprint),
+      );
+      const firstTwoPreserved = (
+        preservedIds.length === 2
+        && canonical.vehicleOrder[0] === preservedIds[0]
+        && canonical.vehicleOrder[1] === preservedIds[1]
+      );
+      const thirdVehiclePreserved = (
+        canonical.configuredCount === 3
+        && Boolean(thirdVehicleId)
+        && canonical.vehicleOrder[2] === thirdVehicleId
+      );
+      const countChecks = [
+        ["fuelRecordCount", asArray(state.fuelRecords).length],
+        [
+          "maintenanceRecordCount",
+          asArray(state.maintenanceRecords).length,
+        ],
+        [
+          "insuranceRecordCount",
+          asArray(state.insuranceRecords).length,
+        ],
+        [
+          "acquisitionRecordCount",
+          asArray(state.vehicleAcquisitionRecords).length,
+        ],
+        ["attachmentCount", asArray(state.attachments).length],
+      ];
+      const countsNonReducing = (
+        Number(canonical.configuredCount)
+          >= Number(sourceCounts.configuredCount || 0)
+        && countChecks.every(([key, actual]) => (
+          Number(actual) >= Number(sourceCounts[key] || 0)
+          && Number(actual) === Number(candidateCounts[key])
+        ))
+      );
+      const reconciliationRecognized = (
+        reconciliationVersion
+          === dataV3.RECONCILIATION_VERSION
+      );
+
+      if (reconciliationRecognized) {
+        checks.push(
+          result(
+            "external_recovery_snapshot_archived",
+            archiveMetadataPresent ? "PASS" : "FAIL",
+            {
+              snapshotSha256Present: Boolean(
+                cleanText(sourceSnapshot.sha256),
+              ),
+              pendingFingerprintPresent: Boolean(
+                cleanText(sourceSnapshot.pendingFingerprint),
+              ),
+              legacyFingerprintPresent: Boolean(
+                cleanText(sourceSnapshot.legacyFingerprint),
+              ),
+            },
+          ),
+          result(
+            "reconciled_original_vehicle_ids_and_order",
+            firstTwoPreserved ? "PASS" : "FAIL",
+            {
+              expected: preservedIds,
+              actual: canonical.vehicleOrder.slice(0, 2),
+            },
+          ),
+          result(
+            "reconciled_third_vehicle_present",
+            thirdVehiclePreserved ? "PASS" : "FAIL",
+            {
+              expected: thirdVehicleId,
+              actual: canonical.vehicleOrder[2],
+            },
+          ),
+          result(
+            "reconciled_counts_non_reducing",
+            countsNonReducing ? "PASS" : "FAIL",
+            {
+              sourceCounts,
+              candidateCounts,
+              actual: {
+                configuredCount: canonical.configuredCount,
+                fuelRecordCount: asArray(state.fuelRecords).length,
+                maintenanceRecordCount:
+                  asArray(state.maintenanceRecords).length,
+                insuranceRecordCount:
+                  asArray(state.insuranceRecords).length,
+                acquisitionRecordCount:
+                  asArray(state.vehicleAcquisitionRecords).length,
+                attachmentCount: asArray(state.attachments).length,
+              },
+            },
+          ),
+        );
+
+        const reconciledPass = (
+          archiveMetadataPresent
+          && firstTwoPreserved
+          && thirdVehiclePreserved
+          && countsNonReducing
+        );
+        legacyComparison = {
+          result: reconciledPass ? "PASS" : "FAIL",
+          sourceKey: "external recovery snapshot",
+          reconciliationVersion,
+          existingVehicleComparisons: [],
+          sourceCounts,
+          candidateCounts,
+        };
+        migrationAcceptance = legacyComparison.result;
+      } else {
+        checks.push(
+          result("legacy_source_retained", "N/A", {
+            reason: "No legacy storage key was found.",
+          }),
+        );
+      }
     }
 
     let idempotency = "FAIL";
