@@ -1,54 +1,53 @@
-# RGB Mileage Tracker — WC-10 flat04 recovery
+# RGB Mileage Tracker — WC-10 flat05 recovery UI
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat04`  
+**Package revision:** `flat05`  
 **Packaging governance:** `v1.5`  
-**Status:** CONTROLLED STANDALONE RECOVERY ONLY
+**Status:** CONTROLLED SNAPSHOT COLLECTION ONLY
 
 ## Review links
 
 - Normal application URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Recovery cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat4
+- Recovery cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat5
 
 ## Purpose
 
-flat04 addresses the standalone `RECOVERY_REQUIRED` screen without clearing, deleting, or automatically overwriting storage.
+flat05 corrects the clipped flat04 recovery page.
 
-The recovery screen:
+- `Download Recovery Snapshot` appears before storage inspection.
+- The recovery page uses native document scrolling.
+- Pending recovery is locked when fewer than three vehicles are configured.
+- Backup restore is locked when a backup would reduce standalone record counts.
+- Inspection and backup comparison do not mutate storage.
 
-- inspects active, pending, and retained legacy storage
-- does not mutate storage during inspection
-- downloads an exact recovery snapshot before recovery
-- validates pending migration data
-- validates a selected full JSON backup
-- avoids active/pending duplicate storage during promotion
-- restores exact active and pending values when a transaction fails
-- never deletes retained legacy keys
+## Current preservation conflict
 
-## Known external backup target
+The Home Screen storage inspection showed:
 
-The latest known three-vehicle backup is:
+- 2 configured vehicles
+- 46 fuel records
+- 13 maintenance records
+- 7 insurance records
 
-`RGBM_Backup_v2.1.6l-wc10_2026-07-26 3.json`
+The latest Safari three-vehicle evidence contains:
 
-Expected summary:
+- 3 configured vehicles
+- 41 fuel records
+- 3 maintenance records
+- 5 insurance records
 
-- configured vehicles: 3
-- vehicle positions: 3
-- fuel records: 41
-- maintenance records: 3
-- insurance records: 5
+A direct pending promotion would omit vehicle 3. A direct backup restore would reduce record counts. flat05 therefore collects the exact standalone snapshot before reconciliation.
 
-The earlier file ending in `2.json` is the pre-third-vehicle backup.
+## Required next action
 
-## Clean install
+Deploy flat05, launch the existing Home Screen app, tap `Download Recovery Snapshot`, and preserve that file.
 
-Upload exactly the 17 files at this archive's root to the blank GitHub application folder. Retain the support folders locally.
+Do not recover pending data and do not restore a backup yet.
 
 ## Acceptance boundary
 
 - automated tests: PASS
-- storage rollback tests: PASS
-- quota-safe pending promotion: PASS
-- real Home Screen recovery: N/A
+- synthetic recovery UI audit: PASS
+- actual iPhone standalone scrolling: N/A
+- data reconciliation: NOT STARTED
 - production promotion: FAIL

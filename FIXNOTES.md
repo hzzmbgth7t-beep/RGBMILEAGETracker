@@ -1,31 +1,25 @@
-# RGB Mileage Tracker flat04 Fix Notes
+# RGB Mileage Tracker flat05 Fix Notes
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat04`  
+**Package revision:** `flat05`  
 **Status:** CURRENT  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat4
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat5
 
-## Failure addressed
+## flat04 failure
 
-The Home Screen app reported:
+The fixed-height recovery app layer did not scroll in the installed Home Screen app, leaving the snapshot control unreachable.
 
-`A pending migration exists and requires recovery.`
+## flat05 correction
 
-Safari testing had already produced a valid three-vehicle backup, but Safari and the installed Home Screen app were not using the same visible storage state.
+- `body.recovery-active` uses normal document flow.
+- Recovery height is `auto`, with `min-height: 100svh`.
+- The app is relative and uses `overflow: visible`.
+- The document owns vertical scrolling.
+- The warning card is compact.
+- Snapshot controls precede storage inspection.
+- Direct recovery actions remain disabled when they would omit vehicles or records.
 
-## Transaction correction
+## Data-safety correction
 
-The earlier migration transaction attempted to keep pending data while writing the same large payload to active storage. Large embedded images can make that duplicate-write pattern exceed browser storage capacity.
-
-flat04 requires an external recovery snapshot first, then:
-
-1. retains active and pending values in memory
-2. removes only the volatile active and pending keys
-3. writes and validates the selected recovery candidate as active
-4. restores the exact prior active and pending values when any step fails
-5. leaves all legacy keys untouched
-
-## Evidence correction
-
-A user-configured third vehicle no longer causes migration acceptance to fail solely because the original blank position is no longer blank.
+The displayed standalone state has more operational records than the Safari backup. The next safe step is snapshot collection and reconciliation, not replacement.

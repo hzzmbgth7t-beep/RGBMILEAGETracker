@@ -1050,38 +1050,44 @@ body.non-home-active {
   }
 }
 
-/* RGBM v2.1.6l-wc10 flat04: recovery-only standalone console */
-body.recovery-active {
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100dvh !important;
-  margin: 0 !important;
-  overflow: hidden !important;
-  background: #09111f !important;
-  touch-action: auto !important;
+/* RGBM v2.1.6l-wc10 flat05: native recovery page scrolling */
+html {
+  min-height: 100%;
 }
 
-#app.screen-recovery {
-  position: fixed !important;
-  inset: 0 !important;
+body.recovery-active {
+  position: static !important;
+  inset: auto !important;
   width: 100% !important;
-  max-width: none !important;
-  height: 100dvh !important;
-  min-height: 0 !important;
-  max-height: 100dvh !important;
+  min-height: 100svh !important;
+  height: auto !important;
+  max-height: none !important;
   margin: 0 !important;
-  padding:
-    calc(16px + env(safe-area-inset-top))
-    calc(14px + env(safe-area-inset-right))
-    calc(24px + env(safe-area-inset-bottom))
-    calc(14px + env(safe-area-inset-left)) !important;
   overflow-x: hidden !important;
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior: contain !important;
+  overscroll-behavior-y: auto !important;
   touch-action: pan-y !important;
+  background: #09111f !important;
+}
+
+#app.screen-recovery {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 100svh !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding:
+    max(8px, env(safe-area-inset-top))
+    max(10px, env(safe-area-inset-right))
+    calc(28px + env(safe-area-inset-bottom))
+    max(10px, env(safe-area-inset-left)) !important;
+  overflow: visible !important;
   box-sizing: border-box !important;
+  touch-action: pan-y !important;
   background:
     radial-gradient(
       circle at top,
@@ -1096,15 +1102,15 @@ body.recovery-active {
   margin: 0 auto !important;
   padding: 0 !important;
   display: grid !important;
-  gap: 14px !important;
+  gap: 10px !important;
 }
 
 .recovery-card {
   width: 100% !important;
   margin: 0 !important;
-  padding: 18px !important;
+  padding: 14px !important;
   border: 1px solid rgba(150, 184, 220, .48) !important;
-  border-radius: 20px !important;
+  border-radius: 18px !important;
   box-sizing: border-box !important;
   background:
     linear-gradient(
@@ -1112,17 +1118,18 @@ body.recovery-active {
       rgba(36, 61, 92, .98),
       rgba(27, 47, 75, .98)
     ) !important;
-  box-shadow: 0 14px 34px rgba(0, 0, 0, .28) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .24) !important;
 }
 
 .recovery-warning {
+  padding: 12px 14px !important;
   border-color: rgba(239, 203, 132, .72) !important;
 }
 
 .recovery-kicker {
-  margin: 0 0 6px !important;
+  margin: 0 0 4px !important;
   color: #d6e4f3 !important;
-  font-size: 13px !important;
+  font-size: 12px !important;
   font-weight: 900 !important;
   letter-spacing: .06em !important;
   text-transform: uppercase !important;
@@ -1130,28 +1137,37 @@ body.recovery-active {
 
 .recovery-card h1,
 .recovery-card h2 {
-  margin: 0 0 12px !important;
-  line-height: 1.08 !important;
+  margin: 0 0 8px !important;
+  line-height: 1.06 !important;
 }
 
 .recovery-card h1 {
-  font-size: clamp(30px, 8vw, 46px) !important;
+  font-size: clamp(28px, 7vw, 40px) !important;
 }
 
 .recovery-card h2 {
-  font-size: clamp(22px, 5.5vw, 30px) !important;
+  font-size: clamp(21px, 5vw, 28px) !important;
 }
 
 .recovery-card p {
-  margin: 8px 0 !important;
-  line-height: 1.42 !important;
+  margin: 6px 0 !important;
+  line-height: 1.32 !important;
+}
+
+.recovery-primary-actions {
+  border-color: rgba(124, 214, 156, .76) !important;
+}
+
+.recovery-primary-actions .wide {
+  min-height: 56px !important;
+  font-size: clamp(18px, 4.8vw, 24px) !important;
 }
 
 .recovery-key-row {
   display: grid !important;
-  grid-template-columns: minmax(120px, .42fr) minmax(0, 1fr) !important;
-  gap: 10px !important;
-  padding: 10px 0 !important;
+  grid-template-columns: minmax(108px, .38fr) minmax(0, 1fr) !important;
+  gap: 9px !important;
+  padding: 8px 0 !important;
   border-bottom: 1px solid rgba(174, 196, 220, .2) !important;
   align-items: start !important;
 }
@@ -1169,8 +1185,8 @@ body.recovery-active {
 .recovery-confirm {
   display: flex !important;
   align-items: flex-start !important;
-  gap: 10px !important;
-  margin-top: 12px !important;
+  gap: 9px !important;
+  margin-top: 9px !important;
   font-weight: 850 !important;
 }
 
@@ -1183,22 +1199,22 @@ body.recovery-active {
 
 .recovery-card input[type="file"] {
   width: 100% !important;
-  min-height: 52px !important;
-  margin-top: 7px !important;
-  padding: 8px !important;
+  min-height: 50px !important;
+  margin-top: 6px !important;
+  padding: 7px !important;
   box-sizing: border-box !important;
 }
 
 .recovery-card button[disabled] {
-  opacity: .48 !important;
+  opacity: .46 !important;
   cursor: not-allowed !important;
 }
 
 .recovery-status {
   width: 100% !important;
-  min-height: 54px !important;
+  min-height: 50px !important;
   margin: 0 !important;
-  padding: 14px !important;
+  padding: 12px !important;
   border: 1px solid rgba(150, 184, 220, .48) !important;
   border-radius: 14px !important;
   box-sizing: border-box !important;
@@ -1216,13 +1232,37 @@ body.recovery-active {
   border-color: rgba(255, 139, 139, .82) !important;
 }
 
+.recovery-scroll-end {
+  padding: 16px 0 calc(20px + env(safe-area-inset-bottom)) !important;
+  text-align: center !important;
+  color: #9fb0c3 !important;
+}
+
+@media (max-height: 760px) and (orientation: portrait) {
+  .recovery-card {
+    padding: 11px !important;
+  }
+
+  .recovery-warning p:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  .recovery-card h1 {
+    font-size: clamp(25px, 6vw, 34px) !important;
+  }
+
+  .recovery-card h2 {
+    font-size: clamp(19px, 4.6vw, 25px) !important;
+  }
+}
+
 @media (orientation: landscape) {
   #app.screen-recovery {
     padding:
-      calc(8px + env(safe-area-inset-top))
-      calc(14px + env(safe-area-inset-right))
-      calc(12px + env(safe-area-inset-bottom))
-      calc(14px + env(safe-area-inset-left)) !important;
+      max(6px, env(safe-area-inset-top))
+      max(12px, env(safe-area-inset-right))
+      calc(18px + env(safe-area-inset-bottom))
+      max(12px, env(safe-area-inset-left)) !important;
   }
 
   .recovery-console {
@@ -1232,11 +1272,13 @@ body.recovery-active {
   }
 
   .recovery-warning,
-  .recovery-status {
+  .recovery-primary-actions,
+  .recovery-status,
+  .recovery-scroll-end {
     grid-column: 1 / -1 !important;
   }
 
   .recovery-card {
-    padding: 14px !important;
+    padding: 12px !important;
   }
 }

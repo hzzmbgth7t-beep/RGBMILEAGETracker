@@ -1831,6 +1831,7 @@ let recoverySnapshotDownloaded=false;
 let recoveryBackupCandidate=null;
 let recoveryInspection=null;
 let recoveryFatalError=null;
+const RECOVERY_REQUIRED_CONFIGURED_COUNT=3;
 
 function recoveryEntrySummary(entry){
   if(!entry)return "Not inspected";
@@ -1862,12 +1863,71 @@ function setRecoveryStatus(message,result="info"){
 function recoveryConfirmed(){
   return recoverySnapshotDownloaded&&$("recoverySnapshotConfirmed")?.checked===true;
 }
+function recoveryStandaloneFloor(inspection=recoveryInspection){
+  const entries=[
+    inspection&&inspection.active,
+    inspection&&inspection.pending,
+    ...((inspection&&inspection.legacy)||[])
+  ].filter(entry=>entry&&entry.summary&&(entry.canonicalValid||entry.migratable));
+  return entries.reduce((floor,entry)=>{
+    const summary=entry.summary;
+    return {
+      configuredCount:Math.max(floor.configuredCount,Number(summary.configuredCount)||0),
+      fuelRecordCount:Math.max(floor.fuelRecordCount,Number(summary.fuelRecordCount)||0),
+      maintenanceRecordCount:Math.max(floor.maintenanceRecordCount,Number(summary.maintenanceRecordCount)||0),
+      insuranceRecordCount:Math.max(floor.insuranceRecordCount,Number(summary.insuranceRecordCount)||0),
+      acquisitionRecordCount:Math.max(floor.acquisitionRecordCount,Number(summary.acquisitionRecordCount)||0),
+      attachmentCount:Math.max(floor.attachmentCount,Number(summary.attachmentCount)||0)
+    };
+  },{
+    configuredCount:0,
+    fuelRecordCount:0,
+    maintenanceRecordCount:0,
+    insuranceRecordCount:0,
+    acquisitionRecordCount:0,
+    attachmentCount:0
+  });
+}
+function recoveryCandidateSafety(summary,inspection=recoveryInspection){
+  const floor=recoveryStandaloneFloor(inspection);
+  const deficits=[];
+  if((Number(summary&&summary.configuredCount)||0)<RECOVERY_REQUIRED_CONFIGURED_COUNT){
+    deficits.push(`requires ${RECOVERY_REQUIRED_CONFIGURED_COUNT} configured vehicles`);
+  }
+  for(const [key,label] of [
+    ["fuelRecordCount","fuel"],
+    ["maintenanceRecordCount","maintenance"],
+    ["insuranceRecordCount","insurance"],
+    ["acquisitionRecordCount","acquisition"],
+    ["attachmentCount","attachments"]
+  ]){
+    const candidate=Number(summary&&summary[key])||0;
+    const minimum=Number(floor[key])||0;
+    if(candidate<minimum)deficits.push(`${label} ${candidate} < standalone ${minimum}`);
+  }
+  return {safe:deficits.length===0,deficits,floor};
+}
+function pendingRecoverySafety(){
+  const pending=recoveryInspection&&recoveryInspection.pending;
+  if(!pending||pending.canonicalValid!==true||!pending.summary){
+    return {safe:false,deficits:["pending migration is not valid schema-3 data"],floor:recoveryStandaloneFloor()};
+  }
+  return recoveryCandidateSafety(pending.summary);
+}
 function updateRecoveryControls(){
   const ready=recoveryConfirmed();
   const pendingButton=$("recoverPendingButton");
   const restoreButton=$("restoreRecoveryButton");
-  if(pendingButton)pendingButton.disabled=!ready;
-  if(restoreButton)restoreButton.disabled=!(ready&&recoveryBackupCandidate);
+  const pendingSafety=pendingRecoverySafety();
+  if(pendingButton)pendingButton.disabled=!(ready&&pendingSafety.safe);
+  if(restoreButton){
+    restoreButton.disabled=!(
+      ready
+      &&recoveryBackupCandidate
+      &&recoveryBackupCandidate.safety
+      &&recoveryBackupCandidate.safety.safe
+    );
+  }
 }
 function downloadRecoverySnapshot(){
   try{
@@ -1893,6 +1953,10 @@ function downloadRecoverySnapshot(){
 function recoverPendingStorage(){
   if(!recoveryConfirmed()){
     return alert("Download the recovery snapshot and confirm it before recovery.");
+  }
+  const safety=pendingRecoverySafety();
+  if(!safety.safe){
+    return alert(`Pending recovery is locked because it could omit required data: ${safety.deficits.join("; ")}.`);
   }
   if(!confirm("Promote the validated pending migration to active storage? The exact current active and pending values will be restored if the transaction fails. Legacy keys will not be deleted."))return;
   try{
@@ -1923,12 +1987,25 @@ function previewRecoveryBackup(){
         raw,
         dataContext("standalone-backup-preview")
       );
-      recoveryBackupCandidate={raw,fileName:file.name,summary:candidate.summary};
       const summary=candidate.summary;
-      setRecoveryStatus(
-        `Backup validated: ${summary.configuredCount} configured vehicles, ${summary.fuelRecordCount} fuel, ${summary.maintenanceRecordCount} maintenance, ${summary.insuranceRecordCount} insurance records.`,
-        "pass"
-      );
+      const safety=recoveryCandidateSafety(summary);
+      recoveryBackupCandidate={
+        raw,
+        fileName:file.name,
+        summary,
+        safety
+      };
+      if(safety.safe){
+        setRecoveryStatus(
+          `Backup validated and is non-reducing: ${summary.configuredCount} configured vehicles, ${summary.fuelRecordCount} fuel, ${summary.maintenanceRecordCount} maintenance, ${summary.insuranceRecordCount} insurance records.`,
+          "pass"
+        );
+      }else{
+        setRecoveryStatus(
+          `Backup validated for comparison but direct restore is locked: ${safety.deficits.join("; ")}. Download the recovery snapshot and return it for reconciliation.`,
+          "fail"
+        );
+      }
       updateRecoveryControls();
     }catch(error){
       recoveryBackupCandidate=null;
@@ -1949,6 +2026,9 @@ function restoreSelectedRecoveryBackup(){
   }
   if(!recoveryBackupCandidate){
     return alert("Choose and validate a full JSON backup first.");
+  }
+  if(!recoveryBackupCandidate.safety||!recoveryBackupCandidate.safety.safe){
+    return alert(`Direct restore is locked because the backup would omit standalone data: ${(recoveryBackupCandidate.safety&&recoveryBackupCandidate.safety.deficits||["unknown mismatch"]).join("; ")}.`);
   }
   const summary=recoveryBackupCandidate.summary;
   if(!confirm(`Restore ${recoveryBackupCandidate.fileName} to standalone active storage?\n\nConfigured vehicles: ${summary.configuredCount}\nFuel: ${summary.fuelRecordCount}\nMaintenance: ${summary.maintenanceRecordCount}\nInsurance: ${summary.insuranceRecordCount}\n\nCurrent active and pending values will be restored if the transaction fails. Legacy keys will not be deleted.`))return;
@@ -1994,41 +2074,53 @@ function renderRecoveryConsole(error){
       inspectionError:inspectError&&inspectError.message?inspectError.message:String(inspectError)
     };
   }
-  const pendingValid=recoveryInspection.pending&&recoveryInspection.pending.canonicalValid===true;
+  const pendingSafety=pendingRecoverySafety();
+  const pendingSafe=pendingSafety.safe===true;
+  const floor=pendingSafety.floor;
   app.innerHTML=`<main class="recovery-console">
     <section class="recovery-card recovery-warning">
-      <p class="recovery-kicker">RGB Mileage flat04 recovery</p>
+      <p class="recovery-kicker">RGB Mileage flat05 recovery</p>
       <h1>Data Recovery Required</h1>
-      <p><strong>${esc(code)}</strong></p>
-      <p>${esc(message)}</p>
-      <p><strong>Do not delete the Home Screen app and do not clear Safari website data.</strong></p>
-      <p>This screen only inspects storage until you download a recovery snapshot and explicitly approve a recovery action.</p>
+      <p><strong>${esc(code)}</strong> — ${esc(message)}</p>
+      <p><strong>Do not delete the Home Screen app or clear Safari website data.</strong></p>
     </section>
-    <section class="recovery-card">
+
+    <section class="recovery-card recovery-primary-actions">
+      <h2>Preserve storage first</h2>
+      <p>Download an exact snapshot before any recovery decision.</p>
+      <button id="downloadRecoverySnapshotButton" class="wide primary" type="button" onclick="downloadRecoverySnapshot()">Download Recovery Snapshot</button>
+      <label class="recovery-confirm"><input id="recoverySnapshotConfirmed" type="checkbox" onchange="updateRecoveryControls()"> I saved the recovery snapshot file.</label>
+    </section>
+
+    <section class="recovery-card recovery-backup-card">
+      <h2>Compare the latest backup</h2>
+      <p>Select the post-third-vehicle JSON backup. Validation does not change storage.</p>
+      <label>Full JSON backup<input id="recoveryBackupFile" type="file" accept=".json,application/json" onchange="previewRecoveryBackup()"></label>
+      <button id="restoreRecoveryButton" class="wide primary" type="button" onclick="restoreSelectedRecoveryBackup()" disabled>Restore Only When Non-Reducing</button>
+      <p class="muted">Direct restore remains locked when a backup contains fewer records than standalone storage.</p>
+    </section>
+
+    <pre id="recoveryStatus" class="recovery-status info">No storage value has been changed.</pre>
+
+    <section class="recovery-card recovery-inspection-card">
       <h2>Standalone storage inspection</h2>
       <div class="recovery-key-row"><strong>Active: ${esc(RGBMDataV3.ACTIVE_KEY)}</strong><span>${esc(recoveryEntrySummary(recoveryInspection.active))}</span></div>
       <div class="recovery-key-row"><strong>Pending: ${esc(RGBMDataV3.PENDING_KEY)}</strong><span>${esc(recoveryEntrySummary(recoveryInspection.pending))}</span></div>
       ${recoveryLegacyHtml(recoveryInspection.legacy)}
-      <p class="muted">Recommended action: ${esc(recoveryInspection.recommendedAction||"RESTORE_BACKUP")}</p>
+      <p class="muted">Standalone preservation floor: ${floor.configuredCount} configured vehicles, ${floor.fuelRecordCount} fuel, ${floor.maintenanceRecordCount} maintenance, ${floor.insuranceRecordCount} insurance.</p>
     </section>
-    <section class="recovery-card">
-      <h2>Step 1 — preserve standalone storage</h2>
-      <button class="wide primary" type="button" onclick="downloadRecoverySnapshot()">Download Recovery Snapshot</button>
-      <label class="recovery-confirm"><input id="recoverySnapshotConfirmed" type="checkbox" onchange="updateRecoveryControls()"> I saved the recovery snapshot file.</label>
+
+    <section class="recovery-card recovery-pending-card">
+      <h2>Pending migration</h2>
+      <p>${pendingSafe
+        ?"The pending state meets the non-reduction gate."
+        :`Pending promotion is locked: ${esc(pendingSafety.deficits.join("; "))}.`}</p>
+      <button id="recoverPendingButton" class="wide primary" type="button" onclick="recoverPendingStorage()" disabled>Recover Pending Migration</button>
     </section>
-    <section class="recovery-card">
-      <h2>Step 2A — recover the pending migration</h2>
-      <p>${pendingValid?"The pending value is valid schema-3 data and can be promoted without keeping duplicate active and pending copies in storage.":"No valid pending migration was detected. Use the backup recovery option."}</p>
-      <button id="recoverPendingButton" class="wide primary" type="button" onclick="recoverPendingStorage()" ${pendingValid?"disabled":"disabled hidden"}>Recover Valid Pending Migration</button>
-    </section>
-    <section class="recovery-card">
-      <h2>Step 2B — restore a full JSON backup</h2>
-      <p>Use the latest three-vehicle backup when pending recovery is unavailable or does not contain the expected data.</p>
-      <label>Full JSON backup<input id="recoveryBackupFile" type="file" accept=".json,application/json" onchange="previewRecoveryBackup()"></label>
-      <button id="restoreRecoveryButton" class="wide primary" type="button" onclick="restoreSelectedRecoveryBackup()" disabled>Restore Validated Backup</button>
-    </section>
-    <pre id="recoveryStatus" class="recovery-status info">No storage value has been changed.</pre>
+
+    <div class="recovery-scroll-end" aria-hidden="true">End of recovery details</div>
   </main>`;
+  updateRecoveryControls();
 }
 function renderDataFatal(error){
   renderRecoveryConsole(error);
@@ -2041,4 +2133,4 @@ try{
   render()
 }
 catch(e){console.error(e);renderDataFatal(e)}
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=216lwc10flat4').catch(()=>{})}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=216lwc10flat5').catch(()=>{})}

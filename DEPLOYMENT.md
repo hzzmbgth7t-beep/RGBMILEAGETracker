@@ -1,10 +1,10 @@
-# RGB Mileage Tracker flat04 Deployment and Recovery
+# RGB Mileage Tracker flat05 Deployment
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat04`  
-**Status:** CONTROLLED STANDALONE RECOVERY  
+**Package revision:** `flat05`  
+**Status:** CONTROLLED SNAPSHOT COLLECTION  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat4
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat5
 
 ## Upload
 
@@ -16,23 +16,18 @@
 6. Close Safari.
 7. Launch the existing Home Screen app.
 
-## Recovery sequence
+## On the flat05 recovery screen
 
-1. On the recovery screen, review the active and pending summaries.
-2. Download the Recovery Snapshot.
-3. Save that file outside the app.
-4. Check `I saved the recovery snapshot file`.
-5. Use pending recovery only when its summary matches the data you intend to recover.
-6. When pending data does not include all three vehicles, select:
-   `RGBM_Backup_v2.1.6l-wc10_2026-07-26 3.json`
-7. Confirm that the selected backup reports 3 vehicles, 41 fuel, 3 maintenance, and 5 insurance records.
-8. Choose Restore Validated Backup.
-9. Allow the app to reload.
-10. Verify all three vehicles before entering or changing data.
+1. `Download Recovery Snapshot` must be visible without scrolling.
+2. Tap it and save the JSON file.
+3. Confirm the file exists in Files or Downloads.
+4. Do not choose Recover Pending Migration.
+5. Do not restore a backup.
+6. Return the snapshot for reconciliation with the existing three-vehicle backup.
 
 ## Prohibited actions
 
 - do not delete the Home Screen app
 - do not clear Safari website data
-- do not use the pre-third backup unless intentionally reverting
-- do not edit records before recovery verification
+- do not promote the two-vehicle pending state
+- do not overwrite the 46/13/7 standalone record set with the smaller 41/3/5 backup
