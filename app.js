@@ -1820,7 +1820,7 @@ function dataDiagnostics(){
 }
 function initV213eStabilization(){
   try{
-    document.addEventListener("touchmove",e=>{if(route&&route.screen==="home")e.preventDefault()},{passive:false});
+    document.addEventListener("touchmove",e=>{const recoveryActive=document.body.classList.contains("recovery-active")||e.target.closest?.("#app.screen-recovery");if(!recoveryActive&&route&&route.screen==="home")e.preventDefault()},{passive:false});
     const refresh=()=>setTimeout(()=>{if(route&&route.screen==="home")scheduleHomeGeometry();else applyNonHomeViewport()},60);
     window.addEventListener("resize",refresh,{passive:true});
     window.addEventListener("orientationchange",refresh,{passive:true});
@@ -2063,6 +2063,42 @@ function restoreSelectedRecoveryBackup(){
     );
   }
 }
+function enterRecoveryScrollMode(){
+  route={screen:"recovery"};
+  const root=document.documentElement;
+  const body=document.body;
+  const app=$("app");
+  const setStyle=(element,name,value)=>{
+    if(element.style&&typeof element.style.setProperty==="function"){
+      element.style.setProperty(name,value,"important");
+    }else if(element.style){
+      element.style[name]=value;
+    }
+  };
+
+  setStyle(root,"width","100%");
+  setStyle(root,"height","100%");
+  setStyle(root,"overflow","hidden");
+  setStyle(root,"overscroll-behavior","none");
+
+  setStyle(body,"position","fixed");
+  setStyle(body,"inset","0");
+  setStyle(body,"width","100%");
+  setStyle(body,"height","100dvh");
+  setStyle(body,"overflow","hidden");
+  setStyle(body,"touch-action","none");
+
+  setStyle(app,"position","fixed");
+  setStyle(app,"inset","0");
+  setStyle(app,"width","100%");
+  setStyle(app,"height","100dvh");
+  setStyle(app,"max-width","none");
+  setStyle(app,"overflow-x","hidden");
+  setStyle(app,"overflow-y","scroll");
+  setStyle(app,"-webkit-overflow-scrolling","touch");
+  setStyle(app,"touch-action","pan-y");
+  app.scrollTop=0;
+}
 function renderRecoveryConsole(error){
   const app=$("app");
   recoveryFatalError=error||null;
@@ -2071,6 +2107,7 @@ function renderRecoveryConsole(error){
   document.body.classList.remove("home-active","non-home-active");
   document.body.classList.add("recovery-active");
   app.className="app-screen screen-recovery";
+  enterRecoveryScrollMode();
   const code=error&&error.code?error.code:"DATA_LOAD_FAILED";
   const message=error&&error.message?error.message:String(error||"Unknown data error");
   try{
@@ -2090,8 +2127,8 @@ function renderRecoveryConsole(error){
   const floor=recoveryStandaloneFloor(recoveryInspection);
   app.innerHTML=`<main class="recovery-console">
     <section class="recovery-card recovery-warning">
-      <p class="recovery-kicker">RGB Mileage flat06 reconciliation</p>
-      <h1>Reconciled Recovery Required</h1>
+      <p class="recovery-kicker">RGB Mileage flat07 reconciliation</p>
+      <h1 class="recovery-title">Reconciled Recovery Required</h1>
       <p><strong>${esc(code)}</strong> — ${esc(message)}</p>
       <p><strong>Do not delete the Home Screen app or clear Safari website data.</strong></p>
     </section>
@@ -2099,15 +2136,15 @@ function renderRecoveryConsole(error){
     <section class="recovery-card recovery-primary-actions">
       <h2>1 — Preserve storage</h2>
       <p>Download a fresh exact snapshot before the reconciliation transaction.</p>
-      <button id="downloadRecoverySnapshotButton" class="wide primary" type="button" onclick="downloadRecoverySnapshot()">Download Recovery Snapshot</button>
+      <button id="downloadRecoverySnapshotButton" class="wide primary" type="button" onclick="downloadRecoverySnapshot()"><span>Download Recovery Snapshot</span></button>
       <label class="recovery-confirm"><input id="recoverySnapshotConfirmed" type="checkbox" onchange="updateRecoveryControls()"> I saved the recovery snapshot file.</label>
     </section>
 
     <section class="recovery-card recovery-backup-card">
       <h2>2 — Select reconciled candidate</h2>
-      <p>Select <strong>RGBM_Reconciled_Recovery_Candidate_3Vehicles_48Fuel_13Maintenance_8Insurance_2026-07-27.json</strong>.</p>
+      <p>Select the downloaded candidate:</p><p class="recovery-filename">RGBM_Reconciled_Recovery_Candidate_3Vehicles_48Fuel_13Maintenance_8Insurance_2026-07-27.json</p>
       <label>Reconciled JSON candidate<input id="recoveryBackupFile" type="file" accept=".json,application/json" onchange="previewRecoveryBackup()"></label>
-      <button id="restoreRecoveryButton" class="wide primary" type="button" onclick="restoreSelectedRecoveryBackup()" disabled>Archive Source Keys and Restore Reconciled Data</button>
+      <button id="restoreRecoveryButton" class="wide primary" type="button" onclick="restoreSelectedRecoveryBackup()" disabled><span>Archive Source Keys and Restore Reconciled Data</span></button>
       <p class="muted">The button activates only after the candidate matches the standalone pending and legacy fingerprints and does not reduce any preserved count.</p>
     </section>
 
@@ -2142,4 +2179,4 @@ try{
   render()
 }
 catch(e){console.error(e);renderDataFatal(e)}
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=216lwc10flat6').catch(()=>{})}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=216lwc10flat7').catch(()=>{})}

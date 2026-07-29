@@ -1,34 +1,23 @@
-# RGB Mileage Tracker flat06 Fix Notes
+# RGB Mileage Tracker flat07 Fix Notes
 
 **Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat06`  
+**Package revision:** `flat07`  
 **Status:** CURRENT  
 **Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat6
+**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat7
 
-## Reconciliation basis
+## Root cause
 
-The standalone and Safari sessions diverged:
+The recovery CSS was not the only scroll controller. The application still held `route.screen === "home"`, and the Home stabilization listener prevented every `touchmove`.
 
-- standalone retained 46/13/7 operational records
-- Safari retained the configured third vehicle and 41/3/5 records
+Long recovery strings also expanded their minimum-content width and were clipped by horizontal overflow protection.
 
-Directly choosing either state would lose data.
+## Correction
 
-## Merge result
-
-The candidate uses the standalone pending state as its base, then:
-
-- preserves both original vehicle IDs and order
-- inserts the Safari Wrangler and its photo in position 3
-- adds two Safari-only fuel record IDs
-- adds one Safari-only insurance record ID
-- retains all standalone fuel, maintenance, and insurance records
-- selects the corrected 2024-09-22 acquisition record and seller
-- unions custom fuel grades, stations, and maintenance categories
-
-The superseded acquisition value remains archived in the recovery snapshot.
-
-## Storage correction
-
-The reconciled active payload and retained legacy copy are too large to safely keep together. After a fresh snapshot and explicit confirmation, flat06 removes source keys, writes active, validates read-back, and restores exact originals if any step fails.
+- set `route.screen` to `recovery`
+- bypass Home touch prevention while recovery is active
+- explicitly override inline shell styles
+- use a fixed recovery viewport with `overflow-y: scroll`
+- keep the body locked behind the recovery viewport
+- force every recovery child to shrink and wrap
+- keep horizontal overflow hidden because horizontal scrolling is not required
