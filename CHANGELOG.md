@@ -1,23 +1,15 @@
-# RGB Mileage Tracker Changelog
+# Changelog
 
-**Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat07`  
-**Status:** CURRENT  
-**Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat7
+## v2.1.6l-wc10-flat09 — 07/31/2026
 
-## 2026-07-27 — flat07
+- Changed all user-visible date formatting to `MM/DD/YYYY`.
+- Added a shared display-date formatter for build, vehicle, fuel, maintenance, and insurance dates.
+- Preserved ISO dates in form controls, storage, backups, and machine-readable evidence.
+- Updated Home and Settings to show `07/31/2026`.
+- Added regression tests that reject `DD/MM/YY`.
+- Preserved all accepted data, recovery logic, layout behavior, and icon references.
 
-- Identified the actual scroll blocker: the Home route remained active and its `touchmove.preventDefault()` intercepted recovery swipes.
-- Added the dedicated `recovery` route.
-- Excluded recovery from Home touch blocking.
-- Added an explicit recovery scroll-mode initializer to override earlier inline shell locks.
-- Moved vertical scrolling to the fixed `#app` recovery viewport.
-- Added viewport-safe wrapping for long filenames and action-button text.
-- Eliminated horizontal overflow.
-- Added four recovery UI tests and two integration tests.
-- Total executable tests: 140 PASS, 0 FAIL.
+## URLs
 
-## 2026-07-27 — flat06
-
-- Added reconciled three-vehicle recovery candidate and archive-aware restore transaction.
+- Normal: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat09

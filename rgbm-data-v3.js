@@ -152,7 +152,7 @@
       ...defaults,
       app: "RGB Mileage",
       schemaVersion: SCHEMA_VERSION,
-      appVersion: cleanText(context.appVersion) || "2.1.6l-wc10",
+      appVersion: cleanText(context.appVersion) || "unversioned",
       migrationVersion: MIGRATION_VERSION,
       migrationHistory: [],
       settings: {
@@ -815,7 +815,7 @@
       ...clone(rawState),
       app: "RGB Mileage",
       schemaVersion: SCHEMA_VERSION,
-      appVersion: cleanText(context.appVersion) || "2.1.6l-wc10",
+      appVersion: cleanText(context.appVersion) || "unversioned",
       migrationVersion: MIGRATION_VERSION,
       migrationHistory: [
         ...asArray(rawState.migrationHistory).filter(
@@ -1113,7 +1113,7 @@
     next.migrationVersion = MIGRATION_VERSION;
     next.appVersion = cleanText(context.appVersion)
       || next.appVersion
-      || "2.1.6l-wc10";
+      || "unversioned";
     next.modifiedAt = nowISO(context);
 
     assertValidStateV3(next);
@@ -1221,7 +1221,7 @@
     next.migrationVersion = MIGRATION_VERSION;
     next.appVersion = cleanText(context.appVersion)
       || next.appVersion
-      || "2.1.6l-wc10";
+      || "unversioned";
     next.modifiedAt = nowISO(context);
     assertValidStateV3(next);
 
@@ -1462,7 +1462,7 @@
       app: "RGB Mileage",
       recoverySnapshotVersion: RECOVERY_SNAPSHOT_VERSION,
       generatedAt: nowISO(context),
-      appVersion: cleanText(context.appVersion) || "2.1.6l-wc10",
+      appVersion: cleanText(context.appVersion) || "unversioned",
       inspection,
       storageEntries,
       instructions: {

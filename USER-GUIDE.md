@@ -1,22 +1,29 @@
-# RGB Mileage Tracker flat07 Recovery Guide
+# User Guide
 
-**Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat07`  
-**Status:** DEVICE RETEST REQUIRED  
-**Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat7
+**Build:** `v2.1.6l-wc10-flat09`  
+**Build date:** `07/31/2026`
 
-After deployment:
+## Confirm the installed build
 
-1. Launch the existing Home Screen app.
-2. Swipe upward and confirm the page moves.
-3. Confirm headings, filenames, and buttons fit the screen.
-4. Download a fresh recovery snapshot.
-5. Check the snapshot confirmation box.
-6. Select:
-   `RGBM_Reconciled_Recovery_Candidate_3Vehicles_48Fuel_13Maintenance_8Insurance_2026-07-27.json`
-7. Confirm the validator reports 3 / 48 / 13 / 8.
-8. Tap `Archive Source Keys and Restore Reconciled Data`.
-9. Verify all three vehicles.
-10. Fully close and reopen the app.
-11. Export a post-relaunch backup and migration evidence.
+Home must display:
+
+`v2.1.6l-wc10-flat09 • Build 07/31/2026`
+
+The first Settings card must display:
+
+`v2.1.6l-wc10-flat09`  
+`Build date: 07/31/2026`
+
+Vehicle and record dates must display in `MM/DD/YYYY` form.
+
+Examples:
+
+- `09/22/2024`
+- `07/31/2026`
+
+Date input controls may use the device-native date picker, while saved values remain ISO internally.
+
+## URLs
+
+- Normal: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat09

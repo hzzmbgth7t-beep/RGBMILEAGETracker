@@ -1,22 +1,20 @@
-# RGB Mileage Tracker flat07 Deployment
+# Deployment
 
-**Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat07`  
-**Status:** CONTROLLED RECONCILED RESTORE RETEST  
-**Normal URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-**Cache-buster URL:** https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat7
+**Build:** `v2.1.6l-wc10-flat09`  
+**Build date:** `07/31/2026`
 
-1. Retain this complete archive locally.
-2. Upload only the 17 root files.
-3. Open the cache-buster URL once in Safari.
+1. Retain the complete ZIP locally.
+2. Upload only the 17 archive-root files.
+3. Open the cache-refresh URL once in Safari:
+   https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat09
 4. Close Safari.
 5. Launch the existing Home Screen app.
-6. Verify vertical scrolling works.
-7. Verify no content is clipped to the right.
-8. Download and retain a fresh recovery snapshot.
-9. Select the previously supplied reconciled candidate.
-10. Confirm the candidate reports 3 vehicles, 48 fuel, 13 maintenance, and 8 insurance records.
-11. Run the reconciled restore.
-12. Verify all three vehicles and fully relaunch the Home Screen app.
+6. Confirm Home shows `v2.1.6l-wc10-flat09 • Build 07/31/2026`.
+7. Open Settings and confirm `Build date: 07/31/2026`.
+8. Confirm record and vehicle dates display as `MM/DD/YYYY`.
+9. Confirm all three vehicles and existing records remain available.
+10. Export a full backup and migration evidence after acceptance.
 
 Do not delete the Home Screen app or clear website data.
+
+Normal URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/

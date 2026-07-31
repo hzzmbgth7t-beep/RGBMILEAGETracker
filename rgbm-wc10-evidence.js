@@ -146,11 +146,11 @@
     };
   }
 
-  function makeExpectedMigration(legacyState) {
+  function makeExpectedMigration(legacyState, appVersion) {
     let sequence = 0;
 
     return dataV3.migrateToV3(legacyState, {
-      appVersion: "2.1.6l-wc10",
+      appVersion: cleanText(appVersion),
       sourceKey: "evidence-comparison",
       now: () => "2000-01-01T00:00:00.000Z",
       idFactory(prefix) {
@@ -254,6 +254,10 @@
   function generateEvidence(storage, state, environment = {}) {
     const generatedAt = cleanText(environment.generatedAt)
       || new Date().toISOString();
+    const build = cleanText(environment.build)
+      || cleanText(state && (state.buildId || state.appVersion));
+    const buildDate = cleanText(environment.buildDate)
+      || cleanText(state && state.buildDate);
     const canonical = summarizeCanonical(state);
     const legacy = findLegacySource(storage);
     const activeRaw = getStorageValue(storage, dataV3.ACTIVE_KEY);
@@ -288,6 +292,16 @@
         pendingRaw ? "FAIL" : "PASS",
         { key: dataV3.PENDING_KEY },
       ),
+      result(
+        "build_identity_matches_active_state",
+        build && cleanText(state && (state.buildId || state.appVersion)) === build
+          ? "PASS"
+          : "FAIL",
+        {
+          expected: build,
+          actual: cleanText(state && (state.buildId || state.appVersion)),
+        },
+      ),
     ];
 
     let migrationAcceptance = "N/A";
@@ -302,7 +316,7 @@
       let expectedError = null;
 
       try {
-        expected = makeExpectedMigration(legacy.parsed);
+        expected = makeExpectedMigration(legacy.parsed, build);
       } catch (error) {
         expectedError = {
           code: cleanText(error && error.code) || "EXPECTED_MIGRATION_FAILED",
@@ -595,7 +609,8 @@
     return {
       evidenceVersion: EVIDENCE_VERSION,
       generatedAt,
-      build: "v2.1.6l-wc10",
+      build,
+      buildDate,
       phase: "migration verification",
       result: overall,
       migrationAcceptance,
@@ -632,6 +647,7 @@
       `RGBM WC-10 Migration Evidence`,
       `Generated: ${report.generatedAt}`,
       `Build: ${report.build}`,
+      `Build date: ${report.buildDate || "N/A"}`,
       `Overall: ${report.result}`,
       `Migration acceptance: ${report.migrationAcceptance}`,
       `Schema: ${report.canonical.schemaVersion}`,

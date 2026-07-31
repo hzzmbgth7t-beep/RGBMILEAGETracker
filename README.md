@@ -1,30 +1,27 @@
-# RGB Mileage Tracker — WC-10 flat07 recovery scroll
+# RGB Mileage
 
-**Build:** `v2.1.6l-wc10`  
-**Package revision:** `flat07`  
-**Packaging governance:** `v1.5`  
-**Status:** CONTROLLED RECONCILED RESTORE RETEST
+**Build:** `v2.1.6l-wc10-flat09`  
+**Build date:** `07/31/2026`  
+**Governance:** `v1.6`  
+**Status:** DEVICE ACCEPTANCE REQUIRED
 
-## Review links
+## Release scope
 
-- Normal URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache-buster URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat7
+This release standardizes all user-visible dates as `MM/DD/YYYY`.
 
-## Purpose
+Examples:
 
-flat07 corrects the flat06 Home Screen recovery interface:
+- Build date: `07/31/2026`
+- Acquisition date: `09/22/2024`
+- Fuel date: `07/31/2026`
 
-- recovery is assigned its own route
-- Home touch interception does not run on recovery
-- the recovery app owns a dedicated iOS-style vertical scroller
-- headings, filenames, labels, and buttons wrap inside the viewport
-- horizontal overflow is eliminated rather than requiring horizontal scrolling
+Machine-readable storage and JSON metadata continue to use ISO dates such as `2026-07-31`.
 
-The reconciled candidate, source fingerprints, non-reduction checks, snapshot gate, archive transaction, and rollback logic are unchanged.
+The full unique build identifier remains visible beneath the Home title and at the top of Settings.
 
-## Acceptance boundary
+## URLs
 
-- executable tests: 140 PASS, 0 FAIL
-- synthetic 430 × 932 touch/scroll audit: PASS
-- actual iPhone standalone flat07: N/A
-- production promotion: FAIL
+- Normal: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat09
+
+Upload only the 17 files at the archive root.
