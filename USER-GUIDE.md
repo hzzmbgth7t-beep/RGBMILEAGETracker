@@ -1,29 +1,32 @@
 # User Guide
 
-**Build:** `v2.1.6l-wc10-flat09`  
+**Build:** `v2.1.6l-wc10-flat10`  
 **Build date:** `07/31/2026`
 
-## Confirm the installed build
+## Home verification
 
-Home must display:
+Portrait should show:
 
-`v2.1.6l-wc10-flat09 • Build 07/31/2026`
+1. `RGB Mileage` close to the top safe area.
+2. One large primary vehicle circle.
+3. Two equal lower vehicle circles.
+4. A normal-height menu bar at the bottom edge.
 
-The first Settings card must display:
+Landscape should show three equal circles in one row with the same bottom menu height.
 
-`v2.1.6l-wc10-flat09`  
-`Build date: 07/31/2026`
+The version line must show:
 
-Vehicle and record dates must display in `MM/DD/YYYY` form.
+```text
+v2.1.6l-wc10-flat10 • Build 07/31/2026
+```
 
-Examples:
+All user-visible dates must use `MM/DD/YYYY`.
 
-- `09/22/2024`
-- `07/31/2026`
+## GitHub upload rule
 
-Date input controls may use the device-native date picker, while saved values remain ISO internally.
+Upload only the 17 top-level files. Support folders remain inside the local ZIP only.
 
 ## URLs
 
 - Normal: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat09
+- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat10

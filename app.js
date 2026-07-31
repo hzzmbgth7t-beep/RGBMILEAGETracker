@@ -1,4 +1,7 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-flat09",date:"2026-07-31",cacheRevision:"216lwc10flat09"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-flat10",date:"2026-07-31",cacheRevision:"216lwc10flat10"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
+function canonicalLaunchUrl(input){try{const url=new URL(String(input||""));if(!/^https?:$/.test(url.protocol))return url.href;url.pathname=url.pathname.replace(/index\.html$/i,"");if(!url.pathname.endsWith("/"))url.pathname+="/";url.search="";url.searchParams.set("v",BUILD.cacheRevision);return url.href}catch(e){return String(input||"")}}
+function normalizeLaunchUrl(){const observed=String(typeof location!=="undefined"&&location.href?location.href:"");const normalized=canonicalLaunchUrl(observed);let changed=false,error="";try{if(normalized&&observed!==normalized&&typeof history!=="undefined"&&typeof history.replaceState==="function"){history.replaceState(history.state||null,"",normalized);changed=true}}catch(e){error=e&&e.message?String(e.message):"URL normalization failed"}Object.assign(LAUNCH_URL_STATE,{observed,normalized:normalized||observed,changed,error});return {...LAUNCH_URL_STATE}}
 function formatDisplayDate(d){const value=String(d||"").trim();if(!value)return "";const match=/^(\d{4})-(\d{2})-(\d{2})(?:T.*)?$/.exec(value);return match?`${match[2]}/${match[3]}/${match[1]}`:value} function formatBuildDate(d){return formatDisplayDate(d)}
 const LEGACY_KEYS=[...RGBMDataV3.LEGACY_KEYS];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], RECORD_ORIGINS=["Manual Entry","Other Data","Migration"], RECORD_STATUSES=["","Incomplete","Historical","Review"], RECORD_LIFECYCLES=["","Archived"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -140,7 +143,7 @@ function numVal(v){if(v===null||v===undefined||v==="")return "";const n=Number(S
 
 
 
-function initV213aShell(){
+function initApplicationShell(){
   try{
     document.documentElement.style.background="#0a1324";
     document.body.style.background="#0a1324";
@@ -149,27 +152,30 @@ function initV213aShell(){
     document.body.style.inset="0";
     document.body.style.width="100%";
     document.body.style.height="100dvh";
-    const vp=document.querySelector("meta[name=viewport]");
-    if(vp)vp.setAttribute("content","width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover");
-    window.addEventListener("orientationchange",()=>setTimeout(()=>{try{render()}catch(e){}},200),{passive:true});
-  }catch(e){}
-}
-function initV213Shell(){
-  try{
-    document.documentElement.style.background="#0a1324";
-    document.body.style.background="#0a1324";
-    document.body.style.overflow="hidden";
-    document.body.style.position="fixed";
-    document.body.style.inset="0";
-    document.body.style.width="100%";
-    document.body.style.height="100dvh";
-    const vp=document.querySelector("meta[name=viewport]");
-    if(vp)vp.setAttribute("content","width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover");
-    window.addEventListener("orientationchange",()=>setTimeout(()=>{try{render()}catch(e){}},250),{passive:true});
-    document.addEventListener("gesturestart",e=>e.preventDefault(),{passive:false});
+    const viewportMeta=document.querySelector("meta[name=viewport]");
+    if(viewportMeta){
+      viewportMeta.setAttribute(
+        "content",
+        "width=device-width, initial-scale=1, maximum-scale=1, "
+          +"user-scalable=no, viewport-fit=cover"
+      );
+    }
+    document.addEventListener(
+      "gesturestart",
+      event=>event.preventDefault(),
+      {passive:false}
+    );
     let lastTouchEnd=0;
-    document.addEventListener("touchend",e=>{const now=Date.now();if(now-lastTouchEnd<=300)e.preventDefault();lastTouchEnd=now;},{passive:false});
-  }catch(e){}
+    document.addEventListener(
+      "touchend",
+      event=>{
+        const current=Date.now();
+        if(current-lastTouchEnd<=300)event.preventDefault();
+        lastTouchEnd=current;
+      },
+      {passive:false}
+    );
+  }catch(error){}
 }
 function clearRGBMStorage(keepCurrent=false){
   const prefixes=["RGBM_DATA_","rgbMileage","rgbm_data_"];
@@ -447,22 +453,40 @@ function pxValue(value){
 function homeViewport(){
   const viewport=window.visualViewport;
   return {
-    width:Math.max(1,Math.round(viewport&&viewport.width?viewport.width:window.innerWidth||document.documentElement.clientWidth||1)),
-    height:Math.max(1,Math.round(viewport&&viewport.height?viewport.height:window.innerHeight||document.documentElement.clientHeight||1))
+    width:Math.max(
+      1,
+      Math.round(
+        viewport&&viewport.width
+          ?viewport.width
+          :window.innerWidth||document.documentElement.clientWidth||1
+      )
+    ),
+    height:Math.max(
+      1,
+      Math.round(
+        viewport&&viewport.height
+          ?viewport.height
+          :window.innerHeight||document.documentElement.clientHeight||1
+      )
+    )
   };
 }
 function applyHomeGeometry(){
   if(!route||route.screen!=="home"||!window.RGBMHomeLayout)return null;
   const app=$("app");
   if(!app||typeof app.querySelector!=="function")return null;
-  const homeScreen=app.querySelector(".screen.home");
+  const homeScreen=app.querySelector(".home-shell");
   const homeHead=app.querySelector(".home-head");
   const vehicleArea=app.querySelector(".vehicle-area");
-  const dock=app.querySelector(".bottom-nav");
+  const dock=app.querySelector(".home-shell > .bottom-nav");
   if(!homeScreen||!homeHead||!vehicleArea||!dock)return null;
   const viewport=homeViewport();
+  app.style.setProperty("--home-viewport-width",`${viewport.width}px`);
+  app.style.setProperty("--home-viewport-height",`${viewport.height}px`);
+  app.dataset.orientation=viewport.width>viewport.height
+    ?"landscape"
+    :"portrait";
   const appStyle=getComputedStyle(app);
-  const orientation=viewport.width>viewport.height?"landscape":"portrait";
   const layout=RGBMHomeLayout.calculateHomeLayout({
     viewportWidth:viewport.width,
     viewportHeight:viewport.height,
@@ -471,37 +495,74 @@ function applyHomeGeometry(){
     paddingBottom:pxValue(appStyle.paddingBottom),
     paddingLeft:pxValue(appStyle.paddingLeft),
     headerHeight:Math.ceil(homeHead.getBoundingClientRect().height),
-    headerGap:orientation==="landscape"?4:6,
+    headerGap:0,
     dockHeight:Math.ceil(dock.getBoundingClientRect().height),
-    dockGap:4,
-    orientation
+    dockGap:0,
+    orientation:app.dataset.orientation
   });
   homeScreen.dataset.layoutMode=layout.mode;
-  homeScreen.style.setProperty("--home-content-height",`${layout.homeContentHeight}px`);
-  homeScreen.style.setProperty("--home-vehicle-height",`${layout.vehicleAreaHeight}px`);
-  homeScreen.style.setProperty("--home-column-gap",`${layout.columnGap}px`);
-  homeScreen.style.setProperty("--home-row-gap",`${layout.rowGap}px`);
-  homeScreen.style.setProperty("--home-label-height",`${layout.labelHeight}px`);
+  homeScreen.style.setProperty(
+    "--home-column-gap",
+    `${layout.columnGap}px`
+  );
+  homeScreen.style.setProperty(
+    "--home-min-row-gap",
+    `${layout.minimumRowGap}px`
+  );
+  homeScreen.style.setProperty(
+    "--home-label-height",
+    `${layout.labelHeight}px`
+  );
   if(layout.mode==="portrait"){
-    homeScreen.style.setProperty("--home-top-diameter",`${layout.topDiameter}px`);
-    homeScreen.style.setProperty("--home-lower-diameter",`${layout.lowerDiameter}px`);
+    homeScreen.style.setProperty(
+      "--home-primary-diameter",
+      `${layout.primaryDiameter}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-secondary-diameter",
+      `${layout.secondaryDiameter}px`
+    );
+    homeScreen.style.removeProperty("--home-shared-diameter");
   }else{
-    homeScreen.style.setProperty("--home-shared-diameter",`${layout.sharedDiameter}px`);
+    homeScreen.style.setProperty(
+      "--home-shared-diameter",
+      `${layout.sharedDiameter}px`
+    );
+    homeScreen.style.removeProperty("--home-primary-diameter");
+    homeScreen.style.removeProperty("--home-secondary-diameter");
   }
+  const headRect=homeHead.getBoundingClientRect();
+  const areaRect=vehicleArea.getBoundingClientRect();
+  const dockRect=dock.getBoundingClientRect();
   window.__RGBM_HOME_LAYOUT_DIAGNOSTICS={
     ...layout,
-    titleRect:homeHead.getBoundingClientRect().toJSON?homeHead.getBoundingClientRect().toJSON():null,
-    dockRect:dock.getBoundingClientRect().toJSON?dock.getBoundingClientRect().toJSON():null
+    titleTop:headRect.top,
+    titleBottom:headRect.bottom,
+    vehicleTop:areaRect.top,
+    vehicleBottom:areaRect.bottom,
+    dockTop:dockRect.top,
+    dockBottom:dockRect.bottom,
+    dockDistanceFromViewportBottom:Math.max(
+      0,
+      Math.round(viewport.height-dockRect.bottom)
+    )
   };
   return layout;
 }
 function scheduleHomeGeometry(){
-  if(homeGeometryFrame&&window.cancelAnimationFrame)cancelAnimationFrame(homeGeometryFrame);
-  const run=()=>{homeGeometryFrame=0;applyHomeGeometry()};
-  homeGeometryFrame=window.requestAnimationFrame?requestAnimationFrame(run):setTimeout(run,0);
+  if(homeGeometryFrame&&window.cancelAnimationFrame){
+    cancelAnimationFrame(homeGeometryFrame);
+  }
+  const run=()=>{
+    homeGeometryFrame=0;
+    applyHomeGeometry();
+  };
+  homeGeometryFrame=window.requestAnimationFrame
+    ?requestAnimationFrame(run)
+    :setTimeout(run,0);
 }
 function home(app){
-  app.innerHTML=`<div class="screen home"><div class="home-head"><h1 class="chrome-title">${APP_NAME}</h1><div class="subtitle version-subtitle" data-build-id="${VERSION}">${VERSION} • Build ${formatBuildDate(BUILD_DATE)}</div></div><div class="vehicle-area">${orderedVehicles().map((v,i)=>circleHtml(v,i)).join("")}</div></div>${bottomNav()}`;
+  app.innerHTML=`<section class="screen home home-shell"><header class="home-head"><h1 class="chrome-title">${APP_NAME}</h1><div class="subtitle version-subtitle" data-build-id="${VERSION}">${VERSION} • Build ${formatBuildDate(BUILD_DATE)}</div></header><main class="vehicle-area" aria-label="Vehicles">${orderedVehicles().map((v,i)=>circleHtml(v,i)).join("")}</main>${bottomNav()}</section>`;
   scheduleHomeGeometry();
 }
 
@@ -1744,7 +1805,11 @@ function migrationEvidenceEnvironment(){
     userAgent:navigator.userAgent||"",
     standalone,
     orientation,
-    url:location.href||"",
+    url:LAUNCH_URL_STATE.normalized||location.href||"",
+    observedUrl:LAUNCH_URL_STATE.observed||location.href||"",
+    urlNormalized:LAUNCH_URL_STATE.changed,
+    urlNormalizationError:LAUNCH_URL_STATE.error,
+    cacheRevision:BUILD.cacheRevision,
     visibilityState:document.visibilityState||"",
     build:VERSION,
     buildDate:BUILD_DATE
@@ -1829,17 +1894,68 @@ function dataDiagnostics(){
     validation:RGBMDataV3.validateStateV3(state),
     migrationReport:window.__RGBM_WC10_LAST_MIGRATION_REPORT||null,
     restoreReport:window.__RGBM_WC10_LAST_RESTORE_REPORT||null,
-    migrationEvidence:window.__RGBM_WC10_LAST_EVIDENCE||null
+    migrationEvidence:window.__RGBM_WC10_LAST_EVIDENCE||null,
+    launchUrl:{...LAUNCH_URL_STATE},
+    homeLayout:window.__RGBM_HOME_LAYOUT_DIAGNOSTICS||null
   };
 }
-function initV213eStabilization(){
+let viewportRefreshTimer=0;
+function initResponsiveViewportHandling(){
   try{
-    document.addEventListener("touchmove",e=>{const recoveryActive=document.body.classList.contains("recovery-active")||e.target.closest?.("#app.screen-recovery");if(!recoveryActive&&route&&route.screen==="home")e.preventDefault()},{passive:false});
-    const refresh=()=>setTimeout(()=>{if(route&&route.screen==="home")scheduleHomeGeometry();else applyNonHomeViewport()},60);
-    window.addEventListener("resize",refresh,{passive:true});
-    window.addEventListener("orientationchange",refresh,{passive:true});
-    if(window.visualViewport)window.visualViewport.addEventListener("resize",refresh,{passive:true});
-  }catch(e){}
+    document.addEventListener(
+      "touchmove",
+      event=>{
+        const recoveryActive=(
+          document.body.classList.contains("recovery-active")
+          ||event.target.closest?.("#app.screen-recovery")
+        );
+        if(!recoveryActive&&route&&route.screen==="home"){
+          event.preventDefault();
+        }
+      },
+      {passive:false}
+    );
+    const refresh=(delay=0)=>{
+      if(viewportRefreshTimer)clearTimeout(viewportRefreshTimer);
+      viewportRefreshTimer=setTimeout(()=>{
+        viewportRefreshTimer=0;
+        if(route&&route.screen==="home"){
+          scheduleHomeGeometry();
+        }else{
+          applyNonHomeViewport();
+        }
+      },delay);
+    };
+    window.addEventListener(
+      "resize",
+      ()=>refresh(0),
+      {passive:true}
+    );
+    window.addEventListener(
+      "orientationchange",
+      ()=>refresh(80),
+      {passive:true}
+    );
+    if(window.visualViewport){
+      window.visualViewport.addEventListener(
+        "resize",
+        ()=>refresh(0),
+        {passive:true}
+      );
+      window.visualViewport.addEventListener(
+        "scroll",
+        ()=>refresh(0),
+        {passive:true}
+      );
+    }
+    if(screen.orientation&&screen.orientation.addEventListener){
+      screen.orientation.addEventListener(
+        "change",
+        ()=>refresh(80),
+        {passive:true}
+      );
+    }
+  }catch(error){}
 }
 let recoverySnapshotDownloaded=false;
 let recoveryBackupCandidate=null;
@@ -2185,7 +2301,7 @@ function renderRecoveryConsole(error){
 function renderDataFatal(error){
   renderRecoveryConsole(error);
 }
-initV213aShell();initV213Shell();initV213eStabilization();
+normalizeLaunchUrl();initApplicationShell();initResponsiveViewportHandling();
 try{
   state=loadData();
   window.RGBM_WC10_DATA_DIAGNOSTICS=dataDiagnostics;

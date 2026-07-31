@@ -258,6 +258,8 @@
       || cleanText(state && (state.buildId || state.appVersion));
     const buildDate = cleanText(environment.buildDate)
       || cleanText(state && state.buildDate);
+    const cacheRevision = cleanText(environment.cacheRevision);
+    const canonicalUrl = cleanText(environment.url);
     const canonical = summarizeCanonical(state);
     const legacy = findLegacySource(storage);
     const activeRaw = getStorageValue(storage, dataV3.ACTIVE_KEY);
@@ -300,6 +302,21 @@
         {
           expected: build,
           actual: cleanText(state && (state.buildId || state.appVersion)),
+        },
+      ),
+      result(
+        "canonical_launch_url_revision",
+        cacheRevision
+          ? (
+            canonicalUrl.includes(`v=${cacheRevision}`)
+            && !/\/index\.html(?:[?#]|$)/i.test(canonicalUrl)
+              ? "PASS"
+              : "FAIL"
+          )
+          : "N/A",
+        {
+          expectedRevision: cacheRevision || null,
+          actualUrl: canonicalUrl || null,
         },
       ),
     ];
@@ -618,7 +635,13 @@
         userAgent: cleanText(environment.userAgent),
         standalone: environment.standalone === true,
         orientation: cleanText(environment.orientation),
-        url: cleanText(environment.url),
+        url: canonicalUrl,
+        observedUrl: cleanText(environment.observedUrl),
+        urlNormalized: environment.urlNormalized === true,
+        urlNormalizationError: cleanText(
+          environment.urlNormalizationError,
+        ),
+        cacheRevision,
         visibilityState: cleanText(environment.visibilityState),
       },
       storage: {
@@ -648,6 +671,9 @@
       `Generated: ${report.generatedAt}`,
       `Build: ${report.build}`,
       `Build date: ${report.buildDate || "N/A"}`,
+      `Launch URL: ${report.environment.url || "N/A"}`,
+      `Observed URL: ${report.environment.observedUrl || "N/A"}`,
+      `URL normalized: ${report.environment.urlNormalized ? "YES" : "NO"}`,
       `Overall: ${report.result}`,
       `Migration acceptance: ${report.migrationAcceptance}`,
       `Schema: ${report.canonical.schemaVersion}`,
