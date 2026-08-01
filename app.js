@@ -1,7 +1,192 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-flat11",date:"2026-07-31",cacheRevision:"216lwc10flat11"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f12",date:"2026-07-31",cacheRevision:"216lwc10f12"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 function canonicalLaunchUrl(input){try{const url=new URL(String(input||""));if(!/^https?:$/.test(url.protocol))return url.href;url.pathname=url.pathname.replace(/index\.html$/i,"");if(!url.pathname.endsWith("/"))url.pathname+="/";url.search="";url.searchParams.set("v",BUILD.cacheRevision);return url.href}catch(e){return String(input||"")}}
 function normalizeLaunchUrl(){const observed=String(typeof location!=="undefined"&&location.href?location.href:"");const normalized=canonicalLaunchUrl(observed);let changed=false,error="";try{if(normalized&&observed!==normalized&&typeof history!=="undefined"&&typeof history.replaceState==="function"){history.replaceState(history.state||null,"",normalized);changed=true}}catch(e){error=e&&e.message?String(e.message):"URL normalization failed"}Object.assign(LAUNCH_URL_STATE,{observed,normalized:normalized||observed,changed,error});return {...LAUNCH_URL_STATE}}
+function isStandaloneDisplayMode(){
+  return !!(
+    (
+      window.matchMedia
+      &&window.matchMedia("(display-mode: standalone)").matches
+    )
+    ||navigator.standalone===true
+  );
+}
+
+let browserHomeViewportToken=0;
+let browserHomeViewportTimer=0;
+
+function styleSet(element,name,value){
+  if(!element||!element.style)return;
+  if(typeof element.style.setProperty==="function"){
+    element.style.setProperty(name,value);
+  }else{
+    element.style[name]=value;
+  }
+}
+
+function styleRemove(element,name){
+  if(!element||!element.style)return;
+  if(typeof element.style.removeProperty==="function"){
+    element.style.removeProperty(name);
+  }else{
+    delete element.style[name];
+  }
+}
+
+function browserHomeViewportSize(){
+  if(isStandaloneDisplayMode())return null;
+  const viewport=window.visualViewport;
+  const width=Math.max(
+    1,
+    Math.round(
+      viewport&&viewport.width
+        ?viewport.width
+        :window.innerWidth
+          ||document.documentElement.clientWidth
+          ||1
+    )
+  );
+  const height=Math.max(
+    1,
+    Math.round(
+      viewport&&viewport.height
+        ?viewport.height
+        :window.innerHeight
+          ||document.documentElement.clientHeight
+          ||1
+    )
+  );
+  const offsetTop=Math.round(
+    viewport&&Number.isFinite(viewport.offsetTop)
+      ?viewport.offsetTop
+      :0
+  );
+  const offsetLeft=Math.round(
+    viewport&&Number.isFinite(viewport.offsetLeft)
+      ?viewport.offsetLeft
+      :0
+  );
+  return {
+    width,
+    height,
+    offsetTop,
+    offsetLeft,
+    visibleBottom:offsetTop+height,
+    source:viewport
+      ?"browser-visualViewport-height"
+      :"browser-innerHeight-fallback"
+  };
+}
+
+function cancelBrowserHomeViewportStabilization(){
+  browserHomeViewportToken+=1;
+  if(browserHomeViewportTimer){
+    clearTimeout(browserHomeViewportTimer);
+    browserHomeViewportTimer=0;
+  }
+}
+
+function applyBrowserHomeViewport(){
+  const app=$("app");
+  if(!app||!app.style)return null;
+
+  if(isStandaloneDisplayMode()){
+    styleRemove(app,"--home-browser-viewport-height");
+    styleRemove(app,"--home-browser-viewport-width");
+    if(app.dataset){
+      app.dataset.homeViewportMode="standalone-100vh";
+    }
+    return null;
+  }
+
+  const size=browserHomeViewportSize();
+  if(!size)return null;
+  styleSet(
+    app,
+    "--home-browser-viewport-height",
+    `${size.height}px`
+  );
+  styleSet(
+    app,
+    "--home-browser-viewport-width",
+    `${size.width}px`
+  );
+  if(app.dataset){
+    app.dataset.homeViewportMode=size.source;
+  }
+  return size;
+}
+
+function stabilizeBrowserHomeViewport(maxFrames=12){
+  cancelBrowserHomeViewportStabilization();
+
+  if(isStandaloneDisplayMode()){
+    applyBrowserHomeViewport();
+    scheduleHomeGeometry();
+    return null;
+  }
+
+  const token=browserHomeViewportToken;
+  let frame=0;
+  let stableFrames=0;
+  let previousSignature="";
+
+  const sample=()=>{
+    if(
+      token!==browserHomeViewportToken
+      ||!route
+      ||route.screen!=="home"
+      ||isStandaloneDisplayMode()
+    ){
+      return;
+    }
+
+    const size=applyBrowserHomeViewport();
+    if(!size)return;
+    const signature=[
+      size.width,
+      size.height,
+      size.offsetTop,
+      size.offsetLeft
+    ].join(":");
+
+    stableFrames=signature===previousSignature
+      ?stableFrames+1
+      :0;
+    previousSignature=signature;
+    frame+=1;
+    scheduleHomeGeometry();
+
+    if(frame<maxFrames&&stableFrames<3){
+      if(window.requestAnimationFrame){
+        requestAnimationFrame(sample);
+      }else{
+        setTimeout(sample,16);
+      }
+    }
+  };
+
+  if(window.requestAnimationFrame){
+    requestAnimationFrame(sample);
+  }else{
+    setTimeout(sample,0);
+  }
+
+  browserHomeViewportTimer=setTimeout(()=>{
+    browserHomeViewportTimer=0;
+    if(
+      token===browserHomeViewportToken
+      &&route
+      &&route.screen==="home"
+      &&!isStandaloneDisplayMode()
+    ){
+      applyBrowserHomeViewport();
+      scheduleHomeGeometry();
+    }
+  },300);
+
+  return token;
+}
 function formatDisplayDate(d){const value=String(d||"").trim();if(!value)return "";const match=/^(\d{4})-(\d{2})-(\d{2})(?:T.*)?$/.exec(value);return match?`${match[2]}/${match[3]}/${match[1]}`:value} function formatBuildDate(d){return formatDisplayDate(d)}
 const LEGACY_KEYS=[...RGBMDataV3.LEGACY_KEYS];
 const STATIONS_DEFAULT=["Murphy USA","Circle K","refuel","BP","Shell","Other"], MAINT_CATS=["Oil Change","Tire Rotation","Brakes","Cooling System","Suspension","Electrical","Engine","Transmission","Inspection","Detailing","Repair","Other"], RECORD_ORIGINS=["Manual Entry","Other Data","Migration"], RECORD_STATUSES=["","Incomplete","Historical","Review"], RECORD_LIFECYCLES=["","Archived"], FUEL_GRADES=["","87","89","90","91","93","Other"];
@@ -332,6 +517,7 @@ function render(){
   document.body.classList.toggle("home-active",s==="home");
   document.body.classList.toggle("non-home-active",s!=="home");
   if(s==="home"){home(app);return}
+  cancelBrowserHomeViewportStabilization();
   disconnectHomeResizeObserver();
   if(s==="vehicleView")vehicleView(app,route.vehicleId);
   else if(s==="vehicleEdit")vehicleEdit(app,route.vehicleId);
@@ -544,10 +730,21 @@ function applyHomeGeometry(){
   const visualHeight=window.visualViewport
     ?window.visualViewport.height
     :null;
+  const standalone=isStandaloneDisplayMode();
+  const browserViewport=standalone
+    ?null
+    :browserHomeViewportSize();
+  const visibleBottom=browserViewport
+    ?browserViewport.visibleBottom
+    :innerHeight;
 
   window.__RGBM_HOME_LAYOUT_DIAGNOSTICS={
     ...layout,
-    heightSource:"standalone-100vh-home-shell",
+    heightSource:standalone
+      ?"standalone-100vh-home-shell"
+      :browserViewport
+        ?browserViewport.source
+        :"browser-innerHeight-fallback",
     appPaddingTop:finitePixels(appStyle.paddingTop),
     containerTop:container.top,
     containerBottom:container.bottom,
@@ -565,9 +762,21 @@ function applyHomeGeometry(){
       0,
       Math.round(innerHeight-dockRect.bottom)
     ),
+    dockDistanceFromVisibleViewportBottom:Math.max(
+      0,
+      Math.round(visibleBottom-dockRect.bottom)
+    ),
     windowInnerHeight:innerHeight,
     visualViewportHeight:visualHeight,
-    visualViewportExcludedFromHomeSizing:true
+    visualViewportOffsetTop:browserViewport
+      ?browserViewport.offsetTop
+      :0,
+    visibleViewportBottom:visibleBottom,
+    standalone,
+    visualViewportExcludedFromHomeSizing:standalone,
+    browserVisualViewportHeightOwner:(
+      !standalone&&!!window.visualViewport
+    )
   };
   return layout;
 }
@@ -600,8 +809,13 @@ function observeHomeGeometry(){
 }
 function home(app){
   app.innerHTML=`<section class="screen home home-shell"><header class="home-head"><h1 class="chrome-title">${APP_NAME}</h1><div class="subtitle version-subtitle" data-build-id="${VERSION}">${VERSION} • Build ${formatBuildDate(BUILD_DATE)}</div></header><main class="vehicle-area" aria-label="Vehicles">${orderedVehicles().map((v,i)=>circleHtml(v,i)).join("")}</main>${bottomNav()}</section>`;
+  applyBrowserHomeViewport();
   observeHomeGeometry();
-  scheduleHomeGeometry();
+  if(isStandaloneDisplayMode()){
+    scheduleHomeGeometry();
+  }else{
+    stabilizeBrowserHomeViewport();
+  }
 }
 
 function pressStart(cb,e,delay=750){
@@ -1831,13 +2045,13 @@ let previewRows=[];function parseCSV(t){const rows=[];let row=[],cell="",q=false
 function savePreviewRows(){if(!previewRows.length)return alert("Preview first.");const mode=$("importMode")?.value||"Skip";if(mode==="Cancel"){$("importStatus").textContent="Import cancelled.";previewRows=[];return}let imported=0,updated=0,skipped=0,duplicated=0,replaced=0;function targetFor(r){return r.recordType==="Maintenance"?state.maintenanceRecords:r.recordType==="Insurance"?state.insuranceRecords:state.fuelRecords}previewRows.forEach(r=>{const target=targetFor(r),i=target.findIndex(e=>e.recordId===r.recordId);if(i>=0){if(mode==="Skip"){skipped++;return}if(mode==="Update"){target[i]={...target[i],...r,modifiedAt:nowISO()};updated++;return}if(mode==="Replace"){target[i]=r;replaced++;return}if(mode==="Duplicate"){r={...r,recordId:r.recordId+"-DUP-"+Date.now().toString(36)};target.push(r);duplicated++;return}}else{target.push(r);imported++}});saveData();$("importStatus").textContent=`Import Summary\\nImported: ${imported}\\nUpdated: ${updated}\\nReplaced: ${replaced}\\nDuplicated: ${duplicated}\\nSkipped: ${skipped}`;previewRows=[]}
 function reportsHome(app){app.innerHTML=header("Reports")+`<div class="card report-menu"><h2>Report Menu</h2><button class="wide" onclick="openReport('reportFuel')">Fuel History Report</button><button class="wide" onclick="openReport('reportMPG')">MPG Report</button><button class="wide" onclick="openReport('reportMaintenance')">Maintenance Report</button><button class="wide" onclick="openReport('reportInsurance')">Insurance History Report</button><button class="wide" onclick="openReport('reportVehicle')">Vehicle Summary Report</button></div>`+bottomNav()+footer()} function reportDetail(app,s){let title="Report", rows=[]; if(s==="reportFuel"){title="Fuel History Report";rows=state.fuelRecords.filter(r=>!hasTag(r,"Archived")).sort((a,b)=>previousSort("Fuel",a,b)).map(r=>[r.date||"",getVehicle(r.vehicleId)?vehicleLabel(getVehicle(r.vehicleId)):"",fmt(r.odometer),fmt(r.miles),fmt(r.gallons,3),fmt(r.mpg)])} if(s==="reportMPG"){title="MPG Report";rows=state.fuelRecords.filter(r=>!hasTag(r,"Archived")&&!hasTag(r,"Historical")).sort((a,b)=>previousSort("Fuel",a,b)).map(r=>[r.date||"",fmt(r.odometer),fmt(r.miles),fmt(r.gallons,3),fmt(r.mpg)])} if(s==="reportMaintenance"){title="Maintenance Report";rows=state.maintenanceRecords.filter(r=>!hasTag(r,"Archived")).sort((a,b)=>previousSort("Maintenance",a,b)).map(r=>[r.dropOffDate||"",r.category||"",fmt(r.odometer),money(r.totalCost)])} if(s==="reportInsurance"){title="Insurance History Report";rows=state.insuranceRecords.filter(r=>!hasTag(r,"Archived")).sort((a,b)=>previousSort("Insurance",a,b)).map(r=>[r.company||"",r.policyNumber||"",r.effectiveDate||"",r.expirationDate||"",money(r.premium)])} if(s==="reportVehicle"){title="Vehicle Summary Report";rows=configuredVehicles().map(v=>[vehicleLabel(v),v.status,state.fuelRecords.filter(r=>r.vehicleId===v.vehicleId&&!hasTag(r,"Archived")).length,state.maintenanceRecords.filter(r=>r.vehicleId===v.vehicleId&&!hasTag(r,"Archived")).length])} app.innerHTML=header(title)+`<div class="card"><p class="muted">Default views exclude Archived records. MPG report also excludes Historical records.</p><div style="overflow:auto"><table><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")||'<tr><td>No records.</td></tr>'}</tbody></table></div></div>`+bottomNav()+footer()}
 function migrationEvidenceEnvironment(){
-  const standalone=!!(
-    (window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)
-    || navigator.standalone===true
-  );
+  const standalone=isStandaloneDisplayMode();
   const orientation=screen.orientation&&screen.orientation.type
     ?screen.orientation.type
     :(window.innerWidth>window.innerHeight?"landscape":"portrait");
+  const browserViewport=standalone
+    ?null
+    :browserHomeViewportSize();
   return {
     generatedAt:nowISO(),
     userAgent:navigator.userAgent||"",
@@ -1849,6 +2063,19 @@ function migrationEvidenceEnvironment(){
     urlNormalizationError:LAUNCH_URL_STATE.error,
     cacheRevision:BUILD.cacheRevision,
     visibilityState:document.visibilityState||"",
+    homeViewportStrategy:standalone
+      ?"standalone-100vh"
+      :browserViewport
+        ?browserViewport.source
+        :"browser-innerHeight-fallback",
+    visualViewport:window.visualViewport
+      ?{
+        width:Math.round(window.visualViewport.width||0),
+        height:Math.round(window.visualViewport.height||0),
+        offsetTop:Math.round(window.visualViewport.offsetTop||0),
+        offsetLeft:Math.round(window.visualViewport.offsetLeft||0)
+      }
+      :null,
     build:VERSION,
     buildDate:BUILD_DATE
   };
@@ -1953,17 +2180,23 @@ function initResponsiveViewportHandling(){
       },
       {passive:false}
     );
+
     const refresh=(delay=0)=>{
       if(viewportRefreshTimer)clearTimeout(viewportRefreshTimer);
       viewportRefreshTimer=setTimeout(()=>{
         viewportRefreshTimer=0;
         if(route&&route.screen==="home"){
-          scheduleHomeGeometry();
+          if(isStandaloneDisplayMode()){
+            scheduleHomeGeometry();
+          }else{
+            stabilizeBrowserHomeViewport();
+          }
         }else{
           applyNonHomeViewport();
         }
       },delay);
     };
+
     window.addEventListener(
       "resize",
       ()=>refresh(0),
@@ -1974,21 +2207,41 @@ function initResponsiveViewportHandling(){
       ()=>refresh(80),
       {passive:true}
     );
+    window.addEventListener(
+      "pageshow",
+      ()=>refresh(0),
+      {passive:true}
+    );
+    document.addEventListener(
+      "visibilitychange",
+      ()=>{
+        if(document.visibilityState==="visible")refresh(0);
+      },
+      {passive:true}
+    );
+
     if(window.visualViewport){
-      const refreshNonHome=()=>{
-        if(route&&route.screen!=="home")refresh(0);
+      const refreshVisualViewport=()=>{
+        if(route&&route.screen==="home"){
+          if(!isStandaloneDisplayMode()){
+            stabilizeBrowserHomeViewport();
+          }
+        }else{
+          refresh(0);
+        }
       };
       window.visualViewport.addEventListener(
         "resize",
-        refreshNonHome,
+        refreshVisualViewport,
         {passive:true}
       );
       window.visualViewport.addEventListener(
         "scroll",
-        refreshNonHome,
+        refreshVisualViewport,
         {passive:true}
       );
     }
+
     if(screen.orientation&&screen.orientation.addEventListener){
       screen.orientation.addEventListener(
         "change",
@@ -1998,6 +2251,7 @@ function initResponsiveViewportHandling(){
     }
   }catch(error){}
 }
+
 let recoverySnapshotDownloaded=false;
 let recoveryBackupCandidate=null;
 let recoveryInspection=null;

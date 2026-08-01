@@ -33,6 +33,11 @@
     return value === null || value === undefined ? "" : String(value).trim();
   }
 
+  function finiteNumber(value) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : 0;
+  }
+
   function asArray(value) {
     return Array.isArray(value) ? value : [];
   }
@@ -643,6 +648,24 @@
         ),
         cacheRevision,
         visibilityState: cleanText(environment.visibilityState),
+        homeViewportStrategy: cleanText(
+          environment.homeViewportStrategy,
+        ),
+        visualViewport: (
+          environment.visualViewport
+          && typeof environment.visualViewport === "object"
+        )
+          ? {
+            width: finiteNumber(environment.visualViewport.width),
+            height: finiteNumber(environment.visualViewport.height),
+            offsetTop: finiteNumber(
+              environment.visualViewport.offsetTop,
+            ),
+            offsetLeft: finiteNumber(
+              environment.visualViewport.offsetLeft,
+            ),
+          }
+          : null,
       },
       storage: {
         activeKey: dataV3.ACTIVE_KEY,
@@ -674,6 +697,12 @@
       `Launch URL: ${report.environment.url || "N/A"}`,
       `Observed URL: ${report.environment.observedUrl || "N/A"}`,
       `URL normalized: ${report.environment.urlNormalized ? "YES" : "NO"}`,
+      `Home viewport strategy: ${report.environment.homeViewportStrategy || "N/A"}`,
+      `Visual viewport: ${
+        report.environment.visualViewport
+          ? `${report.environment.visualViewport.width}x${report.environment.visualViewport.height}`
+          : "N/A"
+      }`,
       `Overall: ${report.result}`,
       `Migration acceptance: ${report.migrationAcceptance}`,
       `Schema: ${report.canonical.schemaVersion}`,

@@ -1,26 +1,27 @@
 # RGB Mileage
 
-**Build:** `v2.1.6l-wc10-flat11`  
+**Build:** `v2.1.6l-wc10-f12`  
 **Build date:** `07/31/2026`  
-**Governance:** `v1.6`  
-**Status:** DEVICE ACCEPTANCE REQUIRED
+**Governance:** `v1.7`  
+**Status:** SAFARI BROWSER DEVICE ACCEPTANCE REQUIRED
 
-## Flat11 purpose
+## F12 purpose
 
-Flat10 proved the three-circle composition but failed to fill the installed iPhone portrait viewport. Its Home height was controlled by `visualViewport.height` with `dvh` fallback.
+F12 corrects Home sizing inside the Safari browser without changing the accepted flat11 Home Screen behavior.
 
-Flat11 keeps the same three-circle model and changes only viewport ownership:
+Display-mode strategies:
 
-- installed standalone Home height: `100vh`
-- regular-browser Home height: `100dvh`
+- installed Home Screen app: `100vh`
+- Safari browser: `visualViewport.height`
+- browser CSS fallback: `100dvh`
 - circle geometry: rendered Home container measured with `ResizeObserver`
-- menu height: unchanged at 58 pixels
-- portrait title safe-area offset: reduced by 10 pixels
-- Home sizing from `visualViewport.height`: prohibited
+- menu height: unchanged at `58px`
+
+The existing one-above/two-below portrait circle arrangement is intentionally retained in F12. The requested staggered left-center/right-stack arrangement is deferred until the Safari browser viewport correction is accepted independently.
 
 ## URLs
 
 - Normal: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat11
+- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f12
 
-Upload only the 17 files at the archive root. Support folders remain in the local ZIP.
+Upload only the 17 archive-root files. Keep all support folders in the local ZIP.
