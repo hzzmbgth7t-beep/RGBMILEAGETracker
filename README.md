@@ -1,28 +1,26 @@
 # RGB Mileage
 
-**Build:** `v2.1.6l-wc10-flat10`  
+**Build:** `v2.1.6l-wc10-flat11`  
 **Build date:** `07/31/2026`  
+**Governance:** `v1.6`  
 **Status:** DEVICE ACCEPTANCE REQUIRED
 
-## Flat10 scope
+## Flat11 purpose
 
-The Home Screen was rebuilt from a blank layout model.
+Flat10 proved the three-circle composition but failed to fill the installed iPhone portrait viewport. Its Home height was controlled by `visualViewport.height` with `dvh` fallback.
 
-- Three responsive vehicle circles
-- One primary and two secondary circles in portrait
-- Three equal circles in landscape
-- Circle sizes calculated from available width and height
-- Fixed 58-pixel menu bar anchored to the viewport bottom
-- Compact title placement immediately below the top safe area
-- No document overflow
-- Canonical launch URL normalization
-- User-visible dates remain `MM/DD/YYYY`
+Flat11 keeps the same three-circle model and changes only viewport ownership:
 
-No vehicle, record, recovery, icon, or schema behavior was intentionally changed.
+- installed standalone Home height: `100vh`
+- regular-browser Home height: `100dvh`
+- circle geometry: rendered Home container measured with `ResizeObserver`
+- menu height: unchanged at 58 pixels
+- portrait title safe-area offset: reduced by 10 pixels
+- Home sizing from `visualViewport.height`: prohibited
 
-## Deployment
+## URLs
 
-Upload only the 17 files at the ZIP root. The eight support folders stay in the local ZIP and are not uploaded to GitHub.
+- Normal: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat11
 
-- Normal URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10flat10
+Upload only the 17 files at the archive root. Support folders remain in the local ZIP.

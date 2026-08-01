@@ -13,7 +13,7 @@
 })(
   typeof globalThis !== "undefined" ? globalThis : this,
   function createRGBMHomeLayout() {
-    const LAYOUT_VERSION = "wc10-responsive-three-circle-home-v2";
+    const LAYOUT_VERSION = "wc10-responsive-three-circle-home-v3";
 
     function finiteNumber(value, fallback = 0) {
       const number = Number(value);

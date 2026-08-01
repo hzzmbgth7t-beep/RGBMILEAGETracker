@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-flat10",date:"2026-07-31",cacheRevision:"216lwc10flat10"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-flat11",date:"2026-07-31",cacheRevision:"216lwc10flat11"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 function canonicalLaunchUrl(input){try{const url=new URL(String(input||""));if(!/^https?:$/.test(url.protocol))return url.href;url.pathname=url.pathname.replace(/index\.html$/i,"");if(!url.pathname.endsWith("/"))url.pathname+="/";url.search="";url.searchParams.set("v",BUILD.cacheRevision);return url.href}catch(e){return String(input||"")}}
 function normalizeLaunchUrl(){const observed=String(typeof location!=="undefined"&&location.href?location.href:"");const normalized=canonicalLaunchUrl(observed);let changed=false,error="";try{if(normalized&&observed!==normalized&&typeof history!=="undefined"&&typeof history.replaceState==="function"){history.replaceState(history.state||null,"",normalized);changed=true}}catch(e){error=e&&e.message?String(e.message):"URL normalization failed"}Object.assign(LAUNCH_URL_STATE,{observed,normalized:normalized||observed,changed,error});return {...LAUNCH_URL_STATE}}
@@ -332,6 +332,7 @@ function render(){
   document.body.classList.toggle("home-active",s==="home");
   document.body.classList.toggle("non-home-active",s!=="home");
   if(s==="home"){home(app);return}
+  disconnectHomeResizeObserver();
   if(s==="vehicleView")vehicleView(app,route.vehicleId);
   else if(s==="vehicleEdit")vehicleEdit(app,route.vehicleId);
   else if(s==="quickFuel")quickFuel(app,route.vehicleId);
@@ -446,31 +447,32 @@ function recordEdit(app,type,recordId){const r=records(type,null,true).find(x=>x
 
 
 let homeGeometryFrame=0;
-function pxValue(value){
+let homeResizeObserver=null;
+
+function finitePixels(value){
   const parsed=Number.parseFloat(value);
   return Number.isFinite(parsed)?parsed:0;
 }
-function homeViewport(){
-  const viewport=window.visualViewport;
+
+function disconnectHomeResizeObserver(){
+  if(homeResizeObserver){
+    homeResizeObserver.disconnect();
+    homeResizeObserver=null;
+  }
+}
+
+function homeContainerSize(homeScreen){
+  const rect=homeScreen.getBoundingClientRect();
   return {
-    width:Math.max(
-      1,
-      Math.round(
-        viewport&&viewport.width
-          ?viewport.width
-          :window.innerWidth||document.documentElement.clientWidth||1
-      )
-    ),
-    height:Math.max(
-      1,
-      Math.round(
-        viewport&&viewport.height
-          ?viewport.height
-          :window.innerHeight||document.documentElement.clientHeight||1
-      )
-    )
+    width:Math.max(1,Math.round(rect.width)),
+    height:Math.max(1,Math.round(rect.height)),
+    top:rect.top,
+    right:rect.right,
+    bottom:rect.bottom,
+    left:rect.left
   };
 }
+
 function applyHomeGeometry(){
   if(!route||route.screen!=="home"||!window.RGBMHomeLayout)return null;
   const app=$("app");
@@ -480,26 +482,28 @@ function applyHomeGeometry(){
   const vehicleArea=app.querySelector(".vehicle-area");
   const dock=app.querySelector(".home-shell > .bottom-nav");
   if(!homeScreen||!homeHead||!vehicleArea||!dock)return null;
-  const viewport=homeViewport();
-  app.style.setProperty("--home-viewport-width",`${viewport.width}px`);
-  app.style.setProperty("--home-viewport-height",`${viewport.height}px`);
-  app.dataset.orientation=viewport.width>viewport.height
+
+  const container=homeContainerSize(homeScreen);
+  const appStyle=getComputedStyle(app);
+  const orientation=container.width>container.height
     ?"landscape"
     :"portrait";
-  const appStyle=getComputedStyle(app);
+  app.dataset.orientation=orientation;
+
   const layout=RGBMHomeLayout.calculateHomeLayout({
-    viewportWidth:viewport.width,
-    viewportHeight:viewport.height,
-    paddingTop:pxValue(appStyle.paddingTop),
-    paddingRight:pxValue(appStyle.paddingRight),
-    paddingBottom:pxValue(appStyle.paddingBottom),
-    paddingLeft:pxValue(appStyle.paddingLeft),
+    viewportWidth:container.width,
+    viewportHeight:container.height,
+    paddingTop:0,
+    paddingRight:0,
+    paddingBottom:0,
+    paddingLeft:0,
     headerHeight:Math.ceil(homeHead.getBoundingClientRect().height),
     headerGap:0,
     dockHeight:Math.ceil(dock.getBoundingClientRect().height),
     dockGap:0,
-    orientation:app.dataset.orientation
+    orientation
   });
+
   homeScreen.dataset.layoutMode=layout.mode;
   homeScreen.style.setProperty(
     "--home-column-gap",
@@ -513,6 +517,7 @@ function applyHomeGeometry(){
     "--home-label-height",
     `${layout.labelHeight}px`
   );
+
   if(layout.mode==="portrait"){
     homeScreen.style.setProperty(
       "--home-primary-diameter",
@@ -531,24 +536,42 @@ function applyHomeGeometry(){
     homeScreen.style.removeProperty("--home-primary-diameter");
     homeScreen.style.removeProperty("--home-secondary-diameter");
   }
+
   const headRect=homeHead.getBoundingClientRect();
   const areaRect=vehicleArea.getBoundingClientRect();
   const dockRect=dock.getBoundingClientRect();
+  const innerHeight=window.innerHeight||0;
+  const visualHeight=window.visualViewport
+    ?window.visualViewport.height
+    :null;
+
   window.__RGBM_HOME_LAYOUT_DIAGNOSTICS={
     ...layout,
+    heightSource:"standalone-100vh-home-shell",
+    appPaddingTop:finitePixels(appStyle.paddingTop),
+    containerTop:container.top,
+    containerBottom:container.bottom,
     titleTop:headRect.top,
     titleBottom:headRect.bottom,
     vehicleTop:areaRect.top,
     vehicleBottom:areaRect.bottom,
     dockTop:dockRect.top,
     dockBottom:dockRect.bottom,
-    dockDistanceFromViewportBottom:Math.max(
+    dockDistanceFromContainerBottom:Math.max(
       0,
-      Math.round(viewport.height-dockRect.bottom)
-    )
+      Math.round(container.bottom-dockRect.bottom)
+    ),
+    dockDistanceFromInnerHeight:Math.max(
+      0,
+      Math.round(innerHeight-dockRect.bottom)
+    ),
+    windowInnerHeight:innerHeight,
+    visualViewportHeight:visualHeight,
+    visualViewportExcludedFromHomeSizing:true
   };
   return layout;
 }
+
 function scheduleHomeGeometry(){
   if(homeGeometryFrame&&window.cancelAnimationFrame){
     cancelAnimationFrame(homeGeometryFrame);
@@ -561,8 +584,23 @@ function scheduleHomeGeometry(){
     ?requestAnimationFrame(run)
     :setTimeout(run,0);
 }
+
+function observeHomeGeometry(){
+  disconnectHomeResizeObserver();
+  if(typeof ResizeObserver!=="function")return;
+  const app=$("app");
+  const homeScreen=app&&app.querySelector(".home-shell");
+  const homeHead=app&&app.querySelector(".home-head");
+  const dock=app&&app.querySelector(".home-shell > .bottom-nav");
+  if(!homeScreen||!homeHead||!dock)return;
+  homeResizeObserver=new ResizeObserver(()=>scheduleHomeGeometry());
+  homeResizeObserver.observe(homeScreen);
+  homeResizeObserver.observe(homeHead);
+  homeResizeObserver.observe(dock);
+}
 function home(app){
   app.innerHTML=`<section class="screen home home-shell"><header class="home-head"><h1 class="chrome-title">${APP_NAME}</h1><div class="subtitle version-subtitle" data-build-id="${VERSION}">${VERSION} • Build ${formatBuildDate(BUILD_DATE)}</div></header><main class="vehicle-area" aria-label="Vehicles">${orderedVehicles().map((v,i)=>circleHtml(v,i)).join("")}</main>${bottomNav()}</section>`;
+  observeHomeGeometry();
   scheduleHomeGeometry();
 }
 
@@ -1937,14 +1975,17 @@ function initResponsiveViewportHandling(){
       {passive:true}
     );
     if(window.visualViewport){
+      const refreshNonHome=()=>{
+        if(route&&route.screen!=="home")refresh(0);
+      };
       window.visualViewport.addEventListener(
         "resize",
-        ()=>refresh(0),
+        refreshNonHome,
         {passive:true}
       );
       window.visualViewport.addEventListener(
         "scroll",
-        ()=>refresh(0),
+        refreshNonHome,
         {passive:true}
       );
     }

@@ -449,10 +449,8 @@ body {
 .choice-buttons button{min-height:48px}
 @media(max-width:385px){.choice-box{width:min(80vw,310px)}}
 
-/* RGBM v2.1.6l-wc10-flat10: responsive three-circle Home rewrite */
+/* RGBM v2.1.6l-wc10-flat11: standalone 100vh three-circle Home */
 :root {
-  --home-viewport-width: 100vw;
-  --home-viewport-height: 100dvh;
   --home-column-gap: 14px;
   --home-min-row-gap: 8px;
   --home-label-height: 36px;
@@ -512,14 +510,14 @@ body.home-active {
 #app.screen-home {
   position: fixed !important;
   inset: 0 !important;
-  width: var(--home-viewport-width, 100vw) !important;
+  width: 100% !important;
   max-width: 540px !important;
-  height: var(--home-viewport-height, 100dvh) !important;
-  min-height: 0 !important;
-  max-height: var(--home-viewport-height, 100dvh) !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  max-height: 100dvh !important;
   margin: 0 auto !important;
   padding:
-    calc(2px + env(safe-area-inset-top))
+    max(2px, calc(env(safe-area-inset-top) - 10px))
     calc(10px + env(safe-area-inset-right))
     0
     calc(10px + env(safe-area-inset-left)) !important;
@@ -527,6 +525,27 @@ body.home-active {
   overscroll-behavior: none !important;
   touch-action: manipulation !important;
   box-sizing: border-box !important;
+}
+
+/*
+ * WebKit installed-app workaround:
+ * visualViewport, svh and dvh can omit safe-area height when
+ * viewport-fit=cover. In standalone mode, 100vh owns the Home canvas.
+ */
+@media all and (display-mode: standalone) {
+  html,
+  body,
+  body.home-active {
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+  }
+
+  #app.screen-home {
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+  }
 }
 
 #app.screen-home .home-shell {
@@ -759,7 +778,7 @@ body.home-active {
 
 @media (orientation: landscape) {
   #app.screen-home {
-    width: var(--home-viewport-width, 100vw) !important;
+    width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
     padding:
@@ -1071,7 +1090,7 @@ body.non-home-active {
   }
 }
 
-/* RGBM v2.1.6l-wc10-flat10: isolated recovery scroller */
+/* RGBM v2.1.6l-wc10-flat11: isolated recovery scroller */
 html {
   width: 100% !important;
   height: 100% !important;
@@ -1369,7 +1388,7 @@ body.recovery-active {
 }
 
 
-/* v2.1.6l-wc10-flat10 canonical build identity */
+/* v2.1.6l-wc10-flat11 canonical build identity */
 .settings-build-card {
   padding: 12px 16px;
   border-color: rgba(135, 189, 238, .72);
