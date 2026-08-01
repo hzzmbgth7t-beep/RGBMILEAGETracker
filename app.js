@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f14",date:"2026-08-01",cacheRevision:"216lwc10f14"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f15",date:"2026-08-01",cacheRevision:"216lwc10f15"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
   online:typeof navigator==="undefined"||navigator.onLine!==false,
@@ -59,6 +59,232 @@ function ensureNetworkStatusElement(){
   }
 }
 
+function serviceWorkerUpdateBadgeMarkup(){
+  return [
+    '<svg class="service-worker-shield-icon" ',
+    'viewBox="0 0 24 24" aria-hidden="true" focusable="false">',
+    '<path d="M12 2 20 5v6c0 5.2-3.4 9.6-8 11-4.6-1.4-8-5.8-8-11V5l8-3Z"/>',
+    '<path d="m8.4 12 2.2 2.2 5-5"/>',
+    '</svg>',
+    '<span>Update</span>',
+    '<span>Offline</span>',
+    '<span>Service</span>',
+    '<span>Worker</span>'
+  ].join("");
+}
+
+function ensureServiceWorkerUpdateBadge(){
+  try{
+    let badge=$("serviceWorkerUpdateBadge");
+    if(badge)return badge;
+    if(
+      !document.body
+      ||typeof document.createElement!=="function"
+    ){
+      return null;
+    }
+    badge=document.createElement("div");
+    badge.id="serviceWorkerUpdateBadge";
+    badge.className="service-worker-update-badge";
+    badge.setAttribute("role","status");
+    badge.setAttribute("aria-live","polite");
+    badge.setAttribute(
+      "aria-label",
+      "Update Offline Service Worker"
+    );
+    badge.innerHTML=serviceWorkerUpdateBadgeMarkup();
+    badge.hidden=true;
+    document.body.appendChild(badge);
+    return badge;
+  }catch(error){
+    return null;
+  }
+}
+
+function rectanglesOverlap(a,b,margin=0){
+  return !(
+    a.right+margin<=b.left
+    ||a.left-margin>=b.right
+    ||a.bottom+margin<=b.top
+    ||a.top-margin>=b.bottom
+  );
+}
+
+function badgeCandidateRect(left,top,width,height){
+  return {
+    left,
+    top,
+    right:left+width,
+    bottom:top+height,
+    width,
+    height
+  };
+}
+
+function placeServiceWorkerUpdateBadge(){
+  const badge=$("serviceWorkerUpdateBadge");
+  const app=$("app");
+  if(
+    !badge
+    ||badge.hidden
+    ||!route
+    ||route.screen!=="home"
+    ||!app
+    ||typeof app.querySelector!=="function"
+  ){
+    return false;
+  }
+
+  const shell=app.querySelector(".home-shell");
+  const vehicleArea=app.querySelector(".vehicle-area");
+  if(!shell||!vehicleArea)return false;
+  if(badge.parentElement!==shell)shell.appendChild(badge);
+
+  const shellRect=shell.getBoundingClientRect();
+  const areaRect=vehicleArea.getBoundingClientRect();
+  const badgeRect=badge.getBoundingClientRect();
+  const orientation=(
+    shellRect.width>shellRect.height
+      ?"landscape"
+      :"portrait"
+  );
+  const width=Math.max(
+    orientation==="landscape"?40:64,
+    Math.round(
+      badgeRect.width
+      ||(orientation==="landscape"?46:72)
+    )
+  );
+  const height=Math.max(
+    orientation==="landscape"?40:78,
+    Math.round(
+      badgeRect.height
+      ||(orientation==="landscape"?44:92)
+    )
+  );
+  const inset=orientation==="landscape"?4:8;
+  const clearance=orientation==="landscape"?2:12;
+
+  const occupied=Array.from(
+    shell.querySelectorAll(
+      ".chrome-title, .version-subtitle, "
+      +".circle-wrap, .bottom-nav"
+    )
+  ).filter(element=>element!==badge).map(element=>{
+    let rect=element.getBoundingClientRect();
+    if(
+      element.matches(
+        ".chrome-title, .version-subtitle"
+      )
+      &&document.createRange
+      &&element.firstChild
+    ){
+      const range=document.createRange();
+      range.selectNodeContents(element);
+      const textRect=range.getBoundingClientRect();
+      if(textRect.width>0&&textRect.height>0)rect=textRect;
+    }
+    return {
+      left:rect.left-shellRect.left,
+      top:rect.top-shellRect.top,
+      right:rect.right-shellRect.left,
+      bottom:rect.bottom-shellRect.top
+    };
+  });
+
+  const area={
+    left:areaRect.left-shellRect.left,
+    top:areaRect.top-shellRect.top,
+    right:areaRect.right-shellRect.left,
+    bottom:areaRect.bottom-shellRect.top
+  };
+
+  const candidates=orientation==="portrait"
+    ?[
+      [area.left+inset,area.top+clearance],
+      [area.right-width-inset,area.top+clearance],
+      [area.left+inset,area.bottom-height-inset],
+      [area.right-width-inset,area.bottom-height-inset],
+      [inset,inset]
+    ]
+    :[
+      [inset,inset],
+      [shellRect.width-width-inset,inset],
+      [area.left+inset,area.top+inset],
+      [area.right-width-inset,area.top+inset],
+      [area.left+inset,area.bottom-height-inset],
+      [area.right-width-inset,area.bottom-height-inset]
+    ];
+
+  let chosen=null;
+  for(const [left,top] of candidates){
+    const rect=badgeCandidateRect(left,top,width,height);
+    const inside=(
+      rect.left>=inset
+      &&rect.top>=inset
+      &&rect.right<=shellRect.width-inset
+      &&rect.bottom<=shellRect.height-inset
+    );
+    if(!inside)continue;
+    if(occupied.some(item=>rectanglesOverlap(rect,item,clearance)))continue;
+    chosen=rect;
+    break;
+  }
+
+  if(!chosen){
+    const step=8;
+    let best=null;
+    for(
+      let top=inset;
+      top+height<=shellRect.height-inset;
+      top+=step
+    ){
+      for(
+        let left=inset;
+        left+width<=shellRect.width-inset;
+        left+=step
+      ){
+        const rect=badgeCandidateRect(left,top,width,height);
+        if(occupied.some(item=>rectanglesOverlap(rect,item,clearance)))continue;
+        const edgeDistance=Math.min(
+          rect.left,
+          rect.top,
+          shellRect.width-rect.right,
+          shellRect.height-rect.bottom
+        );
+        const score=edgeDistance-(top*.01);
+        if(!best||score>best.score)best={...rect,score};
+      }
+    }
+    chosen=best;
+  }
+
+  if(!chosen){
+    badge.hidden=true;
+    return false;
+  }
+
+  badge.style.left=`${Math.round(chosen.left)}px`;
+  badge.style.top=`${Math.round(chosen.top)}px`;
+  badge.dataset.placement=orientation;
+  return true;
+}
+
+function refreshServiceWorkerUpdateBadge(){
+  const badge=ensureServiceWorkerUpdateBadge();
+  if(!badge)return;
+  const show=!!(
+    OFFLINE_STATE.updateReady
+    &&route
+    &&route.screen==="home"
+  );
+  badge.hidden=!show;
+  if(show){
+    badge.innerHTML=serviceWorkerUpdateBadgeMarkup();
+    requestAnimationFrame(()=>placeServiceWorkerUpdateBadge());
+  }
+}
+
 function refreshOfflineUI(){
   const element=ensureNetworkStatusElement();
   const showOffline=!OFFLINE_STATE.online;
@@ -66,19 +292,18 @@ function refreshOfflineUI(){
   const showError=!!OFFLINE_STATE.error;
 
   if(element){
-    element.hidden=!(showOffline||showUpdate||showError);
+    element.hidden=!(showOffline||showError);
     element.className=[
       "network-status",
       showOffline?"is-offline":"",
-      showUpdate?"has-update":"",
       showError?"has-error":""
     ].filter(Boolean).join(" ");
     element.textContent=showError
       ?"Offline unavailable"
-      :showUpdate
-        ?"Update ready"
-        :"Offline";
+      :"Offline";
   }
+
+  refreshServiceWorkerUpdateBadge();
 
   if(route&&route.screen==="settings"){
     const status=$("offlineModeStatus");
@@ -1004,6 +1229,8 @@ function applyHomeGeometry(){
     ?browserViewport.visibleBottom
     :innerHeight;
 
+  placeServiceWorkerUpdateBadge();
+
   window.__RGBM_HOME_LAYOUT_DIAGNOSTICS={
     ...layout,
     heightSource:standalone
@@ -1098,6 +1325,7 @@ function home(app){
   }else{
     stabilizeBrowserHomeViewport();
   }
+  refreshOfflineUI();
 }
 
 function pressStart(cb,e,delay=750){

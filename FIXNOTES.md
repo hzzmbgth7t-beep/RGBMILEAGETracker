@@ -1,37 +1,23 @@
 # Fix Notes
 
-**Build:** `v2.1.6l-wc10-f14`  
+**Build:** `v2.1.6l-wc10-f15`  
 **Build date:** `08/01/2026`  
 **Governance:** `v1.7`
 
-## Portrait geometry
+The previous `Update ready` pill was ambiguous and could overlap the title.
 
-F14 measures the rendered vehicle area directly:
-
-```text
-vehicleArea.getBoundingClientRect()
-```
-
-It computes one maximum common diameter from width and height constraints. The remaining width and height are divided into three equal spaces on each axis.
+F15 introduces a separate waiting-update shield with exact four-line text:
 
 ```text
-horizontal: left edge / between columns / right edge
-vertical: top edge / between right items / bottom edge
+Update
+Offline
+Service
+Worker
 ```
 
-The primary circle spans both portrait rows and centers within that span. Its center aligns with the midpoint between the two right-side circle centers.
+The shield is green, includes a white shield icon, and is absolutely positioned in a collision-free blank region. It is excluded from Home layout calculations.
 
-## Preserved behavior
+No circle, viewport, offline-storage, backup, recovery, or menu behavior changed.
 
-- standalone `100vh`
-- Safari `visualViewport.height`
-- browser `100dvh` fallback
-- 58-pixel menu
-- F13 offline application shell
-- current data and recovery behavior
-- landscape three-across layout
-
-## URLs
-
-- Normal: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f14
+Normal URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
+Cache URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f15

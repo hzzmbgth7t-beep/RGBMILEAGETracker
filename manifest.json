@@ -1,7 +1,7 @@
 {
   "name": "RGB Mileage",
   "short_name": "RGB Mileage",
-  "start_url": "./?v=216lwc10f14",
+  "start_url": "./?v=216lwc10f15",
   "display": "standalone",
   "background_color": "#0a1324",
   "theme_color": "#0a1324",
@@ -23,9 +23,9 @@
     }
   ],
   "orientation": "any",
-  "version": "v2.1.6l-wc10-f14",
+  "version": "v2.1.6l-wc10-f15",
   "build_date": "2026-08-01",
-  "cache_revision": "216lwc10f14",
+  "cache_revision": "216lwc10f15",
   "build_date_display": "08/01/2026",
   "date_display_format": "MM/DD/YYYY",
   "home_standalone_height_strategy": "100vh",
@@ -41,5 +41,18 @@
   },
   "home_portrait_layout": "equal staggered: left-center primary, upper-right and lower-right secondary",
   "home_portrait_circle_strategy": "maximum shared diameter with evenly distributed remaining space",
-  "home_landscape_layout": "three equal circles in one horizontal row"
+  "home_landscape_layout": "three equal circles in one horizontal row",
+  "service_worker_update_badge": {
+    "visible_when": "waiting service worker update exists",
+    "text_lines": [
+      "Update",
+      "Offline",
+      "Service",
+      "Worker"
+    ],
+    "shape": "shield",
+    "background": "green",
+    "placement": "largest available blank Home-screen region",
+    "layout_participation": false
+  }
 }
