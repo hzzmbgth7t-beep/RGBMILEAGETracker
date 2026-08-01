@@ -1,7 +1,7 @@
 {
   "name": "RGB Mileage",
   "short_name": "RGB Mileage",
-  "start_url": "./?v=216lwc10f12",
+  "start_url": "./?v=216lwc10f13",
   "display": "standalone",
   "background_color": "#0a1324",
   "theme_color": "#0a1324",
@@ -23,12 +23,20 @@
     }
   ],
   "orientation": "any",
-  "version": "v2.1.6l-wc10-f12",
+  "version": "v2.1.6l-wc10-f13",
   "build_date": "2026-07-31",
-  "cache_revision": "216lwc10f12",
+  "cache_revision": "216lwc10f13",
   "build_date_display": "07/31/2026",
   "date_display_format": "MM/DD/YYYY",
   "home_standalone_height_strategy": "100vh",
   "home_geometry_source": "ResizeObserver rendered container",
-  "home_browser_height_strategy": "visualViewport.height with stabilized event refresh"
+  "home_browser_height_strategy": "visualViewport.height with stabilized event refresh",
+  "offline_mode": {
+    "application_shell": "precache",
+    "navigation": "network-first with cached shell fallback",
+    "versioned_assets": "cache-first",
+    "same_origin_static_assets": "cache-first with runtime fill",
+    "local_records": "localStorage; never placed in Cache Storage",
+    "controlled_updates": true
+  }
 }

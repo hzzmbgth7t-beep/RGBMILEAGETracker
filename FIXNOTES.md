@@ -1,32 +1,40 @@
 # Fix Notes
 
-**Build:** `v2.1.6l-wc10-f12`  
+**Build:** `v2.1.6l-wc10-f13`  
 **Build date:** `07/31/2026`  
 **Governance:** `v1.7`
 
-## Evidence-based defect
+## Offline boundary
 
-Flat11 fixed installed Home Screen safe-area behavior. The supplied Safari browser screenshots then showed a separate failure: the Home container retained a full-screen height while Safari controls reduced the visible browser area. Portrait clipped the lower vehicles and hid the menu; landscape hid the menu.
-
-## F12 correction
-
-Standalone and browser modes now have independent height owners:
+F13 caches only executable application-shell resources. RGBM records remain in the existing local state and are never copied into Cache Storage.
 
 ```text
-Standalone: 100vh
-Browser: visualViewport.height
-Browser fallback: 100dvh
+Cache Storage:
+HTML, CSS, JavaScript, manifest, icons, static assets
+
+Local storage:
+vehicles, fuel, maintenance, insurance, acquisitions,
+attachments, settings, backups, migration state
 ```
 
-Browser mode writes the measured height to `--home-browser-viewport-height`. It refreshes on Safari viewport changes and samples multiple frames because browser controls can settle after the initiating event.
+## Navigation
 
-The correction changes browser height only. It does not add a toolbar top offset and does not change standalone `100vh`.
+Online navigation uses the network first. When unavailable, the service worker returns the cached current shell, including for stale query strings and `index.html` paths.
 
-## Deferred design work
+## Updates
 
-The new left-center primary circle with upper-right and lower-right secondary circles is deferred to the next build after F12 browser acceptance.
+A newly installed worker waits. The user applies it from Settings, the worker receives `SKIP_WAITING`, and the page reloads only after `controllerchange`. This prevents an uncontrolled mid-session shell replacement.
+
+## Preserved behavior
+
+- installed Home height: `100vh`
+- Safari Home height: `visualViewport.height`
+- browser fallback: `100dvh`
+- menu height: `58px`
+- current circle arrangement
+- all accepted data and recovery logic
 
 ## URLs
 
 - Normal: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f12
+- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f13

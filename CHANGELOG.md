@@ -1,19 +1,22 @@
 # Changelog
 
-## v2.1.6l-wc10-f12 — 07/31/2026
+## v2.1.6l-wc10-f13 — 07/31/2026
 
-- Added Safari-browser-only Home height ownership from `visualViewport.height`.
-- Added stabilized browser viewport sampling over animation frames and a delayed pass.
-- Added Home refresh handling for visual viewport resize/scroll, window resize, orientation, `pageshow`, and visibility return.
-- Preserved standalone `100vh` behavior accepted from flat11 device screenshots.
-- Preserved the current three-circle portrait and landscape arrangements.
-- Kept the Home menu at exactly 58 pixels.
-- Added browser/standalone viewport diagnostics to migration evidence.
-- Adopted Governance v1.7 `fXX` identity and artifact naming.
-- Updated current Home, launch URL, and Safari browser viewport policies.
-- Retained `MM/DD/YYYY` for all user-visible dates.
+**Governance:** `v1.7`  
+**Classification:** CURRENT
+
+- Added complete offline application-shell precaching.
+- Added network-first navigation with cached shell fallback.
+- Added cache-first versioned assets and safe same-origin static runtime caching.
+- Added stale-query and `index.html` offline navigation recovery.
+- Added an Offline/Update Ready status overlay that does not affect Home geometry.
+- Added Settings controls to check for and explicitly apply app-shell updates.
+- Added service-worker readiness and offline-state evidence fields.
+- Preserved standalone `100vh`, Safari `visualViewport.height`, the 58-pixel menu, and the existing three-circle arrangement.
+- Preserved the schema, active storage key, backups, migration evidence, and recovery transactions.
+- Added 15 offline-mode regression tests and a browser airplane-mode audit.
 
 ## URLs
 
 - Normal: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f12
+- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f13

@@ -1,18 +1,20 @@
 # Deployment
 
-**Build:** `v2.1.6l-wc10-f12`  
+**Build:** `v2.1.6l-wc10-f13`  
 **Build date:** `07/31/2026`  
 **Governance:** `v1.7`
 
-1. Retain the complete `v2.1.6l-wc10-f12.zip` locally.
+1. Retain the complete `v2.1.6l-wc10-f13.zip` locally.
 2. Upload only the 17 files at the ZIP root.
-3. Do not upload the eight support folders.
-4. Open the cache-refresh URL in Safari:
-   https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f12
-5. Confirm Safari portrait shows the complete Home menu.
-6. Rotate to Safari landscape and confirm the complete Home menu.
-7. Collapse and expand Safari controls and confirm Home resizes dynamically.
-8. Launch the existing Home Screen app and confirm its accepted portrait and landscape geometry remains unchanged.
-9. Export migration evidence and a fresh backup after device acceptance.
+3. Open https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f13 while online.
+4. Wait for Settings → Offline Mode to report that the app shell is ready.
+5. Close Safari and the installed app.
+6. Enable airplane mode.
+7. Launch the installed Home Screen app.
+8. Confirm Home, Reports, Data, Settings, and existing records open.
+9. Add or edit one harmless test value, close the app, reopen offline, and confirm persistence.
+10. Generate a JSON backup while offline.
+11. Disable airplane mode and confirm the Offline indicator disappears.
+12. Confirm portrait and landscape geometry remain unchanged.
 
 Do not remove the Home Screen app or clear Safari website data.

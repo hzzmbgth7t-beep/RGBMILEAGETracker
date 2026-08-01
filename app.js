@@ -1,5 +1,238 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f12",date:"2026-07-31",cacheRevision:"216lwc10f12"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f13",date:"2026-07-31",cacheRevision:"216lwc10f13"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
+const OFFLINE_STATE={
+  online:typeof navigator==="undefined"||navigator.onLine!==false,
+  supported:typeof navigator!=="undefined"&&"serviceWorker" in navigator,
+  controlled:typeof navigator!=="undefined"
+    &&!!navigator.serviceWorker
+    &&!!navigator.serviceWorker.controller,
+  cacheReady:false,
+  updateReady:false,
+  updateApplying:false,
+  registration:null,
+  error:"",
+  lastMessage:""
+};
+
+function offlineStatusSummary(){
+  if(!OFFLINE_STATE.supported){
+    return "Offline shell is unavailable in this browser.";
+  }
+  if(OFFLINE_STATE.updateApplying){
+    return "Applying the offline update…";
+  }
+  if(OFFLINE_STATE.updateReady){
+    return "An offline update is ready.";
+  }
+  if(!OFFLINE_STATE.online){
+    return OFFLINE_STATE.controlled||OFFLINE_STATE.cacheReady
+      ?"Offline — local records and cached app files remain available."
+      :"Offline — this browser has not confirmed the cached app shell.";
+  }
+  if(OFFLINE_STATE.controlled||OFFLINE_STATE.cacheReady){
+    return "Online — offline app shell is ready.";
+  }
+  return "Online — preparing the offline app shell.";
+}
+
+function ensureNetworkStatusElement(){
+  try{
+    let element=$("networkStatus");
+    if(element)return element;
+    if(
+      !document.body
+      ||typeof document.createElement!=="function"
+      ||typeof document.body.appendChild!=="function"
+    ){
+      return null;
+    }
+    element=document.createElement("div");
+    element.id="networkStatus";
+    element.className="network-status";
+    element.setAttribute("role","status");
+    element.setAttribute("aria-live","polite");
+    element.hidden=true;
+    document.body.appendChild(element);
+    return element;
+  }catch(error){
+    return null;
+  }
+}
+
+function refreshOfflineUI(){
+  const element=ensureNetworkStatusElement();
+  const showOffline=!OFFLINE_STATE.online;
+  const showUpdate=OFFLINE_STATE.updateReady;
+  const showError=!!OFFLINE_STATE.error;
+
+  if(element){
+    element.hidden=!(showOffline||showUpdate||showError);
+    element.className=[
+      "network-status",
+      showOffline?"is-offline":"",
+      showUpdate?"has-update":"",
+      showError?"has-error":""
+    ].filter(Boolean).join(" ");
+    element.textContent=showError
+      ?"Offline unavailable"
+      :showUpdate
+        ?"Update ready"
+        :"Offline";
+  }
+
+  if(route&&route.screen==="settings"){
+    const status=$("offlineModeStatus");
+    if(status)status.textContent=offlineStatusSummary();
+    const applyButton=$("applyOfflineUpdateButton");
+    if(applyButton){
+      applyButton.hidden=!OFFLINE_STATE.updateReady;
+      applyButton.disabled=OFFLINE_STATE.updateApplying;
+    }
+  }
+}
+
+function setOnlineState(online){
+  OFFLINE_STATE.online=online!==false;
+  OFFLINE_STATE.error="";
+  refreshOfflineUI();
+}
+
+function serviceWorkerStateChanged(worker){
+  if(!worker)return;
+  if(worker.state==="installed"){
+    if(navigator.serviceWorker.controller){
+      OFFLINE_STATE.updateReady=true;
+    }else{
+      OFFLINE_STATE.cacheReady=true;
+    }
+    refreshOfflineUI();
+  }
+}
+
+function observeServiceWorkerRegistration(registration){
+  OFFLINE_STATE.registration=registration;
+  OFFLINE_STATE.controlled=!!navigator.serviceWorker.controller;
+  OFFLINE_STATE.cacheReady=(
+    OFFLINE_STATE.controlled
+    ||!!registration.active
+    ||!!registration.waiting
+  );
+  OFFLINE_STATE.updateReady=!!(
+    registration.waiting
+    &&navigator.serviceWorker.controller
+  );
+
+  if(registration.installing){
+    registration.installing.addEventListener(
+      "statechange",
+      ()=>serviceWorkerStateChanged(registration.installing)
+    );
+  }
+
+  registration.addEventListener("updatefound",()=>{
+    const worker=registration.installing;
+    if(worker){
+      worker.addEventListener(
+        "statechange",
+        ()=>serviceWorkerStateChanged(worker)
+      );
+    }
+  });
+
+  refreshOfflineUI();
+}
+
+async function requestOfflineUpdate(){
+  const registration=OFFLINE_STATE.registration;
+  if(!registration)return false;
+  try{
+    await registration.update();
+    OFFLINE_STATE.error="";
+    refreshOfflineUI();
+    return true;
+  }catch(error){
+    OFFLINE_STATE.error=error&&error.message
+      ?String(error.message)
+      :"Update check failed";
+    refreshOfflineUI();
+    return false;
+  }
+}
+
+function applyOfflineUpdate(){
+  const registration=OFFLINE_STATE.registration;
+  const waiting=registration&&registration.waiting;
+  if(!waiting)return false;
+  OFFLINE_STATE.updateApplying=true;
+  refreshOfflineUI();
+  waiting.postMessage({type:"SKIP_WAITING"});
+  return true;
+}
+
+function requestOfflineStatus(){
+  const controller=navigator.serviceWorker&&navigator.serviceWorker.controller;
+  if(!controller)return false;
+  controller.postMessage({type:"GET_OFFLINE_STATUS"});
+  return true;
+}
+
+function initOfflineMode(){
+  ensureNetworkStatusElement();
+  refreshOfflineUI();
+
+  window.addEventListener(
+    "online",
+    ()=>setOnlineState(true),
+    {passive:true}
+  );
+  window.addEventListener(
+    "offline",
+    ()=>setOnlineState(false),
+    {passive:true}
+  );
+
+  if(!OFFLINE_STATE.supported)return;
+
+  navigator.serviceWorker.addEventListener("message",event=>{
+    const message=event&&event.data;
+    if(!message||typeof message!=="object")return;
+    if(message.type==="RGBM_OFFLINE_READY"){
+      OFFLINE_STATE.cacheReady=true;
+      OFFLINE_STATE.lastMessage="RGBM_OFFLINE_READY";
+      refreshOfflineUI();
+    }
+    if(message.type==="RGBM_OFFLINE_STATUS"){
+      OFFLINE_STATE.cacheReady=message.cacheReady===true;
+      OFFLINE_STATE.lastMessage="RGBM_OFFLINE_STATUS";
+      refreshOfflineUI();
+    }
+  });
+
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    OFFLINE_STATE.controlled=true;
+    OFFLINE_STATE.cacheReady=true;
+    OFFLINE_STATE.updateReady=false;
+    OFFLINE_STATE.updateApplying=false;
+    refreshOfflineUI();
+    if(document.visibilityState==="visible"){
+      location.reload();
+    }
+  });
+
+  navigator.serviceWorker.register(
+    `sw.js?v=${BUILD.cacheRevision}`
+  ).then(registration=>{
+    observeServiceWorkerRegistration(registration);
+    requestOfflineStatus();
+    return registration.update().catch(()=>null);
+  }).catch(error=>{
+    OFFLINE_STATE.error=error&&error.message
+      ?String(error.message)
+      :"Service worker registration failed";
+    refreshOfflineUI();
+  });
+}
+
 function canonicalLaunchUrl(input){try{const url=new URL(String(input||""));if(!/^https?:$/.test(url.protocol))return url.href;url.pathname=url.pathname.replace(/index\.html$/i,"");if(!url.pathname.endsWith("/"))url.pathname+="/";url.search="";url.searchParams.set("v",BUILD.cacheRevision);return url.href}catch(e){return String(input||"")}}
 function normalizeLaunchUrl(){const observed=String(typeof location!=="undefined"&&location.href?location.href:"");const normalized=canonicalLaunchUrl(observed);let changed=false,error="";try{if(normalized&&observed!==normalized&&typeof history!=="undefined"&&typeof history.replaceState==="function"){history.replaceState(history.state||null,"",normalized);changed=true}}catch(e){error=e&&e.message?String(e.message):"URL normalization failed"}Object.assign(LAUNCH_URL_STATE,{observed,normalized:normalized||observed,changed,error});return {...LAUNCH_URL_STATE}}
 function isStandaloneDisplayMode(){
@@ -2076,6 +2309,14 @@ function migrationEvidenceEnvironment(){
         offsetLeft:Math.round(window.visualViewport.offsetLeft||0)
       }
       :null,
+    networkOnline:OFFLINE_STATE.online,
+    serviceWorkerSupported:OFFLINE_STATE.supported,
+    serviceWorkerControlled:OFFLINE_STATE.controlled,
+    offlineShellReady:(
+      OFFLINE_STATE.cacheReady
+      ||OFFLINE_STATE.controlled
+    ),
+    offlineUpdateReady:OFFLINE_STATE.updateReady,
     build:VERSION,
     buildDate:BUILD_DATE
   };
@@ -2131,7 +2372,8 @@ function settings(app){
   try{evidence=migrationEvidenceReport()}
   catch(e){evidence={result:"FAIL",migrationAcceptance:"FAIL",storage:{legacySourceKey:null},canonical:{validation:{valid:false}}}}
   const evidenceCard=`<div class="card"><h2>WC-10 Migration Evidence</h2><p><strong>Current check: ${esc(evidence.result)}</strong><br>Migration acceptance: ${esc(evidence.migrationAcceptance)}<br>Legacy source: ${esc(evidence.storage.legacySourceKey||"N/A")}<br>Canonical validation: ${evidence.canonical.validation.valid?"PASS":"FAIL"}</p><p class="muted">The exported JSON contains IDs, counts, order, and record-ID fingerprints. It excludes images, VINs, plates, and record amounts.</p><button class="wide primary" type="button" onclick="downloadMigrationEvidence()">Download Migration Evidence</button><button class="wide ghost" type="button" onclick="copyMigrationEvidenceSummary()">Copy Migration Summary</button></div>`;
-  app.innerHTML=header("Settings")+buildCard+`<div class="card"><h2>Vehicle Order</h2><p class="muted">Position 1 is the primary portrait position. Landscape order is left to right.</p></div>${orderRows}${evidenceCard}<div class="card"><h2>About</h2><p>RGB Mileage ${VERSION}<br>Build Date: ${formatBuildDate(BUILD_DATE)}<br>Schema: ${SCHEMA_VERSION}<br>Migration: ${RGBMDataV3.MIGRATION_VERSION}<br>Evidence: ${RGBMWC10Evidence.EVIDENCE_VERSION}</p><button class="wide danger" onclick="if(confirm('Clear all local data, including retained rollback data?')){clearRGBMStorage(false);state=blankData();saveData();nav('home')}">Clear Local Data</button></div>`+bottomNav()+footer();
+  const offlineCard=`<div class="card offline-mode-card"><h2>Offline Mode</h2><p id="offlineModeStatus">${esc(offlineStatusSummary())}</p><p class="muted">Vehicle data remains in local storage. The service worker caches only application files and icons.</p><button class="wide ghost" type="button" onclick="requestOfflineUpdate()">Check for App Update</button><button id="applyOfflineUpdateButton" class="wide primary" type="button" onclick="applyOfflineUpdate()" ${OFFLINE_STATE.updateReady?"":"hidden"}>Apply Offline Update</button></div>`;
+  app.innerHTML=header("Settings")+buildCard+`<div class="card"><h2>Vehicle Order</h2><p class="muted">Position 1 is the primary portrait position. Landscape order is left to right.</p></div>${orderRows}${offlineCard}${evidenceCard}<div class="card"><h2>About</h2><p>RGB Mileage ${VERSION}<br>Build Date: ${formatBuildDate(BUILD_DATE)}<br>Schema: ${SCHEMA_VERSION}<br>Migration: ${RGBMDataV3.MIGRATION_VERSION}<br>Evidence: ${RGBMWC10Evidence.EVIDENCE_VERSION}</p><button class="wide danger" onclick="if(confirm('Clear all local data, including retained rollback data?')){clearRGBMStorage(false);state=blankData();saveData();nav('home')}">Clear Local Data</button></div>`+bottomNav()+footer();
 }
 function moveVehicleOrder(vid,delta){
   const index=state.vehicleOrder.indexOf(vid);
@@ -2161,7 +2403,15 @@ function dataDiagnostics(){
     restoreReport:window.__RGBM_WC10_LAST_RESTORE_REPORT||null,
     migrationEvidence:window.__RGBM_WC10_LAST_EVIDENCE||null,
     launchUrl:{...LAUNCH_URL_STATE},
-    homeLayout:window.__RGBM_HOME_LAYOUT_DIAGNOSTICS||null
+    homeLayout:window.__RGBM_HOME_LAYOUT_DIAGNOSTICS||null,
+    offline:{
+      online:OFFLINE_STATE.online,
+      supported:OFFLINE_STATE.supported,
+      controlled:OFFLINE_STATE.controlled,
+      cacheReady:OFFLINE_STATE.cacheReady,
+      updateReady:OFFLINE_STATE.updateReady,
+      error:OFFLINE_STATE.error
+    }
   };
 }
 let viewportRefreshTimer=0;
@@ -2596,7 +2846,7 @@ function renderRecoveryConsole(error){
 function renderDataFatal(error){
   renderRecoveryConsole(error);
 }
-normalizeLaunchUrl();initApplicationShell();initResponsiveViewportHandling();
+normalizeLaunchUrl();initApplicationShell();initResponsiveViewportHandling();initOfflineMode();
 try{
   state=loadData();
   window.RGBM_WC10_DATA_DIAGNOSTICS=dataDiagnostics;
@@ -2604,4 +2854,3 @@ try{
   render()
 }
 catch(e){console.error(e);renderDataFatal(e)}
-if('serviceWorker' in navigator){navigator.serviceWorker.register(`sw.js?v=${BUILD.cacheRevision}`).catch(()=>{})}

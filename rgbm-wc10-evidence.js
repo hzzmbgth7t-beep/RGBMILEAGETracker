@@ -666,6 +666,13 @@
             ),
           }
           : null,
+        networkOnline: environment.networkOnline !== false,
+        serviceWorkerSupported:
+          environment.serviceWorkerSupported === true,
+        serviceWorkerControlled:
+          environment.serviceWorkerControlled === true,
+        offlineShellReady: environment.offlineShellReady === true,
+        offlineUpdateReady: environment.offlineUpdateReady === true,
       },
       storage: {
         activeKey: dataV3.ACTIVE_KEY,
@@ -702,6 +709,13 @@
         report.environment.visualViewport
           ? `${report.environment.visualViewport.width}x${report.environment.visualViewport.height}`
           : "N/A"
+      }`,
+      `Network online: ${report.environment.networkOnline ? "YES" : "NO"}`,
+      `Offline shell ready: ${
+        report.environment.offlineShellReady ? "YES" : "NO"
+      }`,
+      `Service worker controlled: ${
+        report.environment.serviceWorkerControlled ? "YES" : "NO"
       }`,
       `Overall: ${report.result}`,
       `Migration acceptance: ${report.migrationAcceptance}`,
