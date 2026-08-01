@@ -1,34 +1,31 @@
 # User Guide
 
-**Build:** `v2.1.6l-wc10-f13`  
-**Build date:** `07/31/2026`  
+**Build:** `v2.1.6l-wc10-f14`  
+**Build date:** `08/01/2026`  
 **Governance:** `v1.7`
 
 Visible identity:
 
-`v2.1.6l-wc10-f13 • Build 07/31/2026`
+`v2.1.6l-wc10-f14 • Build 08/01/2026`
 
-## Preparing offline mode
+## Portrait Home
 
-1. Open RGBM once while online.
-2. Open Settings.
-3. Confirm Offline Mode says the app shell is ready.
-4. Keep the installed Home Screen app and Safari website data.
+The three circles should be equal in size:
 
-## Using RGBM offline
+- primary vehicle on the left, centered vertically
+- second vehicle upper-right
+- third vehicle lower-right
 
-When the network is unavailable, an **Offline** badge appears. Existing vehicles, records, reports, Settings, and local backup generation remain available.
+The circles must not overlap. Empty space should appear balanced around and between them.
 
-Changes made offline are saved locally. They do not require synchronization because RGBM has no server-side record store.
+## Landscape Home
 
-## Applying an app update
+Landscape remains three equal circles in one row.
 
-Settings may display **Apply Offline Update**. Use it only after saving current form work. The app reloads after the new cached shell becomes active.
+## Offline mode
 
-## Supported browser path
-
-Use the installed Home Screen app or open the deployment URL directly in Safari. The GitHub embedded browser is not supported.
+F13 offline behavior remains available. Open RGBM online once after deployment, then test the installed app in airplane mode.
 
 Cache-refresh URL:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f13
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f14

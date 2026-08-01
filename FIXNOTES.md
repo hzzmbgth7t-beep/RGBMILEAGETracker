@@ -1,40 +1,37 @@
 # Fix Notes
 
-**Build:** `v2.1.6l-wc10-f13`  
-**Build date:** `07/31/2026`  
+**Build:** `v2.1.6l-wc10-f14`  
+**Build date:** `08/01/2026`  
 **Governance:** `v1.7`
 
-## Offline boundary
+## Portrait geometry
 
-F13 caches only executable application-shell resources. RGBM records remain in the existing local state and are never copied into Cache Storage.
+F14 measures the rendered vehicle area directly:
 
 ```text
-Cache Storage:
-HTML, CSS, JavaScript, manifest, icons, static assets
-
-Local storage:
-vehicles, fuel, maintenance, insurance, acquisitions,
-attachments, settings, backups, migration state
+vehicleArea.getBoundingClientRect()
 ```
 
-## Navigation
+It computes one maximum common diameter from width and height constraints. The remaining width and height are divided into three equal spaces on each axis.
 
-Online navigation uses the network first. When unavailable, the service worker returns the cached current shell, including for stale query strings and `index.html` paths.
+```text
+horizontal: left edge / between columns / right edge
+vertical: top edge / between right items / bottom edge
+```
 
-## Updates
-
-A newly installed worker waits. The user applies it from Settings, the worker receives `SKIP_WAITING`, and the page reloads only after `controllerchange`. This prevents an uncontrolled mid-session shell replacement.
+The primary circle spans both portrait rows and centers within that span. Its center aligns with the midpoint between the two right-side circle centers.
 
 ## Preserved behavior
 
-- installed Home height: `100vh`
-- Safari Home height: `visualViewport.height`
-- browser fallback: `100dvh`
-- menu height: `58px`
-- current circle arrangement
-- all accepted data and recovery logic
+- standalone `100vh`
+- Safari `visualViewport.height`
+- browser `100dvh` fallback
+- 58-pixel menu
+- F13 offline application shell
+- current data and recovery behavior
+- landscape three-across layout
 
 ## URLs
 
 - Normal: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f13
+- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f14

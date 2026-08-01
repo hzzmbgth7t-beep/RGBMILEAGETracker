@@ -1,35 +1,35 @@
 # RGB Mileage
 
-**Build:** `v2.1.6l-wc10-f13`  
-**Build date:** `07/31/2026`  
+**Build:** `v2.1.6l-wc10-f14`  
+**Build date:** `08/01/2026`  
 **Governance:** `v1.7`  
-**Status:** OFFLINE DEVICE ACCEPTANCE REQUIRED
+**Status:** PORTRAIT DEVICE ACCEPTANCE REQUIRED
 
-## F13 purpose
+## F14 purpose
 
-F13 hardens RGBM for offline use without changing accepted Home geometry, the current three-circle layout, the data schema, or recovery behavior.
+F14 introduces a new portrait Home composition while preserving the accepted F13 offline, viewport, data, and landscape behavior.
 
-Offline architecture:
+Portrait:
 
-- application shell precached by the service worker
-- navigation uses network-first with cached shell fallback
-- versioned runtime assets use cache-first
-- same-origin static assets may be filled into the runtime cache
-- vehicle and record data stay in `localStorage`
-- Cache Storage never receives RGBM record data
-- service-worker updates require explicit activation
+- one primary circle centered on the left
+- one secondary circle upper-right
+- one secondary circle lower-right
+- all three circles use the largest safe common diameter
+- remaining horizontal and vertical space is distributed evenly
 
-## Supported launch paths
+Landscape remains three equal circles in one horizontal row.
 
-- installed Home Screen app
-- direct Safari URL
-- Safari bookmark or shortcut
+## Locked F13 behavior
 
-GitHub's embedded browser is not a supported operating path.
+- installed Home Screen height: `100vh`
+- Safari browser height: `visualViewport.height`
+- menu height: `58px`
+- offline application shell and controlled updates
+- local data, backups, recovery, and `MM/DD/YYYY`
 
 ## URLs
 
 - Normal: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
-- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f13
+- Cache refresh: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f14
 
-Upload only the 17 archive-root files. Keep all eight support folders in the local ZIP.
+Upload only the 17 ZIP-root files.

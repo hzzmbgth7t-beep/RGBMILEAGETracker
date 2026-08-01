@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f13",date:"2026-07-31",cacheRevision:"216lwc10f13"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f14",date:"2026-08-01",cacheRevision:"216lwc10f14"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
   online:typeof navigator==="undefined"||navigator.onLine!==false,
@@ -907,23 +907,29 @@ function applyHomeGeometry(){
   const orientation=container.width>container.height
     ?"landscape"
     :"portrait";
+  const headRect=homeHead.getBoundingClientRect();
+  const areaRect=vehicleArea.getBoundingClientRect();
+  const dockRect=dock.getBoundingClientRect();
   app.dataset.orientation=orientation;
 
   const layout=RGBMHomeLayout.calculateHomeLayout({
     viewportWidth:container.width,
     viewportHeight:container.height,
+    vehicleAreaWidth:Math.max(1,Math.floor(areaRect.width)),
+    vehicleAreaHeight:Math.max(1,Math.floor(areaRect.height)),
     paddingTop:0,
     paddingRight:0,
     paddingBottom:0,
     paddingLeft:0,
-    headerHeight:Math.ceil(homeHead.getBoundingClientRect().height),
+    headerHeight:Math.ceil(headRect.height),
     headerGap:0,
-    dockHeight:Math.ceil(dock.getBoundingClientRect().height),
+    dockHeight:Math.ceil(dockRect.height),
     dockGap:0,
     orientation
   });
 
   homeScreen.dataset.layoutMode=layout.mode;
+  homeScreen.dataset.compact=layout.compact?"true":"false";
   homeScreen.style.setProperty(
     "--home-column-gap",
     `${layout.columnGap}px`
@@ -936,29 +942,56 @@ function applyHomeGeometry(){
     "--home-label-height",
     `${layout.labelHeight}px`
   );
+  homeScreen.style.setProperty(
+    "--home-shared-diameter",
+    `${layout.sharedDiameter}px`
+  );
 
-  if(layout.mode==="portrait"){
+  if(layout.mode==="portrait-staggered"){
     homeScreen.style.setProperty(
-      "--home-primary-diameter",
-      `${layout.primaryDiameter}px`
+      "--home-label-gap",
+      `${layout.labelGap}px`
     );
     homeScreen.style.setProperty(
-      "--home-secondary-diameter",
-      `${layout.secondaryDiameter}px`
+      "--home-circle-item-height",
+      `${layout.itemHeight}px`
     );
-    homeScreen.style.removeProperty("--home-shared-diameter");
+    homeScreen.style.setProperty(
+      "--home-horizontal-space",
+      `${layout.horizontalSpace}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-vertical-space",
+      `${layout.verticalSpace}px`
+    );
+    homeScreen.style.removeProperty("--home-primary-diameter");
+    homeScreen.style.removeProperty("--home-secondary-diameter");
   }else{
-    homeScreen.style.setProperty(
-      "--home-shared-diameter",
-      `${layout.sharedDiameter}px`
-    );
+    homeScreen.style.removeProperty("--home-label-gap");
+    homeScreen.style.removeProperty("--home-circle-item-height");
+    homeScreen.style.removeProperty("--home-horizontal-space");
+    homeScreen.style.removeProperty("--home-vertical-space");
     homeScreen.style.removeProperty("--home-primary-diameter");
     homeScreen.style.removeProperty("--home-secondary-diameter");
   }
 
-  const headRect=homeHead.getBoundingClientRect();
-  const areaRect=vehicleArea.getBoundingClientRect();
-  const dockRect=dock.getBoundingClientRect();
+  const circleRects=Array.from(
+    vehicleArea.querySelectorAll(".circle-wrap")
+  ).map((element,index)=>{
+    const wrapRect=element.getBoundingClientRect();
+    const circle=element.querySelector(".home-circle-visual");
+    const circleRect=circle
+      ?circle.getBoundingClientRect()
+      :wrapRect;
+    return {
+      position:index+1,
+      wrapLeft:Math.round(wrapRect.left-areaRect.left),
+      wrapTop:Math.round(wrapRect.top-areaRect.top),
+      circleLeft:Math.round(circleRect.left-areaRect.left),
+      circleTop:Math.round(circleRect.top-areaRect.top),
+      diameter:Math.round(circleRect.width)
+    };
+  });
   const innerHeight=window.innerHeight||0;
   const visualHeight=window.visualViewport
     ?window.visualViewport.height
@@ -978,6 +1011,7 @@ function applyHomeGeometry(){
       :browserViewport
         ?browserViewport.source
         :"browser-innerHeight-fallback",
+    geometryInputSource:"vehicleArea.getBoundingClientRect()",
     appPaddingTop:finitePixels(appStyle.paddingTop),
     containerTop:container.top,
     containerBottom:container.bottom,
@@ -985,6 +1019,15 @@ function applyHomeGeometry(){
     titleBottom:headRect.bottom,
     vehicleTop:areaRect.top,
     vehicleBottom:areaRect.bottom,
+    renderedVehicleWidth:Math.round(areaRect.width),
+    renderedVehicleHeight:Math.round(areaRect.height),
+    circleRects,
+    renderedEqualDiameters:(
+      circleRects.length===3
+      &&circleRects.every(
+        item=>item.diameter===circleRects[0].diameter
+      )
+    ),
     dockTop:dockRect.top,
     dockBottom:dockRect.bottom,
     dockDistanceFromContainerBottom:Math.max(
@@ -1013,7 +1056,6 @@ function applyHomeGeometry(){
   };
   return layout;
 }
-
 function scheduleHomeGeometry(){
   if(homeGeometryFrame&&window.cancelAnimationFrame){
     cancelAnimationFrame(homeGeometryFrame);
@@ -1033,17 +1075,24 @@ function observeHomeGeometry(){
   const app=$("app");
   const homeScreen=app&&app.querySelector(".home-shell");
   const homeHead=app&&app.querySelector(".home-head");
+  const vehicleArea=app&&app.querySelector(".vehicle-area");
   const dock=app&&app.querySelector(".home-shell > .bottom-nav");
-  if(!homeScreen||!homeHead||!dock)return;
+  if(!homeScreen||!homeHead||!vehicleArea||!dock)return;
   homeResizeObserver=new ResizeObserver(()=>scheduleHomeGeometry());
   homeResizeObserver.observe(homeScreen);
   homeResizeObserver.observe(homeHead);
+  homeResizeObserver.observe(vehicleArea);
   homeResizeObserver.observe(dock);
 }
 function home(app){
-  app.innerHTML=`<section class="screen home home-shell"><header class="home-head"><h1 class="chrome-title">${APP_NAME}</h1><div class="subtitle version-subtitle" data-build-id="${VERSION}">${VERSION} • Build ${formatBuildDate(BUILD_DATE)}</div></header><main class="vehicle-area" aria-label="Vehicles">${orderedVehicles().map((v,i)=>circleHtml(v,i)).join("")}</main>${bottomNav()}</section>`;
+  app.innerHTML=`<section class="screen home home-shell" data-layout-mode="portrait-staggered" data-compact="false"><header class="home-head"><h1 class="chrome-title">${APP_NAME}</h1><div class="subtitle version-subtitle" data-build-id="${VERSION}">${VERSION} • Build ${formatBuildDate(BUILD_DATE)}</div></header><main class="vehicle-area" aria-label="Vehicles">${orderedVehicles().map((v,i)=>circleHtml(v,i)).join("")}</main>${bottomNav()}</section>`;
   applyBrowserHomeViewport();
   observeHomeGeometry();
+  if(document.fonts&&document.fonts.ready){
+    document.fonts.ready
+      .then(()=>scheduleHomeGeometry())
+      .catch(()=>{});
+  }
   if(isStandaloneDisplayMode()){
     scheduleHomeGeometry();
   }else{

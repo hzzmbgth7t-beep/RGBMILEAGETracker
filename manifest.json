@@ -1,7 +1,7 @@
 {
   "name": "RGB Mileage",
   "short_name": "RGB Mileage",
-  "start_url": "./?v=216lwc10f13",
+  "start_url": "./?v=216lwc10f14",
   "display": "standalone",
   "background_color": "#0a1324",
   "theme_color": "#0a1324",
@@ -23,10 +23,10 @@
     }
   ],
   "orientation": "any",
-  "version": "v2.1.6l-wc10-f13",
-  "build_date": "2026-07-31",
-  "cache_revision": "216lwc10f13",
-  "build_date_display": "07/31/2026",
+  "version": "v2.1.6l-wc10-f14",
+  "build_date": "2026-08-01",
+  "cache_revision": "216lwc10f14",
+  "build_date_display": "08/01/2026",
   "date_display_format": "MM/DD/YYYY",
   "home_standalone_height_strategy": "100vh",
   "home_geometry_source": "ResizeObserver rendered container",
@@ -38,5 +38,8 @@
     "same_origin_static_assets": "cache-first with runtime fill",
     "local_records": "localStorage; never placed in Cache Storage",
     "controlled_updates": true
-  }
+  },
+  "home_portrait_layout": "equal staggered: left-center primary, upper-right and lower-right secondary",
+  "home_portrait_circle_strategy": "maximum shared diameter with evenly distributed remaining space",
+  "home_landscape_layout": "three equal circles in one horizontal row"
 }
