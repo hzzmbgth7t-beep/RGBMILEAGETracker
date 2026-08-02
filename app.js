@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f16",date:"2026-08-01",cacheRevision:"216lwc10f16"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f17",date:"2026-08-01",cacheRevision:"216lwc10f17"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
   online:typeof navigator==="undefined"||navigator.onLine!==false,
@@ -1195,6 +1195,30 @@ function applyHomeGeometry(){
       "--home-vertical-space",
       `${layout.verticalSpace}px`
     );
+    homeScreen.style.setProperty(
+      "--home-primary-x",
+      `${layout.primary.x}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-primary-y",
+      `${layout.primary.y}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-upper-secondary-x",
+      `${layout.upperSecondary.x}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-upper-secondary-y",
+      `${layout.upperSecondary.y}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-lower-secondary-x",
+      `${layout.lowerSecondary.x}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-lower-secondary-y",
+      `${layout.lowerSecondary.y}px`
+    );
     homeScreen.style.removeProperty("--home-primary-diameter");
     homeScreen.style.removeProperty("--home-secondary-diameter");
   }else{
@@ -1202,6 +1226,12 @@ function applyHomeGeometry(){
     homeScreen.style.removeProperty("--home-circle-item-height");
     homeScreen.style.removeProperty("--home-horizontal-space");
     homeScreen.style.removeProperty("--home-vertical-space");
+    homeScreen.style.removeProperty("--home-primary-x");
+    homeScreen.style.removeProperty("--home-primary-y");
+    homeScreen.style.removeProperty("--home-upper-secondary-x");
+    homeScreen.style.removeProperty("--home-upper-secondary-y");
+    homeScreen.style.removeProperty("--home-lower-secondary-x");
+    homeScreen.style.removeProperty("--home-lower-secondary-y");
     homeScreen.style.removeProperty("--home-primary-diameter");
     homeScreen.style.removeProperty("--home-secondary-diameter");
   }
