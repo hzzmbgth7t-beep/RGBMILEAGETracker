@@ -15,6 +15,7 @@
   const MIGRATION_VERSION = "wc10-three-vehicle-v1";
   const RECOVERY_SNAPSHOT_VERSION = "wc10-recovery-snapshot-v1";
   const RECONCILIATION_VERSION = "wc10-standalone-safari-reconciliation-v1";
+  const CUSTOM_LABEL_MAX_LENGTH = 50;
   const ACTIVE_KEY = "RGBM_DATA_v3";
   const PENDING_KEY = "RGBM_DATA_v3_pending";
   const LEGACY_KEYS = [
@@ -65,6 +66,10 @@
 
   function cleanText(value) {
     return value === null || value === undefined ? "" : String(value).trim();
+  }
+
+  function normalizeCustomLabel(value) {
+    return cleanText(value).slice(0, CUSTOM_LABEL_MAX_LENGTH);
   }
 
   function clone(value) {
@@ -124,6 +129,7 @@
       nickname: "",
       displayName: "",
       badge: "",
+      customLabel: "",
       primaryPhoto: "",
       primaryPhotoZoom: 1.25,
       primaryPhotoOffsetX: 0,
@@ -196,6 +202,7 @@
       nickname: cleanText(rawVehicle.nickname),
       displayName: cleanText(rawVehicle.displayName),
       badge: cleanText(rawVehicle.badge),
+      customLabel: normalizeCustomLabel(rawVehicle.customLabel),
       primaryPhoto: cleanText(rawVehicle.primaryPhoto || rawVehicle.photo),
       primaryPhotoZoom: Number(rawVehicle.primaryPhotoZoom || rawVehicle.photoZoom || 1.25),
       primaryPhotoOffsetX: Number(rawVehicle.primaryPhotoOffsetX || 0),
@@ -225,6 +232,7 @@
       vehicle.nickname = "";
       vehicle.displayName = "";
       vehicle.badge = "";
+      vehicle.customLabel = "";
       vehicle.primaryPhoto = "";
       vehicle.vin = "";
       vehicle.plate = "";
@@ -604,6 +612,18 @@
           message: `Vehicle ${vehicleId} has no boolean setupComplete state.`,
         });
       }
+      if (Object.prototype.hasOwnProperty.call(vehicle, "customLabel")) {
+        if (
+          typeof vehicle.customLabel !== "string"
+          || vehicle.customLabel !== vehicle.customLabel.trim()
+          || vehicle.customLabel.length > CUSTOM_LABEL_MAX_LENGTH
+        ) {
+          errors.push({
+            code: "INVALID_CUSTOM_LABEL",
+            message: `Vehicle ${vehicleId} has an invalid custom label.`,
+          });
+        }
+      }
       if (Object.prototype.hasOwnProperty.call(vehicle, "slot")) {
         errors.push({
           code: "INVALID_CANONICAL_SLOT",
@@ -924,6 +944,7 @@
       vehicleId,
       id: vehicleId,
     };
+    updated.customLabel = normalizeCustomLabel(updated.customLabel);
     delete updated.slot;
     next.vehicles[index] = updated;
     assertValidStateV3(next);
@@ -2189,11 +2210,13 @@
     MIGRATION_VERSION,
     RECOVERY_SNAPSHOT_VERSION,
     RECONCILIATION_VERSION,
+    CUSTOM_LABEL_MAX_LENGTH,
     ACTIVE_KEY,
     PENDING_KEY,
     LEGACY_KEYS: Object.freeze(LEGACY_KEYS.slice()),
     RECORD_COLLECTIONS: Object.freeze(RECORD_COLLECTIONS.slice()),
     RGBMDataError,
+    normalizeCustomLabel,
     createBlankVehicle,
     createBlankDataV3,
     normalizeLegacyVehicle,

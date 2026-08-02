@@ -1,29 +1,25 @@
 # Fix Notes
 
-**Build:** `v2.1.6l-wc10-f17`  
-**Build date:** `08/01/2026`  
+**Build:** `v2.1.6l-wc10-f19`  
+**Build date:** `08/02/2026`  
 **Governance:** `v1.7`
 
-F14 used equal grid columns and rows. That layout was valid and collision-free, but its rectangular width rule prevented the staggered circles from using their true diagonal separation.
+F17 and F18 were rejected and were not used as source material.
 
-F17 changes only portrait circle geometry:
+F19 starts from accepted `v2.1.6l-wc10-f16` with SHA-256:
 
 ```text
-        upper-right circle
-primary circle
-        lower-right circle
+88d58d0eb7f5bbe0c3de5076acdcbcd0a004e41eff294c7f8050ff0140cf35d8
 ```
 
-- all three circles retain one shared diameter
-- upper-right and lower-right centers use their safe vertical limits
-- the primary center remains exactly between them
-- each candidate diameter is rejected if any circle, label, or edge clearance fails
-- the first valid diameter found from largest to smallest is used
-- labels remain fixed-height, two-line blocks beneath their circles
-- symmetric top, bottom, left, and right insets remain after sizing
+Corrections:
 
-At the representative 410 × 817 rendered vehicle region, the common diameter is 228 pixels rather than the earlier 187-pixel rectangular-column limit.
+- non-Home menu height changed from `58px + safe-area-inset-bottom` to the same exact 58-pixel dock used by Home
+- non-Home menu padding now matches Home at `4px 7px`
+- added the `Custom Label` field with a 50-character maximum
+- centralized onscreen vehicle label selection
+- JSON backups always include `customLabel`, including blank values
+- older JSON backups without the field remain compatible
+- CSV mappings remain unchanged
 
-F16 update-control placement and behavior are locked. No landscape, viewport, offline, data-storage, backup, recovery, or menu behavior changed.
-
-Cache URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f17
+No Home circle geometry changes are included.

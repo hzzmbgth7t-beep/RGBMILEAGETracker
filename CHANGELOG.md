@@ -1,30 +1,22 @@
 # Changelog
 
-## v2.1.6l-wc10-f17 — 08/01/2026
+## v2.1.6l-wc10-f19 — 08/02/2026
 
-**Governance:** `v1.7`  
-**Classification:** CURRENT
+- Rebuilt directly from accepted `v2.1.6l-wc10-f16`.
+- Normalized every non-Home bottom menu to the accepted 58-pixel Home menu height.
+- Added the 50-character `Custom Label` vehicle field.
+- Custom labels override the generated `Year Make Model Badge` label everywhere onscreen.
+- Blank custom labels immediately restore the generated label.
+- JSON backup and restore preserve custom labels; CSV behavior is unchanged.
+- Home portrait and landscape circle geometry is unchanged from F16.
 
-- Enlarged all three portrait circles while preserving equal diameters.
-- Replaced F14's rectangular two-column/two-row size limit with actual circle, label, edge, and collision constraints.
-- Moved the upper-right center to the highest safe position.
-- Moved the lower-right center to the lowest safe position.
-- Kept the primary center aligned with the midpoint of the secondary centers.
-- Changed portrait placement from CSS grid rows to computed absolute coordinates inside the rendered vehicle region.
-- Preserved the accepted F16 update indicator and interaction.
-- Preserved landscape, offline mode, viewport ownership, storage, backups, recovery, and the 58-pixel menu.
+Cache URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f19
 
-Representative 410 × 817 vehicle region: 228-pixel shared portrait diameter.
-
-Normal URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-Cache URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f17
-
-## Historical F16
 
 ## v2.1.6l-wc10-f16 — 08/01/2026
 
 **Governance:** `v1.7`  
-**Classification:** CURRENT
+**Classification:** HISTORICAL ACCEPTED BASELINE
 
 - Kept the accepted F15 update-indicator placement unchanged.
 - Replaced the green shield with the original rounded-pill shape.

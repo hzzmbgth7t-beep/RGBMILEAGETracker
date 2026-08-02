@@ -1,4 +1,5 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f17",date:"2026-08-01",cacheRevision:"216lwc10f17"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f19",date:"2026-08-02",cacheRevision:"216lwc10f19"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const CUSTOM_LABEL_MAX_LENGTH=50;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
   online:typeof navigator==="undefined"||navigator.onLine!==false,
@@ -935,9 +936,22 @@ function handleRecordEditBack(){if(!isRecordEditDirty())return performBackNaviga
 function isVehicleConfigured(v){return RGBMDataV3.isVehicleConfigured(v)}
 function orderedVehicles(){return RGBMDataV3.getOrderedVehicles(state)}
 function configuredVehicles(){return RGBMDataV3.getConfiguredVehicles(state)}
+function normalizeVehicleCustomLabel(value){
+  return cleanText(value).slice(0,CUSTOM_LABEL_MAX_LENGTH);
+}
+function vehicleDefaultLabel(v){
+  if(!v)return "Vehicle";
+  return [v.year,v.make,v.model,v.badge]
+    .map(cleanText)
+    .filter(Boolean)
+    .join(" ")
+    ||cleanText(v.nickname)
+    ||cleanText(v.displayName)
+    ||"Vehicle";
+}
 function vehicleLabel(v){
   if(!v||!isVehicleConfigured(v))return "Add Vehicle";
-  return [v.year,v.make,v.model].filter(Boolean).join(" ")||v.nickname||v.displayName||"Vehicle";
+  return normalizeVehicleCustomLabel(v.customLabel)||vehicleDefaultLabel(v);
 }
 function vehicleBadge(v){
   if(!v||!isVehicleConfigured(v))return "+";
@@ -1092,7 +1106,7 @@ function otherSaveToList(){if(!pendingOtherSelect)return;const val=otherEnteredV
 
 function clearEditForm(type){if(type==="Fuel")clearInputs(["efdate","eftime","efodo","efmiles","efgal","efmpg","efgrade","efstation","efnotes"]);if(type==="Maintenance")clearInputs(["emdate","emcat","emodo","emcost","emloc","emprov","emnotes"]);if(type==="Insurance")clearInputs(["eicomp","eipol","eieff","eiexp","eicov","eiprem","eiagent","eiphone","eiemail","eiagency","einotes"])}
 function saveRecordEdit(type,recordId,goBackAfterSave=false){try{const a=recArray(type);const r=a.find(x=>x.recordId===recordId);if(!r)return alert("Record not found.");if(type==="Fuel"){const date=requireValue($("efdate").value,"Date");const gallons=requirePositive($("efgal").value,"Gallons");const odometer=requireNonNegative($("efodo").value,"Odometer");const miles=requireNonNegative($("efmiles").value,"Miles");const price=requireNonNegative($("efprice").value,"Price/Gal");const total=requireNonNegative($("efcost").value,"Total Cost");Object.assign(r,{date,time:$("eftime").value,odometer,miles,gallons,mpg:requireNonNegative($("efmpg").value,"MPG"),fuelGrade:cleanText($("efgrade").value),ethanolFree:cleanText($("efef").value),station:cleanText($("efstation").value),fuelCostSource:cleanText($("efcostsource").value)||(total!==""?"Entered":price!==""?"Calculated":""),fuelPricePerGallon:price,totalFuelCost:total,notes:cleanText($("efnotes").value),modifiedAt:nowISO()})}else if(type==="Maintenance"){const date=requireValue($("emdate").value,"Date");const odometer=requireNonNegative($("emodo").value,"Odometer");const totalCost=requireNonNegative($("emcost").value,"Cost");const provider=cleanText($("emprov").value);Object.assign(r,{date,dropOffDate:date,pickUpDate:cleanText($("empick").value),category:cleanText($("emcat").value)||"Maintenance",odometer,totalCost,cost:totalCost,location:cleanText($("emloc").value),serviceProvider:provider,provider,performedBy:cleanText($("emperf").value),notes:cleanText($("emnotes").value),modifiedAt:nowISO()})}else if(type==="Insurance"){const agency=cleanText($("eiagency").value);const policyNumber=cleanText($("eipol").value);const effectiveDate=cleanText($("eieff").value);const expirationDate=cleanText($("eiexp").value);if(expirationDate&&expirationDate<effectiveDate)throw new Error("Expiration Date cannot be earlier than Effective Date.");const agreedValue=requireNonNegative($("eiagree").value,"Agreed Value");const premium=requireNonNegative($("eiprem").value,"Premium");const agent=cleanText($("eiagent").value);const notes=cleanText($("einotes").value);Object.assign(r,{company:agency,agency,policyNumber,effectiveDate,expirationDate,agreedValue,coverageValue:agreedValue,insuranceValue:agreedValue,premium,agent,agentName:agent,phone:cleanText($("eiphone").value),email:cleanText($("eiemail").value),notes,coverageNotes:notes,modifiedAt:nowISO()})}saveData();editSnapshot=null;showToast("Edit saved.");if(goBackAfterSave){performBackNavigation();return true}clearEditForm(type);return true}catch(e){alert(e.message||String(e));return false}}
-function vehicleView(app,vid){const v=getVehicle(vid);if(!v)return nav("home");const acq=getAcq(vid);app.innerHTML=header(vehicleLabel(v))+`<div class="card vehicle-detail-card"><div class="vehicle-view-photo">${v.primaryPhoto?`<div class="vehicle-detail-photo-frame"><img src="${v.primaryPhoto}" alt="${esc(vehicleLabel(v))}"></div>`:`<div class="vehicle-detail-photo-frame vehicle-detail-photo-placeholder"><span>${vehicleInitials(v)}</span></div>`}</div><div class="view-grid">${viewField("Year",v.year||"")}${viewField("Make",v.make||"")}${viewField("Model",v.model||"")}${viewField("Badge",v.badge||"")}${viewField("Acquisition Date",formatDisplayDate(acq.acquisitionDate))}${viewField("Starting Odometer",acq.startingOdometer||"")}${viewField("Purchase Price",acq.purchasePrice||"")}${viewField("Status",v.status||"Active")}${viewField("Seller",acq.seller||"",true)}</div><div class="vehicle-detail-actions"><button class="wide primary nav-control" type="button" onclick="nav('vehicleEdit',{vehicleId:'${vid}'})">Edit Vehicle</button><button class="wide nav-control" type="button" onclick="openFuelFromVehicle('${vid}')">Fuel Entry</button><button class="wide nav-control" type="button" onclick="openMaintenanceFromVehicle('${vid}')">Maintenance Entry</button><button class="wide nav-control" type="button" onclick="openInsuranceFromVehicle('${vid}')">Insurance Entry</button></div></div>`+previousRecordsHtml("Fuel",vid)+previousRecordsHtml("Maintenance",vid)+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}
+function vehicleView(app,vid){const v=getVehicle(vid);if(!v)return nav("home");const acq=getAcq(vid);app.innerHTML=header(vehicleLabel(v))+`<div class="card vehicle-detail-card"><div class="vehicle-view-photo">${v.primaryPhoto?`<div class="vehicle-detail-photo-frame"><img src="${v.primaryPhoto}" alt="${esc(vehicleLabel(v))}"></div>`:`<div class="vehicle-detail-photo-frame vehicle-detail-photo-placeholder"><span>${vehicleInitials(v)}</span></div>`}</div><div class="view-grid">${viewField("Year",v.year||"")}${viewField("Make",v.make||"")}${viewField("Model",v.model||"")}${viewField("Badge",v.badge||"")}${viewField("Custom Label",normalizeVehicleCustomLabel(v.customLabel))}${viewField("Acquisition Date",formatDisplayDate(acq.acquisitionDate))}${viewField("Starting Odometer",acq.startingOdometer||"")}${viewField("Purchase Price",acq.purchasePrice||"")}${viewField("Status",v.status||"Active")}${viewField("Seller",acq.seller||"",true)}</div><div class="vehicle-detail-actions"><button class="wide primary nav-control" type="button" onclick="nav('vehicleEdit',{vehicleId:'${vid}'})">Edit Vehicle</button><button class="wide nav-control" type="button" onclick="openFuelFromVehicle('${vid}')">Fuel Entry</button><button class="wide nav-control" type="button" onclick="openMaintenanceFromVehicle('${vid}')">Maintenance Entry</button><button class="wide nav-control" type="button" onclick="openInsuranceFromVehicle('${vid}')">Insurance Entry</button></div></div>`+previousRecordsHtml("Fuel",vid)+previousRecordsHtml("Maintenance",vid)+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}
 function recordEdit(app,type,recordId){const r=records(type,null,true).find(x=>x.recordId===recordId);if(!r)return nav("home");const vid=r.vehicleId;if(type==="Fuel"){app.innerHTML=header("Edit Fuel Record")+`<div class="card"><div class="form-grid"><label>Date<input type="date" id="efdate" value="${esc(r.date||"")}"></label><label>Time<input type="time" id="eftime" value="${esc(r.time||"")}"></label><label>Odometer<input type="number" step="0.01" id="efodo" value="${esc(r.odometer||"")}"></label><label>Miles<input type="number" step="0.01" id="efmiles" value="${esc(r.miles||"")}"></label><label>Gallons<input type="number" step="0.001" id="efgal" value="${esc(r.gallons||"")}"></label><label>MPG<input type="number" step="0.01" id="efmpg" value="${esc(r.mpg||"")}"></label><label>Fuel Grade<select id="efgrade" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'fuelGrades')">${activeList("fuelGrades").map(g=>`<option ${g===(r.fuelGrade||"")?"selected":""}>${esc(g)}</option>`).join("")}</select></label><label>Ethanol Free<select id="efef"><option ${String(r.ethanolFree||"")===""?"selected":""}></option><option ${String(r.ethanolFree||"")==="Yes"?"selected":""}>Yes</option><option ${String(r.ethanolFree||"")==="No"?"selected":""}>No</option></select></label><label>Station<select id="efstation" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'stations')">${activeList("stations").map(s=>`<option ${s===(r.station||"")?"selected":""}>${esc(s)}</option>`).join("")}</select></label><label>Cost Source<select id="efcostsource"><option ${String(r.fuelCostSource||"")===""?"selected":""}></option><option ${String(r.fuelCostSource||"")==="Calculated"?"selected":""}>Calculated</option><option ${String(r.fuelCostSource||"")==="Entered"?"selected":""}>Entered</option></select></label><label>Price/Gal<input type="number" step="0.01" id="efprice" value="${esc(r.fuelPricePerGallon||"")}" oninput="calcEditCost()"></label><label>Total Cost<input type="number" step="0.01" id="efcost" value="${esc(r.totalFuelCost||"")}"></label><label class="full">Notes<textarea id="efnotes">${esc(r.notes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Fuel','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Fuel",vid)+bottomNav()+footer();setEditSnapshot(type,recordId);return}if(type==="Maintenance"){app.innerHTML=header("Edit Maintenance Record")+`<div class="card"><div class="form-grid"><label>Date<input type="date" id="emdate" value="${esc(r.dropOffDate||r.date||"")}"></label><label>Pickup Date<input type="date" id="empick" value="${esc(r.pickUpDate||"")}"></label><label>Category<select id="emcat" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'maintenanceCategories')">${activeList("maintenanceCategories").map(c=>`<option ${c===(r.category||"")?"selected":""}>${esc(c)}</option>`).join("")}</select></label><label>Odometer<input type="number" step="0.01" id="emodo" value="${esc(r.odometer||"")}"></label><label>Cost<input type="number" step="0.01" id="emcost" value="${esc(r.totalCost||r.cost||"")}"></label><label>Location<input id="emloc" value="${esc(r.location||"")}"></label><label>Provider<input id="emprov" value="${esc(r.serviceProvider||r.provider||"")}"></label><label>Performed By<input id="emperf" value="${esc(r.performedBy||"")}"></label><label class="full">Notes<textarea id="emnotes">${esc(r.notes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Maintenance','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Maintenance",vid)+bottomNav()+footer();setEditSnapshot(type,recordId);return}if(type==="Insurance"){app.innerHTML=header("Edit Insurance Record")+`<div class="card"><div class="form-grid"><label>Agency<input id="eiagency" value="${esc(r.agency||r.company||"")}"></label><label>Policy Number<input id="eipol" value="${esc(r.policyNumber||"")}"></label><label>Effective Date<input type="date" id="eieff" value="${esc(r.effectiveDate||"")}"></label><label>Expiration Date<input type="date" id="eiexp" value="${esc(r.expirationDate||"")}"></label><label>Agreed Value<input type="number" step="0.01" id="eiagree" value="${esc((r.agreedValue!==""&&r.agreedValue!=null)?r.agreedValue:(r.coverageValue!==""&&r.coverageValue!=null?r.coverageValue:r.insuranceValue||""))}"></label><label>Premium<input type="number" step="0.01" id="eiprem" value="${esc(r.premium||"")}"></label><label>Agent<input id="eiagent" value="${esc(r.agent||r.agentName||"")}"></label><label>Phone<input id="eiphone" value="${esc(r.phone||"")}"></label><label>Email<input type="email" id="eiemail" value="${esc(r.email||"")}"></label><label class="full">Notes<textarea id="einotes">${esc(r.notes||r.coverageNotes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Insurance','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}}
 
 
@@ -1195,30 +1209,6 @@ function applyHomeGeometry(){
       "--home-vertical-space",
       `${layout.verticalSpace}px`
     );
-    homeScreen.style.setProperty(
-      "--home-primary-x",
-      `${layout.primary.x}px`
-    );
-    homeScreen.style.setProperty(
-      "--home-primary-y",
-      `${layout.primary.y}px`
-    );
-    homeScreen.style.setProperty(
-      "--home-upper-secondary-x",
-      `${layout.upperSecondary.x}px`
-    );
-    homeScreen.style.setProperty(
-      "--home-upper-secondary-y",
-      `${layout.upperSecondary.y}px`
-    );
-    homeScreen.style.setProperty(
-      "--home-lower-secondary-x",
-      `${layout.lowerSecondary.x}px`
-    );
-    homeScreen.style.setProperty(
-      "--home-lower-secondary-y",
-      `${layout.lowerSecondary.y}px`
-    );
     homeScreen.style.removeProperty("--home-primary-diameter");
     homeScreen.style.removeProperty("--home-secondary-diameter");
   }else{
@@ -1226,12 +1216,6 @@ function applyHomeGeometry(){
     homeScreen.style.removeProperty("--home-circle-item-height");
     homeScreen.style.removeProperty("--home-horizontal-space");
     homeScreen.style.removeProperty("--home-vertical-space");
-    homeScreen.style.removeProperty("--home-primary-x");
-    homeScreen.style.removeProperty("--home-primary-y");
-    homeScreen.style.removeProperty("--home-upper-secondary-x");
-    homeScreen.style.removeProperty("--home-upper-secondary-y");
-    homeScreen.style.removeProperty("--home-lower-secondary-x");
-    homeScreen.style.removeProperty("--home-lower-secondary-y");
     homeScreen.style.removeProperty("--home-primary-diameter");
     homeScreen.style.removeProperty("--home-secondary-diameter");
   }
@@ -1593,7 +1577,7 @@ function vehicleEdit(app,vid){
   const configured=isVehicleConfigured(v);
   const acq=getAcq(v.vehicleId);
   const currentImg=v.primaryPhoto?`<div class="edit-image-preview"><div class="vehicle-edit-photo-frame"><img src="${v.primaryPhoto}" alt="${esc(vehicleLabel(v))}"></div><div class="muted">Current vehicle image saved</div></div>`:`<div class="muted">No vehicle image saved</div>`;
-  app.innerHTML=header(configured?"Edit Vehicle":"Add Vehicle")+`<div class="card"><div class="form-grid"><label>Year<input id="vehYear" value="${esc(v.year||"")}"></label><label>Make<input id="vehMake" value="${esc(v.make||"")}"></label><label>Model<input id="vehModel" value="${esc(v.model||"")}"></label><label>Badge<input id="vehBadge" value="${esc(v.badge||"")}"></label></div><div class="image-edit-block"><h3>Vehicle Image</h3>${currentImg}<label>Replace Image<input type="file" id="vehPhoto" accept="image/*"></label><div class="muted">Saved image data: ${v.primaryPhoto?"Present":"None"}</div></div><h3>Vehicle Acquisition Record</h3><div class="form-grid"><label>Acquisition Date<input type="date" id="acqDate" value="${esc(acq.acquisitionDate||"")}"></label><label>Starting Odometer<input type="number" step="0.01" id="startOdo" value="${esc(acq.startingOdometer||"")}"></label><label>Purchase Price<input type="number" step="0.01" id="purchasePrice" value="${esc(acq.purchasePrice||"")}"></label><label>Status<select id="vehStatus"><option ${v.status==="Active"?"selected":""}>Active</option><option ${v.status==="Archived"?"selected":""}>Archived</option></select></label><label class="full">Seller<input id="seller" value="${esc(acq.seller||"")}"></label></div><button class="wide primary" onclick="saveVehicle('${v.vehicleId}')">Save Vehicle</button><button class="wide ghost" onclick="clearVehicleFormExit()">Clear & Exit</button></div>`+bottomNav()+footer();
+  app.innerHTML=header(configured?"Edit Vehicle":"Add Vehicle")+`<div class="card"><div class="form-grid"><label>Year<input id="vehYear" value="${esc(v.year||"")}"></label><label>Make<input id="vehMake" value="${esc(v.make||"")}"></label><label>Model<input id="vehModel" value="${esc(v.model||"")}"></label><label>Badge<input id="vehBadge" value="${esc(v.badge||"")}"></label><label class="full">Custom Label<input id="vehCustomLabel" maxlength="50" value="${esc(normalizeVehicleCustomLabel(v.customLabel))}"></label></div><div class="image-edit-block"><h3>Vehicle Image</h3>${currentImg}<label>Replace Image<input type="file" id="vehPhoto" accept="image/*"></label><div class="muted">Saved image data: ${v.primaryPhoto?"Present":"None"}</div></div><h3>Vehicle Acquisition Record</h3><div class="form-grid"><label>Acquisition Date<input type="date" id="acqDate" value="${esc(acq.acquisitionDate||"")}"></label><label>Starting Odometer<input type="number" step="0.01" id="startOdo" value="${esc(acq.startingOdometer||"")}"></label><label>Purchase Price<input type="number" step="0.01" id="purchasePrice" value="${esc(acq.purchasePrice||"")}"></label><label>Status<select id="vehStatus"><option ${v.status==="Active"?"selected":""}>Active</option><option ${v.status==="Archived"?"selected":""}>Archived</option></select></label><label class="full">Seller<input id="seller" value="${esc(acq.seller||"")}"></label></div><button class="wide primary" onclick="saveVehicle('${v.vehicleId}')">Save Vehicle</button><button class="wide ghost" onclick="clearVehicleFormExit()">Clear & Exit</button></div>`+bottomNav()+footer();
 }
 async function imgData(file){return new Promise(resolve=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height,sc=Math.min(1,1200/Math.max(w,h));const c=document.createElement("canvas");c.width=Math.round(w*sc);c.height=Math.round(h*sc);c.getContext("2d").drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL("image/jpeg",.85))};img.onerror=()=>resolve(e.target.result);img.src=e.target.result};r.readAsDataURL(file)})}
 function meaningfulAcquisition(vals){return !!(vals.acquisitionDate||vals.startingOdometer!==""||vals.purchasePrice!==""||vals.seller)}
@@ -1621,6 +1605,7 @@ async function saveVehicle(vid){
     make:$("vehMake").value.trim(),
     model:$("vehModel").value.trim(),
     badge:$("vehBadge").value.trim(),
+    customLabel:normalizeVehicleCustomLabel($("vehCustomLabel").value),
     status:$("vehStatus")?$("vehStatus").value:(existing.status||"Active"),
     modifiedAt:nowISO()
   };
@@ -2511,6 +2496,7 @@ function saveQuickInsurance(vid,silent){
 function dataScreen(app){app.innerHTML=header("Data Management")+`<div class="card"><h2>Backup & Restore</h2><button class="wide primary" onclick="downloadBackup()">Create JSON Backup</button><label>Restore JSON<input type="file" id="restoreFile" accept=".json"></label><label>Restore Mode<select id="restoreMode"><option>Replace</option><option>Update</option><option>Duplicate</option><option>Skip</option></select></label><button class="wide" onclick="restoreBackup()">Restore JSON Backup</button><button class="wide ghost" onclick="if(confirm('Clear old RGB Mileage cached storage? Current active data may be removed.')){clearRGBMStorage(false);alert('Old RGB Mileage storage cleared.')}">Clear Old Cached Storage</button><pre id="dataStatus" class="small"></pre></div><div class="card"><h2>CSV Import</h2><p class="muted">CSV import supports Fuel and Maintenance records.</p><label>Vehicle<select id="importVehicle">${configuredVehicles().map(v=>`<option value="${v.vehicleId}">${esc(vehicleLabel(v))}</option>`).join("")}</select></label><label>Imported Data Type<select id="importDataType"><option>Migrated Data</option><option>Other Data</option></select></label><label>CSV File<input type="file" id="csvFile" accept=".csv"></label><label>Duplicate Mode<select id="importMode"><option>Skip</option><option>Update</option><option>Duplicate</option><option>Replace</option><option>Cancel</option></select></label><button class="wide" onclick="previewCSV()">Preview Import</button><button class="wide primary" onclick="savePreviewRows()">Save Previewed Rows</button><pre id="importStatus" class="small"></pre></div>`+bottomNav()+footer()}
 function backupPayload(){
   const p=JSON.parse(JSON.stringify(state));
+  p.vehicles=(p.vehicles||[]).map(v=>({...v,customLabel:normalizeVehicleCustomLabel(v.customLabel)}));
   p.app="RGB Mileage";
   p.appVersion=VERSION;
   p.buildId=VERSION;

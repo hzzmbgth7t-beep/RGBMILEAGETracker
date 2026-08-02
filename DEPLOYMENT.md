@@ -1,22 +1,17 @@
 # Deployment
 
-**Build:** `v2.1.6l-wc10-f17`  
-**Build date:** `08/01/2026`  
+**Build:** `v2.1.6l-wc10-f19`  
+**Build date:** `08/02/2026`  
 **Governance:** `v1.7`
 
-1. Retain `v2.1.6l-wc10-f17.zip`.
+1. Retain `v2.1.6l-wc10-f19.zip`.
 2. Upload only the 17 ZIP-root files.
-3. Open https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f17
-4. Confirm the full identity reads `v2.1.6l-wc10-f17`.
-5. Confirm portrait shows three equal enlarged circles:
-   - primary at left-center
-   - secondary at upper-right
-   - secondary at lower-right
-6. Confirm no circle or label overlaps.
-7. Rotate to landscape and confirm the accepted three-across arrangement is unchanged.
-8. Confirm the accepted rounded update pill remains selectable when a waiting worker exists.
-9. Confirm Home, Reports, Data, Settings, offline launch, and existing records remain available.
+3. Open https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f19
+4. Confirm the displayed identity is `v2.1.6l-wc10-f19`.
+5. Apply the waiting offline update if the update pill appears.
+6. Verify Home, Reports, Data, Settings, vehicle detail, and record screens.
+7. Confirm every bottom menu matches the accepted Home menu height.
+8. Add, edit, clear, back up, and restore a vehicle custom label.
+9. Confirm Home landscape remains unchanged.
 
-Do not remove the Home Screen app or clear Safari website data.
-
-Actual iPhone portrait and Safari acceptance is required before production acceptance.
+Do not remove the Home Screen app or clear Safari website data during acceptance.

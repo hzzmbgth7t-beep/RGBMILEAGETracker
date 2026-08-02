@@ -1,35 +1,24 @@
 # User Guide
 
-**Build:** `v2.1.6l-wc10-f17`  
-**Build date:** `08/01/2026`  
+**Build:** `v2.1.6l-wc10-f19`  
+**Build date:** `08/02/2026`  
 **Governance:** `v1.7`
 
-## Home circles
+## Custom Label
 
-Portrait uses three equal circles:
+Open a vehicle, select **Edit Vehicle**, and enter up to 50 characters in **Custom Label**.
 
-- your primary vehicle appears at left-center
-- the other vehicles appear upper-right and lower-right
-- the circles automatically grow to the largest safe common size
-- labels remain beneath their circles
+- When the field contains text, that text is shown everywhere the vehicle name appears.
+- When the field is blank, RGB Mileage shows `Year Make Model Badge`.
+- Leading and trailing spaces are removed.
+- JSON backups preserve the field.
 
-Landscape retains three equal circles in one horizontal row.
+## Bottom menu
 
-## Offline update notification
+Home, Reports, Data, Settings, vehicle, and record screens now use the same compact bottom-menu height.
 
-A rounded dark notification reading:
+## Offline update
 
-```text
-Update
-Offline
-Service
-Worker
-```
+The four-line update pill still applies a waiting offline service worker and reloads RGB Mileage after activation.
 
-means a newer offline service worker is waiting.
-
-Select the notification to apply the update. RGB Mileage reloads after the new worker takes control, and the notification disappears.
-
-The notification does not indicate data loss or a failed GitHub deployment. The same action remains available under **Settings → Offline Mode → Apply Offline Update**.
-
-Cache-refresh URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f17
+Cache URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f19

@@ -1,7 +1,7 @@
 {
   "name": "RGB Mileage",
   "short_name": "RGB Mileage",
-  "start_url": "./?v=216lwc10f17",
+  "start_url": "./?v=216lwc10f19",
   "display": "standalone",
   "background_color": "#0a1324",
   "theme_color": "#0a1324",
@@ -23,10 +23,10 @@
     }
   ],
   "orientation": "any",
-  "version": "v2.1.6l-wc10-f17",
-  "build_date": "2026-08-01",
-  "cache_revision": "216lwc10f17",
-  "build_date_display": "08/01/2026",
+  "version": "v2.1.6l-wc10-f19",
+  "build_date": "2026-08-02",
+  "cache_revision": "216lwc10f19",
+  "build_date_display": "08/02/2026",
   "date_display_format": "MM/DD/YYYY",
   "home_standalone_height_strategy": "100vh",
   "home_geometry_source": "ResizeObserver rendered container",
@@ -39,9 +39,9 @@
     "local_records": "localStorage; never placed in Cache Storage",
     "controlled_updates": true
   },
-  "home_portrait_layout": "equal staggered: left-center primary, upper-right and lower-right secondary with extreme safe vertical centers",
-  "home_portrait_circle_strategy": "maximum shared diameter using actual circle, label, edge, and collision constraints",
-  "home_landscape_layout": "three equal circles in one horizontal row; unchanged from accepted F16 baseline",
+  "home_portrait_layout": "equal staggered: left-center primary, upper-right and lower-right secondary",
+  "home_portrait_circle_strategy": "maximum shared diameter with evenly distributed remaining space",
+  "home_landscape_layout": "three equal circles in one horizontal row",
   "service_worker_update_badge": {
     "visible_when": "waiting service worker update exists",
     "text_lines": [
@@ -53,11 +53,23 @@
     "shape": "original rounded pill",
     "background": "original dark navy",
     "border": "original blue update border",
-    "placement": "accepted F16 blank-area placement with collision avoidance",
+    "placement": "largest available blank Home-screen region",
     "layout_participation": false,
     "interactive": true,
-    "action": "apply waiting offline service worker update",
-    "policy_status": "locked from device-accepted F16"
+    "action": "apply waiting offline service worker update"
   },
-  "home_portrait_residual_spacing": "symmetric safe edge insets after maximum diameter selection"
+  "menu_policy": {
+    "home_dock_height_px": 58,
+    "non_home_dock_height_px": 58,
+    "safe_area_growth": false,
+    "status": "device acceptance pending"
+  },
+  "vehicle_custom_label": {
+    "field_name": "Custom Label",
+    "maximum_characters": 50,
+    "trim_whitespace": true,
+    "display_priority": "custom label, then Year Make Model Badge",
+    "json_backup_restore": true,
+    "csv_import_export": false
+  }
 }
