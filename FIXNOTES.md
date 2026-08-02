@@ -1,25 +1,26 @@
 # Fix Notes
 
-**Build:** `v2.1.6l-wc10-f19`  
+**Build:** `v2.1.6l-wc10-f20`  
 **Build date:** `08/02/2026`  
 **Governance:** `v1.7`
 
-F17 and F18 were rejected and were not used as source material.
+Cache revision: `216lwc10f20`
 
-F19 starts from accepted `v2.1.6l-wc10-f16` with SHA-256:
+F20 source baseline:
 
 ```text
-88d58d0eb7f5bbe0c3de5076acdcbcd0a004e41eff294c7f8050ff0140cf35d8
+v2.1.6l-wc10-f19.zip
+SHA-256: 1e3e15e25b521e1098fae963d2a6b8b8224c0bee8e2ff4c13d982f296b3e4845
 ```
+
+F17 and F18 were rejected portrait-geometry experiments and were not used as runtime source material.
 
 Corrections:
 
-- non-Home menu height changed from `58px + safe-area-inset-bottom` to the same exact 58-pixel dock used by Home
-- non-Home menu padding now matches Home at `4px 7px`
-- added the `Custom Label` field with a 50-character maximum
-- centralized onscreen vehicle label selection
-- JSON backups always include `customLabel`, including blank values
-- older JSON backups without the field remain compatible
-- CSV mappings remain unchanged
-
-No Home circle geometry changes are included.
+- replaced the F19 portrait Home grid distribution with a centralized portrait solver
+- computes one maximum equal shared circle diameter
+- solves left and right center coordinates jointly
+- moves upper-right/lower-right centers inward by geometry constraints, not hardcoded offsets
+- uses rendered label bounds from the centralized display label, including Custom Label
+- rejects the next larger integer diameter with a documented constraint
+- leaves Home landscape and all non-Home/data/offline/update behavior unchanged

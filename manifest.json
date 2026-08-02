@@ -1,7 +1,7 @@
 {
   "name": "RGB Mileage",
   "short_name": "RGB Mileage",
-  "start_url": "./?v=216lwc10f19",
+  "start_url": "./?v=216lwc10f20",
   "display": "standalone",
   "background_color": "#0a1324",
   "theme_color": "#0a1324",
@@ -23,9 +23,9 @@
     }
   ],
   "orientation": "any",
-  "version": "v2.1.6l-wc10-f19",
+  "version": "v2.1.6l-wc10-f20",
   "build_date": "2026-08-02",
-  "cache_revision": "216lwc10f19",
+  "cache_revision": "216lwc10f20",
   "build_date_display": "08/02/2026",
   "date_display_format": "MM/DD/YYYY",
   "home_standalone_height_strategy": "100vh",
@@ -39,8 +39,8 @@
     "local_records": "localStorage; never placed in Cache Storage",
     "controlled_updates": true
   },
-  "home_portrait_layout": "equal staggered: left-center primary, upper-right and lower-right secondary",
-  "home_portrait_circle_strategy": "maximum shared diameter with evenly distributed remaining space",
+  "home_portrait_layout": "equal solved portrait: left primary and inward upper/lower right secondary",
+  "home_portrait_circle_strategy": "coherent F20 solver maximizes one shared diameter, validates the next larger diameter against real constraints, and uses rendered display-label bounds",
   "home_landscape_layout": "three equal circles in one horizontal row",
   "service_worker_update_badge": {
     "visible_when": "waiting service worker update exists",
@@ -62,7 +62,7 @@
     "home_dock_height_px": 58,
     "non_home_dock_height_px": 58,
     "safe_area_growth": false,
-    "status": "device acceptance pending"
+    "status": "F19 device accepted; F20 non-regression pending"
   },
   "vehicle_custom_label": {
     "field_name": "Custom Label",

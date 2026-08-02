@@ -449,7 +449,7 @@ body {
 .choice-buttons button{min-height:48px}
 @media(max-width:385px){.choice-box{width:min(80vw,310px)}}
 
-/* RGBM v2.1.6l-wc10-f19 preserves the accepted F16 Home geometry */
+/* RGBM v2.1.6l-wc10-f20: portrait Home uses one coherent solved geometry from F19 */
 :root {
   --home-column-gap: 14px;
   --home-min-row-gap: 10px;
@@ -460,6 +460,12 @@ body {
   --home-horizontal-space: 12px;
   --home-vertical-space: 12px;
   --home-dock-height: 58px;
+  --home-primary-x: 6px;
+  --home-primary-y: 290px;
+  --home-upper-secondary-x: 208px;
+  --home-upper-secondary-y: 166px;
+  --home-lower-secondary-x: 208px;
+  --home-lower-secondary-y: 414px;
 }
 
 body.home-active {
@@ -613,20 +619,11 @@ body.home-active {
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-staggered"]
+.home-shell[data-layout-mode="portrait-solved-equal-diameter"]
 .vehicle-area {
-  padding:
-    var(--home-vertical-space)
-    var(--home-horizontal-space) !important;
-  display: grid !important;
-  grid-template-columns:
-    repeat(2, var(--home-shared-diameter)) !important;
-  grid-template-rows:
-    repeat(2, var(--home-circle-item-height)) !important;
-  column-gap: var(--home-horizontal-space) !important;
-  row-gap: var(--home-vertical-space) !important;
-  justify-content: start !important;
-  align-content: start !important;
+  position: relative !important;
+  padding: 0 !important;
+  display: block !important;
 }
 
 #app.screen-home .circle-wrap {
@@ -663,7 +660,7 @@ body.home-active {
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-staggered"]
+.home-shell[data-layout-mode="portrait-solved-equal-diameter"]
 .circle-wrap {
   height: var(--home-circle-item-height) !important;
   grid-template-rows:
@@ -673,31 +670,38 @@ body.home-active {
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-staggered"]
+.home-shell[data-layout-mode="portrait-solved-equal-diameter"]
+.circle-wrap {
+  position: absolute !important;
+  right: auto !important;
+  bottom: auto !important;
+  justify-self: auto !important;
+  align-self: auto !important;
+}
+
+#app.screen-home
+.home-shell[data-layout-mode="portrait-solved-equal-diameter"]
 .circle-wrap:nth-child(1) {
-  grid-column: 1 !important;
-  grid-row: 1 / 3 !important;
-  place-self: center !important;
+  left: var(--home-primary-x) !important;
+  top: var(--home-primary-y) !important;
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-staggered"]
+.home-shell[data-layout-mode="portrait-solved-equal-diameter"]
 .circle-wrap:nth-child(2) {
-  grid-column: 2 !important;
-  grid-row: 1 !important;
-  place-self: center !important;
+  left: var(--home-upper-secondary-x) !important;
+  top: var(--home-upper-secondary-y) !important;
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-staggered"]
+.home-shell[data-layout-mode="portrait-solved-equal-diameter"]
 .circle-wrap:nth-child(3) {
-  grid-column: 2 !important;
-  grid-row: 2 !important;
-  place-self: center !important;
+  left: var(--home-lower-secondary-x) !important;
+  top: var(--home-lower-secondary-y) !important;
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-staggered"][data-compact="true"]
+.home-shell[data-layout-mode="portrait-solved-equal-diameter"][data-compact="true"]
 .vehicle-label {
   padding-top: 2px !important;
   font-size: clamp(11px, 3.25vw, 14px) !important;
@@ -1432,7 +1436,7 @@ body.recovery-active {
 }
 
 
-/* v2.1.6l-wc10-f19 canonical build identity */
+/* v2.1.6l-wc10-f20 canonical build identity */
 .settings-build-card {
   padding: 12px 16px;
   border-color: rgba(135, 189, 238, .72);
