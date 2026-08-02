@@ -449,7 +449,7 @@ body {
 .choice-buttons button{min-height:48px}
 @media(max-width:385px){.choice-box{width:min(80vw,310px)}}
 
-/* RGBM v2.1.6l-wc10-f15: equal staggered portrait circles */
+/* RGBM v2.1.6l-wc10-f16: equal staggered portrait circles */
 :root {
   --home-column-gap: 14px;
   --home-min-row-gap: 10px;
@@ -1131,7 +1131,7 @@ body.non-home-active {
   }
 }
 
-/* RGBM v2.1.6l-wc10-f15: isolated recovery scroller */
+/* RGBM v2.1.6l-wc10-f16: isolated recovery scroller */
 html {
   width: 100% !important;
   height: 100% !important;
@@ -1429,7 +1429,7 @@ body.recovery-active {
 }
 
 
-/* v2.1.6l-wc10-f15 canonical build identity */
+/* v2.1.6l-wc10-f16 canonical build identity */
 .settings-build-card {
   padding: 12px 16px;
   border-color: rgba(135, 189, 238, .72);
@@ -1497,37 +1497,37 @@ body.recovery-active {
 }
 
 
-/* RGBM v2.1.6l-wc10-f15 service-worker update shield */
+/* RGBM v2.1.6l-wc10-f16 selectable service-worker update pill */
 .service-worker-update-badge {
   position: absolute;
   z-index: 45;
   width: 72px;
   height: 92px;
-  padding: 9px 8px 12px;
+  padding: 10px 8px;
   box-sizing: border-box;
   display: grid;
-  grid-template-rows: 22px repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
   place-items: center;
   gap: 0;
-  color: #ffffff;
-  background:
-    linear-gradient(180deg, #2dbf64 0%, #159447 58%, #0b6c34 100%);
-  border: 2px solid rgba(226, 255, 236, .94);
-  -webkit-clip-path:
-    polygon(50% 0, 94% 15%, 88% 67%, 50% 100%, 12% 67%, 6% 15%);
-  clip-path:
-    polygon(50% 0, 94% 15%, 88% 67%, 50% 100%, 12% 67%, 6% 15%);
-  box-shadow:
-    0 6px 18px rgba(0, 0, 0, .42),
-    inset 0 1px 0 rgba(255, 255, 255, .45);
+  appearance: none;
+  -webkit-appearance: none;
+  color: #f8fbff;
+  background: rgba(8, 18, 34, .92);
+  border: 1px solid rgba(116, 210, 255, .95);
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .3);
+  font: inherit;
   font-size: 10px;
   font-weight: 900;
   line-height: 1;
   letter-spacing: .01em;
   text-align: center;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-tap-highlight-color: rgba(116, 210, 255, .22);
 }
 
 .service-worker-update-badge[hidden] {
@@ -1538,31 +1538,29 @@ body.recovery-active {
   display: block;
   width: 100%;
   white-space: nowrap;
+  pointer-events: none;
 }
 
-.service-worker-shield-icon {
-  width: 20px;
-  height: 20px;
-  fill: rgba(255, 255, 255, .16);
-  stroke: #ffffff;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.service-worker-update-badge:focus-visible {
+  outline: 3px solid rgba(174, 229, 255, .98);
+  outline-offset: 3px;
+}
+
+.service-worker-update-badge:active:not(:disabled) {
+  transform: scale(.97);
+}
+
+.service-worker-update-badge:disabled {
+  cursor: wait;
+  opacity: .74;
 }
 
 @media (orientation: landscape) {
   .service-worker-update-badge {
     width: 46px;
     height: 44px;
-    padding: 2px 4px 5px;
-    grid-template-rows: 8px repeat(4, minmax(0, 1fr));
-    border-width: 1px;
+    padding: 3px 4px;
     font-size: 6px;
     line-height: .9;
-  }
-
-  .service-worker-shield-icon {
-    width: 8px;
-    height: 8px;
   }
 }

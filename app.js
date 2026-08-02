@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f15",date:"2026-08-01",cacheRevision:"216lwc10f15"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f16",date:"2026-08-01",cacheRevision:"216lwc10f16"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
   online:typeof navigator==="undefined"||navigator.onLine!==false,
@@ -61,11 +61,6 @@ function ensureNetworkStatusElement(){
 
 function serviceWorkerUpdateBadgeMarkup(){
   return [
-    '<svg class="service-worker-shield-icon" ',
-    'viewBox="0 0 24 24" aria-hidden="true" focusable="false">',
-    '<path d="M12 2 20 5v6c0 5.2-3.4 9.6-8 11-4.6-1.4-8-5.8-8-11V5l8-3Z"/>',
-    '<path d="m8.4 12 2.2 2.2 5-5"/>',
-    '</svg>',
     '<span>Update</span>',
     '<span>Offline</span>',
     '<span>Service</span>',
@@ -83,17 +78,23 @@ function ensureServiceWorkerUpdateBadge(){
     ){
       return null;
     }
-    badge=document.createElement("div");
+    badge=document.createElement("button");
     badge.id="serviceWorkerUpdateBadge";
     badge.className="service-worker-update-badge";
-    badge.setAttribute("role","status");
-    badge.setAttribute("aria-live","polite");
+    badge.type="button";
     badge.setAttribute(
       "aria-label",
-      "Update Offline Service Worker"
+      "Apply Offline Service Worker Update"
+    );
+    badge.setAttribute(
+      "title",
+      "Apply Offline Service Worker Update"
     );
     badge.innerHTML=serviceWorkerUpdateBadgeMarkup();
     badge.hidden=true;
+    badge.addEventListener("click",()=>{
+      if(!OFFLINE_STATE.updateApplying)applyOfflineUpdate();
+    });
     document.body.appendChild(badge);
     return badge;
   }catch(error){
@@ -279,6 +280,11 @@ function refreshServiceWorkerUpdateBadge(){
     &&route.screen==="home"
   );
   badge.hidden=!show;
+  badge.disabled=OFFLINE_STATE.updateApplying;
+  badge.setAttribute(
+    "aria-busy",
+    OFFLINE_STATE.updateApplying?"true":"false"
+  );
   if(show){
     badge.innerHTML=serviceWorkerUpdateBadgeMarkup();
     requestAnimationFrame(()=>placeServiceWorkerUpdateBadge());
