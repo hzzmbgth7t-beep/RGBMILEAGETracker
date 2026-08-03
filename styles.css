@@ -449,23 +449,24 @@ body {
 .choice-buttons button{min-height:48px}
 @media(max-width:385px){.choice-box{width:min(80vw,310px)}}
 
-/* RGBM v2.1.6l-wc10-f20: portrait Home uses one coherent solved geometry from F19 */
+/* RGBM v2.1.6l-wc10-f21 uses circle-first Home portrait geometry */
 :root {
   --home-column-gap: 14px;
   --home-min-row-gap: 10px;
   --home-label-height: 36px;
   --home-label-gap: 4px;
   --home-shared-diameter: 180px;
+  --home-label-width: 180px;
   --home-circle-item-height: 220px;
+  --home-primary-x: 0px;
+  --home-primary-y: 0px;
+  --home-upper-secondary-x: 0px;
+  --home-upper-secondary-y: 0px;
+  --home-lower-secondary-x: 0px;
+  --home-lower-secondary-y: 0px;
   --home-horizontal-space: 12px;
   --home-vertical-space: 12px;
   --home-dock-height: 58px;
-  --home-primary-x: 6px;
-  --home-primary-y: 290px;
-  --home-upper-secondary-x: 208px;
-  --home-upper-secondary-y: 166px;
-  --home-lower-secondary-x: 208px;
-  --home-lower-secondary-y: 414px;
 }
 
 body.home-active {
@@ -619,7 +620,7 @@ body.home-active {
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-solved-equal-diameter"]
+.home-shell[data-layout-mode="portrait-circle-solver"]
 .vehicle-area {
   position: relative !important;
   padding: 0 !important;
@@ -628,7 +629,7 @@ body.home-active {
 
 #app.screen-home .circle-wrap {
   --home-circle-diameter: var(--home-shared-diameter);
-  width: var(--home-circle-diameter) !important;
+  width: var(--home-label-width, var(--home-circle-diameter)) !important;
   height:
     calc(
       var(--home-circle-diameter)
@@ -660,8 +661,9 @@ body.home-active {
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-solved-equal-diameter"]
+.home-shell[data-layout-mode="portrait-circle-solver"]
 .circle-wrap {
+  position: absolute !important;
   height: var(--home-circle-item-height) !important;
   grid-template-rows:
     var(--home-circle-diameter)
@@ -670,38 +672,28 @@ body.home-active {
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-solved-equal-diameter"]
-.circle-wrap {
-  position: absolute !important;
-  right: auto !important;
-  bottom: auto !important;
-  justify-self: auto !important;
-  align-self: auto !important;
-}
-
-#app.screen-home
-.home-shell[data-layout-mode="portrait-solved-equal-diameter"]
+.home-shell[data-layout-mode="portrait-circle-solver"]
 .circle-wrap:nth-child(1) {
   left: var(--home-primary-x) !important;
   top: var(--home-primary-y) !important;
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-solved-equal-diameter"]
+.home-shell[data-layout-mode="portrait-circle-solver"]
 .circle-wrap:nth-child(2) {
   left: var(--home-upper-secondary-x) !important;
   top: var(--home-upper-secondary-y) !important;
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-solved-equal-diameter"]
+.home-shell[data-layout-mode="portrait-circle-solver"]
 .circle-wrap:nth-child(3) {
   left: var(--home-lower-secondary-x) !important;
   top: var(--home-lower-secondary-y) !important;
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-solved-equal-diameter"][data-compact="true"]
+.home-shell[data-layout-mode="portrait-circle-solver"][data-compact="true"]
 .vehicle-label {
   padding-top: 2px !important;
   font-size: clamp(11px, 3.25vw, 14px) !important;
@@ -753,7 +745,7 @@ body.home-active {
 }
 
 #app.screen-home .vehicle-label {
-  width: var(--home-circle-diameter) !important;
+  width: var(--home-label-width, var(--home-circle-diameter)) !important;
   height: var(--home-label-height) !important;
   min-height: var(--home-label-height) !important;
   margin: 0 !important;
@@ -1436,7 +1428,7 @@ body.recovery-active {
 }
 
 
-/* v2.1.6l-wc10-f20 canonical build identity */
+/* v2.1.6l-wc10-f21 canonical build identity */
 .settings-build-card {
   padding: 12px 16px;
   border-color: rgba(135, 189, 238, .72);
@@ -1504,7 +1496,7 @@ body.recovery-active {
 }
 
 
-/* RGBM v2.1.6l-wc10-f19 preserves the accepted F16 update pill */
+/* RGBM v2.1.6l-wc10-f21 preserves the accepted F16 update pill */
 .service-worker-update-badge {
   position: absolute;
   z-index: 45;

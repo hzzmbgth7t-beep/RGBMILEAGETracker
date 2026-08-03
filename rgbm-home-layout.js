@@ -13,8 +13,8 @@
 })(
   typeof globalThis !== "undefined" ? globalThis : this,
   function createRGBMHomeLayout() {
-    const LAYOUT_VERSION = "wc10-responsive-three-circle-home-v5-f20";
-    const PORTRAIT_MODE = "portrait-solved-equal-diameter";
+    const LAYOUT_VERSION = "wc10-circle-first-home-v5";
+    const PORTRAIT_MODE = "portrait-circle-solver";
 
     function finiteNumber(value, fallback = 0) {
       const number = Number(value);
@@ -52,381 +52,435 @@
       return width > height ? "landscape" : "portrait";
     }
 
-    function measuredLabelHeight(rawInput, fallback) {
-      const labelBounds = Array.isArray(rawInput.labelBounds)
-        ? rawInput.labelBounds
-        : [];
-      const heights = labelBounds.map((item) => (
-        positive(item && item.height)
-      ));
-      const rawMax = positive(rawInput.labelMaxHeight);
-      const measured = Math.max(rawMax, ...heights, 0);
-
-      if (measured <= 0) {
-        return fallback;
-      }
-
-      return clamp(Math.ceil(measured), fallback, 58);
-    }
-
-    function measuredLabelWidth(rawInput) {
-      const labelBounds = Array.isArray(rawInput.labelBounds)
-        ? rawInput.labelBounds
-        : [];
-      const widths = labelBounds.map((item) => (
-        positive(item && item.width)
-      ));
-
-      return Math.ceil(Math.max(positive(rawInput.labelMaxWidth), ...widths, 0));
-    }
-
     function portraitMetrics(
       contentWidth,
       vehicleAreaHeight,
-      rawInput = {},
       compact = false,
     ) {
-      const base = compact
-        ? {
-          minimumHorizontalSpace: 6,
-          minimumVerticalSpace: 8,
-          minimumRightPairGap: 8,
+      if (compact) {
+        return {
+          edgeClearance: 6,
+          circleGap: 7,
+          labelCircleGap: 3,
           labelGap: 3,
           labelHeight: clamp(
             Math.round(vehicleAreaHeight * 0.04),
             28,
             34,
           ),
-          edgeClearance: 6,
-        }
-        : {
-          minimumHorizontalSpace: clamp(
-            Math.round(contentWidth * 0.015),
-            6,
-            10,
-          ),
-          minimumVerticalSpace: clamp(
-            Math.round(vehicleAreaHeight * 0.012),
-            10,
+          labelWidthExtra: clamp(
+            Math.round(contentWidth * 0.03),
+            8,
             14,
-          ),
-          minimumRightPairGap: clamp(
-            Math.round(vehicleAreaHeight * 0.012),
-            10,
-            14,
-          ),
-          labelGap: clamp(
-            Math.round(vehicleAreaHeight * 0.006),
-            4,
-            6,
-          ),
-          labelHeight: clamp(
-            Math.round(vehicleAreaHeight * 0.045),
-            32,
-            40,
-          ),
-          edgeClearance: clamp(
-            Math.round(contentWidth * 0.015),
-            6,
-            10,
           ),
         };
-
-      const actualLabelHeight = measuredLabelHeight(rawInput, base.labelHeight);
-      const actualLabelWidth = measuredLabelWidth(rawInput);
+      }
 
       return {
-        ...base,
-        labelHeight: actualLabelHeight,
-        measuredLabelWidth: actualLabelWidth,
+        edgeClearance: clamp(
+          Math.round(contentWidth * 0.02),
+          6,
+          10,
+        ),
+        circleGap: clamp(
+          Math.round(contentWidth * 0.02),
+          8,
+          10,
+        ),
+        labelCircleGap: 4,
+        labelGap: clamp(
+          Math.round(vehicleAreaHeight * 0.006),
+          4,
+          6,
+        ),
+        labelHeight: clamp(
+          Math.round(vehicleAreaHeight * 0.045),
+          36,
+          42,
+        ),
+        labelWidthExtra: clamp(
+          Math.round(contentWidth * 0.035),
+          12,
+          22,
+        ),
       };
     }
 
-    function portraitCandidate(
+    function legacyPortraitReference(
       contentWidth,
       vehicleAreaHeight,
       metrics,
-      sharedDiameter,
     ) {
-      const edgeClearance = metrics.edgeClearance;
-      const minimumColumnGap = metrics.minimumHorizontalSpace;
+      const minimumHorizontalSpace = clamp(
+        Math.round(contentWidth * 0.03),
+        10,
+        16,
+      );
+      const minimumVerticalSpace = clamp(
+        Math.round(vehicleAreaHeight * 0.015),
+        10,
+        16,
+      );
+      const labelSpace = metrics.labelGap + metrics.labelHeight;
+      const diameterFromWidth = Math.max(
+        0,
+        (
+          contentWidth
+          - (minimumHorizontalSpace * 3)
+        ) / 2,
+      );
+      const diameterFromHeight = Math.max(
+        0,
+        (
+          vehicleAreaHeight
+          - (labelSpace * 2)
+          - (minimumVerticalSpace * 3)
+        ) / 2,
+      );
+      const sharedDiameter = integer(
+        Math.min(diameterFromWidth, diameterFromHeight),
+      );
       const itemHeight = (
         sharedDiameter
         + metrics.labelGap
         + metrics.labelHeight
       );
-      const leftX = edgeClearance;
-      const rightX = contentWidth - edgeClearance - sharedDiameter;
-      const columnGap = rightX - leftX - sharedDiameter;
-      const residualHeight = vehicleAreaHeight - (itemHeight * 2);
-      const rightPairGap = metrics.minimumRightPairGap;
-      const topBottomSpace = (residualHeight - rightPairGap) / 2;
-      const upperRightY = topBottomSpace;
-      const lowerRightY = (
-        upperRightY
-        + itemHeight
-        + rightPairGap
+      const verticalSpace = Math.max(
+        0,
+        (vehicleAreaHeight - (itemHeight * 2)) / 3,
       );
-      const rightMidpoint = (
-        (upperRightY + (sharedDiameter / 2))
-        + (lowerRightY + (sharedDiameter / 2))
-      ) / 2;
-      const leftY = rightMidpoint - (sharedDiameter / 2);
-      const primaryLabelBottom = (
-        leftY
-        + sharedDiameter
-        + metrics.labelGap
-        + metrics.labelHeight
-      );
-      const lowerLabelBottom = (
-        lowerRightY
-        + sharedDiameter
-        + metrics.labelGap
-        + metrics.labelHeight
-      );
+      const rightCenterGap = itemHeight + verticalSpace;
 
       return {
-        edgeClearance,
-        minimumColumnGap,
-        columnGap,
-        itemHeight,
-        residualHeight,
-        rightPairGap,
-        topBottomSpace,
-        leftX,
-        rightX,
-        leftY,
-        upperRightY,
-        lowerRightY,
-        primaryLabelBottom,
-        lowerLabelBottom,
+        sharedDiameter,
+        rightCenterGap,
       };
     }
 
-    function invalidPortraitConstraint(
+    function labelWidthFor(
+      diameter,
+      contentWidth,
+      metrics,
+      leftCenterX,
+      rightCenterX,
+    ) {
+      const widestFromCircle = diameter + metrics.labelWidthExtra;
+      const widestFromLeftCenter = (
+        2 * (leftCenterX - metrics.edgeClearance)
+      );
+      const widestFromRightCenter = (
+        2 * (contentWidth - rightCenterX - metrics.edgeClearance)
+      );
+      return Math.max(
+        diameter,
+        Math.floor(
+          Math.min(
+            contentWidth - (metrics.edgeClearance * 2),
+            widestFromCircle,
+            widestFromLeftCenter,
+            widestFromRightCenter,
+          ),
+        ),
+      );
+    }
+
+    function candidateForRadius(
+      radius,
       contentWidth,
       vehicleAreaHeight,
       metrics,
-      sharedDiameter,
+      legacy,
     ) {
-      if (sharedDiameter < 44) {
-        return "circle diameter below 44px touch target minimum";
+      const diameter = radius * 2;
+      const leftCenterX = radius + metrics.edgeClearance;
+      const rightCenterX = contentWidth - radius - metrics.edgeClearance;
+      const horizontalDistance = rightCenterX - leftCenterX;
+      const minimumCenterDistance = diameter + metrics.circleGap;
+
+      if (horizontalDistance <= 0) {
+        return null;
       }
 
-      const candidate = portraitCandidate(
-        contentWidth,
-        vehicleAreaHeight,
-        metrics,
-        sharedDiameter,
-      );
-
-      if (candidate.leftX < metrics.edgeClearance) {
-        return "left circle violates edge clearance";
-      }
-
-      if (candidate.rightX + sharedDiameter > contentWidth - metrics.edgeClearance) {
-        return "right circles violate edge clearance";
-      }
-
-      if (candidate.columnGap < metrics.minimumHorizontalSpace) {
-        return "left/right circle columns violate minimum horizontal gap";
-      }
-
-      if (metrics.measuredLabelWidth > 0 && sharedDiameter < 44) {
-        return "display label width cannot be measured against a valid circle";
-      }
-
-      if (candidate.topBottomSpace < metrics.minimumVerticalSpace) {
-        return "right-side pair violates top/bottom portrait clearance";
-      }
-
-      if (candidate.rightPairGap < metrics.minimumRightPairGap) {
-        return "right-side pair violates minimum inward vertical gap";
-      }
-
-      if (candidate.leftY < metrics.minimumVerticalSpace) {
-        return "left circle violates top portrait clearance";
-      }
-
-      if (candidate.primaryLabelBottom > vehicleAreaHeight - metrics.minimumVerticalSpace) {
-        return "left display label intersects the menu boundary";
-      }
-
-      if (candidate.lowerLabelBottom > vehicleAreaHeight - metrics.minimumVerticalSpace) {
-        return "lower-right display label intersects the menu boundary";
-      }
-
-      return "";
-    }
-
-    function solvePortrait(contentWidth, vehicleAreaHeight, metrics) {
-      const widthLimit = Math.floor(
-        (
-          contentWidth
-          - (metrics.edgeClearance * 2)
-          - metrics.minimumHorizontalSpace
-        ) / 2,
-      );
-      const heightLimit = Math.floor(
-        (
-          vehicleAreaHeight
-          - (metrics.minimumVerticalSpace * 2)
-          - metrics.minimumRightPairGap
-          - ((metrics.labelGap + metrics.labelHeight) * 2)
-        ) / 2,
-      );
-      const startDiameter = Math.max(44, Math.min(widthLimit, heightLimit));
-
-      for (let diameter = startDiameter; diameter >= 44; diameter -= 1) {
-        const failure = invalidPortraitConstraint(
-          contentWidth,
-          vehicleAreaHeight,
-          metrics,
-          diameter,
+      const diagonalSeparation = horizontalDistance >= minimumCenterDistance
+        ? minimumCenterDistance
+        : 2 * Math.sqrt(
+          (minimumCenterDistance * minimumCenterDistance)
+          - (horizontalDistance * horizontalDistance),
         );
+      const sameColumnSeparation = Math.max(
+        minimumCenterDistance,
+        diameter
+          + metrics.labelGap
+          + metrics.labelHeight
+          + metrics.labelCircleGap,
+      );
+      const requiredRightCenterGap = Math.ceil(
+        Math.max(diagonalSeparation, sameColumnSeparation),
+      );
 
-        if (!failure) {
-          const nextDiameter = diameter + 1;
-          const nextFailure = invalidPortraitConstraint(
-            contentWidth,
-            vehicleAreaHeight,
-            metrics,
-            nextDiameter,
-          ) || "next larger diameter exceeds computed width/height limit";
+      if (requiredRightCenterGap > legacy.rightCenterGap) {
+        return null;
+      }
 
-          return {
-            sharedDiameter: diameter,
-            nextDiameter,
-            nextDiameterRejected: true,
-            nextDiameterFailure: nextFailure,
-            widthLimit,
-            heightLimit,
-          };
+      const topCenterLimit = radius + metrics.edgeClearance;
+      const bottomCenterLimit = (
+        vehicleAreaHeight
+        - metrics.edgeClearance
+        - radius
+        - metrics.labelGap
+        - metrics.labelHeight
+      );
+      const availableRightCenterGap = bottomCenterLimit - topCenterLimit;
+
+      if (availableRightCenterGap < requiredRightCenterGap) {
+        return null;
+      }
+
+      const midpointY = (
+        topCenterLimit + bottomCenterLimit
+      ) / 2;
+      const upperCenterY = midpointY - (requiredRightCenterGap / 2);
+      const lowerCenterY = midpointY + (requiredRightCenterGap / 2);
+      const primaryCenterY = midpointY;
+      const labelWidth = labelWidthFor(
+        diameter,
+        contentWidth,
+        metrics,
+        leftCenterX,
+        rightCenterX,
+      );
+
+      const circles = [
+        { name: "primary", x: leftCenterX, y: primaryCenterY },
+        { name: "upperSecondary", x: rightCenterX, y: upperCenterY },
+        { name: "lowerSecondary", x: rightCenterX, y: lowerCenterY },
+      ];
+
+      for (const circle of circles) {
+        if (circle.x - radius < metrics.edgeClearance) return null;
+        if (circle.x + radius > contentWidth - metrics.edgeClearance) {
+          return null;
+        }
+        if (circle.y - radius < metrics.edgeClearance) return null;
+        if (
+          circle.y
+          + radius
+          + metrics.labelGap
+          + metrics.labelHeight
+          > vehicleAreaHeight - metrics.edgeClearance
+        ) {
+          return null;
+        }
+      }
+
+      for (let i = 0; i < circles.length; i += 1) {
+        for (let j = i + 1; j < circles.length; j += 1) {
+          const xDelta = circles[i].x - circles[j].x;
+          const yDelta = circles[i].y - circles[j].y;
+          const centerDistance = Math.sqrt(
+            (xDelta * xDelta) + (yDelta * yDelta),
+          );
+
+          if (centerDistance < minimumCenterDistance) {
+            return null;
+          }
         }
       }
 
       return {
-        sharedDiameter: Math.max(0, Math.min(widthLimit, heightLimit)),
-        nextDiameter: Math.max(1, Math.min(widthLimit, heightLimit) + 1),
-        nextDiameterRejected: true,
-        nextDiameterFailure: "no valid portrait circle geometry found above minimum touch target",
-        widthLimit,
-        heightLimit,
+        radius,
+        diameter,
+        labelWidth,
+        leftCenterX,
+        rightCenterX,
+        primaryCenterY,
+        upperCenterY,
+        lowerCenterY,
+        horizontalDistance,
+        rightCenterGap: requiredRightCenterGap,
+        minimumCenterDistance,
+        diagonalSeparation,
+        sameColumnSeparation,
+        legacyRightCenterGap: legacy.rightCenterGap,
       };
     }
 
-    function calculatePortrait(
-      contentWidth,
-      vehicleAreaHeight,
-      rawInput = {},
-    ) {
+    function calculatePortrait(contentWidth, vehicleAreaHeight) {
       const normalMetrics = portraitMetrics(
         contentWidth,
         vehicleAreaHeight,
-        rawInput,
         false,
       );
-      const normalLimits = solvePortrait(
+      const legacyNormal = legacyPortraitReference(
         contentWidth,
         vehicleAreaHeight,
         normalMetrics,
       );
-      const compact = normalLimits.sharedDiameter < 120;
+      const compact = legacyNormal.sharedDiameter < 120;
       const metrics = compact
-        ? portraitMetrics(contentWidth, vehicleAreaHeight, rawInput, true)
+        ? portraitMetrics(contentWidth, vehicleAreaHeight, true)
         : normalMetrics;
-      const solved = compact
-        ? solvePortrait(contentWidth, vehicleAreaHeight, metrics)
-        : normalLimits;
-      const sharedDiameter = solved.sharedDiameter;
-      const candidate = portraitCandidate(
-        contentWidth,
-        vehicleAreaHeight,
-        metrics,
-        sharedDiameter,
+      const legacy = compact
+        ? legacyPortraitReference(contentWidth, vehicleAreaHeight, metrics)
+        : legacyNormal;
+      const maximumEdgeRadius = Math.floor(
+        (contentWidth - (metrics.edgeClearance * 2)) / 2,
       );
-      const upperCenterY = candidate.upperRightY + (sharedDiameter / 2);
-      const lowerCenterY = candidate.lowerRightY + (sharedDiameter / 2);
-      const primaryCenterY = candidate.leftY + (sharedDiameter / 2);
+      let best = null;
+      let nextLargerFailure = "not-tested";
+
+      for (let radius = maximumEdgeRadius; radius >= 20; radius -= 1) {
+        const candidate = candidateForRadius(
+          radius,
+          contentWidth,
+          vehicleAreaHeight,
+          metrics,
+          legacy,
+        );
+
+        if (candidate) {
+          best = candidate;
+          const next = candidateForRadius(
+            radius + 1,
+            contentWidth,
+            vehicleAreaHeight,
+            metrics,
+            legacy,
+          );
+          nextLargerFailure = next
+            ? "next-larger-valid"
+            : "right-center-gap would exceed the inward legacy portrait separation or a real circle/label constraint";
+          break;
+        }
+      }
+
+      if (!best) {
+        const fallbackDiameter = Math.max(
+          44,
+          Math.min(legacy.sharedDiameter, maximumEdgeRadius * 2),
+        );
+        const fallbackRadius = fallbackDiameter / 2;
+        best = candidateForRadius(
+          Math.floor(fallbackRadius),
+          contentWidth,
+          vehicleAreaHeight,
+          metrics,
+          {
+            ...legacy,
+            rightCenterGap: Number.POSITIVE_INFINITY,
+          },
+        );
+      }
+
+      if (!best) {
+        throw new RangeError(
+          "Unable to calculate a valid portrait circle layout.",
+        );
+      }
+
+      const diameter = best.diameter;
+      const itemHeight = (
+        diameter + metrics.labelGap + metrics.labelHeight
+      );
+      const primaryX = best.leftCenterX - (best.labelWidth / 2);
+      const upperX = best.rightCenterX - (best.labelWidth / 2);
+      const lowerX = upperX;
+      const primaryY = best.primaryCenterY - best.radius;
+      const upperY = best.upperCenterY - best.radius;
+      const lowerY = best.lowerCenterY - best.radius;
+      const oldRightUpperCenterY = (
+        (vehicleAreaHeight - ((legacy.sharedDiameter + metrics.labelGap + metrics.labelHeight) * 2)) / 3
+      ) + (legacy.sharedDiameter / 2);
+      const oldRightLowerCenterY = (
+        oldRightUpperCenterY
+        + legacy.rightCenterGap
+      );
 
       return {
         mode: PORTRAIT_MODE,
         compact,
-        columnGap: rounded(candidate.columnGap),
-        minimumRowGap: metrics.minimumRightPairGap,
-        minimumHorizontalSpace:
-          metrics.minimumHorizontalSpace,
-        minimumVerticalSpace:
-          metrics.minimumVerticalSpace,
-        minimumRightPairGap:
-          metrics.minimumRightPairGap,
+        columnGap: 0,
+        minimumRowGap: metrics.circleGap,
+        minimumHorizontalSpace: metrics.edgeClearance,
+        minimumVerticalSpace: metrics.edgeClearance,
+        horizontalSpace: rounded(metrics.edgeClearance),
+        verticalSpace: rounded(
+          Math.max(
+            0,
+            best.upperCenterY - best.radius - metrics.edgeClearance,
+          ),
+        ),
         edgeClearance: metrics.edgeClearance,
-        horizontalSpace: rounded(candidate.edgeClearance),
-        verticalSpace: rounded(candidate.topBottomSpace),
-        topBottomSpace: rounded(candidate.topBottomSpace),
+        circleGap: metrics.circleGap,
+        labelCircleGap: metrics.labelCircleGap,
         labelGap: metrics.labelGap,
         labelHeight: metrics.labelHeight,
-        measuredLabelWidth: metrics.measuredLabelWidth,
-        itemHeight: rounded(candidate.itemHeight),
-        sharedDiameter,
-        primaryDiameter: sharedDiameter,
-        secondaryDiameter: sharedDiameter,
-        diameterFromWidth: solved.widthLimit,
-        diameterFromHeight: solved.heightLimit,
-        widthLimited: solved.widthLimit <= solved.heightLimit,
-        heightLimited: solved.heightLimit < solved.widthLimit,
-        nextDiameter: solved.nextDiameter,
-        nextDiameterRejected: solved.nextDiameterRejected,
-        nextDiameterFailure: solved.nextDiameterFailure,
+        labelWidth: best.labelWidth,
+        itemHeight,
+        sharedDiameter: diameter,
+        primaryDiameter: diameter,
+        secondaryDiameter: diameter,
+        radius: best.radius,
+        primaryCenter: {
+          x: rounded(best.leftCenterX),
+          y: rounded(best.primaryCenterY),
+        },
+        upperSecondaryCenter: {
+          x: rounded(best.rightCenterX),
+          y: rounded(best.upperCenterY),
+        },
+        lowerSecondaryCenter: {
+          x: rounded(best.rightCenterX),
+          y: rounded(best.lowerCenterY),
+        },
         primary: {
-          x: rounded(candidate.leftX),
-          y: rounded(candidate.leftY),
-          centerX: rounded(candidate.leftX + (sharedDiameter / 2)),
-          centerY: rounded(primaryCenterY),
+          x: rounded(primaryX),
+          y: rounded(primaryY),
         },
         upperSecondary: {
-          x: rounded(candidate.rightX),
-          y: rounded(candidate.upperRightY),
-          centerX: rounded(candidate.rightX + (sharedDiameter / 2)),
-          centerY: rounded(upperCenterY),
+          x: rounded(upperX),
+          y: rounded(upperY),
         },
         lowerSecondary: {
-          x: rounded(candidate.rightX),
-          y: rounded(candidate.lowerRightY),
-          centerX: rounded(candidate.rightX + (sharedDiameter / 2)),
-          centerY: rounded(lowerCenterY),
+          x: rounded(lowerX),
+          y: rounded(lowerY),
         },
-        rightCenterMidpointY: rounded((upperCenterY + lowerCenterY) / 2),
-        primaryCenterMatchesRightMidpoint: (
+        diameterFromWidth: diameter,
+        diameterFromHeight: diameter,
+        widthLimited: true,
+        heightLimited: false,
+        usedCircleWidth: diameter * 2,
+        usedItemHeight: itemHeight * 2,
+        horizontalCenterDistance: rounded(best.horizontalDistance),
+        rightCenterGap: rounded(best.rightCenterGap),
+        minimumCenterDistance: rounded(best.minimumCenterDistance),
+        diagonalSeparation: rounded(best.diagonalSeparation),
+        sameColumnSeparation: rounded(best.sameColumnSeparation),
+        legacySharedDiameter: legacy.sharedDiameter,
+        legacyRightCenterGap: rounded(legacy.rightCenterGap),
+        upperRightMovedLower: best.upperCenterY >= oldRightUpperCenterY,
+        lowerRightMovedHigher: best.lowerCenterY <= oldRightLowerCenterY,
+        primaryAlignedToRightMidpoint: (
           Math.abs(
-            primaryCenterY
-            - ((upperCenterY + lowerCenterY) / 2)
-          ) <= 0.5
+            best.primaryCenterY
+            - ((best.upperCenterY + best.lowerCenterY) / 2),
+          ) < 0.01
         ),
-        rightCentersMovedInward: true,
-        usedCircleWidth: (
-          (candidate.rightX + sharedDiameter)
-          - candidate.leftX
-        ),
-        usedItemHeight: rounded(
-          candidate.lowerLabelBottom - candidate.upperRightY,
-        ),
+        nextLargerDiameter: diameter + 2,
+        nextLargerFailure,
         unusedVehicleWidth: rounded(
-          contentWidth
-          - (
-            (candidate.rightX + sharedDiameter)
-            - candidate.leftX
-          ),
+          contentWidth - diameter,
         ),
         unusedVehicleHeight: rounded(
           vehicleAreaHeight
           - (
-            candidate.lowerLabelBottom
-            - candidate.upperRightY
+            (best.lowerCenterY + best.radius + metrics.labelGap + metrics.labelHeight)
+            - (best.upperCenterY - best.radius)
           ),
         ),
         usedVehicleHeight: rounded(
-          candidate.lowerLabelBottom - candidate.upperRightY,
+          (best.lowerCenterY + best.radius + metrics.labelGap + metrics.labelHeight)
+          - (best.upperCenterY - best.radius),
         ),
       };
     }
@@ -466,6 +520,7 @@
         verticalSpace: 0,
         labelGap: 0,
         labelHeight: integer(labelHeight),
+        labelWidth: sharedDiameter,
         itemHeight: usedVehicleHeight,
         primaryDiameter: null,
         secondaryDiameter: null,
@@ -548,22 +603,25 @@
         );
       const geometry = orientation === "landscape"
         ? calculateLandscape(contentWidth, vehicleAreaHeight)
-        : calculatePortrait(contentWidth, vehicleAreaHeight, rawInput);
+        : calculatePortrait(contentWidth, vehicleAreaHeight);
       const fitsWidth = orientation === "landscape"
         ? (
           (geometry.sharedDiameter * 3)
           + (geometry.columnGap * 2)
         ) <= contentWidth
         : (
-          geometry.lowerSecondary.x
-          + geometry.sharedDiameter
-        ) <= contentWidth;
+          geometry.primaryCenter.x - geometry.radius >= 0
+          && geometry.upperSecondaryCenter.x + geometry.radius <= contentWidth
+        );
       const fitsHeight = orientation === "landscape"
         ? geometry.usedVehicleHeight <= vehicleAreaHeight
         : (
-          geometry.lowerSecondary.y
-          + geometry.itemHeight
-        ) <= vehicleAreaHeight;
+          geometry.upperSecondaryCenter.y - geometry.radius >= 0
+          && geometry.lowerSecondaryCenter.y
+            + geometry.radius
+            + geometry.labelGap
+            + geometry.labelHeight <= vehicleAreaHeight
+        );
 
       return Object.freeze({
         layoutVersion: LAYOUT_VERSION,
