@@ -449,7 +449,7 @@ body {
 .choice-buttons button{min-height:48px}
 @media(max-width:385px){.choice-box{width:min(80vw,310px)}}
 
-/* RGBM v2.1.6l-wc10-f22 preserves accepted Home shell and adds F22 portrait circle geometry */
+/* RGBM v2.1.6l-wc10-f23 preserves accepted Home shell and adds F23 circle-plus-label portrait geometry */
 :root {
   --home-column-gap: 14px;
   --home-min-row-gap: 10px;
@@ -457,22 +457,23 @@ body {
   --home-label-gap: 4px;
   --home-shared-diameter: 180px;
   --home-primary-diameter: 190px;
-  --home-secondary-diameter: 108px;
-  --home-primary-x: 30px;
-  --home-primary-y: 300px;
-  --home-upper-x: 270px;
-  --home-upper-y: 80px;
-  --home-lower-x: 270px;
-  --home-lower-y: 620px;
-  --home-primary-label-x: 24px;
-  --home-primary-label-y: 500px;
-  --home-primary-label-width: 260px;
-  --home-upper-label-x: 230px;
-  --home-upper-label-y: 200px;
-  --home-upper-label-width: 170px;
-  --home-lower-label-x: 200px;
-  --home-lower-label-y: 735px;
-  --home-lower-label-width: 200px;
+  --home-secondary-diameter: 150px;
+  --home-primary-x: 34px;
+  --home-primary-y: 270px;
+  --home-upper-x: 245px;
+  --home-upper-y: 36px;
+  --home-lower-x: 245px;
+  --home-lower-y: 530px;
+  --home-primary-label-x: 26px;
+  --home-primary-label-y: 470px;
+  --home-primary-label-width: 250px;
+  --home-upper-label-x: 222px;
+  --home-upper-label-y: 196px;
+  --home-upper-label-width: 160px;
+  --home-lower-label-x: 220px;
+  --home-lower-label-y: 492px;
+  --home-lower-label-width: 160px;
+  --home-label-circle-gap: 6px;
   --home-circle-item-height: 220px;
   --home-horizontal-space: 12px;
   --home-vertical-space: 12px;
@@ -714,7 +715,7 @@ body.home-active {
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-asymmetric-circle-geometry"]
+.home-shell[data-layout-mode="portrait-circle-label-geometry"]
 .vehicle-area {
   position: relative !important;
   display: block !important;
@@ -722,7 +723,7 @@ body.home-active {
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-asymmetric-circle-geometry"]
+.home-shell[data-layout-mode="portrait-circle-label-geometry"]
 .circle-wrap {
   position: absolute !important;
   display: block !important;
@@ -730,16 +731,17 @@ body.home-active {
   height:
     calc(
       var(--home-circle-diameter)
-      + var(--home-label-gap)
+      + var(--home-label-circle-gap)
       + var(--home-label-height)
     ) !important;
   left: var(--home-circle-x) !important;
   top: var(--home-circle-y) !important;
   overflow: visible !important;
+  transform: none !important;
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-asymmetric-circle-geometry"]
+.home-shell[data-layout-mode="portrait-circle-label-geometry"]
 .circle-wrap:nth-child(1) {
   --home-circle-diameter: var(--home-primary-diameter);
   --home-circle-x: var(--home-primary-x);
@@ -750,7 +752,7 @@ body.home-active {
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-asymmetric-circle-geometry"]
+.home-shell[data-layout-mode="portrait-circle-label-geometry"]
 .circle-wrap:nth-child(2) {
   --home-circle-diameter: var(--home-secondary-diameter);
   --home-circle-x: var(--home-upper-x);
@@ -761,7 +763,7 @@ body.home-active {
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-asymmetric-circle-geometry"]
+.home-shell[data-layout-mode="portrait-circle-label-geometry"]
 .circle-wrap:nth-child(3) {
   --home-circle-diameter: var(--home-secondary-diameter);
   --home-circle-x: var(--home-lower-x);
@@ -772,7 +774,7 @@ body.home-active {
 }
 
 #app.screen-home
-.home-shell[data-layout-mode="portrait-asymmetric-circle-geometry"]
+.home-shell[data-layout-mode="portrait-circle-label-geometry"]
 .vehicle-label {
   position: absolute !important;
   left: calc(var(--home-label-x) - var(--home-circle-x)) !important;
@@ -1516,7 +1518,7 @@ body.recovery-active {
 }
 
 
-/* v2.1.6l-wc10-f22 canonical build identity */
+/* v2.1.6l-wc10-f19 canonical build identity */
 .settings-build-card {
   padding: 12px 16px;
   border-color: rgba(135, 189, 238, .72);
@@ -1584,7 +1586,7 @@ body.recovery-active {
 }
 
 
-/* RGBM v2.1.6l-wc10-f22 preserves the accepted F16 update pill */
+/* RGBM v2.1.6l-wc10-f19 preserves the accepted F16 update pill */
 .service-worker-update-badge {
   position: absolute;
   z-index: 45;

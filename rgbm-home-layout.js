@@ -13,8 +13,8 @@
 })(
   typeof globalThis !== "undefined" ? globalThis : this,
   function createRGBMHomeLayout() {
-    const LAYOUT_VERSION = "wc10-responsive-three-circle-home-v7-f22";
-    const PORTRAIT_MODE = "portrait-asymmetric-circle-geometry";
+    const LAYOUT_VERSION = "wc10-responsive-three-circle-home-v8-f23";
+    const PORTRAIT_MODE = "portrait-circle-label-geometry";
 
     function finiteNumber(value, fallback = 0) {
       const number = Number(value);
@@ -63,44 +63,50 @@
 
     function portraitMetrics(contentWidth, vehicleAreaHeight) {
       return {
-        circleMargin: clamp(Math.round(contentWidth * 0.008), 2, 6),
-        circleGap: clamp(Math.round(contentWidth * 0.016), 4, 10),
-        labelGap: clamp(Math.round(vehicleAreaHeight * 0.006), 3, 6),
-        labelHeight: clamp(Math.round(vehicleAreaHeight * 0.05), 36, 44),
-        minimumSecondaryRatio: 0.55,
+        circleMargin: clamp(Math.round(contentWidth * 0.022), 8, 12),
+        circleGap: clamp(Math.round(contentWidth * 0.016), 5, 8),
+        labelGap: clamp(Math.round(vehicleAreaHeight * 0.008), 6, 8),
+        labelHeight: clamp(Math.round(vehicleAreaHeight * 0.048), 36, 44),
+        labelCircleGap: clamp(Math.round(vehicleAreaHeight * 0.007), 5, 7),
       };
     }
 
-    function estimatedLabelWidth(label, diameter, contentWidth, primary) {
-      const textWidth = (label.length * 8.2) + 12;
-      const measuredCap = contentWidth * (primary ? 0.8 : 0.62);
-      const diameterFloor = diameter * (primary ? 1.05 : 1.08);
+    function estimateLabelWidth(label, diameter, contentWidth, primary) {
+      const text = String(label || "");
+      const estimatedTextWidth = (text.length * 7.4) + 14;
+      const twoLineWidth = (estimatedTextWidth / 1.75) + 10;
+      const preferred = Math.max(diameter * (primary ? 1.05 : 1.02), twoLineWidth);
+      const maximum = contentWidth * (primary ? 0.72 : 0.54);
 
       return rounded(
-        Math.min(
-          contentWidth - 4,
-          Math.max(diameterFloor, Math.min(textWidth, measuredCap)),
-        ),
+        clamp(preferred, Math.min(diameter * 0.92, contentWidth - 4), maximum),
       );
     }
 
-    function labelRect(circle, labelWidth, labelHeight, labelGap, contentWidth, margin) {
-      const left = clamp(
-        circle.cx - (labelWidth / 2),
-        margin,
-        contentWidth - margin - labelWidth,
-      );
-      const top = circle.cy + circle.r + labelGap;
-
+    function circle(cx, cy, r) {
       return {
-        x: rounded(left),
-        y: rounded(top),
-        width: rounded(labelWidth),
-        height: rounded(labelHeight),
-        left: rounded(left),
-        top: rounded(top),
-        right: rounded(left + labelWidth),
-        bottom: rounded(top + labelHeight),
+        cx: rounded(cx),
+        cy: rounded(cy),
+        r: rounded(r),
+        diameter: rounded(r * 2),
+        left: rounded(cx - r),
+        top: rounded(cy - r),
+        right: rounded(cx + r),
+        bottom: rounded(cy + r),
+      };
+    }
+
+    function rect(x, y, width, height, placement) {
+      return {
+        x: rounded(x),
+        y: rounded(y),
+        width: rounded(width),
+        height: rounded(height),
+        left: rounded(x),
+        top: rounded(y),
+        right: rounded(x + width),
+        bottom: rounded(y + height),
+        placement,
       };
     }
 
@@ -108,46 +114,168 @@
       return Math.hypot(circleA.cx - circleB.cx, circleA.cy - circleB.cy);
     }
 
-    function rectangleIntersectsCircle(rect, circle, padding = 0) {
-      const nearestX = clamp(circle.cx, rect.left, rect.right);
-      const nearestY = clamp(circle.cy, rect.top, rect.bottom);
-      const deltaX = circle.cx - nearestX;
-      const deltaY = circle.cy - nearestY;
-
-      return ((deltaX * deltaX) + (deltaY * deltaY))
-        < ((circle.r + padding) * (circle.r + padding));
+    function rectIntersectsCircle(label, targetCircle, padding = 0) {
+      const nearestX = clamp(targetCircle.cx, label.left, label.right);
+      const nearestY = clamp(targetCircle.cy, label.top, label.bottom);
+      const dx = targetCircle.cx - nearestX;
+      const dy = targetCircle.cy - nearestY;
+      return ((dx * dx) + (dy * dy)) < ((targetCircle.r + padding) ** 2);
     }
 
-    function rectanglesOverlap(rectA, rectB, padding = 0) {
+    function rectsOverlap(left, right, padding = 0) {
       return !(
-        rectA.right + padding <= rectB.left
-        || rectB.right + padding <= rectA.left
-        || rectA.bottom + padding <= rectB.top
-        || rectB.bottom + padding <= rectA.top
+        left.right + padding <= right.left
+        || right.right + padding <= left.left
+        || left.bottom + padding <= right.top
+        || right.bottom + padding <= left.top
       );
     }
 
-    function candidateIsValid(candidate, metrics, contentWidth, vehicleAreaHeight) {
-      const circles = [
-        candidate.primaryCircle,
-        candidate.upperCircle,
-        candidate.lowerCircle,
-      ];
-      const labels = [
-        candidate.primaryLabel,
-        candidate.upperLabel,
-        candidate.lowerLabel,
-      ];
+    function insideCircleBounds(testCircle, metrics, width, height) {
+      return (
+        testCircle.left >= metrics.circleMargin
+        && testCircle.right <= width - metrics.circleMargin
+        && testCircle.top >= metrics.circleMargin
+        && testCircle.bottom <= height - metrics.circleMargin
+      );
+    }
 
-      for (const circle of circles) {
-        if (
-          circle.cx - circle.r < metrics.circleMargin
-          || circle.cx + circle.r > contentWidth - metrics.circleMargin
-          || circle.cy - circle.r < metrics.circleMargin
-          || circle.cy + circle.r > vehicleAreaHeight - metrics.circleMargin
-        ) {
-          return false;
+    function insideLabelBounds(label, metrics, width, height) {
+      return (
+        label.left >= metrics.circleMargin
+        && label.right <= width - metrics.circleMargin
+        && label.top >= metrics.circleMargin
+        && label.bottom <= height - metrics.circleMargin
+      );
+    }
+
+    function labelOptions(testCircle, labelWidth, metrics, width, height, preference) {
+      const gap = metrics.labelCircleGap;
+      const centeredLeft = clamp(
+        testCircle.cx - (labelWidth / 2),
+        metrics.circleMargin,
+        width - metrics.circleMargin - labelWidth,
+      );
+      const aboveTop = testCircle.top - gap - metrics.labelHeight;
+      const belowTop = testCircle.bottom + gap;
+      const rightLeft = testCircle.right + gap;
+      const leftLeft = testCircle.left - gap - labelWidth;
+      const sideTop = clamp(
+        testCircle.cy - (metrics.labelHeight / 2),
+        metrics.circleMargin,
+        height - metrics.circleMargin - metrics.labelHeight,
+      );
+
+      const options = {
+        below: rect(centeredLeft, belowTop, labelWidth, metrics.labelHeight, "below"),
+        above: rect(centeredLeft, aboveTop, labelWidth, metrics.labelHeight, "above"),
+        right: rect(rightLeft, sideTop, labelWidth, metrics.labelHeight, "right"),
+        left: rect(leftLeft, sideTop, labelWidth, metrics.labelHeight, "left"),
+      };
+
+      return preference
+        .filter((key) => Object.prototype.hasOwnProperty.call(options, key))
+        .map((key) => options[key]);
+    }
+
+    function labelsForCandidate(circles, labels, metrics, width, height) {
+      const labelWidths = [
+        estimateLabelWidth(labels[0], circles[0].diameter, width, true),
+        estimateLabelWidth(labels[1], circles[1].diameter, width, false),
+        estimateLabelWidth(labels[2], circles[2].diameter, width, false),
+      ];
+      const preferenceSets = [
+        ["below", "above", "right", "left"],
+        ["below", "right", "above", "left"],
+        ["above", "below", "right", "left"],
+      ];
+      const optionSets = circles.map((item, index) => (
+        labelOptions(
+          item,
+          labelWidths[index],
+          metrics,
+          width,
+          height,
+          preferenceSets[index],
+        ).filter((option) => insideLabelBounds(option, metrics, width, height))
+      ));
+
+      if (optionSets.some((options) => options.length === 0)) {
+        return null;
+      }
+
+      let best = null;
+
+      for (const primaryLabel of optionSets[0]) {
+        for (const upperLabel of optionSets[1]) {
+          for (const lowerLabel of optionSets[2]) {
+            const candidateLabels = [primaryLabel, upperLabel, lowerLabel];
+            let valid = true;
+
+            for (let labelIndex = 0; labelIndex < candidateLabels.length; labelIndex += 1) {
+              for (let circleIndex = 0; circleIndex < circles.length; circleIndex += 1) {
+                if (rectIntersectsCircle(candidateLabels[labelIndex], circles[circleIndex], 1)) {
+                  valid = false;
+                  break;
+                }
+              }
+
+              if (!valid) {
+                break;
+              }
+            }
+
+            if (!valid) {
+              continue;
+            }
+
+            for (let leftIndex = 0; leftIndex < candidateLabels.length; leftIndex += 1) {
+              for (
+                let rightIndex = leftIndex + 1;
+                rightIndex < candidateLabels.length;
+                rightIndex += 1
+              ) {
+                if (rectsOverlap(candidateLabels[leftIndex], candidateLabels[rightIndex], 1)) {
+                  valid = false;
+                  break;
+                }
+              }
+
+              if (!valid) {
+                break;
+              }
+            }
+
+            if (!valid) {
+              continue;
+            }
+
+            const placements = candidateLabels.map((item) => item.placement);
+            const placementScore = (
+              (placements[0] === "below" ? 80 : 0)
+              + (placements[1] === "below" ? 80 : 0)
+              + (placements[2] === "above" ? 80 : 0)
+              + placements.filter((item) => item === "left" || item === "right").length * -30
+            );
+
+            if (!best || placementScore > best.score) {
+              best = {
+                score: placementScore,
+                labels: candidateLabels,
+              };
+            }
+          }
         }
+      }
+
+      return best ? best.labels : null;
+    }
+
+    function candidateIsValid(candidate, metrics, width, height) {
+      const circles = candidate.circles;
+
+      if (!circles.every((item) => insideCircleBounds(item, metrics, width, height))) {
+        return false;
       }
 
       for (let leftIndex = 0; leftIndex < circles.length; leftIndex += 1) {
@@ -168,322 +296,315 @@
         }
       }
 
-      for (const label of labels) {
-        if (
-          label.left < metrics.circleMargin
-          || label.right > contentWidth - metrics.circleMargin
-          || label.top < metrics.circleMargin
-          || label.bottom > vehicleAreaHeight - metrics.circleMargin
-        ) {
-          return false;
-        }
-      }
-
-      for (let labelIndex = 0; labelIndex < labels.length; labelIndex += 1) {
-        for (let circleIndex = 0; circleIndex < circles.length; circleIndex += 1) {
-          if (labelIndex === circleIndex) {
-            continue;
-          }
-
-          if (rectangleIntersectsCircle(labels[labelIndex], circles[circleIndex], 2)) {
-            return false;
-          }
-        }
-      }
-
-      for (let leftIndex = 0; leftIndex < labels.length; leftIndex += 1) {
-        for (
-          let rightIndex = leftIndex + 1;
-          rightIndex < labels.length;
-          rightIndex += 1
-        ) {
-          if (rectanglesOverlap(labels[leftIndex], labels[rightIndex], 2)) {
-            return false;
-          }
-        }
-      }
-
       return true;
     }
 
-    function makeCandidate(
-      primaryRadius,
-      secondaryRadius,
-      primaryCenterY,
-      metrics,
-      labels,
-      contentWidth,
-      vehicleAreaHeight,
-    ) {
-      const upperCenterY = secondaryRadius + metrics.circleMargin;
-      const lowerCenterY = (
-        vehicleAreaHeight
-        - metrics.labelHeight
-        - metrics.labelGap
-        - metrics.circleMargin
-        - secondaryRadius
-      );
-      const rightCenterX = (
-        contentWidth
-        - secondaryRadius
-        - metrics.circleMargin
-      );
-      let requiredHorizontalSeparation = 0;
-
-      for (const rightCenterY of [upperCenterY, lowerCenterY]) {
-        const verticalSeparation = Math.abs(primaryCenterY - rightCenterY);
-        const requiredDistance = (
-          primaryRadius
-          + secondaryRadius
-          + metrics.circleGap
-        );
-        const horizontalSeparation = verticalSeparation >= requiredDistance
-          ? 0
-          : Math.sqrt(
-            (requiredDistance * requiredDistance)
-            - (verticalSeparation * verticalSeparation),
-          );
-
-        requiredHorizontalSeparation = Math.max(
-          requiredHorizontalSeparation,
-          horizontalSeparation,
-        );
-      }
-
-      const primaryCenterX = Math.min(
-        rightCenterX - requiredHorizontalSeparation,
-        Math.max(
-          primaryRadius + metrics.circleMargin,
-          contentWidth * 0.42,
-        ),
+    function scoreCandidate(candidate, width, height) {
+      const [primary, upper, lower] = candidate.circles;
+      const [primaryLabel, upperLabel, lowerLabel] = candidate.labels;
+      const totalArea = (primary.r ** 2) + (upper.r ** 2) + (lower.r ** 2);
+      const primaryCenterTargetX = width * 0.42;
+      const primaryCenterTargetY = height * 0.52;
+      const secondaryTargetX = width * 0.75;
+      const upperTargetY = height * 0.17;
+      const lowerTargetY = height * 0.84;
+      const labelPenalty = (
+        (primaryLabel.placement === "below" ? 0 : 12)
+        + (upperLabel.placement === "below" ? 0 : 10)
+        + (lowerLabel.placement === "above" ? 0 : 8)
       );
 
-      if (primaryCenterX < primaryRadius + metrics.circleMargin) {
+      return (
+        upper.r * 1_000_000_000
+        + primary.r * 5_000_000
+        + totalArea * 100
+        - Math.abs(primary.cx - primaryCenterTargetX) * 20
+        - Math.abs(primary.cy - primaryCenterTargetY) * 8
+        - Math.abs(upper.cx - secondaryTargetX) * 3
+        - Math.abs(lower.cx - secondaryTargetX) * 3
+        - Math.abs(upper.cy - upperTargetY) * 2
+        - Math.abs(lower.cy - lowerTargetY) * 2
+        - labelPenalty * 1000
+      );
+    }
+
+    function makeCandidate(primaryRadius, secondaryRadius, primaryX, primaryY, secondaryX, metrics, labels, width, height) {
+      const upperCircle = circle(
+        secondaryX,
+        metrics.circleMargin + secondaryRadius,
+        secondaryRadius,
+      );
+      const lowerCircle = circle(
+        secondaryX,
+        height - metrics.circleMargin - secondaryRadius,
+        secondaryRadius,
+      );
+      const primaryCircle = circle(primaryX, primaryY, primaryRadius);
+      const circles = [primaryCircle, upperCircle, lowerCircle];
+
+      const geometryCandidate = { circles };
+
+      if (!candidateIsValid(geometryCandidate, metrics, width, height)) {
         return null;
       }
 
-      const primaryCircle = {
-        cx: rounded(primaryCenterX),
-        cy: rounded(primaryCenterY),
-        r: primaryRadius,
-        diameter: primaryRadius * 2,
+      const labelRects = labelsForCandidate(circles, labels, metrics, width, height);
+
+      if (!labelRects) {
+        return null;
+      }
+
+      const withLabels = {
+        circles,
+        labels: labelRects,
       };
-      const upperCircle = {
-        cx: rounded(rightCenterX),
-        cy: rounded(upperCenterY),
-        r: secondaryRadius,
-        diameter: secondaryRadius * 2,
-      };
-      const lowerCircle = {
-        cx: rounded(rightCenterX),
-        cy: rounded(lowerCenterY),
-        r: secondaryRadius,
-        diameter: secondaryRadius * 2,
-      };
-      const primaryLabelWidth = estimatedLabelWidth(
-        labels[0],
-        primaryRadius * 2,
-        contentWidth,
-        true,
-      );
-      const upperLabelWidth = estimatedLabelWidth(
-        labels[1],
-        secondaryRadius * 2,
-        contentWidth,
-        false,
-      );
-      const lowerLabelWidth = estimatedLabelWidth(
-        labels[2],
-        secondaryRadius * 2,
-        contentWidth,
-        false,
-      );
 
       return {
-        primaryCircle,
-        upperCircle,
-        lowerCircle,
-        primaryLabel: labelRect(
-          primaryCircle,
-          primaryLabelWidth,
-          metrics.labelHeight,
-          metrics.labelGap,
-          contentWidth,
-          metrics.circleMargin,
-        ),
-        upperLabel: labelRect(
-          upperCircle,
-          upperLabelWidth,
-          metrics.labelHeight,
-          metrics.labelGap,
-          contentWidth,
-          metrics.circleMargin,
-        ),
-        lowerLabel: labelRect(
-          lowerCircle,
-          lowerLabelWidth,
-          metrics.labelHeight,
-          metrics.labelGap,
-          contentWidth,
-          metrics.circleMargin,
+        ...withLabels,
+        score: scoreCandidate(withLabels, width, height),
+        totalCircleArea: (
+          (primaryRadius ** 2)
+          + (secondaryRadius ** 2)
+          + (secondaryRadius ** 2)
         ),
       };
     }
 
-    function fallbackPortrait(contentWidth, vehicleAreaHeight, labels) {
+    function fallbackPortrait(width, height, labels) {
       const metrics = {
-        circleMargin: 3,
+        circleMargin: 10,
         circleGap: 6,
-        labelGap: 4,
+        labelGap: 6,
         labelHeight: 36,
-        minimumSecondaryRatio: 0.55,
+        labelCircleGap: 6,
       };
-      const secondaryRadius = Math.max(
-        42,
-        Math.floor(Math.min(contentWidth * 0.22, vehicleAreaHeight * 0.14)),
-      );
-      const primaryRadius = Math.max(
-        secondaryRadius + 8,
-        Math.floor(Math.min(contentWidth * 0.34, vehicleAreaHeight * 0.2)),
-      );
-      const primaryCenterY = vehicleAreaHeight * 0.5;
-
-      return makeCandidate(
+      const secondaryRadius = Math.max(42, Math.floor(Math.min(width * 0.22, height * 0.14)));
+      const primaryRadius = Math.max(secondaryRadius + 10, Math.floor(Math.min(width * 0.30, height * 0.18)));
+      const candidate = makeCandidate(
         primaryRadius,
         secondaryRadius,
-        primaryCenterY,
+        Math.max(primaryRadius + metrics.circleMargin, width * 0.38),
+        height * 0.52,
+        width - metrics.circleMargin - secondaryRadius,
         metrics,
         labels,
-        contentWidth,
-        vehicleAreaHeight,
+        width,
+        height,
       );
+
+      if (!candidate) {
+        throw new Error("No valid portrait Home circle geometry candidate was found.");
+      }
+
+      return {
+        ...candidate,
+        fallback: true,
+      };
     }
 
     function calculatePortrait(contentWidth, vehicleAreaHeight, rawLabels = []) {
       const labels = normalizeLabels(rawLabels);
       const metrics = portraitMetrics(contentWidth, vehicleAreaHeight);
-      const maximumPrimaryRadius = Math.floor(
-        Math.min(contentWidth * 0.44, vehicleAreaHeight * 0.28),
+      const maxSecondary = Math.floor(
+        Math.min(
+          (contentWidth - (metrics.circleMargin * 2)) * 0.31,
+          (vehicleAreaHeight - (metrics.circleMargin * 2)) * 0.23,
+        ),
       );
-      const maximumSecondaryRadius = Math.floor(
-        Math.min(contentWidth * 0.34, vehicleAreaHeight * 0.21),
-      );
+      const minSecondary = 44;
       let best = null;
+      let rejectionReasonForNext = "not evaluated";
 
-      for (
-        let primaryRadius = maximumPrimaryRadius;
-        primaryRadius >= 60;
-        primaryRadius -= 1
-      ) {
-        const maximumRadiusForSecondary = Math.min(
-          maximumSecondaryRadius,
-          primaryRadius - 8,
-        );
-        const minimumSecondaryRadius = Math.max(
-          45,
-          Math.ceil(primaryRadius * metrics.minimumSecondaryRatio),
-        );
+      function primaryXFor(primaryRadius, secondaryRadius, primaryY, secondaryX) {
+        const upperY = metrics.circleMargin + secondaryRadius;
+        const lowerY = vehicleAreaHeight - metrics.circleMargin - secondaryRadius;
+        const requiredDistance = primaryRadius + secondaryRadius + metrics.circleGap;
+        let requiredHorizontal = 0;
 
-        for (
-          let secondaryRadius = maximumRadiusForSecondary;
-          secondaryRadius >= minimumSecondaryRadius;
-          secondaryRadius -= 1
-        ) {
-          const upperCenterY = secondaryRadius + metrics.circleMargin;
-          const lowerCenterY = (
-            vehicleAreaHeight
-            - metrics.labelHeight
-            - metrics.labelGap
-            - metrics.circleMargin
-            - secondaryRadius
-          );
+        for (const secondaryY of [upperY, lowerY]) {
+          const vertical = Math.abs(primaryY - secondaryY);
 
-          if (
-            lowerCenterY - upperCenterY
-            < (secondaryRadius * 2) + metrics.circleGap
-          ) {
-            continue;
+          if (vertical < requiredDistance) {
+            requiredHorizontal = Math.max(
+              requiredHorizontal,
+              Math.sqrt((requiredDistance ** 2) - (vertical ** 2)),
+            );
           }
+        }
 
-          const middleY = (upperCenterY + lowerCenterY) / 2;
-          const centerCandidates = [
-            middleY,
+        const maxPrimaryX = Math.min(
+          secondaryX - requiredHorizontal,
+          contentWidth - metrics.circleMargin - primaryRadius,
+        );
+        const minPrimaryX = metrics.circleMargin + primaryRadius;
+        const targetX = contentWidth * 0.42;
+
+        if (maxPrimaryX < minPrimaryX) {
+          return null;
+        }
+
+        return clamp(targetX, minPrimaryX, maxPrimaryX);
+      }
+
+      for (let secondaryRadius = maxSecondary; secondaryRadius >= minSecondary; secondaryRadius -= 1) {
+        const upperY = metrics.circleMargin + secondaryRadius;
+        const lowerY = vehicleAreaHeight - metrics.circleMargin - secondaryRadius;
+
+        if (lowerY - upperY < (secondaryRadius * 2) + metrics.circleGap) {
+          continue;
+        }
+
+        const maxPrimary = Math.floor(
+          Math.min(
+            contentWidth - (metrics.circleMargin * 2),
+            vehicleAreaHeight - (metrics.circleMargin * 2),
+          ) / 2,
+        );
+        const minimumPrimary = secondaryRadius + 8;
+        const rightMostSecondaryX = contentWidth - metrics.circleMargin - secondaryRadius;
+        const centerY = (upperY + lowerY) / 2;
+        const secondaryXValues = [
+          rightMostSecondaryX,
+          rightMostSecondaryX - 6,
+          rightMostSecondaryX - 12,
+          rightMostSecondaryX - 18,
+          rightMostSecondaryX - 24,
+        ];
+
+        for (let primaryRadius = maxPrimary; primaryRadius >= minimumPrimary; primaryRadius -= 1) {
+          const yMin = metrics.circleMargin + primaryRadius;
+          const yMax = vehicleAreaHeight - metrics.circleMargin - primaryRadius;
+          const primaryYValues = [
+            centerY,
+            contentWidth < 390 ? centerY + 8 : centerY,
             vehicleAreaHeight * 0.5,
-            middleY - 12,
-            middleY + 12,
-            vehicleAreaHeight * 0.48,
             vehicleAreaHeight * 0.52,
-          ];
+            vehicleAreaHeight * 0.48,
+            centerY + 16,
+            centerY - 16,
+          ]
+            .map((value) => clamp(value, yMin, yMax))
+            .filter((value, index, array) => array.indexOf(value) === index);
 
-          for (const primaryCenterY of centerCandidates) {
+          for (const secondaryX of secondaryXValues) {
             if (
-              primaryCenterY - primaryRadius < metrics.circleMargin
-              || primaryCenterY
-                + primaryRadius
-                + metrics.labelGap
-                + metrics.labelHeight
-                > vehicleAreaHeight - metrics.circleMargin
+              secondaryX - secondaryRadius < metrics.circleMargin
+              || secondaryX + secondaryRadius > contentWidth - metrics.circleMargin
             ) {
               continue;
             }
 
-            const candidate = makeCandidate(
-              primaryRadius,
-              secondaryRadius,
-              primaryCenterY,
-              metrics,
-              labels,
-              contentWidth,
-              vehicleAreaHeight,
-            );
-
-            if (
-              !candidate
-              || !candidateIsValid(
-                candidate,
-                metrics,
-                contentWidth,
-                vehicleAreaHeight,
-              )
-            ) {
-              continue;
-            }
-
-            const totalCircleArea = (
-              (primaryRadius * primaryRadius)
-              + (secondaryRadius * secondaryRadius * 2)
-            );
-            const centerScore = (
-              -Math.abs(candidate.primaryCircle.cx - (contentWidth * 0.42)) * 5
-              -Math.abs(candidate.primaryCircle.cy - (vehicleAreaHeight * 0.5))
-            );
-            const score = (
-              totalCircleArea * 1000
-              + primaryRadius * 100
-              + secondaryRadius * 20
-              + centerScore
-            );
-
-            if (!best || score > best.score) {
-              best = {
-                ...candidate,
-                score,
-                totalCircleArea,
+            for (const primaryY of primaryYValues) {
+              const primaryX = primaryXFor(
                 primaryRadius,
                 secondaryRadius,
-              };
+                primaryY,
+                secondaryX,
+              );
+
+              if (primaryX === null) {
+                continue;
+              }
+
+              const xValues = [
+                primaryX,
+                primaryX - 6,
+                primaryX + 6,
+              ];
+
+              for (const candidateX of xValues) {
+                const candidate = makeCandidate(
+                  primaryRadius,
+                  secondaryRadius,
+                  candidateX,
+                  primaryY,
+                  secondaryX,
+                  metrics,
+                  labels,
+                  contentWidth,
+                  vehicleAreaHeight,
+                );
+
+                if (!candidate) {
+                  continue;
+                }
+
+                if (!best || candidate.score > best.score) {
+                  best = {
+                    ...candidate,
+                    primaryRadius,
+                    secondaryRadius,
+                    secondaryX,
+                    primaryX: candidateX,
+                    primaryY,
+                  };
+                }
+              }
             }
           }
+
+          if (best && best.secondaryRadius === secondaryRadius && best.primaryRadius === primaryRadius) {
+            break;
+          }
+        }
+
+        if (best && best.secondaryRadius === secondaryRadius) {
+          const nextSecondary = secondaryRadius + 1;
+          rejectionReasonForNext = (
+            nextSecondary > maxSecondary
+              ? "next upper/lower radius exceeds screen-derived circle maximum"
+              : "next upper/lower radius has no valid circle-plus-label candidate"
+          );
+          break;
         }
       }
 
       if (!best) {
         best = fallbackPortrait(contentWidth, vehicleAreaHeight, labels);
+        rejectionReasonForNext = "fallback used after exhaustive search";
       }
 
-      const primaryDiameter = best.primaryCircle.diameter;
-      const secondaryDiameter = best.upperCircle.diameter;
+      const primaryCircle = best.circles[0];
+      const upperCircle = best.circles[1];
+      const lowerCircle = best.circles[2];
+      const primaryLabel = best.labels[0];
+      const upperLabel = best.labels[1];
+      const lowerLabel = best.labels[2];
+      const primaryDiameter = rounded(primaryCircle.diameter);
+      const secondaryDiameter = rounded(upperCircle.diameter);
       const sharedDiameter = Math.max(primaryDiameter, secondaryDiameter);
+      const contentBottom = Math.max(
+        primaryLabel.bottom,
+        upperLabel.bottom,
+        lowerLabel.bottom,
+        primaryCircle.bottom,
+        upperCircle.bottom,
+        lowerCircle.bottom,
+      );
+      const contentRight = Math.max(
+        primaryLabel.right,
+        upperLabel.right,
+        lowerLabel.right,
+        primaryCircle.right,
+        upperCircle.right,
+        lowerCircle.right,
+      );
+      const contentTop = Math.min(
+        primaryLabel.top,
+        upperLabel.top,
+        lowerLabel.top,
+        primaryCircle.top,
+        upperCircle.top,
+        lowerCircle.top,
+      );
+      const contentLeft = Math.min(
+        primaryLabel.left,
+        upperLabel.left,
+        lowerLabel.left,
+        primaryCircle.left,
+        upperCircle.left,
+        lowerCircle.left,
+      );
 
       return {
         mode: PORTRAIT_MODE,
@@ -496,89 +617,60 @@
         verticalSpace: 0,
         labelGap: metrics.labelGap,
         labelHeight: metrics.labelHeight,
-        itemHeight: sharedDiameter + metrics.labelGap + metrics.labelHeight,
+        labelCircleGap: metrics.labelCircleGap,
+        itemHeight: sharedDiameter + metrics.labelCircleGap + metrics.labelHeight,
         sharedDiameter,
         primaryDiameter,
         secondaryDiameter,
-        primaryRadius: best.primaryRadius,
-        secondaryRadius: best.secondaryRadius,
+        primaryRadius: rounded(primaryCircle.r),
+        secondaryRadius: rounded(upperCircle.r),
         asymmetricDiameter: true,
         circleGap: metrics.circleGap,
         circleMargin: metrics.circleMargin,
         primary: {
-          x: rounded(best.primaryCircle.cx - best.primaryCircle.r),
-          y: rounded(best.primaryCircle.cy - best.primaryCircle.r),
-          cx: best.primaryCircle.cx,
-          cy: best.primaryCircle.cy,
-          r: best.primaryCircle.r,
+          x: rounded(primaryCircle.left),
+          y: rounded(primaryCircle.top),
+          cx: primaryCircle.cx,
+          cy: primaryCircle.cy,
+          r: primaryCircle.r,
           diameter: primaryDiameter,
-          label: best.primaryLabel,
+          label: primaryLabel,
         },
         upperSecondary: {
-          x: rounded(best.upperCircle.cx - best.upperCircle.r),
-          y: rounded(best.upperCircle.cy - best.upperCircle.r),
-          cx: best.upperCircle.cx,
-          cy: best.upperCircle.cy,
-          r: best.upperCircle.r,
+          x: rounded(upperCircle.left),
+          y: rounded(upperCircle.top),
+          cx: upperCircle.cx,
+          cy: upperCircle.cy,
+          r: upperCircle.r,
           diameter: secondaryDiameter,
-          label: best.upperLabel,
+          label: upperLabel,
         },
         lowerSecondary: {
-          x: rounded(best.lowerCircle.cx - best.lowerCircle.r),
-          y: rounded(best.lowerCircle.cy - best.lowerCircle.r),
-          cx: best.lowerCircle.cx,
-          cy: best.lowerCircle.cy,
-          r: best.lowerCircle.r,
+          x: rounded(lowerCircle.left),
+          y: rounded(lowerCircle.top),
+          cx: lowerCircle.cx,
+          cy: lowerCircle.cy,
+          r: lowerCircle.r,
           diameter: secondaryDiameter,
-          label: best.lowerLabel,
+          label: lowerLabel,
         },
         usedCircleWidth: rounded(
-          Math.max(
-            best.primaryCircle.cx + best.primaryCircle.r,
-            best.upperCircle.cx + best.upperCircle.r,
-            best.lowerCircle.cx + best.lowerCircle.r,
-          ) - Math.min(
-            best.primaryCircle.cx - best.primaryCircle.r,
-            best.upperCircle.cx - best.upperCircle.r,
-            best.lowerCircle.cx - best.lowerCircle.r,
-          ),
+          Math.max(primaryCircle.right, upperCircle.right, lowerCircle.right)
+          - Math.min(primaryCircle.left, upperCircle.left, lowerCircle.left),
         ),
-        usedItemHeight: rounded(
-          Math.max(
-            best.primaryLabel.bottom,
-            best.upperLabel.bottom,
-            best.lowerLabel.bottom,
-          ) - Math.min(
-            best.primaryCircle.cy - best.primaryCircle.r,
-            best.upperCircle.cy - best.upperCircle.r,
-            best.lowerCircle.cy - best.lowerCircle.r,
-          ),
-        ),
-        unusedVehicleWidth: rounded(
-          contentWidth
-          - Math.max(
-            best.primaryCircle.cx + best.primaryCircle.r,
-            best.upperCircle.cx + best.upperCircle.r,
-            best.lowerCircle.cx + best.lowerCircle.r,
-          ),
-        ),
-        unusedVehicleHeight: rounded(
-          vehicleAreaHeight
-          - Math.max(
-            best.primaryLabel.bottom,
-            best.upperLabel.bottom,
-            best.lowerLabel.bottom,
-          ),
-        ),
-        usedVehicleHeight: rounded(
-          Math.max(
-            best.primaryLabel.bottom,
-            best.upperLabel.bottom,
-            best.lowerLabel.bottom,
-          ),
-        ),
-        totalCircleArea: best.totalCircleArea,
-        solverEvidence: "circle-first unequal-radius search with actual label-footprint checks",
+        usedItemHeight: rounded(contentBottom - contentTop),
+        unusedVehicleWidth: rounded(contentWidth - contentRight),
+        unusedVehicleHeight: rounded(vehicleAreaHeight - contentBottom),
+        usedVehicleHeight: rounded(contentBottom),
+        contentBounds: {
+          left: rounded(contentLeft),
+          top: rounded(contentTop),
+          right: rounded(contentRight),
+          bottom: rounded(contentBottom),
+        },
+        totalCircleArea: rounded(best.totalCircleArea),
+        nextLargerSecondaryRejection: rejectionReasonForNext,
+        solverEvidence: "F23 non-equal circle-plus-own-label geometry; upper/lower radius maximized before primary radius; labels are outside all circle disks",
       };
     }
 
@@ -706,16 +798,15 @@
           + (geometry.columnGap * 2)
         ) <= contentWidth
         : (
-          geometry.primary.x >= 0
-          && geometry.upperSecondary.x >= 0
-          && geometry.lowerSecondary.x >= 0
-          && geometry.upperSecondary.x + geometry.secondaryDiameter <= contentWidth
-          && geometry.lowerSecondary.x + geometry.secondaryDiameter <= contentWidth
-          && geometry.primary.x + geometry.primaryDiameter <= contentWidth
+          geometry.contentBounds.left >= 0
+          && geometry.contentBounds.right <= contentWidth
         );
       const fitsHeight = orientation === "landscape"
         ? geometry.usedVehicleHeight <= vehicleAreaHeight
-        : geometry.usedVehicleHeight <= vehicleAreaHeight;
+        : (
+          geometry.contentBounds.top >= 0
+          && geometry.contentBounds.bottom <= vehicleAreaHeight
+        );
 
       return Object.freeze({
         layoutVersion: LAYOUT_VERSION,

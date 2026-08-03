@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f22",date:"2026-08-02",cacheRevision:"216lwc10f22"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f23",date:"2026-08-03",cacheRevision:"216lwc10f23"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const CUSTOM_LABEL_MAX_LENGTH=50;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
@@ -1195,10 +1195,14 @@ function applyHomeGeometry(){
     `${layout.sharedDiameter}px`
   );
 
-  if(layout.mode==="portrait-asymmetric-circle-geometry"){
+  if(layout.mode==="portrait-circle-label-geometry"){
     homeScreen.style.setProperty(
       "--home-label-gap",
       `${layout.labelGap}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-label-circle-gap",
+      `${layout.labelCircleGap}px`
     );
     homeScreen.style.setProperty(
       "--home-primary-diameter",
@@ -1271,8 +1275,28 @@ function applyHomeGeometry(){
     homeScreen.style.removeProperty("--home-circle-item-height");
     homeScreen.style.removeProperty("--home-horizontal-space");
     homeScreen.style.removeProperty("--home-vertical-space");
+  }else if(layout.mode==="portrait-staggered"){
+    homeScreen.style.setProperty(
+      "--home-label-gap",
+      `${layout.labelGap}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-circle-item-height",
+      `${layout.itemHeight}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-horizontal-space",
+      `${layout.horizontalSpace}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-vertical-space",
+      `${layout.verticalSpace}px`
+    );
+    homeScreen.style.removeProperty("--home-primary-diameter");
+    homeScreen.style.removeProperty("--home-secondary-diameter");
   }else{
     homeScreen.style.removeProperty("--home-label-gap");
+    homeScreen.style.removeProperty("--home-label-circle-gap");
     homeScreen.style.removeProperty("--home-circle-item-height");
     homeScreen.style.removeProperty("--home-horizontal-space");
     homeScreen.style.removeProperty("--home-vertical-space");
@@ -1407,7 +1431,7 @@ function observeHomeGeometry(){
   homeResizeObserver.observe(dock);
 }
 function home(app){
-  app.innerHTML=`<section class="screen home home-shell" data-layout-mode="portrait-asymmetric-circle-geometry" data-compact="false"><header class="home-head"><h1 class="chrome-title">${APP_NAME}</h1><div class="subtitle version-subtitle" data-build-id="${VERSION}">${VERSION} • Build ${formatBuildDate(BUILD_DATE)}</div></header><main class="vehicle-area" aria-label="Vehicles">${orderedVehicles().map((v,i)=>circleHtml(v,i)).join("")}</main>${bottomNav()}</section>`;
+  app.innerHTML=`<section class="screen home home-shell" data-layout-mode="portrait-circle-label-geometry" data-compact="false"><header class="home-head"><h1 class="chrome-title">${APP_NAME}</h1><div class="subtitle version-subtitle" data-build-id="${VERSION}">${VERSION} • Build ${formatBuildDate(BUILD_DATE)}</div></header><main class="vehicle-area" aria-label="Vehicles">${orderedVehicles().map((v,i)=>circleHtml(v,i)).join("")}</main>${bottomNav()}</section>`;
   applyBrowserHomeViewport();
   observeHomeGeometry();
   if(document.fonts&&document.fonts.ready){

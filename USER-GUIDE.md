@@ -1,11 +1,24 @@
-# User Guide — v2.1.6l-wc10-f22
+# User Guide
 
-This release candidate changes only the Home portrait vehicle-circle layout.
+**Build:** `v2.1.6l-wc10-f23`  
+**Build date:** `08/03/2026`  
+**Governance:** `v1.7`
 
-Check on iPhone:
-- the middle/primary circle is larger than the upper and lower circles
-- upper and lower circles remain visible and selectable
-- labels do not overlap circles
-- labels remain readable
-- landscape remains unchanged
-- all menus remain 58 px
+## Custom Label
+
+Open a vehicle, select **Edit Vehicle**, and enter up to 50 characters in **Custom Label**.
+
+- When the field contains text, that text is shown everywhere the vehicle name appears.
+- When the field is blank, RGB Mileage shows `Year Make Model Badge`.
+- Leading and trailing spaces are removed.
+- JSON backups preserve the field.
+
+## Bottom menu
+
+Home, Reports, Data, Settings, vehicle, and record screens now use the same compact bottom-menu height.
+
+## Offline update
+
+The four-line update pill still applies a waiting offline service worker and reloads RGB Mileage after activation.
+
+Cache URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f23
