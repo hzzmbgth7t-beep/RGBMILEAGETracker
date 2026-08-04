@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f23",date:"2026-08-03",cacheRevision:"216lwc10f23"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f24",date:"2026-08-03",cacheRevision:"216lwc10f24"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const CUSTOM_LABEL_MAX_LENGTH=50;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
@@ -1137,6 +1137,81 @@ function homeContainerSize(homeScreen){
   };
 }
 
+
+function homeLabelMeasurements(vehicleArea){
+  const labels=Array.from(vehicleArea.querySelectorAll(".vehicle-label"));
+  const fallbackWidth=Math.max(
+    44,
+    Math.round(vehicleArea.getBoundingClientRect().width*0.42)
+  );
+  const maxWidth=Math.max(
+    88,
+    Math.min(220,Math.round(vehicleArea.getBoundingClientRect().width*0.56))
+  );
+  let context=null;
+  try{
+    const canvas=document.createElement("canvas");
+    context=canvas.getContext("2d");
+  }catch(_error){
+    context=null;
+  }
+  return labels.slice(0,3).map(label=>{
+    const style=getComputedStyle(label);
+    const font=[
+      style.fontStyle,
+      style.fontVariant,
+      style.fontWeight,
+      style.fontSize,
+      style.fontFamily
+    ].filter(Boolean).join(" ");
+    if(context)context.font=font;
+    const text=(label.textContent||"").trim()||"Add Vehicle";
+    const words=text.split(/\s+/).filter(Boolean);
+    const paddingLeft=finitePixels(style.paddingLeft);
+    const paddingRight=finitePixels(style.paddingRight);
+    const paddingTop=finitePixels(style.paddingTop);
+    const paddingBottom=finitePixels(style.paddingBottom);
+    const lineHeight=(()=>{
+      const parsed=finitePixels(style.lineHeight);
+      if(parsed>0)return parsed;
+      const fontSize=finitePixels(style.fontSize);
+      return fontSize>0?fontSize*1.12:18;
+    })();
+    const measure=value=>context
+      ?context.measureText(value).width
+      :value.length*8.5;
+    const lines=[];
+    words.forEach(word=>{
+      if(lines.length===0){
+        lines.push(word);
+        return;
+      }
+      const next=`${lines[lines.length-1]} ${word}`;
+      if(measure(next)+paddingLeft+paddingRight<=maxWidth){
+        lines[lines.length-1]=next;
+      }else if(lines.length<2){
+        lines.push(word);
+      }else{
+        lines[lines.length-1]=`${lines[lines.length-1]} ${word}`;
+      }
+    });
+    const textWidth=Math.max(
+      44,
+      ...lines.map(line=>measure(line)+paddingLeft+paddingRight)
+    );
+    const height=Math.ceil(
+      (Math.max(1,lines.length)*lineHeight)
+      +paddingTop
+      +paddingBottom
+    );
+    return {
+      width:Math.ceil(Math.min(maxWidth,Math.max(44,textWidth))),
+      height:Math.ceil(Math.max(24,height)),
+      maxWidth
+    };
+  });
+}
+
 function applyHomeGeometry(){
   if(!route||route.screen!=="home"||!window.RGBMHomeLayout)return null;
   const app=$("app");
@@ -1171,9 +1246,7 @@ function applyHomeGeometry(){
     dockHeight:Math.ceil(dockRect.height),
     dockGap:0,
     orientation,
-    labels:Array.from(
-      vehicleArea.querySelectorAll(".vehicle-label")
-    ).map((element)=>element.textContent||"")
+    labelMeasurements:homeLabelMeasurements(vehicleArea)
   });
 
   homeScreen.dataset.layoutMode=layout.mode;
@@ -1195,14 +1268,22 @@ function applyHomeGeometry(){
     `${layout.sharedDiameter}px`
   );
 
-  if(layout.mode==="portrait-circle-label-geometry"){
+  if(layout.mode==="portrait-circle-label-f24"){
     homeScreen.style.setProperty(
       "--home-label-gap",
       `${layout.labelGap}px`
     );
     homeScreen.style.setProperty(
-      "--home-label-circle-gap",
-      `${layout.labelCircleGap}px`
+      "--home-circle-item-height",
+      `${layout.itemHeight}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-horizontal-space",
+      `${layout.horizontalSpace}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-vertical-space",
+      `${layout.verticalSpace}px`
     );
     homeScreen.style.setProperty(
       "--home-primary-diameter",
@@ -1221,12 +1302,28 @@ function applyHomeGeometry(){
       `${layout.primary.y}px`
     );
     homeScreen.style.setProperty(
+      "--home-primary-label-width",
+      `${layout.primary.labelWidth}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-primary-label-height",
+      `${layout.primary.labelHeight}px`
+    );
+    homeScreen.style.setProperty(
       "--home-upper-x",
       `${layout.upperSecondary.x}px`
     );
     homeScreen.style.setProperty(
       "--home-upper-y",
       `${layout.upperSecondary.y}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-upper-label-width",
+      `${layout.upperSecondary.labelWidth}px`
+    );
+    homeScreen.style.setProperty(
+      "--home-upper-label-height",
+      `${layout.upperSecondary.labelHeight}px`
     );
     homeScreen.style.setProperty(
       "--home-lower-x",
@@ -1237,66 +1334,15 @@ function applyHomeGeometry(){
       `${layout.lowerSecondary.y}px`
     );
     homeScreen.style.setProperty(
-      "--home-primary-label-x",
-      `${layout.primary.label.x}px`
-    );
-    homeScreen.style.setProperty(
-      "--home-primary-label-y",
-      `${layout.primary.label.y}px`
-    );
-    homeScreen.style.setProperty(
-      "--home-primary-label-width",
-      `${layout.primary.label.width}px`
-    );
-    homeScreen.style.setProperty(
-      "--home-upper-label-x",
-      `${layout.upperSecondary.label.x}px`
-    );
-    homeScreen.style.setProperty(
-      "--home-upper-label-y",
-      `${layout.upperSecondary.label.y}px`
-    );
-    homeScreen.style.setProperty(
-      "--home-upper-label-width",
-      `${layout.upperSecondary.label.width}px`
-    );
-    homeScreen.style.setProperty(
-      "--home-lower-label-x",
-      `${layout.lowerSecondary.label.x}px`
-    );
-    homeScreen.style.setProperty(
-      "--home-lower-label-y",
-      `${layout.lowerSecondary.label.y}px`
-    );
-    homeScreen.style.setProperty(
       "--home-lower-label-width",
-      `${layout.lowerSecondary.label.width}px`
-    );
-    homeScreen.style.removeProperty("--home-circle-item-height");
-    homeScreen.style.removeProperty("--home-horizontal-space");
-    homeScreen.style.removeProperty("--home-vertical-space");
-  }else if(layout.mode==="portrait-staggered"){
-    homeScreen.style.setProperty(
-      "--home-label-gap",
-      `${layout.labelGap}px`
+      `${layout.lowerSecondary.labelWidth}px`
     );
     homeScreen.style.setProperty(
-      "--home-circle-item-height",
-      `${layout.itemHeight}px`
+      "--home-lower-label-height",
+      `${layout.lowerSecondary.labelHeight}px`
     );
-    homeScreen.style.setProperty(
-      "--home-horizontal-space",
-      `${layout.horizontalSpace}px`
-    );
-    homeScreen.style.setProperty(
-      "--home-vertical-space",
-      `${layout.verticalSpace}px`
-    );
-    homeScreen.style.removeProperty("--home-primary-diameter");
-    homeScreen.style.removeProperty("--home-secondary-diameter");
   }else{
     homeScreen.style.removeProperty("--home-label-gap");
-    homeScreen.style.removeProperty("--home-label-circle-gap");
     homeScreen.style.removeProperty("--home-circle-item-height");
     homeScreen.style.removeProperty("--home-horizontal-space");
     homeScreen.style.removeProperty("--home-vertical-space");
@@ -1304,19 +1350,16 @@ function applyHomeGeometry(){
     homeScreen.style.removeProperty("--home-secondary-diameter");
     homeScreen.style.removeProperty("--home-primary-x");
     homeScreen.style.removeProperty("--home-primary-y");
+    homeScreen.style.removeProperty("--home-primary-label-width");
+    homeScreen.style.removeProperty("--home-primary-label-height");
     homeScreen.style.removeProperty("--home-upper-x");
     homeScreen.style.removeProperty("--home-upper-y");
+    homeScreen.style.removeProperty("--home-upper-label-width");
+    homeScreen.style.removeProperty("--home-upper-label-height");
     homeScreen.style.removeProperty("--home-lower-x");
     homeScreen.style.removeProperty("--home-lower-y");
-    homeScreen.style.removeProperty("--home-primary-label-x");
-    homeScreen.style.removeProperty("--home-primary-label-y");
-    homeScreen.style.removeProperty("--home-primary-label-width");
-    homeScreen.style.removeProperty("--home-upper-label-x");
-    homeScreen.style.removeProperty("--home-upper-label-y");
-    homeScreen.style.removeProperty("--home-upper-label-width");
-    homeScreen.style.removeProperty("--home-lower-label-x");
-    homeScreen.style.removeProperty("--home-lower-label-y");
     homeScreen.style.removeProperty("--home-lower-label-width");
+    homeScreen.style.removeProperty("--home-lower-label-height");
   }
 
   const circleRects=Array.from(
@@ -1431,7 +1474,7 @@ function observeHomeGeometry(){
   homeResizeObserver.observe(dock);
 }
 function home(app){
-  app.innerHTML=`<section class="screen home home-shell" data-layout-mode="portrait-circle-label-geometry" data-compact="false"><header class="home-head"><h1 class="chrome-title">${APP_NAME}</h1><div class="subtitle version-subtitle" data-build-id="${VERSION}">${VERSION} • Build ${formatBuildDate(BUILD_DATE)}</div></header><main class="vehicle-area" aria-label="Vehicles">${orderedVehicles().map((v,i)=>circleHtml(v,i)).join("")}</main>${bottomNav()}</section>`;
+  app.innerHTML=`<section class="screen home home-shell" data-layout-mode="portrait-staggered" data-compact="false"><header class="home-head"><h1 class="chrome-title">${APP_NAME}</h1><div class="subtitle version-subtitle" data-build-id="${VERSION}">${VERSION} • Build ${formatBuildDate(BUILD_DATE)}</div></header><main class="vehicle-area" aria-label="Vehicles">${orderedVehicles().map((v,i)=>circleHtml(v,i)).join("")}</main>${bottomNav()}</section>`;
   applyBrowserHomeViewport();
   observeHomeGeometry();
   if(document.fonts&&document.fonts.ready){

@@ -1,30 +1,31 @@
-# RGB Mileage
+# RGBMileage v2.1.6l-wc10-f24
 
-**Build:** `v2.1.6l-wc10-f23`  
-**Build date:** `08/03/2026`  
-**Governance:** `v1.7`  
-**Status:** DEVICE ACCEPTANCE REQUIRED
+Build: `v2.1.6l-wc10-f24`  
+Cache: `216lwc10f24`  
+Source baseline: verified accepted `v2.1.6l-wc10-f19`  
+Source SHA-256: `1e3e15e25b521e1098fae963d2a6b8b8224c0bee8e2ff4c13d982f296b3e4845`  
+Actual iPhone acceptance: PENDING / USER DEVICE CHECK REQUIRED
 
-F19 was rebuilt directly from the accepted `v2.1.6l-wc10-f16` archive.
+## Purpose
 
-Changes:
+F24 is a portrait Home geometry release candidate rebuilt directly from the accepted F19 archive.
 
-- every non-Home bottom menu now uses the accepted 58-pixel Home menu height
-- vehicle create/edit includes `Custom Label`
-- custom labels are trimmed and limited to 50 characters
-- a nonblank custom label overrides `Year Make Model Badge` everywhere onscreen
-- clearing the custom label restores the generated label
-- JSON backup and restore preserve custom labels
-- CSV behavior is unchanged
+## Release status
 
-Locked from F16:
+This package is not device-accepted. It requires user verification on actual iPhone installed Home Screen mode and direct Safari mode before it can replace F19 as the accepted baseline.
 
-- Home portrait and landscape geometry
-- service-worker update indicator placement, appearance, and action
-- offline behavior
-- records, storage keys, backups, and recovery logic
+## Changed scope
 
-Normal URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/  
-Cache URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f23
+- Portrait-only Home circle-plus-own-label geometry.
+- Upper and lower circles use equal radius.
+- Middle/primary circle may be larger.
+- Labels remain beneath their own circles.
+- Lower circle validity includes below-label clearance above the bottom menu/browser boundary.
 
-Upload only the 17 files at the ZIP root.
+## Locked behavior
+
+The release must preserve landscape Home layout, 58 px menus, Custom Label behavior, JSON backup/restore, CSV behavior, offline service worker, update control, data/recovery behavior, viewport behavior outside the approved portrait Home geometry scope, and the 17-root-file / 8-support-folder packaging structure.
+
+## Deployment URL
+
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f24

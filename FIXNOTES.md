@@ -1,25 +1,15 @@
-# Fix Notes
+# FIXNOTES — v2.1.6l-wc10-f24
 
-**Build:** `v2.1.6l-wc10-f23`  
-**Build date:** `08/03/2026`  
-**Governance:** `v1.7`
+Build: `v2.1.6l-wc10-f24`  
+Cache: `216lwc10f24`  
+Source baseline: verified accepted `v2.1.6l-wc10-f19`  
+Source SHA-256: `1e3e15e25b521e1098fae963d2a6b8b8224c0bee8e2ff4c13d982f296b3e4845`  
+Actual iPhone acceptance: PENDING / USER DEVICE CHECK REQUIRED
 
-F17 and F18 were rejected and were not used as source material.
+## Fix scope
 
-F19 starts from accepted `v2.1.6l-wc10-f16` with SHA-256:
+F24 addresses portrait Home geometry only. The model binds each vehicle circle to its own below-label and rejects candidate geometry when the own-label would overlap its circle or when the lower item would collide with the bottom menu/browser boundary.
 
-```text
-88d58d0eb7f5bbe0c3de5076acdcbcd0a004e41eff294c7f8050ff0140cf35d8
-```
+## Rejected evidence excluded as source
 
-Corrections:
-
-- non-Home menu height changed from `58px + safe-area-inset-bottom` to the same exact 58-pixel dock used by Home
-- non-Home menu padding now matches Home at `4px 7px`
-- added the `Custom Label` field with a 50-character maximum
-- centralized onscreen vehicle label selection
-- JSON backups always include `customLabel`, including blank values
-- older JSON backups without the field remain compatible
-- CSV mappings remain unchanged
-
-No Home circle geometry changes are included.
+F20, F21, F22, and F23 are rejected portrait evidence only and are not implementation sources for this package. F17 and F18 remain prohibited runtime sources.

@@ -449,31 +449,13 @@ body {
 .choice-buttons button{min-height:48px}
 @media(max-width:385px){.choice-box{width:min(80vw,310px)}}
 
-/* RGBM v2.1.6l-wc10-f23 preserves accepted Home shell and adds F23 circle-plus-label portrait geometry */
+/* RGBM v2.1.6l-wc10-f24 applies repaired F24 Home portrait geometry from accepted F19 baseline; landscape remains locked. */
 :root {
   --home-column-gap: 14px;
   --home-min-row-gap: 10px;
   --home-label-height: 36px;
   --home-label-gap: 4px;
   --home-shared-diameter: 180px;
-  --home-primary-diameter: 190px;
-  --home-secondary-diameter: 150px;
-  --home-primary-x: 34px;
-  --home-primary-y: 270px;
-  --home-upper-x: 245px;
-  --home-upper-y: 36px;
-  --home-lower-x: 245px;
-  --home-lower-y: 530px;
-  --home-primary-label-x: 26px;
-  --home-primary-label-y: 470px;
-  --home-primary-label-width: 250px;
-  --home-upper-label-x: 222px;
-  --home-upper-label-y: 196px;
-  --home-upper-label-width: 160px;
-  --home-lower-label-x: 220px;
-  --home-lower-label-y: 492px;
-  --home-lower-label-width: 160px;
-  --home-label-circle-gap: 6px;
   --home-circle-item-height: 220px;
   --home-horizontal-space: 12px;
   --home-vertical-space: 12px;
@@ -712,74 +694,6 @@ body.home-active {
   grid-column: 2 !important;
   grid-row: 2 !important;
   place-self: center !important;
-}
-
-#app.screen-home
-.home-shell[data-layout-mode="portrait-circle-label-geometry"]
-.vehicle-area {
-  position: relative !important;
-  display: block !important;
-  padding: 0 !important;
-}
-
-#app.screen-home
-.home-shell[data-layout-mode="portrait-circle-label-geometry"]
-.circle-wrap {
-  position: absolute !important;
-  display: block !important;
-  width: var(--home-circle-diameter) !important;
-  height:
-    calc(
-      var(--home-circle-diameter)
-      + var(--home-label-circle-gap)
-      + var(--home-label-height)
-    ) !important;
-  left: var(--home-circle-x) !important;
-  top: var(--home-circle-y) !important;
-  overflow: visible !important;
-  transform: none !important;
-}
-
-#app.screen-home
-.home-shell[data-layout-mode="portrait-circle-label-geometry"]
-.circle-wrap:nth-child(1) {
-  --home-circle-diameter: var(--home-primary-diameter);
-  --home-circle-x: var(--home-primary-x);
-  --home-circle-y: var(--home-primary-y);
-  --home-label-x: var(--home-primary-label-x);
-  --home-label-y: var(--home-primary-label-y);
-  --home-label-width: var(--home-primary-label-width);
-}
-
-#app.screen-home
-.home-shell[data-layout-mode="portrait-circle-label-geometry"]
-.circle-wrap:nth-child(2) {
-  --home-circle-diameter: var(--home-secondary-diameter);
-  --home-circle-x: var(--home-upper-x);
-  --home-circle-y: var(--home-upper-y);
-  --home-label-x: var(--home-upper-label-x);
-  --home-label-y: var(--home-upper-label-y);
-  --home-label-width: var(--home-upper-label-width);
-}
-
-#app.screen-home
-.home-shell[data-layout-mode="portrait-circle-label-geometry"]
-.circle-wrap:nth-child(3) {
-  --home-circle-diameter: var(--home-secondary-diameter);
-  --home-circle-x: var(--home-lower-x);
-  --home-circle-y: var(--home-lower-y);
-  --home-label-x: var(--home-lower-label-x);
-  --home-label-y: var(--home-lower-label-y);
-  --home-label-width: var(--home-lower-label-width);
-}
-
-#app.screen-home
-.home-shell[data-layout-mode="portrait-circle-label-geometry"]
-.vehicle-label {
-  position: absolute !important;
-  left: calc(var(--home-label-x) - var(--home-circle-x)) !important;
-  top: calc(var(--home-label-y) - var(--home-circle-y)) !important;
-  width: var(--home-label-width) !important;
 }
 
 #app.screen-home
@@ -1518,7 +1432,7 @@ body.recovery-active {
 }
 
 
-/* v2.1.6l-wc10-f19 canonical build identity */
+/* v2.1.6l-wc10-f24 canonical build identity */
 .settings-build-card {
   padding: 12px 16px;
   border-color: rgba(135, 189, 238, .72);
@@ -1586,7 +1500,7 @@ body.recovery-active {
 }
 
 
-/* RGBM v2.1.6l-wc10-f19 preserves the accepted F16 update pill */
+/* RGBM v2.1.6l-wc10-f24 preserves the accepted F19 update pill behavior. */
 .service-worker-update-badge {
   position: absolute;
   z-index: 45;
@@ -1652,4 +1566,90 @@ body.recovery-active {
     font-size: 6px;
     line-height: .9;
   }
+}
+
+
+/* F24 portrait geometry: each item is a bound circle plus below-label unit. */
+#app.screen-home
+.home-shell[data-layout-mode="portrait-circle-label-f24"]
+.vehicle-area {
+  position: relative !important;
+  padding: 0 !important;
+  display: block !important;
+  overflow: hidden !important;
+}
+
+#app.screen-home
+.home-shell[data-layout-mode="portrait-circle-label-f24"]
+.circle-wrap {
+  position: absolute !important;
+  display: grid !important;
+  grid-template-rows:
+    var(--home-circle-diameter)
+    var(--home-label-gap)
+    var(--home-owned-label-height) !important;
+  justify-items: center !important;
+  align-items: start !important;
+  align-content: start !important;
+  height:
+    calc(
+      var(--home-circle-diameter)
+      + var(--home-label-gap)
+      + var(--home-owned-label-height)
+    ) !important;
+  overflow: visible !important;
+  transform: none !important;
+}
+
+#app.screen-home
+.home-shell[data-layout-mode="portrait-circle-label-f24"]
+.circle-wrap:nth-child(1) {
+  --home-circle-diameter: var(--home-primary-diameter);
+  --home-owned-label-width: var(--home-primary-label-width);
+  --home-owned-label-height: var(--home-primary-label-height);
+  left: var(--home-primary-x) !important;
+  top: var(--home-primary-y) !important;
+  width: var(--home-circle-diameter) !important;
+}
+
+#app.screen-home
+.home-shell[data-layout-mode="portrait-circle-label-f24"]
+.circle-wrap:nth-child(2) {
+  --home-circle-diameter: var(--home-secondary-diameter);
+  --home-owned-label-width: var(--home-upper-label-width);
+  --home-owned-label-height: var(--home-upper-label-height);
+  left: var(--home-upper-x) !important;
+  top: var(--home-upper-y) !important;
+  width: var(--home-circle-diameter) !important;
+}
+
+#app.screen-home
+.home-shell[data-layout-mode="portrait-circle-label-f24"]
+.circle-wrap:nth-child(3) {
+  --home-circle-diameter: var(--home-secondary-diameter);
+  --home-owned-label-width: var(--home-lower-label-width);
+  --home-owned-label-height: var(--home-lower-label-height);
+  left: var(--home-lower-x) !important;
+  top: var(--home-lower-y) !important;
+  width: var(--home-circle-diameter) !important;
+}
+
+#app.screen-home
+.home-shell[data-layout-mode="portrait-circle-label-f24"]
+.vehicle-label {
+  width: var(--home-owned-label-width) !important;
+  height: var(--home-owned-label-height) !important;
+  min-height: var(--home-owned-label-height) !important;
+  margin-left:
+    calc(
+      (var(--home-circle-diameter) - var(--home-owned-label-width))
+      / 2
+    ) !important;
+  margin-right:
+    calc(
+      (var(--home-circle-diameter) - var(--home-owned-label-width))
+      / 2
+    ) !important;
+  padding-top: 3px !important;
+  overflow: hidden !important;
 }
