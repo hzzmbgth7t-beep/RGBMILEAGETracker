@@ -10,6 +10,12 @@ Actual iPhone acceptance: PENDING / USER DEVICE CHECK REQUIRED
 
 F24 is a portrait Home geometry release candidate rebuilt directly from the accepted F19 archive.
 
+## URLs
+
+Production URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
+
+Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f24
+
 ## Release status
 
 This package is not device-accepted. It requires user verification on actual iPhone installed Home Screen mode and direct Safari mode before it can replace F19 as the accepted baseline.
@@ -25,7 +31,3 @@ This package is not device-accepted. It requires user verification on actual iPh
 ## Locked behavior
 
 The release must preserve landscape Home layout, 58 px menus, Custom Label behavior, JSON backup/restore, CSV behavior, offline service worker, update control, data/recovery behavior, viewport behavior outside the approved portrait Home geometry scope, and the 17-root-file / 8-support-folder packaging structure.
-
-## Deployment URL
-
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f24
