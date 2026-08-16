@@ -1,15 +1,29 @@
-# FIXNOTES — v2.1.6l-wc10-f24
+# FIXNOTES — v2.1.6l-wc10-f25-rc1
 
-Build: `v2.1.6l-wc10-f24`  
-Cache: `216lwc10f24`  
-Source baseline: verified accepted `v2.1.6l-wc10-f19`  
-Source SHA-256: `1e3e15e25b521e1098fae963d2a6b8b8224c0bee8e2ff4c13d982f296b3e4845`  
-Actual iPhone acceptance: PENDING / USER DEVICE CHECK REQUIRED
+Build: `v2.1.6l-wc10-f25-rc1`  
+Status: `Release Candidate 1 / pending user validation`  
+Cache: `216lwc10f25rc1`  
+Source baseline: accepted `v2.1.6l-wc10-f24`  
+Source SHA-256: `f90fe95495b9aba00530e8ca47ab95f3d58014a0a1624788209237b2df09bb32`  
+Accepted production baseline remains: `v2.1.6l-wc10-f24`
 
 ## Fix scope
 
-F24 addresses portrait Home geometry only. The model binds each vehicle circle to its own below-label and rejects candidate geometry when the own-label would overlap its circle or when the lower item would collide with the bottom menu/browser boundary.
+This candidate resolves action parity for Maintenance and Insurance records while keeping Fuel behavior as the reference model.
+
+## Implementation notes
+
+- Maintenance record titles now use date, category, and odometer when available.
+- Maintenance category lookup tolerates older field names where practical.
+- Maintenance odometer lookup tolerates `odometer` and `mileage` fields.
+- Maintenance delete choices now provide Delete Permanently, Archive Instead, and Cancel.
+- Insurance delete choices now provide Delete Permanently, Archive Instead, and Cancel.
+- Existing generic archive behavior remains in use where appropriate.
+
+## Unchanged scope
+
+No Home geometry, CSS, schema, backup/restore, CSV, service-worker strategy, or viewport behavior change is intended.
 
 ## Rejected evidence excluded as source
 
-F20, F21, F22, and F23 are rejected portrait evidence only and are not implementation sources for this package. F17 and F18 remain prohibited runtime sources.
+F20, F21, F22, and F23 are rejected failure evidence only and are not implementation sources for this package.

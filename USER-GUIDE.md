@@ -1,17 +1,18 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f24`  
-Cache: `216lwc10f24`  
-Guide release: `v2.1.6l-wc10-f24`  
-Last User Guide content-change release: `v2.1.6l-wc10-f24`  
-Source baseline: verified accepted `v2.1.6l-wc10-f19`  
-Actual user device-check status: `PENDING / USER DEVICE CHECK REQUIRED`
+Build: `v2.1.6l-wc10-f25-rc1`  
+Cache: `216lwc10f25rc1`  
+Guide release: `v2.1.6l-wc10-f25-rc1`  
+Last User Guide content-change release: `v2.1.6l-wc10-f25-rc1`  
+Source baseline: accepted `v2.1.6l-wc10-f24`  
+Source SHA-256: `f90fe95495b9aba00530e8ca47ab95f3d58014a0a1624788209237b2df09bb32`  
+Current status: `Release Candidate 1 / pending user validation`
 
 Production URL:  
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:  
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f24
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f25rc1
 
 ## About this guide
 
@@ -60,7 +61,7 @@ You can open RGB Mileage two ways:
 
 After an update, use the cache-busted URL for the current build:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f24
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f25rc1
 
 If the old version still appears, open Settings and check the build shown there. You may also need to use **Check for App Update** and **Apply Offline Update** from Settings.
 
@@ -558,7 +559,7 @@ The Settings build card shows the current build ID and build date. Use this to c
 
 For this build, the expected build is:
 
-`v2.1.6l-wc10-f24`
+`v2.1.6l-wc10-f25-rc1`
 
 ### Vehicle Order
 
@@ -1003,11 +1004,29 @@ Documentation must not contain stale source-baseline, version, cache, or device-
 
 This guide is prepared for:
 
-- Build: `v2.1.6l-wc10-f24`
-- Cache: `216lwc10f24`
-- Guide release: `v2.1.6l-wc10-f24`
-- Last User Guide content-change release: `v2.1.6l-wc10-f24`
-- Source baseline: verified accepted `v2.1.6l-wc10-f19`
-- Required F19 source SHA-256: `1e3e15e25b521e1098fae963d2a6b8b8224c0bee8e2ff4c13d982f296b3e4845`
+- Build: `v2.1.6l-wc10-f25-rc1`
+- Cache: `216lwc10f25rc1`
+- Guide release: `v2.1.6l-wc10-f25-rc1`
+- Last User Guide content-change release: `v2.1.6l-wc10-f25-rc1`
+- Source baseline: accepted `v2.1.6l-wc10-f24`
+- Required F19 source SHA-256: `f90fe95495b9aba00530e8ca47ab95f3d58014a0a1624788209237b2df09bb32`
 
 Actual user device-check status: `PENDING / USER DEVICE CHECK REQUIRED`
+
+
+---
+
+# F25 RC1 Record Action Update
+
+Maintenance, Insurance, and Fuel records are intended to provide matching record-action behavior.
+
+For existing Maintenance and Insurance records:
+
+1. Open the relevant vehicle.
+2. Open Maintenance Entry or Insurance Entry.
+3. Select an existing record.
+4. Use Edit when changes are needed.
+5. Use Delete when removal is needed.
+6. Choose Delete Permanently, Archive Instead, or Cancel.
+
+Maintenance previous-record rows show date, category, and odometer when odometer data exists.

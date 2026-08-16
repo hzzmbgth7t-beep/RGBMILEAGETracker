@@ -1,33 +1,38 @@
-# RGBMileage v2.1.6l-wc10-f24
+# RGBMileage v2.1.6l-wc10-f25-rc1
 
-Build: `v2.1.6l-wc10-f24`  
-Cache: `216lwc10f24`  
-Source baseline: verified accepted `v2.1.6l-wc10-f19`  
-Source SHA-256: `1e3e15e25b521e1098fae963d2a6b8b8224c0bee8e2ff4c13d982f296b3e4845`  
-Actual iPhone acceptance: PENDING / USER DEVICE CHECK REQUIRED
+Build: `v2.1.6l-wc10-f25-rc1`  
+Status: `Release Candidate 1 / pending user validation`  
+Cache: `216lwc10f25rc1`  
+Source baseline: accepted `v2.1.6l-wc10-f24`  
+Source SHA-256: `f90fe95495b9aba00530e8ca47ab95f3d58014a0a1624788209237b2df09bb32`  
+Accepted production baseline remains: `v2.1.6l-wc10-f24`
 
 ## Purpose
 
-F24 is a portrait Home geometry release candidate rebuilt directly from the accepted F19 archive.
+F25 RC1 is a full packaged maintenance/insurance action-parity release candidate built from the accepted F24 baseline. It corrects Maintenance record-list labeling and adds matching delete/archive/cancel choices for Maintenance and Insurance.
 
 ## URLs
 
 Production URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f24
+Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f25rc1
 
 ## Release status
 
-This package is not device-accepted. It requires user verification on actual iPhone installed Home Screen mode and direct Safari mode before it can replace F19 as the accepted baseline.
+This package is not the accepted production baseline until the user completes validation and explicitly accepts it. The accepted baseline remains `v2.1.6l-wc10-f24`.
 
 ## Changed scope
 
-- Portrait-only Home circle-plus-own-label geometry.
-- Upper and lower circles use equal radius.
-- Middle/primary circle may be larger.
-- Labels remain beneath their own circles.
-- Lower circle validity includes below-label clearance above the bottom menu/browser boundary.
+- Maintenance previous-record rows show date, category, and odometer when odometer data exists.
+- Maintenance row/edit actions now include delete behavior matching Fuel.
+- Insurance row/edit actions now include delete behavior matching Fuel.
+- Delete choices are aligned for Fuel, Maintenance, and Insurance: Delete Permanently, Archive Instead, and Cancel.
+- Cache-busting deployment URL is included for this candidate.
 
 ## Locked behavior
 
-The release must preserve landscape Home layout, 58 px menus, Custom Label behavior, JSON backup/restore, CSV behavior, offline service worker, update control, data/recovery behavior, viewport behavior outside the approved portrait Home geometry scope, and the 17-root-file / 8-support-folder packaging structure.
+Home geometry, CSS, data schema/storage, backup/restore, CSV behavior, offline service worker model, Custom Label behavior, viewport behavior, 58 px menus, and package structure remain outside this change scope.
+
+## Rejected-build handling
+
+F20, F21, F22, and F23 remain rejected portrait failure evidence only and are not runtime sources for this package.
