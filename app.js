@@ -1579,7 +1579,7 @@ function rowPressStart(type,recordId,e){
     startY:e&&typeof e.clientY==="number"?e.clientY:0,
     moved:false
   };
-  pressStart(()=>type==="Fuel"?fuelRowActions(recordId):openRecordFlow(type,recordId,"edit"),e,650);
+  pressStart(()=>type==="Fuel"?fuelRowActions(recordId):type==="Maintenance"?maintenanceRowActions(recordId):openRecordFlow(type,recordId,"edit"),e,650);
 }
 function rowPressMove(e){
   if(!rowTouchState.active) return;
@@ -1691,6 +1691,58 @@ function fuelDeleteFromEdit(){
   return fuelDeleteChoices(route.recordId);
 }
 
+function maintenanceRowActions(recordId){
+  const r=findRecord("Maintenance",recordId);
+  if(!r) return false;
+  return showChoiceModal("Maintenance Record Actions",[
+    {label:"Edit",className:"primary",onClick:()=>openRecordFlow("Maintenance",recordId,"edit",true)},
+    {label:"Delete",className:"danger",onClick:()=>maintenanceDeleteChoices(recordId)},
+    {label:"Cancel",className:"ghost",onClick:()=>false}
+  ]);
+}
+function maintenanceDeleteChoices(recordId){
+  const r=findRecord("Maintenance",recordId);
+  if(!r) return false;
+  return showChoiceModal("Delete Maintenance Record",[
+    {label:"Delete Permanently",className:"danger",onClick:()=>maintenanceDeletePermanent(recordId)},
+    {label:"Archive Instead",className:"ghost",onClick:()=>maintenanceArchiveFromChoices(recordId)},
+    {label:"Cancel",className:"ghost",onClick:()=>false}
+  ]);
+}
+function maintenanceArchiveFromChoices(recordId){
+  const r=findRecord("Maintenance",recordId);
+  if(!r) return false;
+  addTag(r,"Archived");
+  r.modifiedAt=nowISO();
+  saveData();
+  if(route.screen==="quickMaintenance"){
+    route={screen:"quickMaintenance",vehicleId:r.vehicleId,mode:"empty",returnTo:route.returnTo||cloneRoute(route)};
+    renderRoute();
+  }else{
+    renderRoute();
+  }
+  return false;
+}
+function maintenanceDeletePermanent(recordId){
+  const idx=state.maintenanceRecords.findIndex(r=>r.recordId===recordId);
+  if(idx<0) return false;
+  const r=state.maintenanceRecords[idx];
+  state.maintenanceRecords.splice(idx,1);
+  saveData();
+  editSnapshot=null;
+  if(route.screen==="quickMaintenance"){
+    route={screen:"quickMaintenance",vehicleId:r.vehicleId,mode:"empty",returnTo:route.returnTo||cloneRoute(route)};
+    renderRoute();
+  }else{
+    renderRoute();
+  }
+  return false;
+}
+function maintenanceDeleteFromEdit(){
+  if(route.screen!=="quickMaintenance" || route.mode!=="edit" || !route.recordId) return false;
+  return maintenanceDeleteChoices(route.recordId);
+}
+
 function circleHtml(v,i){
   const configured=isVehicleConfigured(v);
   const inner=configured&&v.primaryPhoto?`<img src="${v.primaryPhoto}" alt="">`:esc(vehicleBadge(v));
@@ -1773,7 +1825,15 @@ function recArray(type){return type==="Fuel"?state.fuelRecords:type==="Maintenan
 function dateValue(r,type){const d=r.date||r.dropOffDate||r.effectiveDate||r.acquisitionDate||"";const t=r.time||"";if(!d)return 0;const ms=Date.parse((d+" "+t).trim());return Number.isFinite(ms)?ms:0}
 function previousSort(type,a,b){const ad=dateValue(a,type),bd=dateValue(b,type);if(ad||bd){if(bd!==ad)return bd-ad}const ao=Number(a.odometer||a.startingOdometer||0),bo=Number(b.odometer||b.startingOdometer||0);if((type==="Fuel"||type==="Maintenance")&&(ao||bo)&&bo!==ao)return bo-ao;const as=Number(a.entrySequence||0),bs=Number(b.entrySequence||0);if(bs!==as)return bs-as;const am=Date.parse(a.modifiedAt||a.createdAt||"")||0,bm=Date.parse(b.modifiedAt||b.createdAt||"")||0;return bm-am}
 function records(type,vid,includeArchived=false){return recArray(type).filter(r=>(!vid||r.vehicleId===vid)&&(includeArchived||!hasTag(r,"Archived"))).sort((a,b)=>previousSort(type,a,b))}
-function recordTitle(type,r){if(type==="Fuel")return `${formatDisplayDate(r.date)||"No Date"} Odo ${fmt(r.odometer)}`; if(type==="Maintenance")return `${formatDisplayDate(r.dropOffDate||r.date)||"No Date"} ${r.category||"Maintenance"}`; if(type==="Insurance")return `${r.agency||r.company||"Insurance"} ${r.policyNumber||""}`; return r.recordId}
+function recordTitle(type,r){
+  if(type==="Fuel") return `${formatDisplayDate(r.date)||"No Date"} Odo ${fmt(r.odometer)}`;
+  if(type==="Maintenance"){
+    const odometer=r.odometer==="" || r.odometer==null ? "" : ` Odo ${fmt(r.odometer)}`;
+    return `${formatDisplayDate(r.dropOffDate||r.date)||"No Date"} ${r.category||"Maintenance"}${odometer}`;
+  }
+  if(type==="Insurance") return `${r.agency||r.company||"Insurance"} ${r.policyNumber||""}`;
+  return r.recordId;
+}
 function line(k,v){return `<div><b>${esc(k)}:</b> ${esc(v??"")}</div>`}
 function recordDetails(type,r){if(type==="Fuel")return line("Odometer",fmt(r.odometer))+line("Miles",fmt(r.miles))+line("Gallons",fmt(r.gallons,3))+line("MPG",fmt(r.mpg))+line("Station",r.station)+line("Notes",r.notes); if(type==="Maintenance")return line("Odometer",fmt(r.odometer))+line("Cost",money(r.totalCost))+line("Provider",r.serviceProvider||r.provider||"")+line("Notes",r.notes); if(type==="Insurance")return line("Effective",formatDisplayDate(r.effectiveDate))+line("Expiration",formatDisplayDate(r.expirationDate))+line("Premium",money(r.premium))+line("Agency",r.agency||"");return ""}
 
@@ -2399,6 +2459,11 @@ function maintenanceActionButtons(){
   if(mode==="empty") return `<div class="fuel-actions single"><button class="primary" onclick="maintenanceNew()">New</button></div>`;
   if(mode==="view") return `<div class="fuel-actions"><button class="ghost" onclick="maintenanceNew()">New</button><button onclick="maintenanceToggleMode()">Edit</button><button class="ghost" onclick="maintenanceCancel()">Cancel</button></div>`;
   const toggleBtn=route.recordId?`<button onclick="maintenanceToggleMode()">View</button>`:'';
+  const deleteBtn=route.recordId?`<button class="danger" onclick="maintenanceDeleteFromEdit()">Delete</button>`:'';
+  const spacer=route.recordId?`<span class="fuel-action-spacer" aria-hidden="true" style="visibility:hidden"></span>`:'';
+  if(route.recordId){
+    return `<div class="fuel-actions"><button class="ghost" onclick="maintenanceNew()">New</button>${toggleBtn}${deleteBtn}<button class="primary" onclick="saveQuickMaintenance('${route.vehicleId}')">Save</button>${spacer}<button class="ghost" onclick="maintenanceCancel()">Cancel</button></div>`;
+  }
   return `<div class="fuel-actions"><button class="ghost" onclick="maintenanceNew()">New</button>${toggleBtn}<button class="primary" onclick="saveQuickMaintenance('${route.vehicleId}')">Save</button><button class="ghost" onclick="maintenanceCancel()">Cancel</button></div>`;
 }
 function quickMaintenance(app,vid){
