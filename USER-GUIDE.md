@@ -1,18 +1,18 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f26-rc3`  
-Cache: `216lwc10f26rc3`  
-Guide release: `v2.1.6l-wc10-f26-rc3`  
-Last User Guide content-change release: `v2.1.6l-wc10-f26-rc3`  
+Build: `v2.1.6l-wc10-f26`  
+Cache: `216lwc10f26`  
+Guide release: `v2.1.6l-wc10-f26`  
+Last User Guide content-change release: `v2.1.6l-wc10-f26`  
 Source baseline: accepted `v2.1.6l-wc10-f25`  
 Source SHA-256: `6aad843c7db5135c98bf476ecf73e897a336a0d6b9345cf800a887c8d975e212`  
-Current status: `Release Candidate 3 / pending user validation`
+Current status: `Accepted baseline`
 
 Production URL:  
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:  
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26rc3
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26
 
 ## Vehicle Detail odometer fields
 
@@ -55,7 +55,7 @@ Fuel, Maintenance, and Insurance records use aligned delete choices:
 
 Use the cache-busting URL for validation:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26rc3
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26
 
 ## Mileage warning highlights
 

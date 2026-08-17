@@ -1,14 +1,14 @@
-# FIXNOTES — v2.1.6l-wc10-f26-rc3
+# FIXNOTES — v2.1.6l-wc10-f26
 
-Build: `v2.1.6l-wc10-f26-rc3`  
-Status: `Release Candidate 3 / pending user validation`  
-Cache: `216lwc10f26rc3`  
+Build: `v2.1.6l-wc10-f26`  
+Status: `Accepted baseline`  
+Cache: `216lwc10f26`  
 Source baseline: accepted `v2.1.6l-wc10-f25`  
 Source SHA-256: `6aad843c7db5135c98bf476ecf73e897a336a0d6b9345cf800a887c8d975e212`
 
 ## Fix scope
 
-This candidate adds computed odometer summary fields and mileage consistency warnings.
+This version adds computed odometer summary fields and mileage consistency warnings.
 
 ## Implementation notes
 
@@ -35,7 +35,7 @@ No Home geometry, CSS layout overhaul, data schema migration, backup/restore cha
 - Confirm Current Mileage follows the most recent valid dated reading.
 - Confirm Mileage Error appears when a newer dated reading is lower than an older dated reading.
 
-## F26 RC3 correction
+## F26 correction
 
 - No-date entries do not generate mileage-order warnings.
 - Mileage-order warnings compare dated readings only.

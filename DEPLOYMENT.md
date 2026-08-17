@@ -1,8 +1,8 @@
-# DEPLOYMENT — v2.1.6l-wc10-f26-rc3
+# DEPLOYMENT — v2.1.6l-wc10-f26
 
-Build: `v2.1.6l-wc10-f26-rc3`  
-Status: `Release Candidate 3 / pending user validation`  
-Cache: `216lwc10f26rc3`  
+Build: `v2.1.6l-wc10-f26`  
+Status: `Accepted baseline`  
+Cache: `216lwc10f26`  
 Source baseline: accepted `v2.1.6l-wc10-f25`  
 Source SHA-256: `6aad843c7db5135c98bf476ecf73e897a336a0d6b9345cf800a887c8d975e212`
 
@@ -21,19 +21,19 @@ Deploy only the 17 ZIP-root files to GitHub Pages. Do not deploy the eight suppo
 
 Open the cache-busting URL after deployment:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26rc3
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26
 
-Confirm displayed identity is `v2.1.6l-wc10-f26-rc3` and cache identity is `216lwc10f26rc3`.
+Confirm displayed identity is `v2.1.6l-wc10-f26` and cache identity is `216lwc10f26`.
 
 ## Cache-busting requirement
 
-Every deployable candidate or release must include a cache-busting URL. For this candidate use:
+Every deployable release must include a cache-busting URL. For this version use:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26rc3
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26
 
 If an older installed app continues to load stale files, remove the Home Screen icon, clear the site data for the GitHub Pages site in Safari, reopen the cache-busting URL, then add the app to Home Screen again.
 
-## F26 RC3 validation
+## F26 validation
 
 - Confirm Vehicle Detail shows Last Refuel Mileage, Last Maintenance Mileage, and Current Mileage grouped with Starting Odometer.
 - Confirm Last Refuel Mileage uses the most recent active Fuel/Refuel entry with odometer by date/time.
