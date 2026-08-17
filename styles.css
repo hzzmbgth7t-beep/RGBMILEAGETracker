@@ -1653,3 +1653,28 @@ body.recovery-active {
   padding-top: 3px !important;
   overflow: hidden !important;
 }
+
+
+/* F26 RC2 mileage validation highlights */
+.mileage-warning-field,
+.fieldbox.mileage-warning-field,
+label.mileage-warning-field{
+  background:#fff2a8 !important;
+  color:#1b1b1b !important;
+  border-color:#d6a900 !important;
+  box-shadow:0 0 0 2px rgba(214,169,0,.25) inset !important;
+}
+.mileage-warning-field input{
+  background:#fff8c7 !important;
+  color:#1b1b1b !important;
+}
+.entry-row.mileage-warning-row{
+  background:#fff2a8 !important;
+  color:#1b1b1b !important;
+  border-color:#d6a900 !important;
+  box-shadow:0 0 0 2px rgba(214,169,0,.25) inset !important;
+}
+.entry-row.mileage-warning-row .muted,
+.entry-row.mileage-warning-row .badge{
+  color:#1b1b1b !important;
+}

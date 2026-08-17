@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f26-rc1
+# FIXNOTES — v2.1.6l-wc10-f26-rc2
 
-Build: `v2.1.6l-wc10-f26-rc1`  
-Status: `Release Candidate 1 / pending user validation`  
-Cache: `216lwc10f26rc1`  
+Build: `v2.1.6l-wc10-f26-rc2`  
+Status: `Release Candidate 2 / pending user validation`  
+Cache: `216lwc10f26rc2`  
 Source baseline: accepted `v2.1.6l-wc10-f25`  
 Source SHA-256: `6aad843c7db5135c98bf476ecf73e897a336a0d6b9345cf800a887c8d975e212`
 
@@ -15,8 +15,10 @@ This candidate adds computed odometer summary fields and mileage consistency war
 - Vehicle Detail now displays Last Refuel Mileage, Last Maintenance Mileage, and Current Mileage near Starting Odometer.
 - Last Refuel Mileage is computed from active Fuel records with valid odometer values.
 - Last Maintenance Mileage is computed from active Maintenance records with valid odometer values.
-- Current Mileage is computed from the most recent valid dated mileage reading across Starting Odometer, Fuel records, and Maintenance records.
-- Date/time ordering uses each record date and time where available, with deterministic fallback to entry sequence/modified order.
+- Last Refuel, Last Maintenance, and Current Mileage use dated-first logic.
+- Dated entries are preferred and selected by most recent date/time.
+- Undated entries are ignored while dated readings exist.
+- If no dated readings exist for a field, the highest undated mileage is used as a fallback.
 - Mileage Error warnings are informational only and do not block saving.
 - A warning is raised when a newer dated odometer reading is lower than an older dated reading.
 - Affected Fuel and Maintenance record pages display their related Mileage Error warnings.
@@ -32,3 +34,10 @@ No Home geometry, CSS layout overhaul, data schema migration, backup/restore cha
 - Confirm Last Maintenance Mileage updates after adding/editing/deleting Maintenance records.
 - Confirm Current Mileage follows the most recent valid dated reading.
 - Confirm Mileage Error appears when a newer dated reading is lower than an older dated reading.
+
+## F26 RC2 correction
+
+- No-date entries do not generate mileage-order warnings.
+- Mileage-order warnings compare dated readings only.
+- Affected Fuel and Maintenance odometer fields are highlighted yellow.
+- Affected previous-record rows are highlighted yellow on Fuel and Maintenance pages.

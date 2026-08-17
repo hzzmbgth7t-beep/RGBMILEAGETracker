@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f26-rc1",date:"2026-08-16",cacheRevision:"216lwc10f26rc1"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f26-rc2",date:"2026-08-16",cacheRevision:"216lwc10f26rc2"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const CUSTOM_LABEL_MAX_LENGTH=50;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
@@ -1634,7 +1634,8 @@ function entryRow(type,r){
   if(origin && origin!=="Manual Entry") badges.push(`<span class="badge">${esc(origin)}</span>`);
   if(status) badges.push(`<span class="badge warn">${esc(status)}</span>`);
   if(canonicalLifecycle(r)==="Archived") badges.push(`<span class="badge arch">Archived</span>`);
-  return `<div class="entry-row" role="button" tabindex="0"
+  const warningClass=mileageWarningRowClass(type,r);
+  return `<div class="entry-row${warningClass}" role="button" tabindex="0"
     onpointerdown="rowPressStart('${type}','${r.recordId}',event)"
     onpointermove="rowPressMove(event)"
     onpointerup="return rowPressEnd('${type}','${r.recordId}',event)"
@@ -1837,10 +1838,10 @@ function recordMileageValue(record){
 function mileageDateParts(date,time){
   const d=String(date||"").trim();
   const t=String(time||"").trim();
-  if(!d) return {stamp:0,displayDate:"",displayTime:""};
+  if(!d) return {stamp:0,displayDate:"",displayTime:"",hasDate:false};
   const isoTime=t?`T${t}`:"T00:00";
   const ms=Date.parse(`${d}${isoTime}`);
-  return {stamp:Number.isFinite(ms)?ms:0,displayDate:d,displayTime:t};
+  return {stamp:Number.isFinite(ms)?ms:0,displayDate:d,displayTime:t,hasDate:Number.isFinite(ms)};
 }
 function mileageRecordDate(record,type){
   if(type==="Maintenance") return record.dropOffDate||record.date||record.serviceDate||"";
@@ -1878,6 +1879,7 @@ function vehicleMileageReadings(vid){
       stamp:parts.stamp,
       date:parts.displayDate,
       time:"",
+      hasDate:parts.hasDate,
       sequence:0,
       label:"Starting Mileage"
     });
@@ -1894,6 +1896,7 @@ function vehicleMileageReadings(vid){
       stamp:parts.stamp,
       date:parts.displayDate,
       time:parts.displayTime,
+      hasDate:parts.hasDate,
       sequence:mileageSequence(record,index),
       label:"Refuel"
     });
@@ -1910,6 +1913,7 @@ function vehicleMileageReadings(vid){
       stamp:parts.stamp,
       date:parts.displayDate,
       time:parts.displayTime,
+      hasDate:parts.hasDate,
       sequence:mileageSequence(record,index),
       label:"Maintenance"
     });
@@ -1921,10 +1925,22 @@ function compareMileageReadingDate(a,b){
   if((a.sequence||0)!==(b.sequence||0)) return (a.sequence||0)-(b.sequence||0);
   return String(a.recordId||"").localeCompare(String(b.recordId||""));
 }
+function highestMileageReading(readings,type){
+  const scoped=type?readings.filter(reading=>reading.type===type):readings.slice();
+  scoped.sort((a,b)=>{
+    if(a.odometer!==b.odometer) return a.odometer-b.odometer;
+    return compareMileageReadingDate(a,b);
+  });
+  return scoped.length?scoped[scoped.length-1]:null;
+}
 function mostRecentMileageReading(readings,type){
   const scoped=type?readings.filter(reading=>reading.type===type):readings.slice();
-  scoped.sort(compareMileageReadingDate);
-  return scoped.length?scoped[scoped.length-1]:null;
+  const dated=scoped.filter(reading=>reading.hasDate);
+  if(dated.length){
+    dated.sort(compareMileageReadingDate);
+    return dated[dated.length-1];
+  }
+  return highestMileageReading(scoped,null);
 }
 function vehicleMileageSummary(vid){
   const readings=vehicleMileageReadings(vid);
@@ -1940,7 +1956,7 @@ function vehicleMileageSummary(vid){
   };
 }
 function vehicleMileageIssuesFromReadings(readings){
-  const dated=readings.filter(reading=>reading.stamp||reading.sequence).sort(compareMileageReadingDate);
+  const dated=readings.filter(reading=>reading.hasDate).sort(compareMileageReadingDate);
   const issues=[];
   let highest=null;
   dated.forEach(reading=>{
@@ -1964,12 +1980,28 @@ function mileageIssueMessage(issue){
   if(!issue) return "";
   return `Newer ${formatMileageReading(issue.newer)} is lower than older ${formatMileageReading(issue.older)}. Check date, time, and odometer values.`;
 }
-function mileageIssueHtml(vid,recordId,type){
-  const issues=vehicleMileageIssues(vid).filter(issue=>{
+function mileageIssuesForRecord(vid,recordId,type){
+  return vehicleMileageIssues(vid).filter(issue=>{
     if(!recordId) return true;
     return (issue.older.type===type && String(issue.older.recordId)===String(recordId))
       || (issue.newer.type===type && String(issue.newer.recordId)===String(recordId));
   });
+}
+function mileageRecordHasIssue(vid,recordId,type){
+  if(!(type==="Fuel"||type==="Maintenance")) return false;
+  return !!mileageIssuesForRecord(vid,recordId,type).length;
+}
+function mileageWarningClass(vid,recordId,type){
+  return mileageRecordHasIssue(vid,recordId,type)?" mileage-warning-field":"";
+}
+function mileageWarningRowClass(type,r){
+  return mileageRecordHasIssue(r.vehicleId,r.recordId,type)?" mileage-warning-row":"";
+}
+function roBoxClass(label,val,className){
+  return `<div class="fieldbox${className||""}"><b>${esc(label)}</b><span>${esc(val??"")}</span></div>`;
+}
+function mileageIssueHtml(vid,recordId,type){
+  const issues=mileageIssuesForRecord(vid,recordId,type);
   if(!issues.length) return "";
   return `<div class="fieldbox full mileage-error"><b>Mileage Error</b><span>${esc(issues.map(mileageIssueMessage).join(" "))}</span></div>`;
 }
@@ -2085,8 +2117,14 @@ function recordView(app,type,id){
   app.innerHTML=header("View "+type+" Record")+`<div class="card">${meta(r)}${warning}<h3>${type} Information</h3><div class="readonly-grid">${viewFields(type,r)}</div><div class="view-actions"><button class="danger" onclick="archiveRecord('${type}','${id}')">Archive</button><button onclick="navRecord('${type}','${id}','edit')">Edit</button></div></div>`+bottomNav()+footer();
 }
 function viewFields(type,r){
-  if(type==="Fuel")return roBox("Date",formatDisplayDate(r.date))+roBox("Time",r.time)+roBox("Odometer",fmt(r.odometer))+roBox("Miles",fmt(r.miles))+roBox("Gallons",fmt(r.gallons,3))+roBox("MPG",fmt(r.mpg))+roBox("Fuel Grade",r.fuelGrade)+roBox("Ethanol Free",r.ethanolFree)+roBox("Station",r.station)+roBox("Cost Source",r.fuelCostSource)+roBox("Price/Gal",money(r.fuelPricePerGallon))+roBox("Total Cost",money(r.totalFuelCost))+roBox("Notes",r.notes);
-  if(type==="Maintenance")return roBox("Date",formatDisplayDate(r.dropOffDate||r.date))+roBox("Category",r.category)+roBox("Odometer",fmt(r.odometer))+roBox("Cost",money(r.totalCost||r.cost))+roBox("Location",r.location)+roBox("Provider",r.serviceProvider||r.provider)+roBox("Pickup Date",formatDisplayDate(r.pickUpDate))+roBox("Performed By",r.performedBy)+roBox("Notes",r.notes);
+  if(type==="Fuel"){
+    const odometerWarningClass=mileageWarningClass(r.vehicleId,r.recordId,"Fuel");
+    return roBox("Date",formatDisplayDate(r.date))+roBox("Time",r.time)+roBoxClass("Odometer",fmt(r.odometer),odometerWarningClass)+roBox("Miles",fmt(r.miles))+roBox("Gallons",fmt(r.gallons,3))+roBox("MPG",fmt(r.mpg))+roBox("Fuel Grade",r.fuelGrade)+roBox("Ethanol Free",r.ethanolFree)+roBox("Station",r.station)+roBox("Cost Source",r.fuelCostSource)+roBox("Price/Gal",money(r.fuelPricePerGallon))+roBox("Total Cost",money(r.totalFuelCost))+roBox("Notes",r.notes);
+  }
+  if(type==="Maintenance"){
+    const odometerWarningClass=mileageWarningClass(r.vehicleId,r.recordId,"Maintenance");
+    return roBox("Date",formatDisplayDate(r.dropOffDate||r.date))+roBox("Category",r.category)+roBoxClass("Odometer",fmt(r.odometer),odometerWarningClass)+roBox("Cost",money(r.totalCost||r.cost))+roBox("Location",r.location)+roBox("Provider",r.serviceProvider||r.provider)+roBox("Pickup Date",formatDisplayDate(r.pickUpDate))+roBox("Performed By",r.performedBy)+roBox("Notes",r.notes);
+  }
   if(type==="Insurance")return roBox("Agency",r.agency||r.company)+roBox("Policy Number",r.policyNumber)+roBox("Effective Date",formatDisplayDate(r.effectiveDate))+roBox("Expiration Date",formatDisplayDate(r.expirationDate))+roBox("Agreed Value",money(r.agreedValue!==""&&r.agreedValue!=null?r.agreedValue:(r.coverageValue!==""&&r.coverageValue!=null?r.coverageValue:r.insuranceValue)))+roBox("Premium",money(r.premium))+roBox("Agent",r.agent||r.agentName)+roBox("Phone",r.phone)+roBox("Email",r.email)+roBox("Notes",r.notes||r.coverageNotes);
   return "";
 }
@@ -2314,11 +2352,12 @@ function openFuelFromVehicle(vehicleId){
 function fuelFormHtml(vid,r,readOnly){
   const stationList=activeList("stations");
   const gradeList=activeList("fuelGrades");
+  const odometerWarningClass=mileageWarningClass(vid,r.recordId,"Fuel");
   if(readOnly){
     return `<div class="readonly-grid">
       ${roBox("Date",formatDisplayDate(r.date))}
       ${roBox("Time",r.time||"")}
-      ${roBox("Odometer",fmt(r.odometer))}
+      ${roBoxClass("Odometer",fmt(r.odometer),odometerWarningClass)}
       ${roBox("Miles",fmt(r.miles))}
       ${roBox("Gallons",fmt(r.gallons,3))}
       ${roBox("MPG",fmt(r.mpg))}
@@ -2335,7 +2374,7 @@ function fuelFormHtml(vid,r,readOnly){
   return `<div class="form-grid">
     <label>Date<input type="date" id="fdate" value="${esc(r.date||"")}"></label>
     <label>Time<input type="time" id="ftime" value="${esc(r.time||"")}"></label>
-    <label>Odometer<input type="number" step="0.01" id="fodo" value="${esc(r.odometer||"")}" oninput="calcFuel('${vid}')"></label>
+    <label class="${odometerWarningClass.trim()}">Odometer<input type="number" step="0.01" id="fodo" value="${esc(r.odometer||"")}" oninput="calcFuel('${vid}')"></label>
     <label>Miles<input type="number" step="0.01" id="fmiles" value="${esc(r.miles||"")}" oninput="calcMpg()"></label>
     <label>Gallons<input type="number" step="0.001" id="fgal" value="${esc(r.gallons||"")}" oninput="calcMpg()"></label>
     <label>MPG<input type="number" step="0.01" id="fmpg" value="${esc(r.mpg||"")}" readonly></label>
@@ -2661,12 +2700,13 @@ function maintenanceNew(){ return maintenanceNewEntry(); }
 function openMaintenanceFromVehicle(vehicleId){ route={screen:'quickMaintenance',vehicleId,mode:'edit',returnTo:cloneRoute(route)}; renderRoute(); setTimeout(setQuickMaintenanceSnapshot,0); return false; }
 function maintenanceFormHtml(vid,r,readOnly){
   const catList=activeList("maintenanceCategories");
+  const odometerWarningClass=mileageWarningClass(vid,r.recordId,"Maintenance");
   if(readOnly){
     return `<div class="readonly-grid">
       ${roBox("Date",formatDisplayDate(r.dropOffDate||r.date))}
       ${roBox("Pickup Date",formatDisplayDate(r.pickUpDate))}
       ${roBox("Category",r.category||"")}
-      ${roBox("Odometer",fmt(r.odometer))}
+      ${roBoxClass("Odometer",fmt(r.odometer),odometerWarningClass)}
       ${roBox("Cost",money(r.totalCost||r.cost))}
       ${roBox("Location",r.location||"")}
       ${roBox("Provider",r.serviceProvider||r.provider||"")}
@@ -2679,7 +2719,7 @@ function maintenanceFormHtml(vid,r,readOnly){
     <label>Date<input type="date" id="mdrop" value="${esc(r.dropOffDate||r.date||"")}"></label>
     <label>Pickup Date<input type="date" id="mpick" value="${esc(r.pickUpDate||"")}"></label>
     <label>Category<select id="mcat" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'maintenanceCategories')">${catList.map(c=>`<option ${c===(r.category||"")?'selected':''}>${esc(c)}</option>`).join("")}</select></label>
-    <label>Odometer<input type="number" step="0.01" id="modo" value="${esc(r.odometer||"")}"></label>
+    <label class="${odometerWarningClass.trim()}">Odometer<input type="number" step="0.01" id="modo" value="${esc(r.odometer||"")}"></label>
     <label>Cost<input type="number" step="0.01" id="mcost" value="${esc(r.totalCost||r.cost||"")}"></label>
     <label>Location<input id="mloc" value="${esc(r.location||"")}"></label>
     <label>Provider<input id="mprov" value="${esc(r.serviceProvider||r.provider||"")}"></label>

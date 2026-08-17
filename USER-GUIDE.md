@@ -1,18 +1,18 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f26-rc1`  
-Cache: `216lwc10f26rc1`  
-Guide release: `v2.1.6l-wc10-f26-rc1`  
-Last User Guide content-change release: `v2.1.6l-wc10-f26-rc1`  
+Build: `v2.1.6l-wc10-f26-rc2`  
+Cache: `216lwc10f26rc2`  
+Guide release: `v2.1.6l-wc10-f26-rc2`  
+Last User Guide content-change release: `v2.1.6l-wc10-f26-rc2`  
 Source baseline: accepted `v2.1.6l-wc10-f25`  
 Source SHA-256: `6aad843c7db5135c98bf476ecf73e897a336a0d6b9345cf800a887c8d975e212`  
-Current status: `Release Candidate 1 / pending user validation`
+Current status: `Release Candidate 2 / pending user validation`
 
 Production URL:  
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:  
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26rc1
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26rc2
 
 ## Vehicle Detail odometer fields
 
@@ -23,11 +23,11 @@ Vehicle Detail now groups these odometer fields together:
 - Last Maintenance Mileage
 - Current Mileage
 
-Last Refuel Mileage shows the odometer from the most recent active Refuel/Fuel entry by date/time that has an odometer value.
+Last Refuel Mileage shows the odometer from the most recent dated active Refuel/Fuel entry with an odometer value. If no dated Refuel/Fuel entries have odometer values, it falls back to the highest undated Refuel/Fuel mileage.
 
-Last Maintenance Mileage shows the odometer from the most recent active Maintenance entry by date/time that has an odometer value.
+Last Maintenance Mileage shows the odometer from the most recent dated active Maintenance entry with an odometer value. If no dated Maintenance entries have odometer values, it falls back to the highest undated Maintenance mileage.
 
-Current Mileage shows the most recent valid odometer reading by date/time across Starting Odometer, Refuel/Fuel entries, and Maintenance entries.
+Current Mileage shows the most recent dated valid odometer reading across Starting Odometer, Refuel/Fuel entries, and Maintenance entries. If no dated readings exist, it falls back to the highest undated mileage.
 
 A field is blank only when its source has no valid odometer value.
 
@@ -55,4 +55,10 @@ Fuel, Maintenance, and Insurance records use aligned delete choices:
 
 Use the cache-busting URL for validation:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26rc1
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26rc2
+
+## Mileage warning highlights
+
+When a mileage-order error is flagged, the affected Fuel or Maintenance odometer field is highlighted yellow. The affected entry in the Previous Records list is also highlighted yellow on the appropriate Fuel or Maintenance page.
+
+Entries without dates do not create mileage-order errors.
