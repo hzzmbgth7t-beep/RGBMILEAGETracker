@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v2.1.6l-wc10-f26-rc2 — 08/16/2026
+## v2.1.6l-wc10-f26-rc3 — 08/16/2026
 
 - Built from accepted `v2.1.6l-wc10-f25`.
 - Source SHA-256: `6aad843c7db5135c98bf476ecf73e897a336a0d6b9345cf800a887c8d975e212`.
@@ -13,9 +13,10 @@
 - Corrected no-date mileage logic: dated entries are preferred, and undated entries are used only as highest-mileage fallback when no dated entries exist for that field.
 - Mileage Error detection now compares dated readings only and ignores undated readings.
 - Added yellow highlighting for affected Fuel/Maintenance odometer fields and affected previous-record rows when a mileage-order error is flagged.
-- Updated cache token to `216lwc10f26rc2` and included cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26rc2.
+- Updated cache token to `216lwc10f26rc3` and included cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26rc3.
 - Preserved accepted F25 Maintenance and Insurance delete parity.
-- Status: Release Candidate 2 / pending user validation.
+- Locked package naming and README URL ordering: full package by default, no `FULL` or date in standard ZIP filename, README URLs first and updated every version.
+- Status: Release Candidate 3 / pending user validation.
 
 ## v2.1.6l-wc10-f25 — 08/16/2026
 

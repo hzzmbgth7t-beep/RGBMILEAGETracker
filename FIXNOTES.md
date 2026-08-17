@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f26-rc2
+# FIXNOTES — v2.1.6l-wc10-f26-rc3
 
-Build: `v2.1.6l-wc10-f26-rc2`  
-Status: `Release Candidate 2 / pending user validation`  
-Cache: `216lwc10f26rc2`  
+Build: `v2.1.6l-wc10-f26-rc3`  
+Status: `Release Candidate 3 / pending user validation`  
+Cache: `216lwc10f26rc3`  
 Source baseline: accepted `v2.1.6l-wc10-f25`  
 Source SHA-256: `6aad843c7db5135c98bf476ecf73e897a336a0d6b9345cf800a887c8d975e212`
 
@@ -35,9 +35,15 @@ No Home geometry, CSS layout overhaul, data schema migration, backup/restore cha
 - Confirm Current Mileage follows the most recent valid dated reading.
 - Confirm Mileage Error appears when a newer dated reading is lower than an older dated reading.
 
-## F26 RC2 correction
+## F26 RC3 correction
 
 - No-date entries do not generate mileage-order warnings.
 - Mileage-order warnings compare dated readings only.
 - Affected Fuel and Maintenance odometer fields are highlighted yellow.
 - Affected previous-record rows are highlighted yellow on Fuel and Maintenance pages.
+
+## Release-process correction
+
+- Every package is a full package unless a partial package is explicitly requested and approved before creation.
+- Standard package filenames use `RGBMileage_<version>.zip` with no `FULL` and no date.
+- README URLs are locked as the first README section after the title and must be updated every version.
