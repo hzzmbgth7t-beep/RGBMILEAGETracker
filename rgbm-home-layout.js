@@ -145,15 +145,15 @@
     }
 
     function validateCandidate(
-      candidate,
+      release,
       contentWidth,
       vehicleAreaHeight,
       metrics,
     ) {
       const items = [
-        candidate.primary,
-        candidate.upper,
-        candidate.lower,
+        release.primary,
+        release.upper,
+        release.lower,
       ];
       const failures = [];
 
@@ -185,9 +185,9 @@
       });
 
       [
-        [candidate.primary, candidate.upper],
-        [candidate.primary, candidate.lower],
-        [candidate.upper, candidate.lower],
+        [release.primary, release.upper],
+        [release.primary, release.lower],
+        [release.upper, release.lower],
       ].forEach(([a, b]) => {
         if (pairClearance(a, b) < metrics.circleGap) {
           failures.push(`${a.name}/${b.name} circle clearance`);
@@ -205,9 +205,9 @@
       });
 
       [
-        [candidate.primary, candidate.upper],
-        [candidate.primary, candidate.lower],
-        [candidate.upper, candidate.lower],
+        [release.primary, release.upper],
+        [release.primary, release.lower],
+        [release.upper, release.lower],
       ].forEach(([a, b]) => {
         if (rectOverlap(a.label, b.label)) {
           failures.push(`${a.name}/${b.name} label overlap`);
@@ -237,7 +237,7 @@
       const primaryCenterX = metrics.edgeGap + primaryRadius;
       const secondaryCenterX = contentWidth - metrics.edgeGap - secondaryRadius;
 
-      const candidate = {
+      const release = {
         primary: item(
           "primary",
           primaryCenterX,
@@ -264,14 +264,14 @@
         ),
       };
 
-      candidate.failures = validateCandidate(
-        candidate,
+      release.failures = validateCandidate(
+        release,
         contentWidth,
         vehicleAreaHeight,
         metrics,
       );
-      candidate.valid = candidate.failures.length === 0;
-      return candidate;
+      release.valid = release.failures.length === 0;
+      return release;
     }
 
     function firstFailure(
@@ -282,7 +282,7 @@
       secondaryRadius,
       primaryRadius,
     ) {
-      const candidate = buildCandidate(
+      const release = buildCandidate(
         contentWidth,
         vehicleAreaHeight,
         metrics,
@@ -290,7 +290,7 @@
         secondaryRadius,
         primaryRadius,
       );
-      return candidate.failures[0] || "no valid center with bound below-labels";
+      return release.failures[0] || "no valid center with bound below-labels";
     }
 
     function solvePortrait(
@@ -335,7 +335,7 @@
           primaryRadius > secondaryRadius;
           primaryRadius -= 1
         ) {
-          const candidate = buildCandidate(
+          const release = buildCandidate(
             contentWidth,
             vehicleAreaHeight,
             metrics,
@@ -344,8 +344,8 @@
             primaryRadius,
           );
 
-          if (candidate.valid) {
-            best = candidate;
+          if (release.valid) {
+            best = release;
             break;
           }
         }
@@ -387,16 +387,16 @@
       return best;
     }
 
-    function minCircleClearance(candidate) {
+    function minCircleClearance(release) {
       return Math.min(
-        pairClearance(candidate.primary, candidate.upper),
-        pairClearance(candidate.primary, candidate.lower),
-        pairClearance(candidate.upper, candidate.lower),
+        pairClearance(release.primary, release.upper),
+        pairClearance(release.primary, release.lower),
+        pairClearance(release.upper, release.lower),
       );
     }
 
-    function minLabelCircleClearance(candidate) {
-      const items = [candidate.primary, candidate.upper, candidate.lower];
+    function minLabelCircleClearance(release) {
+      const items = [release.primary, release.upper, release.lower];
       return Math.min(
         ...items.flatMap(labelOwner => (
           items.map(circleOwner => rectCircleClearance(

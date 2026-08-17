@@ -1670,7 +1670,7 @@
     context = {},
   ) {
     requireRecoverySnapshotConfirmation(context);
-    const candidate = validateRecoveryCandidate(
+    const release = validateRecoveryCandidate(
       backup,
       {
         ...context,
@@ -1678,7 +1678,7 @@
           || "recovery-backup",
       },
     );
-    const payload = JSON.stringify(candidate.state);
+    const payload = JSON.stringify(release.state);
     const promoted = promoteRecoveryPayload(
       storage,
       payload,
@@ -1692,9 +1692,9 @@
 
     return {
       ...promoted,
-      candidate: {
-        summary: candidate.summary,
-        migrationReport: candidate.report,
+      release: {
+        summary: release.summary,
+        migrationReport: release.report,
       },
     };
   }
@@ -1765,16 +1765,16 @@
     backup,
     context = {},
   ) {
-    const candidate = validateRecoveryCandidate(
+    const release = validateRecoveryCandidate(
       backup,
       {
         ...context,
         sourceKey: cleanText(context.sourceKey)
-          || "reconciled-recovery-candidate",
+          || "reconciled-recovery-release",
       },
     );
     const reconciliation = reconciliationMetadata(
-      candidate.state,
+      release.state,
     );
 
     if (
@@ -1786,7 +1786,7 @@
     ) {
       throw new RGBMDataError(
         "RECONCILIATION_METADATA_REQUIRED",
-        "Select the controlled reconciled recovery candidate, not a normal backup.",
+        "Select the controlled reconciled recovery release, not a normal backup.",
       );
     }
 
@@ -1844,18 +1844,18 @@
     const pendingOrder = pendingEntry
       && pendingEntry.summary
       && asArray(pendingEntry.summary.vehicleOrder);
-    const candidateOrder = asArray(
-      candidate.state.vehicleOrder,
+    const releaseOrder = asArray(
+      release.state.vehicleOrder,
     );
 
     if (
       preservedIds.length !== 2
       || pendingOrder.length < 2
-      || candidateOrder.length < 3
+      || releaseOrder.length < 3
       || preservedIds[0] !== pendingOrder[0]
       || preservedIds[1] !== pendingOrder[1]
-      || candidateOrder[0] !== pendingOrder[0]
-      || candidateOrder[1] !== pendingOrder[1]
+      || releaseOrder[0] !== pendingOrder[0]
+      || releaseOrder[1] !== pendingOrder[1]
     ) {
       sourceErrors.push(
         "the original two vehicle IDs or their order do not match",
@@ -1865,7 +1865,7 @@
     if (sourceErrors.length > 0) {
       throw new RGBMDataError(
         "RECOVERY_SOURCE_MISMATCH",
-        "The reconciled candidate does not match the current standalone storage.",
+        "The reconciled release does not match the current standalone storage.",
         {
           errors: sourceErrors,
           inspection,
@@ -1876,7 +1876,7 @@
     const floor = recoveryPreservationFloor(
       inspection,
     );
-    const summary = candidate.summary;
+    const summary = release.summary;
     const deficits = [];
 
     if ((Number(summary.configuredCount) || 0) < 3) {
@@ -1898,9 +1898,9 @@
     }
 
     const declaredCounts = isObject(
-      reconciliation.candidateCounts,
+      reconciliation.releaseCounts,
     )
-      ? reconciliation.candidateCounts
+      ? reconciliation.releaseCounts
       : {};
     for (const key of [
       "configuredCount",
@@ -1914,7 +1914,7 @@
         Number(declaredCounts[key]) !== Number(summary[key])
       ) {
         deficits.push(
-          `declared ${key} does not match the candidate`,
+          `declared ${key} does not match the release`,
         );
       }
     }
@@ -1922,7 +1922,7 @@
     if (deficits.length > 0) {
       throw new RGBMDataError(
         "RECONCILIATION_REDUCTION_BLOCKED",
-        "The reconciled candidate would omit required standalone data.",
+        "The reconciled release would omit required standalone data.",
         {
           deficits,
           floor,
@@ -1932,7 +1932,7 @@
     }
 
     return {
-      ...candidate,
+      ...release,
       inspection,
       floor,
       reconciliation,
@@ -2026,7 +2026,7 @@
       {
         ...context,
         sourceKey: cleanText(context.sourceKey)
-          || "reconciled-recovery-candidate",
+          || "reconciled-recovery-release",
       },
     );
     const originals = exactRecoveryEntries(
@@ -2086,7 +2086,7 @@
           reconciled: true,
           reconciliationVersion: RECONCILIATION_VERSION,
           source: cleanText(context.sourceKey)
-            || "reconciled-recovery-candidate",
+            || "reconciled-recovery-release",
           archivedKeysRemoved: archivedKeys.filter(
             (key) => key !== ACTIVE_KEY,
           ),

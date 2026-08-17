@@ -1,18 +1,18 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f25-rc1`  
-Cache: `216lwc10f25rc1`  
-Guide release: `v2.1.6l-wc10-f25-rc1`  
-Last User Guide content-change release: `v2.1.6l-wc10-f25-rc1`  
+Build: `v2.1.6l-wc10-f25`  
+Cache: `216lwc10f25`  
+Guide release: `v2.1.6l-wc10-f25`  
+Last User Guide content-change release: `v2.1.6l-wc10-f25`  
 Source baseline: accepted `v2.1.6l-wc10-f24`  
 Source SHA-256: `f90fe95495b9aba00530e8ca47ab95f3d58014a0a1624788209237b2df09bb32`  
-Current status: `Release Candidate 1 / pending user validation`
+Current status: `User validated / accepted baseline`
 
 Production URL:  
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:  
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f25rc1
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f25
 
 ## About this guide
 
@@ -61,7 +61,7 @@ You can open RGB Mileage two ways:
 
 After an update, use the cache-busted URL for the current build:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f25rc1
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f25
 
 If the old version still appears, open Settings and check the build shown there. You may also need to use **Check for App Update** and **Apply Offline Update** from Settings.
 
@@ -559,7 +559,7 @@ The Settings build card shows the current build ID and build date. Use this to c
 
 For this build, the expected build is:
 
-`v2.1.6l-wc10-f25-rc1`
+`v2.1.6l-wc10-f25`
 
 ### Vehicle Order
 
@@ -654,10 +654,10 @@ Recovery steps shown by the app:
 1. Preserve storage.
 2. Download a fresh recovery snapshot.
 3. Confirm that the snapshot was saved.
-4. Select the reconciled recovery candidate JSON.
+4. Select the reconciled recovery release JSON.
 5. Restore the reconciled data.
 
-The recovery restore button activates only after the candidate matches required fingerprints and does not reduce preserved counts.
+The recovery restore button activates only after the release matches required fingerprints and does not reduce preserved counts.
 
 If recovery appears, do not clear data first. Download the recovery snapshot before taking destructive action.
 
@@ -942,10 +942,10 @@ If the Recovery Console appears:
 2. Do not clear Safari website data.
 3. Download a recovery snapshot.
 4. Confirm the snapshot is saved.
-5. Select the reconciled candidate JSON.
+5. Select the reconciled release JSON.
 6. Restore only after the app enables the recovery restore button.
 
-The app describes a preservation floor with configured vehicle, fuel, maintenance, and insurance counts. Do not proceed with a candidate that reduces preserved counts.
+The app describes a preservation floor with configured vehicle, fuel, maintenance, and insurance counts. Do not proceed with a release that reduces preserved counts.
 
 ## 30. Admin data count review
 
@@ -1000,14 +1000,14 @@ When a release adds, removes, or changes functionality, update the User Guide to
 
 Documentation must not contain stale source-baseline, version, cache, or device-status claims.
 
-## 33. Admin release-candidate status for this guide
+## 33. Admin release-release status for this guide
 
 This guide is prepared for:
 
-- Build: `v2.1.6l-wc10-f25-rc1`
-- Cache: `216lwc10f25rc1`
-- Guide release: `v2.1.6l-wc10-f25-rc1`
-- Last User Guide content-change release: `v2.1.6l-wc10-f25-rc1`
+- Build: `v2.1.6l-wc10-f25`
+- Cache: `216lwc10f25`
+- Guide release: `v2.1.6l-wc10-f25`
+- Last User Guide content-change release: `v2.1.6l-wc10-f25`
 - Source baseline: accepted `v2.1.6l-wc10-f24`
 - Required F19 source SHA-256: `f90fe95495b9aba00530e8ca47ab95f3d58014a0a1624788209237b2df09bb32`
 
@@ -1016,7 +1016,7 @@ Actual user device-check status: `PENDING / USER DEVICE CHECK REQUIRED`
 
 ---
 
-# F25 RC1 Record Action Update
+# F25 Record Action Update
 
 Maintenance, Insurance, and Fuel records are intended to provide matching record-action behavior.
 

@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f25-rc1",date:"2026-08-16",cacheRevision:"216lwc10f25rc1"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f25",date:"2026-08-16",cacheRevision:"216lwc10f25"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const CUSTOM_LABEL_MAX_LENGTH=50;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
@@ -201,7 +201,7 @@ function placeServiceWorkerUpdateBadge(){
     bottom:areaRect.bottom-shellRect.top
   };
 
-  const candidates=orientation==="portrait"
+  const releases=orientation==="portrait"
     ?[
       [area.left+inset,area.top+clearance],
       [area.right-width-inset,area.top+clearance],
@@ -219,7 +219,7 @@ function placeServiceWorkerUpdateBadge(){
     ];
 
   let chosen=null;
-  for(const [left,top] of candidates){
+  for(const [left,top] of releases){
     const rect=badgeCandidateRect(left,top,width,height);
     const inside=(
       rect.left>=inset
@@ -3141,9 +3141,9 @@ function recoveryCandidateSafety(summary,inspection=recoveryInspection){
     ["acquisitionRecordCount","acquisition"],
     ["attachmentCount","attachments"]
   ]){
-    const candidate=Number(summary&&summary[key])||0;
+    const release=Number(summary&&summary[key])||0;
     const minimum=Number(floor[key])||0;
-    if(candidate<minimum)deficits.push(`${label} ${candidate} < standalone ${minimum}`);
+    if(release<minimum)deficits.push(`${label} ${release} < standalone ${minimum}`);
   }
   return {safe:deficits.length===0,deficits,floor};
 }
@@ -3216,7 +3216,7 @@ function recoverPendingStorage(){
 }
 function previewRecoveryBackup(){
   const file=$("recoveryBackupFile")?.files?.[0];
-  if(!file)return alert("Choose the reconciled recovery candidate JSON first.");
+  if(!file)return alert("Choose the reconciled recovery release JSON first.");
   const reader=new FileReader();
   reader.onload=()=>{
     try{
@@ -3236,7 +3236,7 @@ function previewRecoveryBackup(){
         floor:validated.floor
       };
       setRecoveryStatus(
-        `Reconciled candidate verified: ${summary.configuredCount} configured vehicles, ${summary.fuelRecordCount} fuel, ${summary.maintenanceRecordCount} maintenance, ${summary.insuranceRecordCount} insurance. Source fingerprints match the saved standalone snapshot.`,
+        `Reconciled release verified: ${summary.configuredCount} configured vehicles, ${summary.fuelRecordCount} fuel, ${summary.maintenanceRecordCount} maintenance, ${summary.insuranceRecordCount} insurance. Source fingerprints match the saved standalone snapshot.`,
         "pass"
       );
       updateRecoveryControls();
@@ -3246,7 +3246,7 @@ function previewRecoveryBackup(){
         ?` ${error.details.deficits.join("; ")}.`
         :"";
       setRecoveryStatus(
-        `Reconciled candidate rejected: ${error&&error.message?error.message:String(error)}${details}`,
+        `Reconciled release rejected: ${error&&error.message?error.message:String(error)}${details}`,
         "fail"
       );
       updateRecoveryControls();
@@ -3264,11 +3264,11 @@ function restoreSelectedRecoveryBackup(){
     return alert("Download the recovery snapshot and confirm it before reconciliation.");
   }
   if(!recoveryBackupCandidate||recoveryBackupCandidate.reconciled!==true){
-    return alert("Choose and validate the reconciled recovery candidate first.");
+    return alert("Choose and validate the reconciled recovery release first.");
   }
   const summary=recoveryBackupCandidate.summary;
   if(!confirm(
-    `Restore the reconciled candidate?\n\n`
+    `Restore the reconciled release?\n\n`
     +`Configured vehicles: ${summary.configuredCount}\n`
     +`Fuel: ${summary.fuelRecordCount}\n`
     +`Maintenance: ${summary.maintenanceRecordCount}\n`
@@ -3381,11 +3381,11 @@ function renderRecoveryConsole(error){
     </section>
 
     <section class="recovery-card recovery-backup-card">
-      <h2>2 — Select reconciled candidate</h2>
-      <p>Select the downloaded candidate:</p><p class="recovery-filename">RGBM_Reconciled_Recovery_Candidate_3Vehicles_48Fuel_13Maintenance_8Insurance_2026-07-27.json</p>
-      <label>Reconciled JSON candidate<input id="recoveryBackupFile" type="file" accept=".json,application/json" onchange="previewRecoveryBackup()"></label>
+      <h2>2 — Select reconciled release</h2>
+      <p>Select the downloaded release:</p><p class="recovery-filename">RGBM_Reconciled_Recovery_Candidate_3Vehicles_48Fuel_13Maintenance_8Insurance_2026-07-27.json</p>
+      <label>Reconciled JSON release<input id="recoveryBackupFile" type="file" accept=".json,application/json" onchange="previewRecoveryBackup()"></label>
       <button id="restoreRecoveryButton" class="wide primary" type="button" onclick="restoreSelectedRecoveryBackup()" disabled><span>Archive Source Keys and Restore Reconciled Data</span></button>
-      <p class="muted">The button activates only after the candidate matches the standalone pending and legacy fingerprints and does not reduce any preserved count.</p>
+      <p class="muted">The button activates only after the release matches the standalone pending and legacy fingerprints and does not reduce any preserved count.</p>
     </section>
 
     <pre id="recoveryStatus" class="recovery-status info">No storage value has been changed.</pre>

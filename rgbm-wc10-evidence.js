@@ -462,9 +462,9 @@
         && typeof reconciliation.sourceCounts.standalone === "object"
         ? reconciliation.sourceCounts.standalone
         : {};
-      const candidateCounts = reconciliation
-        && typeof reconciliation.candidateCounts === "object"
-        ? reconciliation.candidateCounts
+      const releaseCounts = reconciliation
+        && typeof reconciliation.releaseCounts === "object"
+        ? reconciliation.releaseCounts
         : {};
       const preservation = reconciliation
         && typeof reconciliation.preservationDecisions === "object"
@@ -512,7 +512,7 @@
           >= Number(sourceCounts.configuredCount || 0)
         && countChecks.every(([key, actual]) => (
           Number(actual) >= Number(sourceCounts[key] || 0)
-          && Number(actual) === Number(candidateCounts[key])
+          && Number(actual) === Number(releaseCounts[key])
         ))
       );
       const reconciliationRecognized = (
@@ -558,7 +558,7 @@
             countsNonReducing ? "PASS" : "FAIL",
             {
               sourceCounts,
-              candidateCounts,
+              releaseCounts,
               actual: {
                 configuredCount: canonical.configuredCount,
                 fuelRecordCount: asArray(state.fuelRecords).length,
@@ -586,7 +586,7 @@
           reconciliationVersion,
           existingVehicleComparisons: [],
           sourceCounts,
-          candidateCounts,
+          releaseCounts,
         };
         migrationAcceptance = legacyComparison.result;
       } else {

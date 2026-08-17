@@ -1,15 +1,15 @@
-# FIXNOTES — v2.1.6l-wc10-f25-rc1
+# FIXNOTES — v2.1.6l-wc10-f25
 
-Build: `v2.1.6l-wc10-f25-rc1`  
-Status: `Release Candidate 1 / pending user validation`  
-Cache: `216lwc10f25rc1`  
+Build: `v2.1.6l-wc10-f25`  
+Status: `User validated / accepted baseline`  
+Cache: `216lwc10f25`  
 Source baseline: accepted `v2.1.6l-wc10-f24`  
 Source SHA-256: `f90fe95495b9aba00530e8ca47ab95f3d58014a0a1624788209237b2df09bb32`  
-Accepted production baseline remains: `v2.1.6l-wc10-f24`
+Accepted production baseline: `v2.1.6l-wc10-f25`
 
 ## Fix scope
 
-This candidate resolves action parity for Maintenance and Insurance records while keeping Fuel behavior as the reference model.
+This release resolves action parity for Maintenance and Insurance records while keeping Fuel behavior as the reference model.
 
 ## Implementation notes
 
