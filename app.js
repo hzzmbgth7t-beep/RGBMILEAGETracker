@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f25",date:"2026-08-16",cacheRevision:"216lwc10f25"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f26-rc1",date:"2026-08-16",cacheRevision:"216lwc10f26rc1"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const CUSTOM_LABEL_MAX_LENGTH=50;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
@@ -1106,7 +1106,12 @@ function otherSaveToList(){if(!pendingOtherSelect)return;const val=otherEnteredV
 
 function clearEditForm(type){if(type==="Fuel")clearInputs(["efdate","eftime","efodo","efmiles","efgal","efmpg","efgrade","efstation","efnotes"]);if(type==="Maintenance")clearInputs(["emdate","emcat","emodo","emcost","emloc","emprov","emnotes"]);if(type==="Insurance")clearInputs(["eicomp","eipol","eieff","eiexp","eicov","eiprem","eiagent","eiphone","eiemail","eiagency","einotes"])}
 function saveRecordEdit(type,recordId,goBackAfterSave=false){try{const a=recArray(type);const r=a.find(x=>x.recordId===recordId);if(!r)return alert("Record not found.");if(type==="Fuel"){const date=requireValue($("efdate").value,"Date");const gallons=requirePositive($("efgal").value,"Gallons");const odometer=requireNonNegative($("efodo").value,"Odometer");const miles=requireNonNegative($("efmiles").value,"Miles");const price=requireNonNegative($("efprice").value,"Price/Gal");const total=requireNonNegative($("efcost").value,"Total Cost");Object.assign(r,{date,time:$("eftime").value,odometer,miles,gallons,mpg:requireNonNegative($("efmpg").value,"MPG"),fuelGrade:cleanText($("efgrade").value),ethanolFree:cleanText($("efef").value),station:cleanText($("efstation").value),fuelCostSource:cleanText($("efcostsource").value)||(total!==""?"Entered":price!==""?"Calculated":""),fuelPricePerGallon:price,totalFuelCost:total,notes:cleanText($("efnotes").value),modifiedAt:nowISO()})}else if(type==="Maintenance"){const date=requireValue($("emdate").value,"Date");const odometer=requireNonNegative($("emodo").value,"Odometer");const totalCost=requireNonNegative($("emcost").value,"Cost");const provider=cleanText($("emprov").value);Object.assign(r,{date,dropOffDate:date,pickUpDate:cleanText($("empick").value),category:cleanText($("emcat").value)||"Maintenance",odometer,totalCost,cost:totalCost,location:cleanText($("emloc").value),serviceProvider:provider,provider,performedBy:cleanText($("emperf").value),notes:cleanText($("emnotes").value),modifiedAt:nowISO()})}else if(type==="Insurance"){const agency=cleanText($("eiagency").value);const policyNumber=cleanText($("eipol").value);const effectiveDate=cleanText($("eieff").value);const expirationDate=cleanText($("eiexp").value);if(expirationDate&&expirationDate<effectiveDate)throw new Error("Expiration Date cannot be earlier than Effective Date.");const agreedValue=requireNonNegative($("eiagree").value,"Agreed Value");const premium=requireNonNegative($("eiprem").value,"Premium");const agent=cleanText($("eiagent").value);const notes=cleanText($("einotes").value);Object.assign(r,{company:agency,agency,policyNumber,effectiveDate,expirationDate,agreedValue,coverageValue:agreedValue,insuranceValue:agreedValue,premium,agent,agentName:agent,phone:cleanText($("eiphone").value),email:cleanText($("eiemail").value),notes,coverageNotes:notes,modifiedAt:nowISO()})}saveData();editSnapshot=null;showToast("Edit saved.");if(goBackAfterSave){performBackNavigation();return true}clearEditForm(type);return true}catch(e){alert(e.message||String(e));return false}}
-function vehicleView(app,vid){const v=getVehicle(vid);if(!v)return nav("home");const acq=getAcq(vid);app.innerHTML=header(vehicleLabel(v))+`<div class="card vehicle-detail-card"><div class="vehicle-view-photo">${v.primaryPhoto?`<div class="vehicle-detail-photo-frame"><img src="${v.primaryPhoto}" alt="${esc(vehicleLabel(v))}"></div>`:`<div class="vehicle-detail-photo-frame vehicle-detail-photo-placeholder"><span>${vehicleInitials(v)}</span></div>`}</div><div class="view-grid">${viewField("Year",v.year||"")}${viewField("Make",v.make||"")}${viewField("Model",v.model||"")}${viewField("Badge",v.badge||"")}${viewField("Custom Label",normalizeVehicleCustomLabel(v.customLabel))}${viewField("Acquisition Date",formatDisplayDate(acq.acquisitionDate))}${viewField("Starting Odometer",acq.startingOdometer||"")}${viewField("Purchase Price",acq.purchasePrice||"")}${viewField("Status",v.status||"Active")}${viewField("Seller",acq.seller||"",true)}</div><div class="vehicle-detail-actions"><button class="wide primary nav-control" type="button" onclick="nav('vehicleEdit',{vehicleId:'${vid}'})">Edit Vehicle</button><button class="wide nav-control" type="button" onclick="openFuelFromVehicle('${vid}')">Fuel Entry</button><button class="wide nav-control" type="button" onclick="openMaintenanceFromVehicle('${vid}')">Maintenance Entry</button><button class="wide nav-control" type="button" onclick="openInsuranceFromVehicle('${vid}')">Insurance Entry</button></div></div>`+previousRecordsHtml("Fuel",vid)+previousRecordsHtml("Maintenance",vid)+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}
+function vehicleView(app,vid){
+  const v=getVehicle(vid);
+  if(!v)return nav("home");
+  const acq=getAcq(vid);
+  app.innerHTML=header(vehicleLabel(v))+`<div class="card vehicle-detail-card"><div class="vehicle-view-photo">${v.primaryPhoto?`<div class="vehicle-detail-photo-frame"><img src="${v.primaryPhoto}" alt="${esc(vehicleLabel(v))}"></div>`:`<div class="vehicle-detail-photo-frame vehicle-detail-photo-placeholder"><span>${vehicleInitials(v)}</span></div>`}</div><div class="view-grid">${viewField("Year",v.year||"")}${viewField("Make",v.make||"")}${viewField("Model",v.model||"")}${viewField("Badge",v.badge||"")}${viewField("Custom Label",normalizeVehicleCustomLabel(v.customLabel))}${viewField("Acquisition Date",formatDisplayDate(acq.acquisitionDate))}${viewField("Starting Odometer",acq.startingOdometer||"")}${vehicleMileageFieldsHtml(vid)}${viewField("Purchase Price",acq.purchasePrice||"")}${viewField("Status",v.status||"Active")}${viewField("Seller",acq.seller||"",true)}</div><div class="vehicle-detail-actions"><button class="wide primary nav-control" type="button" onclick="nav('vehicleEdit',{vehicleId:'${vid}'})">Edit Vehicle</button><button class="wide nav-control" type="button" onclick="openFuelFromVehicle('${vid}')">Fuel Entry</button><button class="wide nav-control" type="button" onclick="openMaintenanceFromVehicle('${vid}')">Maintenance Entry</button><button class="wide nav-control" type="button" onclick="openInsuranceFromVehicle('${vid}')">Insurance Entry</button></div></div>`+vehicleMileageErrorCardHtml(vid)+previousRecordsHtml("Fuel",vid)+previousRecordsHtml("Maintenance",vid)+previousRecordsHtml("Insurance",vid)+bottomNav()+footer();
+}
 function recordEdit(app,type,recordId){const r=records(type,null,true).find(x=>x.recordId===recordId);if(!r)return nav("home");const vid=r.vehicleId;if(type==="Fuel"){app.innerHTML=header("Edit Fuel Record")+`<div class="card"><div class="form-grid"><label>Date<input type="date" id="efdate" value="${esc(r.date||"")}"></label><label>Time<input type="time" id="eftime" value="${esc(r.time||"")}"></label><label>Odometer<input type="number" step="0.01" id="efodo" value="${esc(r.odometer||"")}"></label><label>Miles<input type="number" step="0.01" id="efmiles" value="${esc(r.miles||"")}"></label><label>Gallons<input type="number" step="0.001" id="efgal" value="${esc(r.gallons||"")}"></label><label>MPG<input type="number" step="0.01" id="efmpg" value="${esc(r.mpg||"")}"></label><label>Fuel Grade<select id="efgrade" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'fuelGrades')">${activeList("fuelGrades").map(g=>`<option ${g===(r.fuelGrade||"")?"selected":""}>${esc(g)}</option>`).join("")}</select></label><label>Ethanol Free<select id="efef"><option ${String(r.ethanolFree||"")===""?"selected":""}></option><option ${String(r.ethanolFree||"")==="Yes"?"selected":""}>Yes</option><option ${String(r.ethanolFree||"")==="No"?"selected":""}>No</option></select></label><label>Station<select id="efstation" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'stations')">${activeList("stations").map(s=>`<option ${s===(r.station||"")?"selected":""}>${esc(s)}</option>`).join("")}</select></label><label>Cost Source<select id="efcostsource"><option ${String(r.fuelCostSource||"")===""?"selected":""}></option><option ${String(r.fuelCostSource||"")==="Calculated"?"selected":""}>Calculated</option><option ${String(r.fuelCostSource||"")==="Entered"?"selected":""}>Entered</option></select></label><label>Price/Gal<input type="number" step="0.01" id="efprice" value="${esc(r.fuelPricePerGallon||"")}" oninput="calcEditCost()"></label><label>Total Cost<input type="number" step="0.01" id="efcost" value="${esc(r.totalFuelCost||"")}"></label><label class="full">Notes<textarea id="efnotes">${esc(r.notes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Fuel','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Fuel",vid)+bottomNav()+footer();setEditSnapshot(type,recordId);return}if(type==="Maintenance"){app.innerHTML=header("Edit Maintenance Record")+`<div class="card"><div class="form-grid"><label>Date<input type="date" id="emdate" value="${esc(r.dropOffDate||r.date||"")}"></label><label>Pickup Date<input type="date" id="empick" value="${esc(r.pickUpDate||"")}"></label><label>Category<select id="emcat" onfocus="this.setAttribute('data-prev',this.value)" onchange="selectOther(this,'maintenanceCategories')">${activeList("maintenanceCategories").map(c=>`<option ${c===(r.category||"")?"selected":""}>${esc(c)}</option>`).join("")}</select></label><label>Odometer<input type="number" step="0.01" id="emodo" value="${esc(r.odometer||"")}"></label><label>Cost<input type="number" step="0.01" id="emcost" value="${esc(r.totalCost||r.cost||"")}"></label><label>Location<input id="emloc" value="${esc(r.location||"")}"></label><label>Provider<input id="emprov" value="${esc(r.serviceProvider||r.provider||"")}"></label><label>Performed By<input id="emperf" value="${esc(r.performedBy||"")}"></label><label class="full">Notes<textarea id="emnotes">${esc(r.notes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Maintenance','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Maintenance",vid)+bottomNav()+footer();setEditSnapshot(type,recordId);return}if(type==="Insurance"){app.innerHTML=header("Edit Insurance Record")+`<div class="card"><div class="form-grid"><label>Agency<input id="eiagency" value="${esc(r.agency||r.company||"")}"></label><label>Policy Number<input id="eipol" value="${esc(r.policyNumber||"")}"></label><label>Effective Date<input type="date" id="eieff" value="${esc(r.effectiveDate||"")}"></label><label>Expiration Date<input type="date" id="eiexp" value="${esc(r.expirationDate||"")}"></label><label>Agreed Value<input type="number" step="0.01" id="eiagree" value="${esc((r.agreedValue!==""&&r.agreedValue!=null)?r.agreedValue:(r.coverageValue!==""&&r.coverageValue!=null?r.coverageValue:r.insuranceValue||""))}"></label><label>Premium<input type="number" step="0.01" id="eiprem" value="${esc(r.premium||"")}"></label><label>Agent<input id="eiagent" value="${esc(r.agent||r.agentName||"")}"></label><label>Phone<input id="eiphone" value="${esc(r.phone||"")}"></label><label>Email<input type="email" id="eiemail" value="${esc(r.email||"")}"></label><label class="full">Notes<textarea id="einotes">${esc(r.notes||r.coverageNotes||"")}</textarea></label></div><button class="wide primary nav-control" type="button" onclick="saveRecordEdit('Insurance','${recordId}')">Save Changes</button><button class="wide ghost nav-control" type="button" onclick="goBack()">Cancel</button></div>`+previousRecordsHtml("Insurance",vid)+bottomNav()+footer()}}
 
 
@@ -1817,6 +1822,169 @@ function vehicleLong(i){
 }
 function getAcq(vid){let a=state.vehicleAcquisitionRecords.find(r=>r.vehicleId===vid);const v=getVehicle(vid)||{};return a||{vehicleId:vid,acquisitionDate:v.acquisitionDate||v.purchaseDate||"",purchaseDate:v.purchaseDate||v.acquisitionDate||"",startingOdometer:v.startingOdometer||"",purchasePrice:v.purchasePrice||v.purchaseCost||"",seller:v.seller||""}}
 
+function normalizedMileageValue(value){
+  if(value===null||value===undefined||value==="") return "";
+  const n=Number(String(value).replace(/[$,]/g,"").trim());
+  return Number.isFinite(n)?n:"";
+}
+function recordMileageValue(record){
+  if(!record) return "";
+  if(record.odometer!=="" && record.odometer!==null && record.odometer!==undefined) return normalizedMileageValue(record.odometer);
+  if(record.mileage!=="" && record.mileage!==null && record.mileage!==undefined) return normalizedMileageValue(record.mileage);
+  if(record.startingOdometer!=="" && record.startingOdometer!==null && record.startingOdometer!==undefined) return normalizedMileageValue(record.startingOdometer);
+  return "";
+}
+function mileageDateParts(date,time){
+  const d=String(date||"").trim();
+  const t=String(time||"").trim();
+  if(!d) return {stamp:0,displayDate:"",displayTime:""};
+  const isoTime=t?`T${t}`:"T00:00";
+  const ms=Date.parse(`${d}${isoTime}`);
+  return {stamp:Number.isFinite(ms)?ms:0,displayDate:d,displayTime:t};
+}
+function mileageRecordDate(record,type){
+  if(type==="Maintenance") return record.dropOffDate||record.date||record.serviceDate||"";
+  if(type==="Starting") return record.acquisitionDate||record.purchaseDate||record.date||"";
+  return record.date||"";
+}
+function mileageRecordTime(record){
+  return record.time||record.dropOffTime||record.serviceTime||"";
+}
+function mileageSequence(record,index){
+  const seq=Number(record.entrySequence||0);
+  if(Number.isFinite(seq) && seq) return seq;
+  const modified=Date.parse(record.modifiedAt||record.createdAt||"");
+  if(Number.isFinite(modified) && modified) return modified/1000;
+  return index+1;
+}
+function mileageLabel(reading){
+  if(!reading) return "";
+  if(reading.type==="Starting") return "Starting Mileage";
+  if(reading.type==="Fuel") return "Refuel";
+  if(reading.type==="Maintenance") return "Maintenance";
+  return "Mileage";
+}
+function vehicleMileageReadings(vid){
+  const readings=[];
+  const acq=getAcq(vid);
+  const starting=normalizedMileageValue(acq.startingOdometer);
+  if(starting!==""){
+    const parts=mileageDateParts(acq.acquisitionDate||acq.purchaseDate||"","");
+    readings.push({
+      type:"Starting",
+      recordId:"starting",
+      vehicleId:vid,
+      odometer:starting,
+      stamp:parts.stamp,
+      date:parts.displayDate,
+      time:"",
+      sequence:0,
+      label:"Starting Mileage"
+    });
+  }
+  records("Fuel",vid,false).forEach((record,index)=>{
+    const odometer=recordMileageValue(record);
+    if(odometer==="") return;
+    const parts=mileageDateParts(mileageRecordDate(record,"Fuel"),mileageRecordTime(record));
+    readings.push({
+      type:"Fuel",
+      recordId:record.recordId,
+      vehicleId:vid,
+      odometer,
+      stamp:parts.stamp,
+      date:parts.displayDate,
+      time:parts.displayTime,
+      sequence:mileageSequence(record,index),
+      label:"Refuel"
+    });
+  });
+  records("Maintenance",vid,false).forEach((record,index)=>{
+    const odometer=recordMileageValue(record);
+    if(odometer==="") return;
+    const parts=mileageDateParts(mileageRecordDate(record,"Maintenance"),mileageRecordTime(record));
+    readings.push({
+      type:"Maintenance",
+      recordId:record.recordId,
+      vehicleId:vid,
+      odometer,
+      stamp:parts.stamp,
+      date:parts.displayDate,
+      time:parts.displayTime,
+      sequence:mileageSequence(record,index),
+      label:"Maintenance"
+    });
+  });
+  return readings;
+}
+function compareMileageReadingDate(a,b){
+  if((a.stamp||0)!==(b.stamp||0)) return (a.stamp||0)-(b.stamp||0);
+  if((a.sequence||0)!==(b.sequence||0)) return (a.sequence||0)-(b.sequence||0);
+  return String(a.recordId||"").localeCompare(String(b.recordId||""));
+}
+function mostRecentMileageReading(readings,type){
+  const scoped=type?readings.filter(reading=>reading.type===type):readings.slice();
+  scoped.sort(compareMileageReadingDate);
+  return scoped.length?scoped[scoped.length-1]:null;
+}
+function vehicleMileageSummary(vid){
+  const readings=vehicleMileageReadings(vid);
+  const lastFuel=mostRecentMileageReading(readings,"Fuel");
+  const lastMaintenance=mostRecentMileageReading(readings,"Maintenance");
+  const current=mostRecentMileageReading(readings,null);
+  return {
+    lastFuelMileage:lastFuel?lastFuel.odometer:"",
+    lastMaintenanceMileage:lastMaintenance?lastMaintenance.odometer:"",
+    currentMileage:current?current.odometer:"",
+    currentSource:current?current.type:"",
+    issues:vehicleMileageIssuesFromReadings(readings)
+  };
+}
+function vehicleMileageIssuesFromReadings(readings){
+  const dated=readings.filter(reading=>reading.stamp||reading.sequence).sort(compareMileageReadingDate);
+  const issues=[];
+  let highest=null;
+  dated.forEach(reading=>{
+    if(highest && reading.odometer<highest.odometer){
+      issues.push({older:highest,newer:reading});
+    }
+    if(!highest || reading.odometer>highest.odometer) highest=reading;
+  });
+  return issues;
+}
+function vehicleMileageIssues(vid){
+  return vehicleMileageSummary(vid).issues;
+}
+function formatMileageReading(reading){
+  if(!reading) return "";
+  const date=formatDisplayDate(reading.date);
+  const time=reading.time?` ${reading.time}`:"";
+  return `${mileageLabel(reading)} ${date}${time} Odo ${fmt(reading.odometer)}`.trim();
+}
+function mileageIssueMessage(issue){
+  if(!issue) return "";
+  return `Newer ${formatMileageReading(issue.newer)} is lower than older ${formatMileageReading(issue.older)}. Check date, time, and odometer values.`;
+}
+function mileageIssueHtml(vid,recordId,type){
+  const issues=vehicleMileageIssues(vid).filter(issue=>{
+    if(!recordId) return true;
+    return (issue.older.type===type && String(issue.older.recordId)===String(recordId))
+      || (issue.newer.type===type && String(issue.newer.recordId)===String(recordId));
+  });
+  if(!issues.length) return "";
+  return `<div class="fieldbox full mileage-error"><b>Mileage Error</b><span>${esc(issues.map(mileageIssueMessage).join(" "))}</span></div>`;
+}
+function vehicleMileageFieldsHtml(vid){
+  const summary=vehicleMileageSummary(vid);
+  return viewField("Last Refuel Mileage",summary.lastFuelMileage===""?"":fmt(summary.lastFuelMileage))
+    +viewField("Last Maintenance Mileage",summary.lastMaintenanceMileage===""?"":fmt(summary.lastMaintenanceMileage))
+    +viewField("Current Mileage",summary.currentMileage===""?"":fmt(summary.currentMileage));
+}
+function vehicleMileageErrorCardHtml(vid){
+  const warning=mileageIssueHtml(vid);
+  return warning?`<div class="card"><div class="readonly-grid">${warning}</div></div>`:"";
+}
+
+
 function vehicleEdit(app,vid){
   const v=getVehicle(vid);
   if(!v){alert("Vehicle position not found.");return nav("home")}
@@ -1910,7 +2078,18 @@ function meta(r){return `<details class="card data-information"><summary><strong
 function findRecord(type,id){
   return recArray(type).find(r=>String(r.recordId)===String(id));
 }
-function recordView(app,type,id){const r=findRecord(type,id);if(!r)return nav("home",{},false);app.innerHTML=header("View "+type+" Record")+`<div class="card">${meta(r)}<h3>${type} Information</h3><div class="readonly-grid">${viewFields(type,r)}</div><div class="view-actions"><button class="danger" onclick="archiveRecord('${type}','${id}')">Archive</button><button onclick="navRecord('${type}','${id}','edit')">Edit</button></div></div>`+bottomNav()+footer()} function viewFields(type,r){if(type==="Fuel")return roBox("Date",formatDisplayDate(r.date))+roBox("Time",r.time)+roBox("Odometer",fmt(r.odometer))+roBox("Miles",fmt(r.miles))+roBox("Gallons",fmt(r.gallons,3))+roBox("MPG",fmt(r.mpg))+roBox("Fuel Grade",r.fuelGrade)+roBox("Ethanol Free",r.ethanolFree)+roBox("Station",r.station)+roBox("Cost Source",r.fuelCostSource)+roBox("Price/Gal",money(r.fuelPricePerGallon))+roBox("Total Cost",money(r.totalFuelCost))+roBox("Notes",r.notes); if(type==="Maintenance")return roBox("Date",formatDisplayDate(r.dropOffDate||r.date))+roBox("Category",r.category)+roBox("Odometer",fmt(r.odometer))+roBox("Cost",money(r.totalCost||r.cost))+roBox("Location",r.location)+roBox("Provider",r.serviceProvider||r.provider)+roBox("Pickup Date",formatDisplayDate(r.pickUpDate))+roBox("Performed By",r.performedBy)+roBox("Notes",r.notes); if(type==="Insurance")return roBox("Agency",r.agency||r.company)+roBox("Policy Number",r.policyNumber)+roBox("Effective Date",formatDisplayDate(r.effectiveDate))+roBox("Expiration Date",formatDisplayDate(r.expirationDate))+roBox("Agreed Value",money(r.agreedValue!==""&&r.agreedValue!=null?r.agreedValue:(r.coverageValue!==""&&r.coverageValue!=null?r.coverageValue:r.insuranceValue)))+roBox("Premium",money(r.premium))+roBox("Agent",r.agent||r.agentName)+roBox("Phone",r.phone)+roBox("Email",r.email)+roBox("Notes",r.notes||r.coverageNotes);return ""}
+function recordView(app,type,id){
+  const r=findRecord(type,id);
+  if(!r)return nav("home",{},false);
+  const warning=(type==="Fuel"||type==="Maintenance")?`<div class="readonly-grid">${mileageIssueHtml(r.vehicleId,id,type)}</div>`:"";
+  app.innerHTML=header("View "+type+" Record")+`<div class="card">${meta(r)}${warning}<h3>${type} Information</h3><div class="readonly-grid">${viewFields(type,r)}</div><div class="view-actions"><button class="danger" onclick="archiveRecord('${type}','${id}')">Archive</button><button onclick="navRecord('${type}','${id}','edit')">Edit</button></div></div>`+bottomNav()+footer();
+}
+function viewFields(type,r){
+  if(type==="Fuel")return roBox("Date",formatDisplayDate(r.date))+roBox("Time",r.time)+roBox("Odometer",fmt(r.odometer))+roBox("Miles",fmt(r.miles))+roBox("Gallons",fmt(r.gallons,3))+roBox("MPG",fmt(r.mpg))+roBox("Fuel Grade",r.fuelGrade)+roBox("Ethanol Free",r.ethanolFree)+roBox("Station",r.station)+roBox("Cost Source",r.fuelCostSource)+roBox("Price/Gal",money(r.fuelPricePerGallon))+roBox("Total Cost",money(r.totalFuelCost))+roBox("Notes",r.notes);
+  if(type==="Maintenance")return roBox("Date",formatDisplayDate(r.dropOffDate||r.date))+roBox("Category",r.category)+roBox("Odometer",fmt(r.odometer))+roBox("Cost",money(r.totalCost||r.cost))+roBox("Location",r.location)+roBox("Provider",r.serviceProvider||r.provider)+roBox("Pickup Date",formatDisplayDate(r.pickUpDate))+roBox("Performed By",r.performedBy)+roBox("Notes",r.notes);
+  if(type==="Insurance")return roBox("Agency",r.agency||r.company)+roBox("Policy Number",r.policyNumber)+roBox("Effective Date",formatDisplayDate(r.effectiveDate))+roBox("Expiration Date",formatDisplayDate(r.expirationDate))+roBox("Agreed Value",money(r.agreedValue!==""&&r.agreedValue!=null?r.agreedValue:(r.coverageValue!==""&&r.coverageValue!=null?r.coverageValue:r.insuranceValue)))+roBox("Premium",money(r.premium))+roBox("Agent",r.agent||r.agentName)+roBox("Phone",r.phone)+roBox("Email",r.email)+roBox("Notes",r.notes||r.coverageNotes);
+  return "";
+}
 function commonEdit(r){return `<label>Data Quality<select id="rq">${DATA_QUALITIES.map(q=>`<option ${r.dataQuality===q?'selected':''}>${q}</option>`).join("")}</select></label><label>Tags<input id="rtags" value="${esc(tags(r.classificationTags).join('; '))}"></label><label>Notes<textarea id="rnotes">${esc(r.notes||"")}</textarea></label>`} 
 
 
@@ -2192,7 +2371,7 @@ function quickFuel(app,vid){
   if(mode==="empty"){
     body += `<div class="empty-state"><p class="muted">No record selected. Choose a record below or tap New.</p>${fuelActionButtons()}</div>`;
   }else{
-    if(existing) body += meta(existing);
+    if(existing) body += meta(existing)+`<div class="readonly-grid">${mileageIssueHtml(vid,recordId,"Fuel")}</div>`;
     body += `<h3>Fuel Information</h3>`+fuelFormHtml(vid,r,mode==="view")+fuelActionButtons();
   }
   body += `</div>`;
@@ -2525,7 +2704,7 @@ function quickMaintenance(app,vid){
   const mode=route.mode||"edit"; const recordId=route.recordId||""; const existing=recordId?findRecord("Maintenance",recordId):null; const r=existing?existing:maintenanceDefaultRecord(vid);
   let body=`<div class="card">`;
   if(mode==="empty") body += `<div class="empty-state"><p class="muted">No record selected. Choose a record below or tap New.</p>${maintenanceActionButtons()}</div>`;
-  else { if(existing) body += meta(existing); body += `<h3>Maintenance Information</h3>`+maintenanceFormHtml(vid,r,mode==="view")+maintenanceActionButtons(); }
+  else { if(existing) body += meta(existing)+`<div class="readonly-grid">${mileageIssueHtml(vid,recordId,"Maintenance")}</div>`; body += `<h3>Maintenance Information</h3>`+maintenanceFormHtml(vid,r,mode==="view")+maintenanceActionButtons(); }
   body += `</div>`;
   app.innerHTML=header(vehicleLabel(v)+" - Maintenance")+body+previousRecordsHtml("Maintenance",vid)+bottomNav()+footer();
   if(mode==="edit") setTimeout(setQuickMaintenanceSnapshot,0);

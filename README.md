@@ -1,38 +1,48 @@
-# RGBMileage v2.1.6l-wc10-f25
+# RGBMileage v2.1.6l-wc10-f26-rc1
 
-Build: `v2.1.6l-wc10-f25`  
-Status: `User validated / accepted baseline`  
-Cache: `216lwc10f25`  
-Source baseline: accepted `v2.1.6l-wc10-f24`  
-Source SHA-256: `f90fe95495b9aba00530e8ca47ab95f3d58014a0a1624788209237b2df09bb32`  
-Accepted production baseline: `v2.1.6l-wc10-f25`
+Build: `v2.1.6l-wc10-f26-rc1`  
+Status: `Release Candidate 1 / pending user validation`  
+Cache: `216lwc10f26rc1`  
+Source baseline: accepted `v2.1.6l-wc10-f25`  
+Source SHA-256: `6aad843c7db5135c98bf476ecf73e897a336a0d6b9345cf800a887c8d975e212`  
+Accepted production baseline before this candidate: `v2.1.6l-wc10-f25`
 
 ## Purpose
 
-F25 is the user-validated accepted maintenance/insurance action-parity release built from the accepted F24 baseline. It corrects Maintenance record-list labeling and adds matching delete/archive/cancel choices for Maintenance and Insurance.
+F26 RC1 adds computed odometer summary fields to Vehicle Detail pages and mileage consistency warnings for Fuel and Maintenance records.
 
 ## URLs
 
 Production URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f25
+Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26rc1
 
 ## Release status
 
-This package has user validation PASS and is promoted as the accepted F25 production baseline.
+This package is pending user validation. It is not an accepted production baseline until the user reports PASS and explicitly promotes it.
 
 ## Changed scope
 
-- Maintenance previous-record rows show date, category, and odometer when odometer data exists.
-- Maintenance row/edit actions now include delete behavior matching Fuel.
-- Insurance row/edit actions now include delete behavior matching Fuel.
-- Delete choices are aligned for Fuel, Maintenance, and Insurance: Delete Permanently, Archive Instead, and Cancel.
-- Cache-busting deployment URL is included for this release.
+- Adds Last Refuel Mileage to Vehicle Detail, grouped with Starting Odometer.
+- Adds Last Maintenance Mileage to Vehicle Detail, grouped with Starting Odometer.
+- Adds Current Mileage to Vehicle Detail, grouped with Starting Odometer.
+- Computes Last Refuel and Last Maintenance from the most recent active entry by date/time that has valid odometer data.
+- Computes Current Mileage from the most recent valid odometer reading across Starting Odometer, Fuel, and Maintenance.
+- Adds non-blocking Mileage Error warnings when a newer dated reading is lower than an older dated reading.
+- Shows Mileage Error warnings on Vehicle Detail and affected Fuel/Maintenance record pages.
 
-## Locked behavior
+## Unchanged scope
 
-Home geometry, CSS, data schema/storage, backup/restore, CSV behavior, offline service worker model, Custom Label behavior, viewport behavior, 58 px menus, and package structure remain outside this change scope.
+- No Home geometry changes.
+- No CSS layout overhaul.
+- No data schema/storage migration.
+- No bundled user backup data.
+- Insurance delete/action parity from accepted F25 is preserved.
 
-## Rejected-build handling
+## Deployment
 
-F20, F21, F22, and F23 remain rejected portrait failure evidence only and are not runtime sources for this package.
+Deploy the 17 ZIP-root files to GitHub Pages. The eight support folders are retained for governed archive/audit use and are not required for GitHub Pages deployment.
+
+Use the cache-busting URL after deployment:
+
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26rc1

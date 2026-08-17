@@ -449,7 +449,7 @@ body {
 .choice-buttons button{min-height:48px}
 @media(max-width:385px){.choice-box{width:min(80vw,310px)}}
 
-/* RGBM v2.1.6l-wc10-f24 applies repaired F24 Home portrait geometry from accepted F19 baseline; landscape remains locked. */
+/* RGBM Home portrait geometry remains inherited from the accepted historical repair baseline; landscape remains locked. */
 :root {
   --home-column-gap: 14px;
   --home-min-row-gap: 10px;
@@ -1500,7 +1500,7 @@ body.recovery-active {
 }
 
 
-/* RGBM v2.1.6l-wc10-f24 preserves the accepted F19 update pill behavior. */
+/* RGBM preserves the accepted historical update pill behavior. */
 .service-worker-update-badge {
   position: absolute;
   z-index: 45;
