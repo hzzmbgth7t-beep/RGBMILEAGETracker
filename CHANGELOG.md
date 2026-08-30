@@ -1,32 +1,20 @@
 # CHANGELOG
 
-## v2.1.6l-wc10-f26 — 08/16/2026
+## v2.1.6l-wc10-f27-rc1 — 08/30/2026
 
-- Built from accepted `v2.1.6l-wc10-f25`.
-- Source SHA-256: `6aad843c7db5135c98bf476ecf73e897a336a0d6b9345cf800a887c8d975e212`.
-- Added Vehicle Detail odometer summary fields: Last Refuel Mileage, Last Maintenance Mileage, and Current Mileage.
-- Last Refuel Mileage uses the most recent active Fuel/Refuel record by date/time with valid odometer data.
-- Last Maintenance Mileage uses the most recent active Maintenance record by date/time with valid odometer data.
-- Current Mileage uses the most recent valid odometer reading by date/time across Starting Odometer, Fuel, and Maintenance.
-- Added non-blocking Mileage Error warnings when a newer dated reading is lower than an older dated reading.
-- Added Mileage Error warning visibility to Vehicle Detail and affected Fuel/Maintenance record pages.
-- Corrected no-date mileage logic: dated entries are preferred, and undated entries are used only as highest-mileage fallback when no dated entries exist for that field.
-- Mileage Error detection now compares dated readings only and ignores undated readings.
-- Added yellow highlighting for affected Fuel/Maintenance odometer fields and affected previous-record rows when a mileage-order error is flagged.
-- Updated cache token to `216lwc10f26` and included cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26.
-- Preserved accepted F25 Maintenance and Insurance delete parity.
-- Locked package naming and README URL ordering: full package by default, no `FULL` or date in standard ZIP filename, README URLs first and updated every version.
-- Status: Accepted baseline.
+- Built from accepted `v2.1.6l-wc10-f26`.
+- Source SHA-256: `6011c1d5742b1dfb295f04849cb6fd0419bad0c629d2aac30a4d62e48603503b`.
+- Added Settings App Cache Reset feature.
+- Added Settings shortcut to create a JSON backup before cache reset.
+- App cache reset clears cached app-shell files and unregisters service workers scoped to RGB Mileage.
+- App cache reset preserves vehicle data stored in local app storage.
+- App cache reset reloads the current cache-busting URL.
+- Updated build/cache references to `v2.1.6l-wc10-f27-rc1` and `216lwc10f27rc1`.
+- Preserved F26 odometer fields, mileage-error warnings, delete parity, and accepted Home geometry.
 
-## v2.1.6l-wc10-f25 — 08/16/2026
+## v2.1.6l-wc10-f26 — 08/30/2026
 
-- User validated and promoted as accepted baseline.
-- Accepted package SHA-256: `6aad843c7db5135c98bf476ecf73e897a336a0d6b9345cf800a887c8d975e212`.
-- Added Maintenance previous-record row text with date, category, and odometer when available.
-- Added Maintenance delete/archive/cancel parity with Fuel.
-- Added Insurance delete/archive/cancel parity with Fuel.
-
-## v2.1.6l-wc10-f24 — 08/03/2026
-
-- Recorded accepted baseline per user report.
-- F20, F21, F22, and F23 remain rejected failure evidence only.
+- Accepted baseline before F27 RC1.
+- Added Vehicle Detail odometer summary fields.
+- Added mileage consistency warnings and yellow highlights.
+- Added dated-first / undated-fallback odometer logic.

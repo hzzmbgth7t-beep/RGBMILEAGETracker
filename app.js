@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f26",date:"2026-08-16",cacheRevision:"216lwc10f26"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f27-rc1",date:"2026-08-30",cacheRevision:"216lwc10f27rc1"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const CUSTOM_LABEL_MAX_LENGTH=50;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
@@ -400,6 +400,78 @@ function applyOfflineUpdate(){
   waiting.postMessage({type:"SKIP_WAITING"});
   return true;
 }
+
+
+function currentAppBaseUrl(){
+  try{
+    const url=new URL("./",location.href);
+    url.search="";
+    url.hash="";
+    return url.href;
+  }catch(error){
+    return "";
+  }
+}
+
+function isCurrentAppServiceWorkerRegistration(registration){
+  if(!registration||!registration.scope)return false;
+  const base=currentAppBaseUrl();
+  if(!base)return true;
+  return base.startsWith(registration.scope)||registration.scope.startsWith(base);
+}
+
+async function clearAppShellCaches(){
+  if(typeof caches==="undefined"||!caches.keys)return [];
+  const keys=await caches.keys();
+  const appShellKeys=keys.filter(key=>/^rgbm-app-shell-/i.test(String(key)));
+  await Promise.all(appShellKeys.map(key=>caches.delete(key)));
+  return appShellKeys;
+}
+
+async function unregisterCurrentAppServiceWorkers(){
+  if(
+    !navigator.serviceWorker
+    ||typeof navigator.serviceWorker.getRegistrations!=="function"
+  ){
+    return [];
+  }
+  const registrations=await navigator.serviceWorker.getRegistrations();
+  const targets=registrations.filter(isCurrentAppServiceWorkerRegistration);
+  await Promise.all(targets.map(registration=>registration.unregister()));
+  return targets.map(registration=>registration.scope);
+}
+
+function cacheResetReloadUrl(){
+  const url=new URL(canonicalLaunchUrl(location.href));
+  url.searchParams.set("reset",Date.now().toString(36));
+  return url.href;
+}
+
+function setAppShellResetStatus(message){
+  const status=$("appShellResetStatus");
+  if(status)status.textContent=message;
+}
+
+async function resetAppShellCache(){
+  if(!confirm("Reset cached app files and reload the current version? Vehicle data is preserved. Create a JSON backup first if you have not already done so."))return false;
+  setAppShellResetStatus("Resetting cached app files…");
+  try{
+    saveData();
+    const deletedCaches=await clearAppShellCaches();
+    const unregisteredScopes=await unregisterCurrentAppServiceWorkers();
+    setAppShellResetStatus(
+      `Reset complete.\nDeleted app-shell caches: ${deletedCaches.length}\nUnregistered service workers: ${unregisteredScopes.length}\nReloading current version…`
+    );
+    setTimeout(()=>location.replace(cacheResetReloadUrl()),400);
+    return true;
+  }catch(error){
+    const message=error&&error.message?String(error.message):String(error);
+    setAppShellResetStatus(`Reset failed: ${message}`);
+    alert(`App cache reset failed: ${message}`);
+    return false;
+  }
+}
+
 
 function requestOfflineStatus(){
   const controller=navigator.serviceWorker&&navigator.serviceWorker.controller;
@@ -3157,7 +3229,8 @@ function settings(app){
   catch(e){evidence={result:"FAIL",migrationAcceptance:"FAIL",storage:{legacySourceKey:null},canonical:{validation:{valid:false}}}}
   const evidenceCard=`<div class="card"><h2>WC-10 Migration Evidence</h2><p><strong>Current check: ${esc(evidence.result)}</strong><br>Migration acceptance: ${esc(evidence.migrationAcceptance)}<br>Legacy source: ${esc(evidence.storage.legacySourceKey||"N/A")}<br>Canonical validation: ${evidence.canonical.validation.valid?"PASS":"FAIL"}</p><p class="muted">The exported JSON contains IDs, counts, order, and record-ID fingerprints. It excludes images, VINs, plates, and record amounts.</p><button class="wide primary" type="button" onclick="downloadMigrationEvidence()">Download Migration Evidence</button><button class="wide ghost" type="button" onclick="copyMigrationEvidenceSummary()">Copy Migration Summary</button></div>`;
   const offlineCard=`<div class="card offline-mode-card"><h2>Offline Mode</h2><p id="offlineModeStatus">${esc(offlineStatusSummary())}</p><p class="muted">Vehicle data remains in local storage. The service worker caches only application files and icons.</p><button class="wide ghost" type="button" onclick="requestOfflineUpdate()">Check for App Update</button><button id="applyOfflineUpdateButton" class="wide primary" type="button" onclick="applyOfflineUpdate()" ${OFFLINE_STATE.updateReady?"":"hidden"}>Apply Offline Update</button></div>`;
-  app.innerHTML=header("Settings")+buildCard+`<div class="card"><h2>Vehicle Order</h2><p class="muted">Position 1 is the primary portrait position. Landscape order is left to right.</p></div>${orderRows}${offlineCard}${evidenceCard}<div class="card"><h2>About</h2><p>RGB Mileage ${VERSION}<br>Build Date: ${formatBuildDate(BUILD_DATE)}<br>Schema: ${SCHEMA_VERSION}<br>Migration: ${RGBMDataV3.MIGRATION_VERSION}<br>Evidence: ${RGBMWC10Evidence.EVIDENCE_VERSION}</p><button class="wide danger" onclick="if(confirm('Clear all local data, including retained rollback data?')){clearRGBMStorage(false);state=blankData();saveData();nav('home')}">Clear Local Data</button></div>`+bottomNav()+footer();
+  const cacheRepairCard=`<div class="card app-shell-repair-card"><h2>App Cache Reset</h2><p class="muted">Use this if the Home Screen app opens an older version or wrong layout while Safari shows the current version. This clears cached app files and service worker registrations for this app, then reloads the current cache-busting URL. Vehicle data is preserved.</p><button class="wide ghost" type="button" onclick="downloadBackup()">Create JSON Backup First</button><button class="wide primary" type="button" onclick="resetAppShellCache()">Reset App Cache / Reload Current Version</button><pre id="appShellResetStatus" class="small"></pre></div>`;
+  app.innerHTML=header("Settings")+buildCard+`<div class="card"><h2>Vehicle Order</h2><p class="muted">Position 1 is the primary portrait position. Landscape order is left to right.</p></div>${orderRows}${offlineCard}${cacheRepairCard}${evidenceCard}<div class="card"><h2>About</h2><p>RGB Mileage ${VERSION}<br>Build Date: ${formatBuildDate(BUILD_DATE)}<br>Schema: ${SCHEMA_VERSION}<br>Migration: ${RGBMDataV3.MIGRATION_VERSION}<br>Evidence: ${RGBMWC10Evidence.EVIDENCE_VERSION}</p><button class="wide danger" onclick="if(confirm('Clear all local data, including retained rollback data?')){clearRGBMStorage(false);state=blankData();saveData();nav('home')}">Clear Local Data</button></div>`+bottomNav()+footer();
 }
 function moveVehicleOrder(vid,delta){
   const index=state.vehicleOrder.indexOf(vid);

@@ -1,64 +1,64 @@
-# RGBMileage v2.1.6l-wc10-f26
+# RGBMileage v2.1.6l-wc10-f27-rc1
 
 ## URLs
 
 Production URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26
+Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f27rc1
 
-Build: `v2.1.6l-wc10-f26`  
-Status: `Accepted baseline`  
-Cache: `216lwc10f26`  
-Source baseline: accepted `v2.1.6l-wc10-f25`  
-Source SHA-256: `6aad843c7db5135c98bf476ecf73e897a336a0d6b9345cf800a887c8d975e212`  
-Accepted production baseline before F26: `v2.1.6l-wc10-f25`
+Build: `v2.1.6l-wc10-f27-rc1`  
+Status: `Release Candidate 1 / pending user validation`  
+Cache: `216lwc10f27rc1`  
+Source baseline: accepted `v2.1.6l-wc10-f26`  
+Source SHA-256: `6011c1d5742b1dfb295f04849cb6fd0419bad0c629d2aac30a4d62e48603503b`  
+Accepted production baseline before F27: `v2.1.6l-wc10-f26`
 
 ## Locked release package rules
 
 - Every package is a full package unless the assistant asks before creating it and the user explicitly approves a partial/special-purpose package.
 - Standard package filename format is `RGBMileage_<version>.zip`.
 - Do not include `FULL` or a date in standard package filenames.
+- Version numbers are never reused.
 - The README URLs section must be the first section after the title.
 - All README URLs must be updated for every version and must remain before all non-URL README content.
 
-
 ## Purpose
 
-F26 adds computed odometer summary fields to Vehicle Detail pages and mileage consistency warnings for Fuel and Maintenance records.
+F27 RC1 adds a Settings app-cache reset/update-recovery feature for stale iPhone Home Screen installations.
 
 ## Release status
 
-This package is accepted baseline. It is not an accepted production baseline until the user reports PASS and explicitly promotes it.
+This package is a release candidate pending user validation. The accepted baseline remains `v2.1.6l-wc10-f26` until this candidate is validated and promoted.
 
-## Changed scope
+## User-data safety
 
-- Adds Last Refuel Mileage to Vehicle Detail, grouped with Starting Odometer.
-- Adds Last Maintenance Mileage to Vehicle Detail, grouped with Starting Odometer.
-- Adds Current Mileage to Vehicle Detail, grouped with Starting Odometer.
-- Computes Last Refuel and Last Maintenance using dated-first logic: most recent dated entry with valid odometer, falling back to highest undated mileage only when that record type has no dated entries with odometer.
-- Computes Current Mileage from the most recent valid odometer reading across Starting Odometer, Fuel, and Maintenance.
-- Adds non-blocking Mileage Error warnings when a newer dated reading is lower than an older dated reading.
-- Shows Mileage Error warnings on Vehicle Detail and affected Fuel/Maintenance record pages.
+Vehicle records are stored in local browser/app storage and are not placed in Cache Storage. The new app-cache reset feature clears cached application files and service worker registrations only. It does not intentionally clear vehicle data.
 
-## Unchanged scope
+Before using the reset feature, create a JSON backup from Settings or Data Management.
 
-- No Home geometry changes.
-- No CSS layout overhaul.
-- No data schema/storage migration.
-- No bundled user backup data.
-- Insurance delete/action parity from accepted F25 is preserved.
+## Settings app-cache reset
 
-## Deployment
+Settings now includes an **App Cache Reset** card with:
 
-Deploy the 17 ZIP-root files to GitHub Pages. The eight support folders are retained for governed archive/audit use and are not required for GitHub Pages deployment.
+- **Create JSON Backup First**
+- **Reset App Cache / Reload Current Version**
 
-Use the cache-busting URL after deployment:
+Use this if Safari opens the current version but the installed Home Screen app opens an older version or wrong Home layout.
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f26
+The reset action:
 
-## F26 correction
+1. saves the current data state,
+2. deletes `rgbm-app-shell-*` caches,
+3. unregisters service workers scoped to this app,
+4. reloads the current cache-busting URL.
 
-- No-date Fuel and Maintenance entries are ignored when dated mileage readings exist.
-- If no dated mileage readings exist for a field, the highest undated mileage is used as a fallback.
-- No-date entries do not generate mileage-order errors.
-- Affected Fuel and Maintenance odometer fields and previous-record rows are highlighted yellow when a mileage-order error is flagged.
+## Validation focus
+
+- Confirm app shows `v2.1.6l-wc10-f27-rc1`.
+- Confirm README URLs are first.
+- Confirm Settings includes App Cache Reset.
+- Create a JSON backup before resetting.
+- Use Reset App Cache / Reload Current Version.
+- Confirm the app reloads with `v2.1.6l-wc10-f27-rc1`.
+- Confirm vehicle data remains present.
+- Confirm Home portrait and landscape still display correctly.
