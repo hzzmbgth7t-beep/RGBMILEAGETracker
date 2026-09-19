@@ -1,17 +1,17 @@
-# RGBMileage v2.1.6l-wc10-f27-rc1
+# RGBMileage v2.1.6l-wc10-f28-rc1
 
 ## URLs
 
 Production URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f27rc1
+Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc1
 
-Build: `v2.1.6l-wc10-f27-rc1`  
+Build: `v2.1.6l-wc10-f28-rc1`  
 Status: `Release Candidate 1 / pending user validation`  
-Cache: `216lwc10f27rc1`  
-Source baseline: accepted `v2.1.6l-wc10-f26`  
-Source SHA-256: `6011c1d5742b1dfb295f04849cb6fd0419bad0c629d2aac30a4d62e48603503b`  
-Accepted production baseline before F27: `v2.1.6l-wc10-f26`
+Cache: `216lwc10f28rc1`  
+Source baseline: accepted `v2.1.6l-wc10-f27`  
+Source SHA-256: `97ce4d8ac0afb209879e2c9f68a2b976859c98af0a9e8311a13ed617f244a088`  
+Previous accepted production baseline: `v2.1.6l-wc10-f27`
 
 ## Locked release package rules
 
@@ -24,41 +24,21 @@ Accepted production baseline before F27: `v2.1.6l-wc10-f26`
 
 ## Purpose
 
-F27 RC1 adds a Settings app-cache reset/update-recovery feature for stale iPhone Home Screen installations.
+RGB Mileage is a standalone GitHub Pages app for vehicle mileage, refuel, maintenance, insurance, backup, restore, and recovery workflows.
 
-## Release status
+## F28 RC1 changes
 
-This package is a release candidate pending user validation. The accepted baseline remains `v2.1.6l-wc10-f26` until this candidate is validated and promoted.
+- MPG display now uses three digits right of the decimal point.
+- Price/Gal display now uses three digits right of the decimal point.
+- The change is display-oriented; stored record values are not migrated or rewritten.
+- Existing F27 App Cache Reset behavior is preserved.
+- Existing F26 odometer summary and mileage-warning behavior is preserved.
+- Accepted Home geometry is preserved.
 
-## User-data safety
+## Deploy
 
-Vehicle records are stored in local browser/app storage and are not placed in Cache Storage. The new app-cache reset feature clears cached application files and service worker registrations only. It does not intentionally clear vehicle data.
+Deploy all 17 ZIP-root files to GitHub Pages. Do not deploy only a partial file set.
 
-Before using the reset feature, create a JSON backup from Settings or Data Management.
+Validation URL:
 
-## Settings app-cache reset
-
-Settings now includes an **App Cache Reset** card with:
-
-- **Create JSON Backup First**
-- **Reset App Cache / Reload Current Version**
-
-Use this if Safari opens the current version but the installed Home Screen app opens an older version or wrong Home layout.
-
-The reset action:
-
-1. saves the current data state,
-2. deletes `rgbm-app-shell-*` caches,
-3. unregisters service workers scoped to this app,
-4. reloads the current cache-busting URL.
-
-## Validation focus
-
-- Confirm app shows `v2.1.6l-wc10-f27-rc1`.
-- Confirm README URLs are first.
-- Confirm Settings includes App Cache Reset.
-- Create a JSON backup before resetting.
-- Use Reset App Cache / Reload Current Version.
-- Confirm the app reloads with `v2.1.6l-wc10-f27-rc1`.
-- Confirm vehicle data remains present.
-- Confirm Home portrait and landscape still display correctly.
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc1

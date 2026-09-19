@@ -1,10 +1,10 @@
-# DEPLOYMENT — v2.1.6l-wc10-f27-rc1
+# DEPLOYMENT — v2.1.6l-wc10-f28-rc1
 
-Build: `v2.1.6l-wc10-f27-rc1`  
+Build: `v2.1.6l-wc10-f28-rc1`  
 Status: `Release Candidate 1 / pending user validation`  
-Cache: `216lwc10f27rc1`  
-Source baseline: accepted `v2.1.6l-wc10-f26`  
-Source SHA-256: `6011c1d5742b1dfb295f04849cb6fd0419bad0c629d2aac30a4d62e48603503b`
+Cache: `216lwc10f28rc1`  
+Source baseline: accepted `v2.1.6l-wc10-f27`  
+Source SHA-256: `97ce4d8ac0afb209879e2c9f68a2b976859c98af0a9e8311a13ed617f244a088`
 
 ## Locked package and README rules
 
@@ -21,23 +21,16 @@ Deploy only the 17 ZIP-root files to GitHub Pages. Do not deploy the eight suppo
 
 Open the cache-busting URL after deployment:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f27rc1
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc1
 
-Confirm displayed identity is `v2.1.6l-wc10-f27-rc1` and cache identity is `216lwc10f27rc1`.
+Confirm displayed identity is `v2.1.6l-wc10-f28-rc1` and cache identity is `216lwc10f28rc1`.
 
 ## Cache-busting requirement
 
 Every deployable release must include a cache-busting URL. For this version use:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f27rc1
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc1
 
-## Installed Home Screen recovery
+## Installed app recovery
 
-If Safari shows `v2.1.6l-wc10-f27-rc1` but the Home Screen app shows an older version:
-
-1. Open the Home Screen app.
-2. Create a JSON backup if the old app supports backup.
-3. Deploy/open this version using the cache-busting URL.
-4. In Settings, use **App Cache Reset**.
-5. Confirm the app reloads as `v2.1.6l-wc10-f27-rc1`.
-6. Confirm vehicle data remains present.
+If Safari shows the correct version but the Home Screen app shows an old version, use Settings > App Cache Reset after creating a JSON backup.
