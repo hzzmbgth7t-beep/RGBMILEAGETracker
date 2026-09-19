@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f28-rc3",date:"2026-09-18",cacheRevision:"216lwc10f28rc3"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f28-rc4",date:"2026-09-18",cacheRevision:"216lwc10f28rc4"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const CUSTOM_LABEL_MAX_LENGTH=50;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={

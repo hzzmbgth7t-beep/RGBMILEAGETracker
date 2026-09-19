@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f28-rc3
+# FIXNOTES — v2.1.6l-wc10-f28-rc4
 
-Build: `v2.1.6l-wc10-f28-rc3`  
-Status: `Release Candidate 3 / pending user validation`  
-Cache: `216lwc10f28rc3`  
+Build: `v2.1.6l-wc10-f28-rc4`  
+Status: `Release Candidate 4 / pending user validation`  
+Cache: `216lwc10f28rc4`  
 Source baseline: accepted `v2.1.6l-wc10-f27`  
 Source SHA-256: `97ce4d8ac0afb209879e2c9f68a2b976859c98af0a9e8311a13ed617f244a088`
 

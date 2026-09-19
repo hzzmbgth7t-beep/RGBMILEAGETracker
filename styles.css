@@ -677,37 +677,39 @@ body.home-active {
   position: absolute !important;
   top: calc(var(--home-circle-diameter) * .5) !important;
   transform: translateY(-50%) !important;
-  z-index: 12 !important;
-  max-width: min(11ch, calc(var(--home-horizontal-space, var(--home-column-gap, 96px)) - 10px)) !important;
+  z-index: 40 !important;
+  width: min(9ch, 32vw) !important;
+  max-width: none !important;
   padding: 1px 3px !important;
   border-radius: 5px !important;
   color: #f6f1e8 !important;
-  background: rgba(7, 17, 31, .52) !important;
+  background: rgba(7, 17, 31, .68) !important;
   font-size: clamp(11px, 3.1vw, 14px) !important;
   font-weight: 950 !important;
   line-height: 1.1 !important;
   letter-spacing: .01em !important;
   white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
   pointer-events: none !important;
   text-shadow: 0 1px 2px rgba(0,0,0,.78) !important;
 }
 
 #app.screen-home .circle-wrap[data-position="1"] .home-mileage-label {
-  left: calc(100% + 6px) !important;
+  left: calc(100% + 8px) !important;
   text-align: left !important;
 }
 
 #app.screen-home .circle-wrap[data-position="2"] .home-mileage-label,
 #app.screen-home .circle-wrap[data-position="3"] .home-mileage-label {
-  right: calc(100% + 6px) !important;
+  right: calc(100% + 8px) !important;
   text-align: right !important;
 }
 
 @media (orientation: landscape) {
   #app.screen-home .home-mileage-label {
-    max-width: min(10ch, calc(var(--home-column-gap, 96px) - 10px)) !important;
+    width: min(9ch, 18vw) !important;
+    max-width: none !important;
     font-size: clamp(10px, 1.35vw, 13px) !important;
   }
 

@@ -1,18 +1,18 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f28-rc3`  
-Cache: `216lwc10f28rc3`  
-Guide release: `v2.1.6l-wc10-f28-rc3`  
-Last User Guide content-change release: `v2.1.6l-wc10-f28-rc3`  
+Build: `v2.1.6l-wc10-f28-rc4`  
+Cache: `216lwc10f28rc4`  
+Guide release: `v2.1.6l-wc10-f28-rc4`  
+Last User Guide content-change release: `v2.1.6l-wc10-f28-rc4`  
 Source baseline: accepted `v2.1.6l-wc10-f27`  
 Source SHA-256: `97ce4d8ac0afb209879e2c9f68a2b976859c98af0a9e8311a13ed617f244a088`  
-Current status: `Release Candidate 3 / pending user validation`
+Current status: `Release Candidate 4 / pending user validation`
 
 Production URL:  
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:  
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc3
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc4
 
 ## Fuel MPG and Price/Gal formatting
 
@@ -46,7 +46,7 @@ Steps:
 3. Save the downloaded JSON backup somewhere safe.
 4. Tap **Reset App Cache / Reload Current Version**.
 5. Confirm the reset.
-6. Confirm the app reloads as `v2.1.6l-wc10-f28-rc3`.
+6. Confirm the app reloads as `v2.1.6l-wc10-f28-rc4`.
 7. Confirm vehicle data remains present.
 
 ## Home circle mileage

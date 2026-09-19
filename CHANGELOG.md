@@ -1,10 +1,10 @@
 # CHANGELOG
 
-## v2.1.6l-wc10-f28-rc3 — 2026-09-18
+## v2.1.6l-wc10-f28-rc4 — 2026-09-18
 
 - Built from accepted `v2.1.6l-wc10-f27`.
 - Source SHA-256: `97ce4d8ac0afb209879e2c9f68a2b976859c98af0a9e8311a13ed617f244a088`.
-- Updated build/cache references to `v2.1.6l-wc10-f28-rc3` and `216lwc10f28rc3`.
+- Updated build/cache references to `v2.1.6l-wc10-f28-rc4` and `216lwc10f28rc4`.
 - Changed MPG display formatting to three decimal places.
 - Changed Price/Gal display formatting to three decimal places.
 - Corrected Fuel record edit recalculation parity:
