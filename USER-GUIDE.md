@@ -1,18 +1,18 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f28-rc1`  
-Cache: `216lwc10f28rc1`  
-Guide release: `v2.1.6l-wc10-f28-rc1`  
-Last User Guide content-change release: `v2.1.6l-wc10-f28-rc1`  
+Build: `v2.1.6l-wc10-f28-rc2`  
+Cache: `216lwc10f28rc2`  
+Guide release: `v2.1.6l-wc10-f28-rc2`  
+Last User Guide content-change release: `v2.1.6l-wc10-f28-rc2`  
 Source baseline: accepted `v2.1.6l-wc10-f27`  
 Source SHA-256: `97ce4d8ac0afb209879e2c9f68a2b976859c98af0a9e8311a13ed617f244a088`  
-Current status: `Release Candidate 1 / pending user validation`
+Current status: `Release Candidate 2 / pending user validation`
 
 Production URL:  
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:  
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc1
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc2
 
 ## Fuel MPG and Price/Gal formatting
 
@@ -24,6 +24,12 @@ Examples:
 - Price/Gal: `$3.499`
 
 The formatting change is display-oriented. Existing stored record values are not migrated or rewritten.
+
+When editing a Fuel record, related Fuel fields recalculate:
+- Odometer updates Miles and MPG when a previous odometer is available.
+- Miles and Gallons update MPG.
+- Price/Gal updates Total Cost.
+- Total Cost updates Price/Gal.
 
 ## Backup before recovery
 
@@ -40,5 +46,5 @@ Steps:
 3. Save the downloaded JSON backup somewhere safe.
 4. Tap **Reset App Cache / Reload Current Version**.
 5. Confirm the reset.
-6. Confirm the app reloads as `v2.1.6l-wc10-f28-rc1`.
+6. Confirm the app reloads as `v2.1.6l-wc10-f28-rc2`.
 7. Confirm vehicle data remains present.
