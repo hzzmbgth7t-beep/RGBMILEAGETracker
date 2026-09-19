@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f28-rc2",date:"2026-09-18",cacheRevision:"216lwc10f28rc2"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f28-rc3",date:"2026-09-18",cacheRevision:"216lwc10f28rc3"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const CUSTOM_LABEL_MAX_LENGTH=50;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
@@ -1878,7 +1878,16 @@ function circleHtml(v,i){
   const inner=configured&&v.primaryPhoto?`<img src="${v.primaryPhoto}" alt="">`:esc(vehicleBadge(v));
   const label=configured?vehicleLabel(v):"Add Vehicle";
   const accessible=esc(label);
-  return `<button class="circle-wrap" type="button" data-position="${i+1}" aria-label="${accessible}" onpointerdown="pressStart(()=>vehicleLong(${i}),event,500)" onpointerup="clearLP()" onpointercancel="clearLP()" onclick="vehicleTap(${i})"><span class="home-circle-visual" aria-hidden="true">${inner}</span><span class="vehicle-label">${esc(label)}</span></button>`;
+  const mileage=configured?homeLastRefuelMileageText(v.vehicleId):"";
+  const mileageHtml=mileage?`<span class="home-mileage-label" aria-hidden="true">${esc(mileage)}</span>`:"";
+  return `<button class="circle-wrap" type="button" data-position="${i+1}" aria-label="${accessible}" onpointerdown="pressStart(()=>vehicleLong(${i}),event,500)" onpointerup="clearLP()" onpointercancel="clearLP()" onclick="vehicleTap(${i})"><span class="home-circle-visual" aria-hidden="true">${inner}</span>${mileageHtml}<span class="vehicle-label">${esc(label)}</span></button>`;
+}
+function formatHomeMileage(value){
+  return value!==""&&value!=null&&Number.isFinite(+value)?Math.round(+value).toLocaleString():"";
+}
+function homeLastRefuelMileageText(vehicleId){
+  const summary=vehicleMileageSummary(vehicleId);
+  return formatHomeMileage(summary.lastFuelMileage);
 }
 function vehicleTap(i){
   if(suppressTap){suppressTap=false;return}

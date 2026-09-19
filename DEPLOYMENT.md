@@ -1,8 +1,8 @@
-# DEPLOYMENT — v2.1.6l-wc10-f28-rc2
+# DEPLOYMENT — v2.1.6l-wc10-f28-rc3
 
-Build: `v2.1.6l-wc10-f28-rc2`  
-Status: `Release Candidate 2 / pending user validation`  
-Cache: `216lwc10f28rc2`  
+Build: `v2.1.6l-wc10-f28-rc3`  
+Status: `Release Candidate 3 / pending user validation`  
+Cache: `216lwc10f28rc3`  
 Source baseline: accepted `v2.1.6l-wc10-f27`  
 Source SHA-256: `97ce4d8ac0afb209879e2c9f68a2b976859c98af0a9e8311a13ed617f244a088`
 
@@ -21,16 +21,20 @@ Deploy only the 17 ZIP-root files to GitHub Pages. Do not deploy the eight suppo
 
 Open the cache-busting URL after deployment:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc2
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc3
 
-Confirm displayed identity is `v2.1.6l-wc10-f28-rc2` and cache identity is `216lwc10f28rc2`.
+Confirm displayed identity is `v2.1.6l-wc10-f28-rc3` and cache identity is `216lwc10f28rc3`.
 
 ## Cache-busting requirement
 
 Every deployable release must include a cache-busting URL. For this version use:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc2
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc3
 
 ## Installed app recovery
 
 If Safari shows the correct version but the Home Screen app shows an old version, use Settings > App Cache Reset after creating a JSON backup.
+
+## Home circle mileage validation
+
+Validate that Home circle positions and descriptions remain unchanged, that Circle 1 mileage appears to the right, and that Circle 2 and Circle 3 mileage appears to the left in portrait and landscape.

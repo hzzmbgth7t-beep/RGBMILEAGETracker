@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f28-rc2
+# FIXNOTES — v2.1.6l-wc10-f28-rc3
 
-Build: `v2.1.6l-wc10-f28-rc2`  
-Status: `Release Candidate 2 / pending user validation`  
-Cache: `216lwc10f28rc2`  
+Build: `v2.1.6l-wc10-f28-rc3`  
+Status: `Release Candidate 3 / pending user validation`  
+Cache: `216lwc10f28rc3`  
 Source baseline: accepted `v2.1.6l-wc10-f27`  
 Source SHA-256: `97ce4d8ac0afb209879e2c9f68a2b976859c98af0a9e8311a13ed617f244a088`
 
@@ -28,3 +28,9 @@ This version updates display formatting for Fuel MPG and Price/Gal values and co
 ## Validation focus
 
 Confirm Fuel Entry, Fuel Record Detail, Previous Fuel Records/report displays, and MPG reports show MPG and Price/Gal to three decimal places where those values appear.
+
+## Home circle mileage display
+
+- Added each configured vehicle’s last refuel mileage beside its Home circle.
+- Circle 1 displays mileage to the right; Circles 2 and 3 display mileage to the left.
+- Mileage is display-only, zero-decimal, and does not move existing circles or descriptions.

@@ -1,14 +1,14 @@
-# RGBMileage v2.1.6l-wc10-f28-rc2
+# RGBMileage v2.1.6l-wc10-f28-rc3
 
 ## URLs
 
 Production URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc2
+Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc3
 
-Build: `v2.1.6l-wc10-f28-rc2`  
-Status: `Release Candidate 2 / pending user validation`  
-Cache: `216lwc10f28rc2`  
+Build: `v2.1.6l-wc10-f28-rc3`  
+Status: `Release Candidate 3 / pending user validation`  
+Cache: `216lwc10f28rc3`  
 Source baseline: accepted `v2.1.6l-wc10-f27`  
 Source SHA-256: `97ce4d8ac0afb209879e2c9f68a2b976859c98af0a9e8311a13ed617f244a088`  
 Previous accepted production baseline: `v2.1.6l-wc10-f27`
@@ -24,9 +24,12 @@ Previous accepted production baseline: `v2.1.6l-wc10-f27`
 
 ## Purpose
 
+Home circles now display each configured vehicle’s last refuel mileage beside the circle using zero decimal places. Circle 1 displays mileage to the right; Circles 2 and 3 display mileage to the left without changing circle or description placement.
+
+
 RGB Mileage is a standalone GitHub Pages app for vehicle mileage, refuel, maintenance, insurance, backup, restore, and recovery workflows.
 
-## F28 RC2 changes
+## F28 RC3 changes
 
 - MPG display now uses three digits right of the decimal point.
 - Price/Gal display now uses three digits right of the decimal point.
@@ -35,7 +38,7 @@ RGB Mileage is a standalone GitHub Pages app for vehicle mileage, refuel, mainte
 - Existing F26 odometer summary and mileage-warning behavior is preserved.
 - Accepted Home geometry is preserved.
 
-## F28 RC2 correction
+## F28 RC3 correction
 
 - Fuel record edit recalculation now matches Fuel Entry behavior more closely.
 - Editing odometer recalculates miles and MPG.
@@ -50,4 +53,4 @@ Deploy all 17 ZIP-root files to GitHub Pages. Do not deploy only a partial file 
 
 Validation URL:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc2
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc3
