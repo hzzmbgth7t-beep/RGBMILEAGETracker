@@ -1,22 +1,20 @@
 # CHANGELOG
 
-## v2.1.6l-wc10-f28-rc4 — 2026-09-18
+## v2.1.6l-wc10-f29-rc1 — 2026-10-12
 
-- Built from accepted `v2.1.6l-wc10-f27`.
-- Source SHA-256: `97ce4d8ac0afb209879e2c9f68a2b976859c98af0a9e8311a13ed617f244a088`.
-- Updated build/cache references to `v2.1.6l-wc10-f28-rc4` and `216lwc10f28rc4`.
-- Changed MPG display formatting to three decimal places.
-- Changed Price/Gal display formatting to three decimal places.
-- Corrected Fuel record edit recalculation parity:
-  - odometer updates miles and MPG
-  - miles/gallons update MPG
-  - Price/Gal updates Total Cost
-  - Total Cost updates Price/Gal
-- Added Home circle last-refuel mileage beside each circle: Circle 1 displays to the right; Circles 2 and 3 display to the left without moving circles or descriptions.
-- No data migration was added; existing stored values are not rewritten.
-- Preserved F27 Settings App Cache Reset, F26 odometer fields, delete parity, and accepted Home geometry.
+- Built from accepted `v2.1.6l-wc10-f28`.
+- Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`.
+- Added Supabase cloud sync (offline-first; local storage remains the working copy).
+- Added Settings > Cloud Sync card and Cloud Sync screen.
+- Added sign-in, Set/Reset Password by email, invite/reset link handling, Sync Now, and Sign Out.
+- Added automatic push after each save and push-then-pull sync on launch, foreground, and reconnect.
+- Added first-link comparison with an explicit Use Cloud / Upload This Device choice when data differs.
+- Added large-deletion safety pause (more than 10 cloud items or all vehicles).
+- Vehicle photos remain device-only.
+- Clear Local Data now also unlinks cloud sync on this device (cloud data is never deleted by it).
+- Supabase side: `4_Enable_App_Sync.sql` adds list order/updated columns and fill triggers (applied 2026-10-12).
+- No Home geometry, record schema, or calculation changes.
 
 ## Prior accepted baseline
 
-- Previous accepted production baseline before this candidate: `v2.1.6l-wc10-f27`.
-- Earlier F26 and F27 notes are preserved in the accepted release packages for those versions.
+- Previous accepted production baseline before this release: `v2.1.6l-wc10-f28`.

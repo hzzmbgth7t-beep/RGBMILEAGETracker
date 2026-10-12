@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f28-rc4",date:"2026-09-18",cacheRevision:"216lwc10f28rc4"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f29-rc1",date:"2026-10-12",cacheRevision:"216lwc10f29rc1"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const CUSTOM_LABEL_MAX_LENGTH=50;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
@@ -907,6 +907,7 @@ function clearRGBMStorage(keepCurrent=false){
     if(prefixes.some(p=>k&&k.startsWith(p))) keys.push(k);
   }
   keys.forEach(k=>{ if(!keepCurrent || k!==KEY) localStorage.removeItem(k); });
+  if(!keepCurrent){try{localStorage.removeItem("RGBM_CLOUD_SYNCED");localStorage.removeItem("RGBM_CLOUD_LINKED")}catch(e){}}
 }
 function storageBytes(obj){
   try{return new Blob([JSON.stringify(obj)]).size}
@@ -961,7 +962,7 @@ function loadData(){
   }
   return d;
 }
-function saveData(d=state){
+function saveData(d=state,opts={}){
   applyRecordLabelModel(d);
   d.schemaVersion=SCHEMA_VERSION;
   d.migrationVersion=RGBMDataV3.MIGRATION_VERSION;
@@ -970,6 +971,7 @@ function saveData(d=state){
   d.buildDate=BUILD_DATE;
   d.modifiedAt=nowISO();
   state=RGBMDataV3.saveActiveState(localStorage,d,dataContext("active-save"));
+  if(!(opts&&opts.skipCloud)&&typeof cloudSchedulePush==="function")cloudSchedulePush();
   return state;
 }
 function nextSeq(){const n=state.nextEntrySequence||1;state.nextEntrySequence=n+1;return n} function baseRecord(type,vid,source="Manual Entry"){return {recordId:uid(type.toUpperCase()),entrySequence:nextSeq(),recordType:type,vehicleId:vid,source,origin:source,status:"",lifecycle:"",classificationTags:[],dataQuality:"",createdAt:nowISO(),modifiedAt:nowISO(),notes:""}}
@@ -1080,6 +1082,7 @@ function render(){
   else if(s==="reports")reportsHome(app);
   else if(s.startsWith("report"))reportDetail(app,s);
   else if(s==="settings")settings(app);
+  else if(s==="cloud")cloudScreen(app);
   else{home(app);return}
   finalizeNonHomeShell(app,s);
 }
@@ -3281,7 +3284,7 @@ function settings(app){
   const evidenceCard=`<div class="card"><h2>WC-10 Migration Evidence</h2><p><strong>Current check: ${esc(evidence.result)}</strong><br>Migration acceptance: ${esc(evidence.migrationAcceptance)}<br>Legacy source: ${esc(evidence.storage.legacySourceKey||"N/A")}<br>Canonical validation: ${evidence.canonical.validation.valid?"PASS":"FAIL"}</p><p class="muted">The exported JSON contains IDs, counts, order, and record-ID fingerprints. It excludes images, VINs, plates, and record amounts.</p><button class="wide primary" type="button" onclick="downloadMigrationEvidence()">Download Migration Evidence</button><button class="wide ghost" type="button" onclick="copyMigrationEvidenceSummary()">Copy Migration Summary</button></div>`;
   const offlineCard=`<div class="card offline-mode-card"><h2>Offline Mode</h2><p id="offlineModeStatus">${esc(offlineStatusSummary())}</p><p class="muted">Vehicle data remains in local storage. The service worker caches only application files and icons.</p><button class="wide ghost" type="button" onclick="requestOfflineUpdate()">Check for App Update</button><button id="applyOfflineUpdateButton" class="wide primary" type="button" onclick="applyOfflineUpdate()" ${OFFLINE_STATE.updateReady?"":"hidden"}>Apply Offline Update</button></div>`;
   const cacheRepairCard=`<div class="card app-shell-repair-card"><h2>App Cache Reset</h2><p class="muted">Use this if the Home Screen app opens an older version or wrong layout while Safari shows the current version. This clears cached app files and service worker registrations for this app, then reloads the current cache-busting URL. Vehicle data is preserved.</p><button class="wide ghost" type="button" onclick="downloadBackup()">Create JSON Backup First</button><button class="wide primary" type="button" onclick="resetAppShellCache()">Reset App Cache / Reload Current Version</button><pre id="appShellResetStatus" class="small"></pre></div>`;
-  app.innerHTML=header("Settings")+buildCard+`<div class="card"><h2>Vehicle Order</h2><p class="muted">Position 1 is the primary portrait position. Landscape order is left to right.</p></div>${orderRows}${offlineCard}${cacheRepairCard}${evidenceCard}<div class="card"><h2>About</h2><p>RGB Mileage ${VERSION}<br>Build Date: ${formatBuildDate(BUILD_DATE)}<br>Schema: ${SCHEMA_VERSION}<br>Migration: ${RGBMDataV3.MIGRATION_VERSION}<br>Evidence: ${RGBMWC10Evidence.EVIDENCE_VERSION}</p><button class="wide danger" onclick="if(confirm('Clear all local data, including retained rollback data?')){clearRGBMStorage(false);state=blankData();saveData();nav('home')}">Clear Local Data</button></div>`+bottomNav()+footer();
+  app.innerHTML=header("Settings")+buildCard+cloudSettingsCard()+`<div class="card"><h2>Vehicle Order</h2><p class="muted">Position 1 is the primary portrait position. Landscape order is left to right.</p></div>${orderRows}${offlineCard}${cacheRepairCard}${evidenceCard}<div class="card"><h2>About</h2><p>RGB Mileage ${VERSION}<br>Build Date: ${formatBuildDate(BUILD_DATE)}<br>Schema: ${SCHEMA_VERSION}<br>Migration: ${RGBMDataV3.MIGRATION_VERSION}<br>Evidence: ${RGBMWC10Evidence.EVIDENCE_VERSION}</p><button class="wide danger" onclick="if(confirm('Clear all local data, including retained rollback data?')){clearRGBMStorage(false);state=blankData();saveData();nav('home')}">Clear Local Data</button></div>`+bottomNav()+footer();
 }
 function moveVehicleOrder(vid,delta){
   const index=state.vehicleOrder.indexOf(vid);
@@ -3754,11 +3757,291 @@ function renderRecoveryConsole(error){
 function renderDataFatal(error){
   renderRecoveryConsole(error);
 }
-normalizeLaunchUrl();initApplicationShell();initResponsiveViewportHandling();initOfflineMode();
+/* ===== F29 Cloud Sync (Supabase) =====
+   Local storage stays the working copy (offline-first). When signed in, every save is
+   pushed to Supabase; on launch/foreground/Sync Now, local changes are pushed first and
+   then any changes made on another device are pulled. Vehicle photos stay on the device. */
+const CLOUD_CONFIG=Object.freeze(Object.assign({
+  url:"https://nlfivcxlzmivjzwlhlot.supabase.co",
+  key:"sb_publishable_fBNYoq7AJ2po0RM62R0lBg_pIYccnPM"
+},(typeof window!=="undefined"&&window.__RGBM_CLOUD_CONFIG__)||{}));
+const CLOUD_KEYS=Object.freeze({session:"RGBM_CLOUD_SESSION",synced:"RGBM_CLOUD_SYNCED",linked:"RGBM_CLOUD_LINKED",last:"RGBM_CLOUD_LAST"});
+const CLOUD_TABLES=Object.freeze([
+  {table:"vehicle_acquisition_records",collection:"vehicleAcquisitionRecords",pk:"record_id",idField:"recordId"},
+  {table:"fuel_records",collection:"fuelRecords",pk:"record_id",idField:"recordId"},
+  {table:"maintenance_records",collection:"maintenanceRecords",pk:"record_id",idField:"recordId"},
+  {table:"insurance_records",collection:"insuranceRecords",pk:"record_id",idField:"recordId"},
+  {table:"attachments",collection:"attachments",pk:"attachment_id",idField:"attachmentId"}
+]);
+const CLOUD_LOCAL_ONLY_VEHICLE_FIELDS=Object.freeze(["primaryPhoto","photos"]);
+const CLOUD_DELETE_GUARD=10;
+const CLOUD={busy:false,again:false,timer:null,status:"",error:"",blocked:null,choice:null,authNotice:"",passwordMode:""};
+
+function cloudStoreGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function cloudStoreSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function cloudStoreDel(k){try{localStorage.removeItem(k)}catch(e){}}
+function cloudJSON(k,f){try{const v=cloudStoreGet(k);return v?JSON.parse(v):f}catch(e){return f}}
+function cloudSession(){return cloudJSON(CLOUD_KEYS.session,null)}
+function cloudSignedIn(){const s=cloudSession();return !!(s&&s.refresh_token&&s.user&&s.user.id)}
+function cloudLinked(){const s=cloudSession();return !!(s&&s.user&&cloudStoreGet(CLOUD_KEYS.linked)===s.user.id)}
+function cloudOnline(){return typeof navigator==="undefined"||navigator.onLine!==false}
+function cloudNote(status,error=""){CLOUD.status=status;CLOUD.error=error;cloudRefreshStatusUi()}
+function cloudSaveSession(t){
+  if(!t||!t.access_token)return null;
+  const prev=cloudSession()||{};
+  const user=t.user&&t.user.id?{id:t.user.id,email:t.user.email||""}:prev.user||cloudUserFromJwt(t.access_token);
+  const s={access_token:t.access_token,refresh_token:t.refresh_token||prev.refresh_token,expires_at:Date.now()+((+t.expires_in||3600)*1000),user};
+  cloudStoreSet(CLOUD_KEYS.session,JSON.stringify(s));return s;
+}
+function cloudUserFromJwt(tok){try{const p=JSON.parse(atob(String(tok).split(".")[1].replace(/-/g,"+").replace(/_/g,"/")));return {id:p.sub,email:p.email||""}}catch(e){return null}}
+
+async function cloudAuthFetch(path,body,method="POST",bearer){
+  const headers={"apikey":CLOUD_CONFIG.key,"Content-Type":"application/json"};
+  if(bearer)headers.Authorization="Bearer "+bearer;
+  const res=await fetch(CLOUD_CONFIG.url+"/auth/v1/"+path,{method,headers,body:body?JSON.stringify(body):undefined});
+  let data=null;try{data=await res.json()}catch(e){}
+  if(!res.ok){const m=(data&&(data.msg||data.error_description||data.message||data.error))||("HTTP "+res.status);const err=new Error(m);err.status=res.status;throw err}
+  return data;
+}
+async function cloudToken(){
+  const s=cloudSession();if(!s)throw new Error("Not signed in");
+  if(s.access_token&&s.expires_at-Date.now()>60000)return s.access_token;
+  try{const t=await cloudAuthFetch("token?grant_type=refresh_token",{refresh_token:s.refresh_token});return cloudSaveSession(t).access_token}
+  catch(e){if(e.status===400||e.status===401||e.status===403){cloudStoreDel(CLOUD_KEYS.session);CLOUD.authNotice="Your cloud sign-in expired. Sign in again."}throw e}
+}
+async function cloudRest(path,{method="GET",body,prefer}={}){
+  const tok=await cloudToken();
+  const headers={"apikey":CLOUD_CONFIG.key,"Authorization":"Bearer "+tok,"Content-Type":"application/json"};
+  if(prefer)headers.Prefer=prefer;
+  const res=await fetch(CLOUD_CONFIG.url+"/rest/v1/"+path,{method,headers,body:body!==undefined?JSON.stringify(body):undefined});
+  if(!res.ok){let m="";try{const d=await res.json();m=d.message||d.hint||JSON.stringify(d)}catch(e){}throw new Error(`Cloud ${method} ${path.split("?")[0]} failed (${res.status}) ${m}`)}
+  if(res.status===204)return null;
+  const txt=await res.text();return txt?JSON.parse(txt):null;
+}
+
+/* ---- state <-> rows ---- */
+function cloudHash(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193)}return (h>>>0).toString(16)+":"+str.length}
+function cloudStable(v){if(Array.isArray(v))return "["+v.map(cloudStable).join(",")+"]";if(v&&typeof v==="object")return "{"+Object.keys(v).sort().map(k=>JSON.stringify(k)+":"+cloudStable(v[k])).join(",")+"}";return JSON.stringify(v===undefined?null:v)}
+function cloudVehicleRaw(v){const r={...v};CLOUD_LOCAL_ONLY_VEHICLE_FIELDS.forEach(f=>delete r[f]);return r}
+function cloudSettingsRaw(st){const r={...st};["vehicles",...CLOUD_TABLES.map(t=>t.collection)].forEach(k=>delete r[k]);return r}
+function cloudRecordId(rec,t){return String(rec[t.idField]||rec.id||"")}
+function cloudRowsFromState(st,userId){
+  const out={app_settings:[{user_id:userId,raw_json:cloudSettingsRaw(st)}],vehicles:[]};
+  (st.vehicles||[]).forEach(v=>{const p=String(v.primaryPhoto||"");out.vehicles.push({vehicle_id:String(v.vehicleId),raw_json:cloudVehicleRaw(v),primary_photo_present:!!p,primary_photo_chars:p.length||null})});
+  CLOUD_TABLES.forEach(t=>{out[t.table]=(st[t.collection]||[]).map((r,i)=>{const row={[t.pk]:cloudRecordId(r,t),raw_json:r,list_position:i};if(t.table!=="attachments")row.vehicle_id=String(r.vehicleId||"");else{row.vehicle_id=r.vehicleId||null;row.record_id=r.recordId||null}return row})});
+  return out;
+}
+function cloudRowKey(table,row){if(table==="app_settings")return "app_settings";if(table==="vehicles")return "vehicles:"+row.vehicle_id;const t=CLOUD_TABLES.find(x=>x.table===table);return table+":"+row[t.pk]}
+function cloudRowFingerprint(table,row,withPosition=true){const pos=withPosition&&row.list_position!=null?"|"+row.list_position:"";return cloudHash(cloudStable(row.raw_json)+pos)}
+function cloudFingerprints(rows,withPosition=true,skipSettings=false){const m={};Object.keys(rows).forEach(table=>{if(skipSettings&&table==="app_settings")return;rows[table].forEach(row=>{m[cloudRowKey(table,row)]=cloudRowFingerprint(table,row,withPosition)})});return m}
+
+async function cloudFetchRows(){
+  const rows={};
+  const set=await cloudRest("app_settings?select=user_id,raw_json");
+  rows.app_settings=(set||[]).map(r=>({user_id:r.user_id,raw_json:r.raw_json}));
+  const veh=await cloudRest("vehicles?select=vehicle_id,raw_json,sort_order&order=vehicle_id.asc");
+  rows.vehicles=(veh||[]).map(r=>({vehicle_id:r.vehicle_id,raw_json:cloudVehicleRaw(r.raw_json||{})}));
+  for(const t of CLOUD_TABLES){
+    const sel=t.table==="attachments"?"attachment_id,vehicle_id,record_id,raw_json,list_position":`${t.pk},vehicle_id,raw_json,list_position`;
+    const order=t.table==="attachments"?`list_position.asc.nullslast,${t.pk}.asc`:`list_position.asc.nullslast,entry_sequence.asc.nullslast,${t.pk}.asc`;
+    const data=await cloudRest(`${t.table}?select=${sel}&order=${order}`);
+    rows[t.table]=data||[];
+  }
+  return rows;
+}
+function cloudStateFromRows(rows,localState){
+  const base=(rows.app_settings[0]&&rows.app_settings[0].raw_json)||{};
+  const st=JSON.parse(JSON.stringify(base));
+  const localById={};((localState&&localState.vehicles)||[]).forEach(v=>{localById[v.vehicleId]=v});
+  const order=Array.isArray(st.vehicleOrder)?st.vehicleOrder:[];
+  const vs=rows.vehicles.map(r=>{const v={...r.raw_json};const lv=localById[v.vehicleId];CLOUD_LOCAL_ONLY_VEHICLE_FIELDS.forEach(f=>{if(lv&&lv[f]!==undefined)v[f]=lv[f];else if(f==="photos")v.photos=v.photos||[];else v[f]=v[f]||""});return v});
+  vs.sort((a,b)=>{const ia=order.indexOf(a.vehicleId),ib=order.indexOf(b.vehicleId);return (ia<0?999:ia)-(ib<0?999:ib)});
+  st.vehicles=vs;
+  CLOUD_TABLES.forEach(t=>{st[t.collection]=(rows[t.table]||[]).map(r=>r.raw_json)});
+  return st;
+}
+function cloudCounts(st){return {vehicles:(st.vehicles||[]).filter(v=>RGBMDataV3.isVehicleConfigured(v)).length,fuel:(st.fuelRecords||[]).length,maintenance:(st.maintenanceRecords||[]).length,insurance:(st.insuranceRecords||[]).length}}
+function cloudRowsEmpty(rows){return !rows.vehicles.length&&CLOUD_TABLES.every(t=>!(rows[t.table]||[]).length)}
+
+/* ---- push ---- */
+async function cloudPush(opts={}){
+  const s=cloudSession();if(!s||!s.user)throw new Error("Not signed in");
+  const rows=cloudRowsFromState(state,s.user.id);
+  const cur=cloudFingerprints(rows);
+  const prev=opts.prev||cloudJSON(CLOUD_KEYS.synced,{});
+  const ups={},dels={};let upCount=0,delCount=0;
+  Object.keys(rows).forEach(table=>{rows[table].forEach(row=>{const k=cloudRowKey(table,row);if(prev[k]!==cur[k]){(ups[table]=ups[table]||[]).push(row);upCount++}})});
+  Object.keys(prev).forEach(k=>{if(k==="app_settings"||cur[k]!==undefined)return;const i=k.indexOf(":");const table=k.slice(0,i),id=k.slice(i+1);(dels[table]=dels[table]||[]).push(id);delCount++});
+  const vehiclesLeft=rows.vehicles.length,vehiclesBefore=Object.keys(prev).filter(k=>k.startsWith("vehicles:")).length;
+  if(!opts.allowLargeDelete&&(delCount>CLOUD_DELETE_GUARD||(vehiclesBefore>0&&vehiclesLeft===0))){
+    CLOUD.blocked={deletes:delCount};cloudNote("Sync paused: this device would remove "+delCount+" cloud item(s).","Open Cloud Sync to choose what to do.");return {blocked:true};
+  }
+  CLOUD.blocked=null;
+  if(!upCount&&!delCount)return {pushed:0};
+  const up=async(table,pk)=>{const list=ups[table];if(!list||!list.length)return;for(let i=0;i<list.length;i+=200)await cloudRest(`${table}?on_conflict=${pk}`,{method:"POST",body:list.slice(i,i+200),prefer:"resolution=merge-duplicates,return=minimal"})};
+  const del=async(table,pk)=>{const ids=dels[table];if(!ids||!ids.length)return;for(let i=0;i<ids.length;i+=50){const list=ids.slice(i,i+50).map(id=>'"'+String(id).replace(/\\/g,"\\\\").replace(/"/g,'\\"')+'"').join(",");await cloudRest(`${table}?${pk}=in.(${encodeURIComponent(list)})`,{method:"DELETE",prefer:"return=minimal"})}};
+  await up("app_settings","user_id");
+  await up("vehicles","vehicle_id");
+  for(const t of CLOUD_TABLES)await up(t.table,t.pk);
+  for(const t of CLOUD_TABLES)await del(t.table,t.pk);
+  await del("vehicles","vehicle_id");
+  cloudStoreSet(CLOUD_KEYS.synced,JSON.stringify(cur));
+  return {pushed:upCount,deleted:delCount};
+}
+
+/* ---- adopt cloud data on this device (photos kept) ---- */
+function cloudAdopt(rows){
+  const next=cloudStateFromRows(rows,state);
+  const v=RGBMDataV3.validateStateV3(next);
+  if(!v.valid)throw new Error("Cloud data failed validation: "+(v.errors||[]).slice(0,3).join("; "));
+  const prevRoute=route&&route.screen;
+  state=saveData(next,{skipCloud:true});
+  cloudStoreSet(CLOUD_KEYS.synced,JSON.stringify(cloudFingerprints(rows)));
+  const safe=["home","settings","cloud","reports","data","vehicleView"].includes(prevRoute)||String(prevRoute||"").startsWith("report");
+  if(safe)render();
+}
+
+/* ---- full sync ---- */
+async function cloudSync(reason="manual"){
+  if(!cloudSignedIn()){cloudNote("Signed out");return}
+  if(CLOUD.passwordMode)return;
+  if(!cloudOnline()){cloudNote("Offline — changes are saved on this device and will sync later.");return}
+  if(CLOUD.busy){CLOUD.again=true;return}
+  CLOUD.busy=true;cloudNote("Syncing…");
+  try{
+    const s=cloudSession();
+    if(!cloudLinked()){
+      const rows=await cloudFetchRows();
+      if(cloudRowsEmpty(rows)){await cloudPush({prev:{}});cloudStoreSet(CLOUD_KEYS.linked,s.user.id);cloudNote("Synced — this device's data was uploaded.")}
+      else{
+        const local=cloudFingerprints(cloudRowsFromState(state,s.user.id),false,true);
+        const remote=cloudFingerprints(rows,false,true);
+        const same=Object.keys(local).length===Object.keys(remote).length&&Object.keys(local).every(k=>local[k]===remote[k]);
+        if(same){await cloudPush({prev:cloudFingerprints(rows)});cloudStoreSet(CLOUD_KEYS.linked,s.user.id);CLOUD.choice=null;cloudNote("Synced — this device matches the cloud.")}
+        else{const diff=Object.keys({...local,...remote}).filter(k=>local[k]!==remote[k]).length;CLOUD.choice={rows,diff,cloud:cloudCounts(cloudStateFromRows(rows,state)),device:cloudCounts(state)};cloudNote("Choose which data to keep.","This device and the cloud have different data.");if(route.screen!=="cloud")nav("cloud")}
+      }
+    }else{
+      const pushed=await cloudPush();
+      if(pushed.blocked)return;
+      const rows=await cloudFetchRows();
+      const local=cloudFingerprints(cloudRowsFromState(state,s.user.id),false,true);
+      const remote=cloudFingerprints(rows,false,true);
+      const same=Object.keys(local).length===Object.keys(remote).length&&Object.keys(local).every(k=>local[k]===remote[k]);
+      if(!same)cloudAdopt(rows);
+      else cloudStoreSet(CLOUD_KEYS.synced,JSON.stringify({...cloudJSON(CLOUD_KEYS.synced,{}),...cloudFingerprints(rows)}));
+      cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());
+      cloudNote(same?"Synced":"Synced — updates from the cloud were applied.");
+    }
+  }catch(e){console.error(e);cloudNote(cloudSignedIn()?"Sync failed — changes are safe on this device.":"Signed out",String(e&&e.message||e))}
+  finally{CLOUD.busy=false;if(CLOUD.again){CLOUD.again=false;setTimeout(()=>cloudSync("again"),300)}}
+}
+function cloudSchedulePush(){
+  if(!cloudLinked())return;
+  clearTimeout(CLOUD.timer);
+  CLOUD.timer=setTimeout(async()=>{
+    if(!cloudOnline()){cloudNote("Offline — changes are saved on this device and will sync later.");return}
+    if(CLOUD.busy){CLOUD.again=true;return}
+    CLOUD.busy=true;
+    try{const r=await cloudPush();if(!r.blocked){cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());cloudNote("Synced")}}
+    catch(e){console.error(e);cloudNote("Sync failed — changes are safe on this device.",String(e&&e.message||e))}
+    finally{CLOUD.busy=false;if(CLOUD.again){CLOUD.again=false;setTimeout(()=>cloudSync("again"),300)}}
+  },1200);
+}
+async function cloudResolveChoice(which){
+  const c=CLOUD.choice;if(!c)return;const s=cloudSession();
+  if(which==="cloud"){
+    if(!confirm("Replace the data on this device with the cloud data?\n\nVehicle photos on this device are kept. Create a JSON backup first if you are unsure."))return;
+    try{cloudAdopt(c.rows);await cloudPush({prev:cloudFingerprints(c.rows)});cloudStoreSet(CLOUD_KEYS.linked,s.user.id);CLOUD.choice=null;cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());cloudNote("Synced — this device now uses the cloud data.");nav("cloud",{},false)}
+    catch(e){cloudNote("Could not use cloud data.",String(e.message||e))}
+  }else{
+    if(!confirm("Replace the cloud data with this device's data?\n\nCloud records that are not on this device will be removed from the cloud."))return;
+    try{await cloudPush({prev:cloudFingerprints(c.rows),allowLargeDelete:true});cloudStoreSet(CLOUD_KEYS.linked,s.user.id);CLOUD.choice=null;cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());cloudNote("Synced — the cloud now matches this device.");render()}
+    catch(e){cloudNote("Could not upload this device's data.",String(e.message||e))}
+  }
+}
+async function cloudResolveBlocked(which){
+  if(which==="push"){if(!confirm("Remove these items from the cloud too?"))return;CLOUD.busy=true;try{await cloudPush({allowLargeDelete:true});cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());cloudNote("Synced")}catch(e){cloudNote("Sync failed",String(e.message||e))}finally{CLOUD.busy=false}render()}
+  else{if(!confirm("Replace this device's data with the cloud data?"))return;CLOUD.busy=true;try{const rows=await cloudFetchRows();cloudAdopt(rows);CLOUD.blocked=null;cloudNote("Synced — this device now uses the cloud data.")}catch(e){cloudNote("Could not load cloud data.",String(e.message||e))}finally{CLOUD.busy=false}render()}
+}
+
+/* ---- auth actions ---- */
+async function cloudSignIn(){
+  const email=($("cloudEmail")||{}).value||"",pw=($("cloudPassword")||{}).value||"";
+  if(!email||!pw){cloudNote("Enter your email and password.");return}
+  cloudNote("Signing in…");
+  try{const t=await cloudAuthFetch("token?grant_type=password",{email:email.trim(),password:pw});cloudSaveSession(t);CLOUD.authNotice="";render();cloudSync("sign-in")}
+  catch(e){cloudNote("Sign-in failed.",String(e.message||e))}
+}
+async function cloudSendReset(){
+  const email=(($("cloudEmail")||{}).value||"").trim();
+  if(!email){cloudNote("Enter your email first.");return}
+  try{const redirect=location.origin+location.pathname;await cloudAuthFetch("recover?redirect_to="+encodeURIComponent(redirect),{email});cloudNote("Email sent. Open the link on this device to set your password.")}
+  catch(e){cloudNote("Could not send the email.",String(e.message||e))}
+}
+async function cloudSetPassword(){
+  const a=($("cloudNewPassword")||{}).value||"",b=($("cloudNewPassword2")||{}).value||"";
+  if(a.length<8){cloudNote("Use at least 8 characters.");return}
+  if(a!==b){cloudNote("The two passwords do not match.");return}
+  try{const tok=await cloudToken();await cloudAuthFetch("user",{password:a},"PUT",tok);CLOUD.passwordMode="";cloudNote("Password saved.");render();cloudSync("password-set")}
+  catch(e){cloudNote("Could not save the password.",String(e.message||e))}
+}
+async function cloudSignOut(){
+  if(!confirm("Sign out of cloud sync on this device?\n\nYour data stays on this device. Changes will not sync until you sign in again."))return;
+  const s=cloudSession();
+  try{if(s&&s.access_token)await cloudAuthFetch("logout",null,"POST",s.access_token)}catch(e){}
+  [CLOUD_KEYS.session,CLOUD_KEYS.synced,CLOUD_KEYS.linked,CLOUD_KEYS.last].forEach(cloudStoreDel);
+  CLOUD.choice=null;CLOUD.blocked=null;cloudNote("Signed out");render();
+}
+function cloudCaptureAuthRedirect(){
+  try{
+    const h=String(location.hash||"");if(!h||h.length<2)return;
+    const p=new URLSearchParams(h.slice(1));
+    if(!p.get("access_token")&&!p.get("error")&&!p.get("error_code"))return;
+    if(p.get("error")||p.get("error_code")){CLOUD.authNotice="That email link did not work ("+(p.get("error_description")||p.get("error_code")||p.get("error")).replace(/\+/g," ")+"). Use “Set or reset password” to get a new link.";CLOUD.pendingRoute=true}
+    else{cloudSaveSession({access_token:p.get("access_token"),refresh_token:p.get("refresh_token"),expires_in:p.get("expires_in")});const type=p.get("type")||"";if(type==="invite"||type==="recovery"||type==="signup")CLOUD.passwordMode=type;CLOUD.pendingRoute=true}
+    history.replaceState(history.state||null,"",location.pathname+location.search);
+  }catch(e){console.error(e)}
+}
+function cloudAge(){const t=cloudStoreGet(CLOUD_KEYS.last);if(!t)return "never";const d=new Date(t);return isNaN(d)?"never":d.toLocaleString()}
+function cloudStatusLine(){
+  if(!cloudSignedIn())return "Not signed in. Data is stored on this device only.";
+  const s=cloudSession();
+  return `Signed in as ${s.user.email||"your account"} • Last sync: ${cloudAge()}${CLOUD.status?" • "+CLOUD.status:""}`;
+}
+function cloudRefreshStatusUi(){const el=$("cloudStatusText");if(el)el.textContent=cloudStatusLine();const er=$("cloudErrorText");if(er)er.textContent=CLOUD.error||""}
+function cloudSettingsCard(){return `<div class="card cloud-sync-card"><h2>Cloud Sync</h2><p id="cloudStatusText">${esc(cloudStatusLine())}</p><button class="wide primary" type="button" onclick="nav('cloud')">Open Cloud Sync</button></div>`}
+function cloudScreen(app){
+  let body="";
+  const notice=CLOUD.authNotice?`<p class="cloud-notice">${esc(CLOUD.authNotice)}</p>`:"";
+  if(CLOUD.passwordMode&&cloudSignedIn()){
+    body=`<div class="card"><h2>Set Your Password</h2><p class="muted">Choose the password you will use to sign in to RGB Mileage cloud sync.</p><label>New password<input id="cloudNewPassword" type="password" autocomplete="new-password"></label><label>Confirm password<input id="cloudNewPassword2" type="password" autocomplete="new-password"></label><button class="wide primary" type="button" onclick="cloudSetPassword()">Save Password</button></div>`;
+  }else if(!cloudSignedIn()){
+    body=`<div class="card"><h2>Sign In</h2>${notice}<p class="muted">Sign in to keep this device's data in sync with your RGB Mileage cloud database.</p><label>Email<input id="cloudEmail" type="email" autocomplete="username" autocapitalize="none"></label><label>Password<input id="cloudPassword" type="password" autocomplete="current-password"></label><button class="wide primary" type="button" onclick="cloudSignIn()">Sign In</button><button class="wide ghost" type="button" onclick="cloudSendReset()">Set or Reset Password by Email</button></div>`;
+  }else{
+    let extra="";
+    if(CLOUD.choice){const c=CLOUD.choice;extra=`<div class="card cloud-choice-card"><h2>Choose Which Data to Keep</h2><p>This device and the cloud have different data (${c.diff} item(s) differ).</p><p><strong>Cloud:</strong> ${c.cloud.vehicles} vehicles • ${c.cloud.fuel} fuel • ${c.cloud.maintenance} maintenance • ${c.cloud.insurance} insurance<br><strong>This device:</strong> ${c.device.vehicles} vehicles • ${c.device.fuel} fuel • ${c.device.maintenance} maintenance • ${c.device.insurance} insurance</p><button class="wide ghost" type="button" onclick="downloadBackup()">Create JSON Backup First</button><button class="wide primary" type="button" onclick="cloudResolveChoice('cloud')">Use Cloud Data on This Device</button><button class="wide" type="button" onclick="cloudResolveChoice('device')">Upload This Device's Data to Cloud</button></div>`}
+    else if(CLOUD.blocked){extra=`<div class="card cloud-choice-card"><h2>Sync Paused</h2><p>Saving here would remove ${CLOUD.blocked.deletes} item(s) from the cloud. Nothing has been removed yet.</p><button class="wide ghost" type="button" onclick="downloadBackup()">Create JSON Backup First</button><button class="wide primary" type="button" onclick="cloudResolveBlocked('pull')">Restore This Device from Cloud</button><button class="wide danger" type="button" onclick="cloudResolveBlocked('push')">Remove Them from the Cloud Too</button></div>`}
+    body=`${extra}<div class="card"><h2>Status</h2>${notice}<p id="cloudStatusText">${esc(cloudStatusLine())}</p><p id="cloudErrorText" class="small muted">${esc(CLOUD.error||"")}</p><button class="wide primary" type="button" onclick="cloudSync('manual')">Sync Now</button><button class="wide ghost" type="button" onclick="cloudSignOut()">Sign Out</button><p class="muted">Vehicle photos stay on this device. Records, vehicles and settings sync.</p></div>`;
+  }
+  app.innerHTML=header("Cloud Sync")+body+`<pre id="cloudErrorPre" class="small"></pre>`+bottomNav()+footer();
+}
+function initCloudSync(){
+  if(typeof window==="undefined")return;
+  window.addEventListener("online",()=>cloudSync("online"));
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")cloudSync("foreground")});
+  const go=()=>{if(CLOUD.pendingRoute){CLOUD.pendingRoute=false;nav("cloud")}setTimeout(()=>cloudSync("launch"),600)};
+  const s=cloudSession();
+  if(s&&s.access_token&&!(s.user&&s.user.id)){
+    cloudAuthFetch("user",null,"GET",s.access_token).then(u=>{if(u&&u.id){s.user={id:u.id,email:u.email||""};cloudStoreSet(CLOUD_KEYS.session,JSON.stringify(s))}}).catch(e=>{CLOUD.authNotice="Could not confirm your sign-in. Sign in again.";cloudStoreDel(CLOUD_KEYS.session)}).finally(go);
+  }else go();
+}
+
+cloudCaptureAuthRedirect();normalizeLaunchUrl();initApplicationShell();initResponsiveViewportHandling();initOfflineMode();
 try{
   state=loadData();
   window.RGBM_WC10_DATA_DIAGNOSTICS=dataDiagnostics;
   window.RGBM_WC10_MIGRATION_EVIDENCE=migrationEvidenceReport;
-  render()
+  render();
+  initCloudSync()
 }
 catch(e){console.error(e);renderDataFatal(e)}

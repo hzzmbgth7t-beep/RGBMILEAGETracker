@@ -1,17 +1,19 @@
-# RGBMileage v2.1.6l-wc10-f28-rc4
+# RGBMileage v2.1.6l-wc10-f29-rc1
 
 ## URLs
 
 Production URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc4
+Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc1
 
-Build: `v2.1.6l-wc10-f28-rc4`  
-Status: `Release Candidate 4 / pending user validation`  
-Cache: `216lwc10f28rc4`  
-Source baseline: accepted `v2.1.6l-wc10-f27`  
-Source SHA-256: `97ce4d8ac0afb209879e2c9f68a2b976859c98af0a9e8311a13ed617f244a088`  
-Previous accepted production baseline: `v2.1.6l-wc10-f27`
+Supabase project URL: https://nlfivcxlzmivjzwlhlot.supabase.co
+
+Build: `v2.1.6l-wc10-f29-rc1`  
+Status: `Release candidate — pending user validation`  
+Cache: `216lwc10f29rc1`  
+Source baseline: accepted `v2.1.6l-wc10-f28`  
+Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`  
+Previous accepted production baseline: `v2.1.6l-wc10-f28`
 
 ## Locked release package rules
 
@@ -24,28 +26,19 @@ Previous accepted production baseline: `v2.1.6l-wc10-f27`
 
 ## Purpose
 
-Home circles now display each configured vehicle’s last refuel mileage beside the circle using zero decimal places. Circle 1 displays mileage to the right; Circles 2 and 3 display mileage to the left without changing circle or description placement.
+F29 connects RGB Mileage to its Supabase database. The device keeps working offline from local storage; when signed in, changes sync to Supabase and changes made on another device sync back.
 
+## F29 changes
 
-RGB Mileage is a standalone GitHub Pages app for vehicle mileage, refuel, maintenance, insurance, backup, restore, and recovery workflows.
-
-## F28 RC4 changes
-
-- MPG display now uses three digits right of the decimal point.
-- Price/Gal display now uses three digits right of the decimal point.
-- The change is display-oriented; stored record values are not migrated or rewritten.
-- Existing F27 App Cache Reset behavior is preserved.
-- Existing F26 odometer summary and mileage-warning behavior is preserved.
-- Accepted Home geometry is preserved.
-
-## F28 RC4 correction
-
-- Fuel record edit recalculation now matches Fuel Entry behavior more closely.
-- Editing odometer recalculates miles and MPG.
-- Editing miles or gallons recalculates MPG.
-- Editing Price/Gal recalculates Total Cost.
-- Editing Total Cost recalculates Price/Gal.
-- MPG and Price/Gal display remain three decimal places.
+- New Settings > Cloud Sync card and Cloud Sync screen (sign in, set/reset password by email, Sync Now, Sign Out).
+- Every save is pushed to Supabase about one second later when signed in and online.
+- On launch, return to the app, reconnect, and Sync Now: local changes are pushed first, then cloud changes are pulled.
+- First sign-in on a device compares device and cloud data. If they match, sync starts. If they differ, the user chooses which data to keep; nothing is overwritten without a choice.
+- Safety pause: a save that would remove more than 10 cloud items (or every vehicle) is held until the user chooses.
+- Invite and password-reset email links open a Set Password screen in the app.
+- Vehicle photos stay on the device and are not uploaded.
+- Clear Local Data unlinks the device from cloud sync; it never deletes cloud data.
+- Home geometry, circles, descriptions, and mileage labels are unchanged.
 
 ## Deploy
 
@@ -53,4 +46,4 @@ Deploy all 17 ZIP-root files to GitHub Pages. Do not deploy only a partial file 
 
 Validation URL:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc4
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc1

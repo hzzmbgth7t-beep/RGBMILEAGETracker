@@ -1,10 +1,10 @@
-# DEPLOYMENT — v2.1.6l-wc10-f28-rc4
+# DEPLOYMENT — v2.1.6l-wc10-f29-rc1
 
-Build: `v2.1.6l-wc10-f28-rc4`  
-Status: `Release Candidate 4 / pending user validation`  
-Cache: `216lwc10f28rc4`  
-Source baseline: accepted `v2.1.6l-wc10-f27`  
-Source SHA-256: `97ce4d8ac0afb209879e2c9f68a2b976859c98af0a9e8311a13ed617f244a088`
+Build: `v2.1.6l-wc10-f29-rc1`  
+Status: `Release candidate — pending user validation`  
+Cache: `216lwc10f29rc1`  
+Source baseline: accepted `v2.1.6l-wc10-f28`  
+Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
 ## Locked package and README rules
 
@@ -15,26 +15,34 @@ Source SHA-256: `97ce4d8ac0afb209879e2c9f68a2b976859c98af0a9e8311a13ed617f244a08
 - README URLs must be updated for every version.
 - README URLs must be the first README section after the title.
 
+## Before deploying
+
+1. In the current app, create a JSON backup (Settings > App Cache Reset > Create JSON Backup First) and save it outside the app.
+2. Supabase is already prepared (tables, data import, sync triggers, sign-ups off, app URL allowed for email links).
+
 ## Deploy
 
 Deploy only the 17 ZIP-root files to GitHub Pages. Do not deploy the eight support folders.
 
 Open the cache-busting URL after deployment:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc4
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc1
 
-Confirm displayed identity is `v2.1.6l-wc10-f28-rc4` and cache identity is `216lwc10f28rc4`.
+Confirm displayed identity is `v2.1.6l-wc10-f29-rc1` and cache identity is `216lwc10f29rc1`.
 
-## Cache-busting requirement
+## First sign-in
 
-Every deployable release must include a cache-busting URL. For this version use:
-
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f28rc4
+1. Settings > Open Cloud Sync.
+2. Enter your email and tap **Set or Reset Password by Email**.
+3. Open the email link on the same device; the app opens the Set Password screen.
+4. Save a password. Sync starts.
+5. If the device and cloud match, status shows "Synced — this device matches the cloud."
+6. If they differ, choose **Use Cloud Data on This Device** or **Upload This Device's Data to Cloud**.
 
 ## Installed app recovery
 
 If Safari shows the correct version but the Home Screen app shows an old version, use Settings > App Cache Reset after creating a JSON backup.
 
-## Home circle mileage validation
+## Home validation
 
-Validate that Home circle positions and descriptions remain unchanged, that Circle 1 mileage appears to the right, and that Circle 2 and Circle 3 mileage appears to the left in portrait and landscape.
+Validate that Home circle positions, descriptions, and mileage labels are unchanged in portrait and landscape.

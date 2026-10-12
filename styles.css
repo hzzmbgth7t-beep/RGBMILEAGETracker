@@ -1729,3 +1729,7 @@ label.mileage-warning-field{
 .entry-row.mileage-warning-row .badge{
   color:#1b1b1b !important;
 }
+
+/* F29 cloud sync */
+.cloud-notice{color:#ffd166;font-weight:600}
+.cloud-choice-card{border:1px solid #ffd166}

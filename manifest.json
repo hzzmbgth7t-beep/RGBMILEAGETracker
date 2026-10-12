@@ -1,7 +1,7 @@
 {
   "name": "RGB Mileage",
   "short_name": "RGB Mileage",
-  "start_url": "./?v=216lwc10f28rc4",
+  "start_url": "./?v=216lwc10f29rc1",
   "display": "standalone",
   "background_color": "#0a1324",
   "theme_color": "#0a1324",
@@ -23,10 +23,10 @@
     }
   ],
   "orientation": "any",
-  "version": "v2.1.6l-wc10-f28-rc4",
-  "build_date": "2026-09-18",
-  "cache_revision": "216lwc10f28rc4",
-  "build_date_display": "08/30/2026",
+  "version": "v2.1.6l-wc10-f29-rc1",
+  "build_date": "2026-10-12",
+  "cache_revision": "216lwc10f29rc1",
+  "build_date_display": "10/12/2026",
   "date_display_format": "MM/DD/YYYY",
   "home_standalone_height_strategy": "100vh",
   "home_geometry_source": "ResizeObserver rendered container",
@@ -36,7 +36,7 @@
     "navigation": "network-first with cached shell fallback",
     "versioned_assets": "cache-first",
     "same_origin_static_assets": "cache-first with runtime fill",
-    "local_records": "localStorage; never placed in Cache Storage",
+    "local_records": "localStorage working copy; synced to Supabase when signed in; never placed in Cache Storage",
     "controlled_updates": true
   },
   "home_portrait_layout": "equal staggered: left-center primary, upper-right and lower-right secondary",
