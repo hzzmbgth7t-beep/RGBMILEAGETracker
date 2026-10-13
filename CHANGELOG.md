@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc2 — 2026-10-13
+
+- Built from `v2.1.6l-wc10-f29-rc1` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Added vehicle photo sync through private Supabase Storage bucket `vehicle-photos` (per-user folders).
+- Added Face ID app lock (passkey): on launch and after a chosen time in the background; cloud password fallback.
+- Added Face ID sign-in for Cloud Sync using Supabase passkeys (beta).
+- Added Settings > Face ID card (set up, require on open, lock-after time, turn off).
+- Supabase side: `5_Enable_Photo_Storage.sql` applied; passkeys enabled with RP ID `hzzmbgth7t-beep.github.io`.
+- No Home geometry, record schema, or calculation changes.
+
 ## v2.1.6l-wc10-f29-rc1 — 2026-10-12
 
 - Built from accepted `v2.1.6l-wc10-f28`.

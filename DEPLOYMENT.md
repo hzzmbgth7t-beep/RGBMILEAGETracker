@@ -1,8 +1,8 @@
-# DEPLOYMENT — v2.1.6l-wc10-f29-rc1
+# DEPLOYMENT — v2.1.6l-wc10-f29-rc2
 
-Build: `v2.1.6l-wc10-f29-rc1`  
+Build: `v2.1.6l-wc10-f29-rc2`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc1`  
+Cache: `216lwc10f29rc2`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -26,9 +26,9 @@ Deploy only the 17 ZIP-root files to GitHub Pages. Do not deploy the eight suppo
 
 Open the cache-busting URL after deployment:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc1
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc2
 
-Confirm displayed identity is `v2.1.6l-wc10-f29-rc1` and cache identity is `216lwc10f29rc1`.
+Confirm displayed identity is `v2.1.6l-wc10-f29-rc2` and cache identity is `216lwc10f29rc2`.
 
 ## First sign-in
 
@@ -38,6 +38,12 @@ Confirm displayed identity is `v2.1.6l-wc10-f29-rc1` and cache identity is `216l
 4. Save a password. Sync starts.
 5. If the device and cloud match, status shows "Synced — this device matches the cloud."
 6. If they differ, choose **Use Cloud Data on This Device** or **Upload This Device's Data to Cloud**.
+
+## Face ID (RC2)
+
+1. Sign in to Cloud Sync in the Home Screen app.
+2. Settings > Face ID > **Set Up Face ID** and approve the Face ID prompt.
+3. Close and reopen the app: it should ask for Face ID before showing data.
 
 ## Installed app recovery
 

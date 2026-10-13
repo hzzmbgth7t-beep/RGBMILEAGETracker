@@ -1,16 +1,16 @@
-# RGBMileage v2.1.6l-wc10-f29-rc1
+# RGBMileage v2.1.6l-wc10-f29-rc2
 
 ## URLs
 
 Production URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc1
+Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc2
 
 Supabase project URL: https://nlfivcxlzmivjzwlhlot.supabase.co
 
-Build: `v2.1.6l-wc10-f29-rc1`  
+Build: `v2.1.6l-wc10-f29-rc2`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc1`  
+Cache: `216lwc10f29rc2`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`  
 Previous accepted production baseline: `v2.1.6l-wc10-f28`
@@ -26,7 +26,7 @@ Previous accepted production baseline: `v2.1.6l-wc10-f28`
 
 ## Purpose
 
-F29 connects RGB Mileage to its Supabase database. The device keeps working offline from local storage; when signed in, changes sync to Supabase and changes made on another device sync back.
+F29 connects RGB Mileage to its Supabase database. RC2 adds vehicle photo sync and Face ID. The device keeps working offline from local storage; when signed in, changes sync to Supabase and changes made on another device sync back.
 
 ## F29 changes
 
@@ -36,7 +36,9 @@ F29 connects RGB Mileage to its Supabase database. The device keeps working offl
 - First sign-in on a device compares device and cloud data. If they match, sync starts. If they differ, the user chooses which data to keep; nothing is overwritten without a choice.
 - Safety pause: a save that would remove more than 10 cloud items (or every vehicle) is held until the user chooses.
 - Invite and password-reset email links open a Set Password screen in the app.
-- Vehicle photos stay on the device and are not uploaded.
+- RC2: vehicle photos sync through a private Supabase Storage bucket, so every signed-in device shows them.
+- RC2: Face ID (passkey) can lock the app on open and after time in the background, with the cloud password as a fallback.
+- RC2: Face ID sign-in for Cloud Sync (Supabase passkeys, beta).
 - Clear Local Data unlinks the device from cloud sync; it never deletes cloud data.
 - Home geometry, circles, descriptions, and mileage labels are unchanged.
 
@@ -46,4 +48,4 @@ Deploy all 17 ZIP-root files to GitHub Pages. Do not deploy only a partial file 
 
 Validation URL:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc1
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc2

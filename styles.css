@@ -1733,3 +1733,10 @@ label.mileage-warning-field{
 /* F29 cloud sync */
 .cloud-notice{color:#ffd166;font-weight:600}
 .cloud-choice-card{border:1px solid #ffd166}
+
+/* F29 RC2 Face ID lock */
+#rgbmLock{position:fixed;inset:0;z-index:2147483000;background:#0a1324;display:flex;align-items:center;justify-content:center;padding:24px;padding-top:calc(24px + env(safe-area-inset-top));}
+#rgbmLock .rgbm-lock-inner{width:100%;max-width:420px;text-align:center}
+#rgbmLock h1{margin:0 0 4px}
+body.rgbm-locked{overflow:hidden}
+.faceid-toggle{display:flex;gap:10px;align-items:center}

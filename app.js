@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f29-rc1",date:"2026-10-12",cacheRevision:"216lwc10f29rc1"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f29-rc2",date:"2026-10-12",cacheRevision:"216lwc10f29rc2"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const CUSTOM_LABEL_MAX_LENGTH=50;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
@@ -3284,7 +3284,7 @@ function settings(app){
   const evidenceCard=`<div class="card"><h2>WC-10 Migration Evidence</h2><p><strong>Current check: ${esc(evidence.result)}</strong><br>Migration acceptance: ${esc(evidence.migrationAcceptance)}<br>Legacy source: ${esc(evidence.storage.legacySourceKey||"N/A")}<br>Canonical validation: ${evidence.canonical.validation.valid?"PASS":"FAIL"}</p><p class="muted">The exported JSON contains IDs, counts, order, and record-ID fingerprints. It excludes images, VINs, plates, and record amounts.</p><button class="wide primary" type="button" onclick="downloadMigrationEvidence()">Download Migration Evidence</button><button class="wide ghost" type="button" onclick="copyMigrationEvidenceSummary()">Copy Migration Summary</button></div>`;
   const offlineCard=`<div class="card offline-mode-card"><h2>Offline Mode</h2><p id="offlineModeStatus">${esc(offlineStatusSummary())}</p><p class="muted">Vehicle data remains in local storage. The service worker caches only application files and icons.</p><button class="wide ghost" type="button" onclick="requestOfflineUpdate()">Check for App Update</button><button id="applyOfflineUpdateButton" class="wide primary" type="button" onclick="applyOfflineUpdate()" ${OFFLINE_STATE.updateReady?"":"hidden"}>Apply Offline Update</button></div>`;
   const cacheRepairCard=`<div class="card app-shell-repair-card"><h2>App Cache Reset</h2><p class="muted">Use this if the Home Screen app opens an older version or wrong layout while Safari shows the current version. This clears cached app files and service worker registrations for this app, then reloads the current cache-busting URL. Vehicle data is preserved.</p><button class="wide ghost" type="button" onclick="downloadBackup()">Create JSON Backup First</button><button class="wide primary" type="button" onclick="resetAppShellCache()">Reset App Cache / Reload Current Version</button><pre id="appShellResetStatus" class="small"></pre></div>`;
-  app.innerHTML=header("Settings")+buildCard+cloudSettingsCard()+`<div class="card"><h2>Vehicle Order</h2><p class="muted">Position 1 is the primary portrait position. Landscape order is left to right.</p></div>${orderRows}${offlineCard}${cacheRepairCard}${evidenceCard}<div class="card"><h2>About</h2><p>RGB Mileage ${VERSION}<br>Build Date: ${formatBuildDate(BUILD_DATE)}<br>Schema: ${SCHEMA_VERSION}<br>Migration: ${RGBMDataV3.MIGRATION_VERSION}<br>Evidence: ${RGBMWC10Evidence.EVIDENCE_VERSION}</p><button class="wide danger" onclick="if(confirm('Clear all local data, including retained rollback data?')){clearRGBMStorage(false);state=blankData();saveData();nav('home')}">Clear Local Data</button></div>`+bottomNav()+footer();
+  app.innerHTML=header("Settings")+buildCard+cloudSettingsCard()+faceIdSettingsCard()+`<div class="card"><h2>Vehicle Order</h2><p class="muted">Position 1 is the primary portrait position. Landscape order is left to right.</p></div>${orderRows}${offlineCard}${cacheRepairCard}${evidenceCard}<div class="card"><h2>About</h2><p>RGB Mileage ${VERSION}<br>Build Date: ${formatBuildDate(BUILD_DATE)}<br>Schema: ${SCHEMA_VERSION}<br>Migration: ${RGBMDataV3.MIGRATION_VERSION}<br>Evidence: ${RGBMWC10Evidence.EVIDENCE_VERSION}</p><button class="wide danger" onclick="if(confirm('Clear all local data, including retained rollback data?')){clearRGBMStorage(false);state=blankData();saveData();nav('home')}">Clear Local Data</button></div>`+bottomNav()+footer();
 }
 function moveVehicleOrder(vid,delta){
   const index=state.vehicleOrder.indexOf(vid);
@@ -3827,7 +3827,7 @@ function cloudSettingsRaw(st){const r={...st};["vehicles",...CLOUD_TABLES.map(t=
 function cloudRecordId(rec,t){return String(rec[t.idField]||rec.id||"")}
 function cloudRowsFromState(st,userId){
   const out={app_settings:[{user_id:userId,raw_json:cloudSettingsRaw(st)}],vehicles:[]};
-  (st.vehicles||[]).forEach(v=>{const p=String(v.primaryPhoto||"");out.vehicles.push({vehicle_id:String(v.vehicleId),raw_json:cloudVehicleRaw(v),primary_photo_present:!!p,primary_photo_chars:p.length||null})});
+  (st.vehicles||[]).forEach(v=>{const p=String(v.primaryPhoto||"");out.vehicles.push({vehicle_id:String(v.vehicleId),raw_json:cloudVehicleRaw(v)})});
   CLOUD_TABLES.forEach(t=>{out[t.table]=(st[t.collection]||[]).map((r,i)=>{const row={[t.pk]:cloudRecordId(r,t),raw_json:r,list_position:i};if(t.table!=="attachments")row.vehicle_id=String(r.vehicleId||"");else{row.vehicle_id=r.vehicleId||null;row.record_id=r.recordId||null}return row})});
   return out;
 }
@@ -3932,6 +3932,7 @@ async function cloudSync(reason="manual"){
       cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());
       cloudNote(same?"Synced":"Synced — updates from the cloud were applied.");
     }
+    if(cloudLinked()&&!CLOUD.blocked&&!CLOUD.choice)await cloudPhotoSyncSafe();
   }catch(e){console.error(e);cloudNote(cloudSignedIn()?"Sync failed — changes are safe on this device.":"Signed out",String(e&&e.message||e))}
   finally{CLOUD.busy=false;if(CLOUD.again){CLOUD.again=false;setTimeout(()=>cloudSync("again"),300)}}
 }
@@ -3942,7 +3943,7 @@ function cloudSchedulePush(){
     if(!cloudOnline()){cloudNote("Offline — changes are saved on this device and will sync later.");return}
     if(CLOUD.busy){CLOUD.again=true;return}
     CLOUD.busy=true;
-    try{const r=await cloudPush();if(!r.blocked){cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());cloudNote("Synced")}}
+    try{const r=await cloudPush();if(!r.blocked){await cloudPhotoSyncSafe();cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());cloudNote("Synced")}}
     catch(e){console.error(e);cloudNote("Sync failed — changes are safe on this device.",String(e&&e.message||e))}
     finally{CLOUD.busy=false;if(CLOUD.again){CLOUD.again=false;setTimeout(()=>cloudSync("again"),300)}}
   },1200);
@@ -3951,11 +3952,11 @@ async function cloudResolveChoice(which){
   const c=CLOUD.choice;if(!c)return;const s=cloudSession();
   if(which==="cloud"){
     if(!confirm("Replace the data on this device with the cloud data?\n\nVehicle photos on this device are kept. Create a JSON backup first if you are unsure."))return;
-    try{cloudAdopt(c.rows);await cloudPush({prev:cloudFingerprints(c.rows)});cloudStoreSet(CLOUD_KEYS.linked,s.user.id);CLOUD.choice=null;cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());cloudNote("Synced — this device now uses the cloud data.");nav("cloud",{},false)}
+    try{cloudAdopt(c.rows);await cloudPush({prev:cloudFingerprints(c.rows)});cloudStoreSet(CLOUD_KEYS.linked,s.user.id);CLOUD.choice=null;cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());cloudNote("Synced — this device now uses the cloud data.");await cloudPhotoSyncSafe();nav("cloud",{},false)}
     catch(e){cloudNote("Could not use cloud data.",String(e.message||e))}
   }else{
     if(!confirm("Replace the cloud data with this device's data?\n\nCloud records that are not on this device will be removed from the cloud."))return;
-    try{await cloudPush({prev:cloudFingerprints(c.rows),allowLargeDelete:true});cloudStoreSet(CLOUD_KEYS.linked,s.user.id);CLOUD.choice=null;cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());cloudNote("Synced — the cloud now matches this device.");render()}
+    try{await cloudPush({prev:cloudFingerprints(c.rows),allowLargeDelete:true});cloudStoreSet(CLOUD_KEYS.linked,s.user.id);CLOUD.choice=null;cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());cloudNote("Synced — the cloud now matches this device.");await cloudPhotoSyncSafe();render()}
     catch(e){cloudNote("Could not upload this device's data.",String(e.message||e))}
   }
 }
@@ -4016,12 +4017,12 @@ function cloudScreen(app){
   if(CLOUD.passwordMode&&cloudSignedIn()){
     body=`<div class="card"><h2>Set Your Password</h2><p class="muted">Choose the password you will use to sign in to RGB Mileage cloud sync.</p><label>New password<input id="cloudNewPassword" type="password" autocomplete="new-password"></label><label>Confirm password<input id="cloudNewPassword2" type="password" autocomplete="new-password"></label><button class="wide primary" type="button" onclick="cloudSetPassword()">Save Password</button></div>`;
   }else if(!cloudSignedIn()){
-    body=`<div class="card"><h2>Sign In</h2>${notice}<p class="muted">Sign in to keep this device's data in sync with your RGB Mileage cloud database.</p><label>Email<input id="cloudEmail" type="email" autocomplete="username" autocapitalize="none"></label><label>Password<input id="cloudPassword" type="password" autocomplete="current-password"></label><button class="wide primary" type="button" onclick="cloudSignIn()">Sign In</button><button class="wide ghost" type="button" onclick="cloudSendReset()">Set or Reset Password by Email</button></div>`;
+    body=`<div class="card"><h2>Sign In</h2>${notice}<p class="muted">Sign in to keep this device's data in sync with your RGB Mileage cloud database.</p><label>Email<input id="cloudEmail" type="email" autocomplete="username" autocapitalize="none"></label><label>Password<input id="cloudPassword" type="password" autocomplete="current-password"></label><button class="wide primary" type="button" onclick="cloudSignIn()">Sign In</button>${faceIdApiAvailable()?`<button class="wide" type="button" onclick="faceIdSignIn()">Sign In with Face ID</button>`:""}<button class="wide ghost" type="button" onclick="cloudSendReset()">Set or Reset Password by Email</button></div>`;
   }else{
     let extra="";
     if(CLOUD.choice){const c=CLOUD.choice;extra=`<div class="card cloud-choice-card"><h2>Choose Which Data to Keep</h2><p>This device and the cloud have different data (${c.diff} item(s) differ).</p><p><strong>Cloud:</strong> ${c.cloud.vehicles} vehicles • ${c.cloud.fuel} fuel • ${c.cloud.maintenance} maintenance • ${c.cloud.insurance} insurance<br><strong>This device:</strong> ${c.device.vehicles} vehicles • ${c.device.fuel} fuel • ${c.device.maintenance} maintenance • ${c.device.insurance} insurance</p><button class="wide ghost" type="button" onclick="downloadBackup()">Create JSON Backup First</button><button class="wide primary" type="button" onclick="cloudResolveChoice('cloud')">Use Cloud Data on This Device</button><button class="wide" type="button" onclick="cloudResolveChoice('device')">Upload This Device's Data to Cloud</button></div>`}
     else if(CLOUD.blocked){extra=`<div class="card cloud-choice-card"><h2>Sync Paused</h2><p>Saving here would remove ${CLOUD.blocked.deletes} item(s) from the cloud. Nothing has been removed yet.</p><button class="wide ghost" type="button" onclick="downloadBackup()">Create JSON Backup First</button><button class="wide primary" type="button" onclick="cloudResolveBlocked('pull')">Restore This Device from Cloud</button><button class="wide danger" type="button" onclick="cloudResolveBlocked('push')">Remove Them from the Cloud Too</button></div>`}
-    body=`${extra}<div class="card"><h2>Status</h2>${notice}<p id="cloudStatusText">${esc(cloudStatusLine())}</p><p id="cloudErrorText" class="small muted">${esc(CLOUD.error||"")}</p><button class="wide primary" type="button" onclick="cloudSync('manual')">Sync Now</button><button class="wide ghost" type="button" onclick="cloudSignOut()">Sign Out</button><p class="muted">Vehicle photos stay on this device. Records, vehicles and settings sync.</p></div>`;
+    body=`${extra}<div class="card"><h2>Status</h2>${notice}<p id="cloudStatusText">${esc(cloudStatusLine())}</p><p id="cloudErrorText" class="small muted">${esc(CLOUD.error||"")}</p><button class="wide primary" type="button" onclick="cloudSync('manual')">Sync Now</button><button class="wide ghost" type="button" onclick="cloudSignOut()">Sign Out</button><p class="muted">Records, vehicles, settings and vehicle photos sync.</p></div>`;
   }
   app.innerHTML=header("Cloud Sync")+body+`<pre id="cloudErrorPre" class="small"></pre>`+bottomNav()+footer();
 }
@@ -4036,12 +4037,181 @@ function initCloudSync(){
   }else go();
 }
 
+/* ===== F29 RC2: Vehicle photo sync (Supabase Storage) =====
+   Photos are stored in the private "vehicle-photos" bucket at <user id>/<vehicle id>.
+   vehicles.primary_photo_md5 holds the photo fingerprint so other devices know when to download.
+   RGBM_CLOUD_PHOTOS remembers, per vehicle, the local and cloud fingerprints at the last photo sync. */
+const CLOUD_PHOTO_BUCKET="vehicle-photos";
+function cloudPhotoState(){return cloudJSON("RGBM_CLOUD_PHOTOS",{})}
+function cloudPhotoStateSave(m){cloudStoreSet("RGBM_CLOUD_PHOTOS",JSON.stringify(m))}
+function cloudPhotoPath(uid,vid){return encodeURIComponent(uid)+"/"+encodeURIComponent(vid)}
+function cloudDataUrlToBlob(u){const m=/^data:([^;,]+)?(;base64)?,(.*)$/s.exec(String(u||""));if(!m)return null;const mime=m[1]||"image/jpeg";if(m[2]){const bin=atob(m[3]);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new Blob([a],{type:mime})}return new Blob([decodeURIComponent(m[3])],{type:mime})}
+function cloudBlobToDataUrl(b){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result));r.onerror=()=>rej(r.error);r.readAsDataURL(b)})}
+async function cloudStorage(method,path,body,headers={}){
+  const tok=await cloudToken();
+  const res=await fetch(CLOUD_CONFIG.url+"/storage/v1/object/"+path,{method,headers:{"apikey":CLOUD_CONFIG.key,"Authorization":"Bearer "+tok,...headers},body});
+  if(!res.ok){let m="";try{m=(await res.json()).message||""}catch(e){}const err=new Error(`Photo ${method} failed (${res.status}) ${m}`);err.status=res.status;throw err}
+  return res;
+}
+function cloudApplyPhoto(vid,dataUrl){
+  const v=(state.vehicles||[]).find(x=>x.vehicleId===vid);if(!v)return false;
+  v.primaryPhoto=dataUrl||"";
+  state=saveData(state,{skipCloud:true});
+  return true;
+}
+async function cloudPhotoSync(){
+  const s=cloudSession();if(!s||!s.user)return;
+  const uid=s.user.id,rec=cloudPhotoState();let changed=false,uploaded=0,downloaded=0;
+  // push local photo changes
+  for(const v of (state.vehicles||[])){
+    const vid=v.vehicleId,photo=String(v.primaryPhoto||""),lh=photo?cloudHash(photo):null,r=rec[vid];
+    if(lh&&(!r||r.local!==lh)){
+      const blob=cloudDataUrlToBlob(photo);if(!blob)continue;
+      await cloudStorage("POST",CLOUD_PHOTO_BUCKET+"/"+cloudPhotoPath(uid,vid),blob,{"Content-Type":blob.type||"image/jpeg","x-upsert":"true"});
+      await cloudRest(`vehicles?vehicle_id=eq.${encodeURIComponent(vid)}`,{method:"PATCH",body:{primary_photo_md5:lh,primary_photo_present:true,primary_photo_chars:photo.length},prefer:"return=minimal"});
+      rec[vid]={local:lh,cloud:lh};uploaded++;changed=true;
+    }else if(!lh&&r&&r.local){
+      try{await cloudStorage("DELETE",CLOUD_PHOTO_BUCKET+"/"+cloudPhotoPath(uid,vid))}catch(e){if(e.status!==404&&e.status!==400)throw e}
+      await cloudRest(`vehicles?vehicle_id=eq.${encodeURIComponent(vid)}`,{method:"PATCH",body:{primary_photo_md5:null,primary_photo_present:false,primary_photo_chars:null},prefer:"return=minimal"});
+      delete rec[vid];changed=true;
+    }
+  }
+  // pull photo changes made on other devices
+  const cloud=await cloudRest("vehicles?select=vehicle_id,primary_photo_md5")||[];
+  for(const row of cloud){
+    const vid=row.vehicle_id,cm=row.primary_photo_md5||null,r=rec[vid];
+    const v=(state.vehicles||[]).find(x=>x.vehicleId===vid);if(!v)continue;
+    const lh=v.primaryPhoto?cloudHash(String(v.primaryPhoto)):null;
+    if(cm&&(!r||r.cloud!==cm)){
+      if(r&&r.local===lh&&lh===cm)continue;
+      let res;try{res=await cloudStorage("GET","authenticated/"+CLOUD_PHOTO_BUCKET+"/"+cloudPhotoPath(uid,vid))}catch(e){if(e.status===404||e.status===400)continue;throw e}
+      const url=await cloudBlobToDataUrl(await res.blob());
+      cloudApplyPhoto(vid,url);rec[vid]={local:cloudHash(url),cloud:cm};downloaded++;changed=true;
+    }else if(!cm&&r&&r.cloud&&r.local===lh){
+      cloudApplyPhoto(vid,"");delete rec[vid];changed=true;
+    }
+  }
+  if(changed)cloudPhotoStateSave(rec);
+  if(downloaded){const sc=route&&route.screen;if(["home","settings","cloud","vehicleView"].includes(sc))render()}
+  return {uploaded,downloaded};
+}
+async function cloudPhotoSyncSafe(){try{return await cloudPhotoSync()}catch(e){console.error(e);CLOUD.error="Photos: "+String(e&&e.message||e);cloudRefreshStatusUi();return null}}
+
+/* ===== F29 RC2: Face ID (passkeys) =====
+   One passkey does two jobs: it signs in to Supabase (server-verified) and it unlocks the app on this
+   device (checked by the iPhone's Face ID / passcode). The app lock hides the screen; it does not
+   encrypt data stored on the phone. */
+const LOCK_KEY="RGBM_LOCK";
+const LOCK={hiddenAt:0,visible:false};
+function b64uToBuf(s){s=String(s).replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";const bin=atob(s);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a.buffer}
+function bufToB64u(b){const a=new Uint8Array(b);let s="";for(let i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function lockConfig(){return cloudJSON(LOCK_KEY,{enabled:false,credId:"",passkeyId:"",after:1})}
+function lockSave(c){cloudStoreSet(LOCK_KEY,JSON.stringify(c))}
+function faceIdApiAvailable(){return typeof window!=="undefined"&&!!window.PublicKeyCredential&&!!(navigator.credentials&&navigator.credentials.create)}
+async function faceIdAvailable(){try{return faceIdApiAvailable()&&await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()}catch(e){return false}}
+function faceIdParseCreate(o){
+  if(PublicKeyCredential.parseCreationOptionsFromJSON)return PublicKeyCredential.parseCreationOptionsFromJSON(o);
+  const r={...o,challenge:b64uToBuf(o.challenge),user:{...o.user,id:b64uToBuf(o.user.id)}};
+  if(o.excludeCredentials)r.excludeCredentials=o.excludeCredentials.map(c=>({...c,id:b64uToBuf(c.id)}));
+  return r;
+}
+function faceIdParseGet(o){
+  if(PublicKeyCredential.parseRequestOptionsFromJSON)return PublicKeyCredential.parseRequestOptionsFromJSON(o);
+  const r={...o,challenge:b64uToBuf(o.challenge)};
+  if(o.allowCredentials)r.allowCredentials=o.allowCredentials.map(c=>({...c,id:b64uToBuf(c.id)}));
+  return r;
+}
+function faceIdSerialize(c){
+  if(typeof c.toJSON==="function")return c.toJSON();
+  const r=c.response,out={id:c.id,rawId:c.id,type:"public-key",clientExtensionResults:c.getClientExtensionResults?c.getClientExtensionResults():{},authenticatorAttachment:c.authenticatorAttachment||undefined,response:{clientDataJSON:bufToB64u(r.clientDataJSON)}};
+  if(r.attestationObject)out.response.attestationObject=bufToB64u(r.attestationObject);
+  if(r.authenticatorData){out.response.authenticatorData=bufToB64u(r.authenticatorData);out.response.signature=bufToB64u(r.signature);if(r.userHandle)out.response.userHandle=bufToB64u(r.userHandle)}
+  return out;
+}
+async function faceIdSetup(){
+  if(!cloudSignedIn()){alert("Sign in to Cloud Sync first, then set up Face ID.");return}
+  if(!await faceIdAvailable()){alert("Face ID is not available in this browser.");return}
+  try{
+    const tok=await cloudToken();
+    const start=await cloudAuthFetch("passkeys/registration/options",{},"POST",tok);
+    const cred=await navigator.credentials.create({publicKey:faceIdParseCreate(start.options)});
+    if(!cred)throw new Error("Face ID was cancelled.");
+    const done=await cloudAuthFetch("passkeys/registration/verify",{challenge_id:start.challenge_id,credential:faceIdSerialize(cred)},"POST",await cloudToken());
+    lockSave({...lockConfig(),enabled:true,credId:cred.id,passkeyId:(done&&done.id)||""});
+    alert("Face ID is set up. The app will ask for Face ID when it opens.");
+    render();
+  }catch(e){console.error(e);alert("Face ID setup did not finish: "+String(e&&e.message||e))}
+}
+async function faceIdSignIn(){
+  try{
+    const start=await cloudAuthFetch("passkeys/authentication/options",{});
+    const cred=await navigator.credentials.get({publicKey:faceIdParseGet(start.options)});
+    if(!cred)throw new Error("Face ID was cancelled.");
+    const data=await cloudAuthFetch("passkeys/authentication/verify",{challenge_id:start.challenge_id,credential:faceIdSerialize(cred)});
+    const sess=data&&data.session?{...data.session,user:data.session.user||data.user}:data;
+    if(!cloudSaveSession(sess))throw new Error("No session returned.");
+    const c=lockConfig();if(!c.credId)lockSave({...c,credId:cred.id});
+    CLOUD.authNotice="";render();cloudSync("faceid-sign-in");
+  }catch(e){console.error(e);cloudNote("Face ID sign-in failed.",String(e&&e.message||e))}
+}
+async function faceIdRemove(){
+  if(!confirm("Turn off Face ID on this device?\n\nThe app will open without Face ID, and Face ID sign-in will be removed from your account."))return;
+  const c=lockConfig();
+  if(c.passkeyId&&cloudSignedIn()){try{await cloudAuthFetch("passkeys/"+encodeURIComponent(c.passkeyId),null,"DELETE",await cloudToken())}catch(e){console.error(e)}}
+  lockSave({enabled:false,credId:"",passkeyId:"",after:c.after||1});render();
+}
+function lockSetEnabled(on){const c=lockConfig();if(on&&!c.credId){faceIdSetup();return}lockSave({...c,enabled:!!on});render()}
+function lockSetAfter(v){const c=lockConfig();lockSave({...c,after:Math.max(0,+v||0)})}
+function lockShow(){
+  const c=lockConfig();if(!c.enabled||!c.credId||LOCK.visible)return;
+  LOCK.visible=true;
+  let el=document.getElementById("rgbmLock");
+  if(!el){el=document.createElement("div");el.id="rgbmLock";document.body.appendChild(el)}
+  const pw=cloudSignedIn()?`<button class="wide ghost" type="button" onclick="lockPasswordForm()">Use Cloud Password</button>`:"";
+  el.innerHTML=`<div class="rgbm-lock-inner"><h1>RGB Mileage</h1><p class="muted">Locked</p><button class="wide primary" type="button" onclick="lockUnlock()">Unlock with Face ID</button>${pw}<div id="rgbmLockExtra"></div><p id="rgbmLockMsg" class="small muted"></p></div>`;
+  document.body.classList.add("rgbm-locked");
+}
+function lockHide(){LOCK.visible=false;const el=document.getElementById("rgbmLock");if(el)el.remove();document.body.classList.remove("rgbm-locked")}
+async function lockUnlock(){
+  const c=lockConfig(),msg=document.getElementById("rgbmLockMsg");
+  try{
+    const challenge=new Uint8Array(32);crypto.getRandomValues(challenge);
+    const cred=await navigator.credentials.get({publicKey:{challenge,allowCredentials:[{type:"public-key",id:b64uToBuf(c.credId)}],userVerification:"required",timeout:60000}});
+    if(cred&&cred.id===c.credId)lockHide();else if(msg)msg.textContent="Face ID did not match.";
+  }catch(e){if(msg)msg.textContent="Face ID did not unlock. Try again"+(cloudSignedIn()?" or use your cloud password.":".")}
+}
+function lockPasswordForm(){const x=document.getElementById("rgbmLockExtra");if(x)x.innerHTML=`<label>Cloud password<input id="rgbmLockPw" type="password" autocomplete="current-password"></label><button class="wide" type="button" onclick="lockPasswordUnlock()">Unlock</button>`}
+async function lockPasswordUnlock(){
+  const s=cloudSession(),pw=(document.getElementById("rgbmLockPw")||{}).value||"",msg=document.getElementById("rgbmLockMsg");
+  try{const t=await cloudAuthFetch("token?grant_type=password",{email:s.user.email,password:pw});cloudSaveSession(t);lockHide()}
+  catch(e){if(msg)msg.textContent="That password did not work."}
+}
+function faceIdSettingsCard(){
+  const c=lockConfig();
+  if(!faceIdApiAvailable())return `<div class="card faceid-card"><h2>Face ID</h2><p class="muted">Face ID is not available in this browser.</p></div>`;
+  if(!c.credId){
+    return `<div class="card faceid-card"><h2>Face ID</h2><p class="muted">Use Face ID to open the app and to sign in to Cloud Sync.${cloudSignedIn()?"":" Sign in to Cloud Sync first."}</p><button class="wide primary" type="button" onclick="faceIdSetup()" ${cloudSignedIn()?"":"disabled"}>Set Up Face ID</button></div>`;
+  }
+  const opt=(v,l)=>`<option value="${v}" ${(+c.after)===v?"selected":""}>${l}</option>`;
+  return `<div class="card faceid-card"><h2>Face ID</h2><label class="faceid-toggle"><input type="checkbox" ${c.enabled?"checked":""} onchange="lockSetEnabled(this.checked)"> Require Face ID to open the app</label><label>Lock again after<select onchange="lockSetAfter(this.value)">${opt(0,"Immediately")}${opt(1,"1 minute")}${opt(5,"5 minutes")}${opt(15,"15 minutes")}</select></label><p class="muted">Face ID sign-in is also turned on for Cloud Sync.</p><button class="wide ghost" type="button" onclick="faceIdRemove()">Turn Off Face ID on This Device</button></div>`;
+}
+function initFaceIdLock(){
+  if(typeof document==="undefined")return;
+  lockShow();
+  document.addEventListener("visibilitychange",()=>{
+    if(document.visibilityState==="hidden"){LOCK.hiddenAt=Date.now();return}
+    const c=lockConfig();
+    if(c.enabled&&LOCK.hiddenAt&&Date.now()-LOCK.hiddenAt>=(+c.after||0)*60000)lockShow();
+  });
+}
+
 cloudCaptureAuthRedirect();normalizeLaunchUrl();initApplicationShell();initResponsiveViewportHandling();initOfflineMode();
 try{
   state=loadData();
   window.RGBM_WC10_DATA_DIAGNOSTICS=dataDiagnostics;
   window.RGBM_WC10_MIGRATION_EVIDENCE=migrationEvidenceReport;
   render();
+  initFaceIdLock();
   initCloudSync()
 }
 catch(e){console.error(e);renderDataFatal(e)}
