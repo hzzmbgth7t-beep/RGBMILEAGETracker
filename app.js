@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f29-rc2",date:"2026-10-12",cacheRevision:"216lwc10f29rc2"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f29-rc3",date:"2026-10-13",cacheRevision:"216lwc10f29rc3"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const CUSTOM_LABEL_MAX_LENGTH=50;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
@@ -3874,7 +3874,7 @@ async function cloudPush(opts={}){
   Object.keys(prev).forEach(k=>{if(k==="app_settings"||cur[k]!==undefined)return;const i=k.indexOf(":");const table=k.slice(0,i),id=k.slice(i+1);(dels[table]=dels[table]||[]).push(id);delCount++});
   const vehiclesLeft=rows.vehicles.length,vehiclesBefore=Object.keys(prev).filter(k=>k.startsWith("vehicles:")).length;
   if(!opts.allowLargeDelete&&(delCount>CLOUD_DELETE_GUARD||(vehiclesBefore>0&&vehiclesLeft===0))){
-    CLOUD.blocked={deletes:delCount};cloudNote("Sync paused: this device would remove "+delCount+" cloud item(s).","Open Cloud Sync to choose what to do.");return {blocked:true};
+    CLOUD.blocked={deletes:delCount};cloudNote("Sync paused: this device would remove "+delCount+" cloud item(s).","Open Cloud Sync to choose what to do.");if(route&&route.screen==="cloud")render();return {blocked:true};
   }
   CLOUD.blocked=null;
   if(!upCount&&!delCount)return {pushed:0};
@@ -3918,7 +3918,7 @@ async function cloudSync(reason="manual"){
         const remote=cloudFingerprints(rows,false,true);
         const same=Object.keys(local).length===Object.keys(remote).length&&Object.keys(local).every(k=>local[k]===remote[k]);
         if(same){await cloudPush({prev:cloudFingerprints(rows)});cloudStoreSet(CLOUD_KEYS.linked,s.user.id);CLOUD.choice=null;cloudNote("Synced — this device matches the cloud.")}
-        else{const diff=Object.keys({...local,...remote}).filter(k=>local[k]!==remote[k]).length;CLOUD.choice={rows,diff,cloud:cloudCounts(cloudStateFromRows(rows,state)),device:cloudCounts(state)};cloudNote("Choose which data to keep.","This device and the cloud have different data.");if(route.screen!=="cloud")nav("cloud")}
+        else{const diff=Object.keys({...local,...remote}).filter(k=>local[k]!==remote[k]).length;CLOUD.choice={rows,diff,cloud:cloudCounts(cloudStateFromRows(rows,state)),device:cloudCounts(state)};cloudNote("Choose which data to keep.","This device and the cloud have different data.");if(route.screen!=="cloud")nav("cloud");else render()}
       }
     }else{
       const pushed=await cloudPush();
@@ -3970,7 +3970,7 @@ async function cloudSignIn(){
   const email=($("cloudEmail")||{}).value||"",pw=($("cloudPassword")||{}).value||"";
   if(!email||!pw){cloudNote("Enter your email and password.");return}
   cloudNote("Signing in…");
-  try{const t=await cloudAuthFetch("token?grant_type=password",{email:email.trim(),password:pw});cloudSaveSession(t);CLOUD.authNotice="";render();cloudSync("sign-in")}
+  try{const t=await cloudAuthFetch("token?grant_type=password",{email:email.trim(),password:pw});cloudSaveSession(t);cloudStoreDel("RGBM_CLOUD_SKIP_SIGNIN");CLOUD.authNotice="";render();cloudSync("sign-in")}
   catch(e){cloudNote("Sign-in failed.",String(e.message||e))}
 }
 async function cloudSendReset(){
@@ -4003,6 +4003,7 @@ function cloudCaptureAuthRedirect(){
     history.replaceState(history.state||null,"",location.pathname+location.search);
   }catch(e){console.error(e)}
 }
+function cloudSkipSignIn(){cloudStoreSet("RGBM_CLOUD_SKIP_SIGNIN","1");nav("home",{},false)}
 function cloudAge(){const t=cloudStoreGet(CLOUD_KEYS.last);if(!t)return "never";const d=new Date(t);return isNaN(d)?"never":d.toLocaleString()}
 function cloudStatusLine(){
   if(!cloudSignedIn())return "Not signed in. Data is stored on this device only.";
@@ -4017,7 +4018,7 @@ function cloudScreen(app){
   if(CLOUD.passwordMode&&cloudSignedIn()){
     body=`<div class="card"><h2>Set Your Password</h2><p class="muted">Choose the password you will use to sign in to RGB Mileage cloud sync.</p><label>New password<input id="cloudNewPassword" type="password" autocomplete="new-password"></label><label>Confirm password<input id="cloudNewPassword2" type="password" autocomplete="new-password"></label><button class="wide primary" type="button" onclick="cloudSetPassword()">Save Password</button></div>`;
   }else if(!cloudSignedIn()){
-    body=`<div class="card"><h2>Sign In</h2>${notice}<p class="muted">Sign in to keep this device's data in sync with your RGB Mileage cloud database.</p><label>Email<input id="cloudEmail" type="email" autocomplete="username" autocapitalize="none"></label><label>Password<input id="cloudPassword" type="password" autocomplete="current-password"></label><button class="wide primary" type="button" onclick="cloudSignIn()">Sign In</button>${faceIdApiAvailable()?`<button class="wide" type="button" onclick="faceIdSignIn()">Sign In with Face ID</button>`:""}<button class="wide ghost" type="button" onclick="cloudSendReset()">Set or Reset Password by Email</button></div>`;
+    body=`<div class="card"><h2>Sign In</h2>${notice}<p class="muted">Sign in to keep this device's data in sync with your RGB Mileage cloud database.</p><label>Email<input id="cloudEmail" type="email" autocomplete="username" autocapitalize="none"></label><label>Password<input id="cloudPassword" type="password" autocomplete="current-password"></label><button class="wide primary" type="button" onclick="cloudSignIn()">Sign In</button>${faceIdApiAvailable()?`<button class="wide" type="button" onclick="faceIdSignIn()">Sign In with Face ID</button>`:""}<button class="wide ghost" type="button" onclick="cloudSendReset()">Set or Reset Password by Email</button><button class="wide ghost" type="button" onclick="cloudSkipSignIn()">Not Now — Use This Device Only</button></div>`;
   }else{
     let extra="";
     if(CLOUD.choice){const c=CLOUD.choice;extra=`<div class="card cloud-choice-card"><h2>Choose Which Data to Keep</h2><p>This device and the cloud have different data (${c.diff} item(s) differ).</p><p><strong>Cloud:</strong> ${c.cloud.vehicles} vehicles • ${c.cloud.fuel} fuel • ${c.cloud.maintenance} maintenance • ${c.cloud.insurance} insurance<br><strong>This device:</strong> ${c.device.vehicles} vehicles • ${c.device.fuel} fuel • ${c.device.maintenance} maintenance • ${c.device.insurance} insurance</p><button class="wide ghost" type="button" onclick="downloadBackup()">Create JSON Backup First</button><button class="wide primary" type="button" onclick="cloudResolveChoice('cloud')">Use Cloud Data on This Device</button><button class="wide" type="button" onclick="cloudResolveChoice('device')">Upload This Device's Data to Cloud</button></div>`}
@@ -4030,7 +4031,7 @@ function initCloudSync(){
   if(typeof window==="undefined")return;
   window.addEventListener("online",()=>cloudSync("online"));
   document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")cloudSync("foreground")});
-  const go=()=>{if(CLOUD.pendingRoute){CLOUD.pendingRoute=false;nav("cloud")}setTimeout(()=>cloudSync("launch"),600)};
+  const go=()=>{if(CLOUD.pendingRoute){CLOUD.pendingRoute=false;nav("cloud")}else if(!cloudSignedIn()&&cloudStoreGet("RGBM_CLOUD_SKIP_SIGNIN")!=="1"){nav("cloud")}setTimeout(()=>cloudSync("launch"),600)};
   const s=cloudSession();
   if(s&&s.access_token&&!(s.user&&s.user.id)){
     cloudAuthFetch("user",null,"GET",s.access_token).then(u=>{if(u&&u.id){s.user={id:u.id,email:u.email||""};cloudStoreSet(CLOUD_KEYS.session,JSON.stringify(s))}}).catch(e=>{CLOUD.authNotice="Could not confirm your sign-in. Sign in again.";cloudStoreDel(CLOUD_KEYS.session)}).finally(go);
@@ -4151,7 +4152,7 @@ async function faceIdSignIn(){
     const sess=data&&data.session?{...data.session,user:data.session.user||data.user}:data;
     if(!cloudSaveSession(sess))throw new Error("No session returned.");
     const c=lockConfig();if(!c.credId)lockSave({...c,credId:cred.id});
-    CLOUD.authNotice="";render();cloudSync("faceid-sign-in");
+    cloudStoreDel("RGBM_CLOUD_SKIP_SIGNIN");CLOUD.authNotice="";render();cloudSync("faceid-sign-in");
   }catch(e){console.error(e);cloudNote("Face ID sign-in failed.",String(e&&e.message||e))}
 }
 async function faceIdRemove(){

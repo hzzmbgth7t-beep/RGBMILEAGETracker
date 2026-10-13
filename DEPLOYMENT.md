@@ -1,8 +1,8 @@
-# DEPLOYMENT — v2.1.6l-wc10-f29-rc2
+# DEPLOYMENT — v2.1.6l-wc10-f29-rc3
 
-Build: `v2.1.6l-wc10-f29-rc2`  
+Build: `v2.1.6l-wc10-f29-rc3`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc2`  
+Cache: `216lwc10f29rc3`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -26,9 +26,9 @@ Deploy only the 17 ZIP-root files to GitHub Pages. Do not deploy the eight suppo
 
 Open the cache-busting URL after deployment:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc2
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc3
 
-Confirm displayed identity is `v2.1.6l-wc10-f29-rc2` and cache identity is `216lwc10f29rc2`.
+Confirm displayed identity is `v2.1.6l-wc10-f29-rc3` and cache identity is `216lwc10f29rc3`.
 
 ## First sign-in
 

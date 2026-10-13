@@ -1,9 +1,9 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc2`  
-Cache: `216lwc10f29rc2`  
-Guide release: `v2.1.6l-wc10-f29-rc2`  
-Last User Guide content-change release: `v2.1.6l-wc10-f29-rc2`  
+Build: `v2.1.6l-wc10-f29-rc3`  
+Cache: `216lwc10f29rc3`  
+Guide release: `v2.1.6l-wc10-f29-rc3`  
+Last User Guide content-change release: `v2.1.6l-wc10-f29-rc3`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`  
 Current status: `Release candidate — pending user validation`
@@ -12,13 +12,13 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:  
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc2
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc3
 
 ## Cloud Sync
 
 Your data is saved on the device first, then copied to your RGB Mileage cloud database when you are signed in and online. Another signed-in device picks up the changes the next time it opens or you tap **Sync Now**.
 
-- Open: Settings > Open Cloud Sync.
+- Open: Settings > Open Cloud Sync. If you are not signed in, the app opens on this screen by itself; tap **Not Now — Use This Device Only** to skip it.
 - First time: enter your email, tap **Set or Reset Password by Email**, open the email on this device, and save a password.
 - Status shows who is signed in and when the last sync happened.
 - Offline is fine. Changes wait on the device and sync when you are back online.
@@ -45,7 +45,7 @@ Use **Create JSON Backup** before cache reset, reinstall, recovery, or choosing 
 
 ## App Cache Reset
 
-Use Settings > App Cache Reset when the installed Home Screen app opens an older version or wrong layout while Safari opens the correct version. Create a JSON backup first, reset, and confirm the app reloads as `v2.1.6l-wc10-f29-rc2`.
+Use Settings > App Cache Reset when the installed Home Screen app opens an older version or wrong layout while Safari opens the correct version. Create a JSON backup first, reset, and confirm the app reloads as `v2.1.6l-wc10-f29-rc3`.
 
 ## Home circle mileage
 

@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc3 — 2026-10-13
+
+- Built from `v2.1.6l-wc10-f29-rc2` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- App opens on the Cloud Sync sign-in screen when no account is signed in; "Not Now — Use This Device Only" returns to Home and is remembered until sign-in.
+- Fixed: the "Choose Which Data to Keep" card did not render when sign-in happened from the Cloud Sync screen.
+- Fixed: the "Sync Paused" card now redraws immediately when the Cloud Sync screen is open.
+- No Home geometry, record schema, or calculation changes.
+
 ## v2.1.6l-wc10-f29-rc2 — 2026-10-13
 
 - Built from `v2.1.6l-wc10-f29-rc1` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
