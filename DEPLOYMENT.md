@@ -1,8 +1,8 @@
-# DEPLOYMENT — v2.1.6l-wc10-f29-rc3
+# DEPLOYMENT — v2.1.6l-wc10-f29-rc4
 
-Build: `v2.1.6l-wc10-f29-rc3`  
+Build: `v2.1.6l-wc10-f29-rc4`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc3`  
+Cache: `216lwc10f29rc4`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -15,6 +15,21 @@ Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f260010
 - README URLs must be updated for every version.
 - README URLs must be the first README section after the title.
 
+## Release rule: User Guide
+
+Every release updates the User Guide. Edit the guide source, then run `build_guide.py <package> <version> <cache>`; it rewrites the guide block in app.js and USER-GUIDE.md together. A release is not complete until the in-app guide shows the new version and describes every change in that release.
+
+## Adding users (invite only)
+
+Supabase's built-in email only delivers to members of the Supabase team, so invitation emails do not reach other people. Add users this way:
+
+1. Supabase → Authentication → Users → **Add user** → **Create new user**.
+2. Enter their email and a temporary password, and tick **Auto Confirm User**.
+3. Send them the app link, their email, and the temporary password.
+4. They install the app, sign in, and use **Change Password**.
+
+Each user sees only their own data (row level security).
+
 ## Before deploying
 
 1. In the current app, create a JSON backup (Settings > App Cache Reset > Create JSON Backup First) and save it outside the app.
@@ -26,9 +41,9 @@ Deploy only the 17 ZIP-root files to GitHub Pages. Do not deploy the eight suppo
 
 Open the cache-busting URL after deployment:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc3
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc4
 
-Confirm displayed identity is `v2.1.6l-wc10-f29-rc3` and cache identity is `216lwc10f29rc3`.
+Confirm displayed identity is `v2.1.6l-wc10-f29-rc4` and cache identity is `216lwc10f29rc4`.
 
 ## First sign-in
 

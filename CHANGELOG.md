@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc4 — 2026-10-13
+
+- Built from `v2.1.6l-wc10-f29-rc3` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Added in-app User Guide (Settings → User Guide; also on the Sign In screen and in the welcome popup). Includes Home Screen install steps for iPhone/iPad (Safari) and Android (Chrome, Samsung Internet).
+- The in-app guide and USER-GUIDE.md are generated from one source for every release; the guide shows the version it matches.
+- Added first-sign-in welcome popup (once per account per device): Set Up Face ID, Open User Guide, Later.
+- Added multi-user safety: the device remembers which account owns its data (RGBM_CLOUD_OWNER). When a different account signs in, the app asks before replacing the device copy; nothing is uploaded into the wrong account. Face ID lock is cleared on switch.
+- Added Change Password on the Cloud Sync screen (for users given a temporary password).
+- No Home geometry, record schema, or calculation changes. No database changes.
+
 ## v2.1.6l-wc10-f29-rc3 — 2026-10-13
 
 - Built from `v2.1.6l-wc10-f29-rc2` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).

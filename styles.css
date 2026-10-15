@@ -1740,3 +1740,20 @@ label.mileage-warning-field{
 #rgbmLock h1{margin:0 0 4px}
 body.rgbm-locked{overflow:hidden}
 .faceid-toggle{display:flex;gap:10px;align-items:center}
+
+/* F29 RC4: user guide + welcome */
+.choice-box .choice-message{margin:0 0 6px;text-align:center;line-height:1.4;color:#e8eef7;font-size:15px}
+.guide-version{margin-top:0}
+.guide-toc{display:grid;grid-template-columns:1fr;gap:6px;margin-top:10px}
+.guide-toc-item{text-align:left;font-size:14px;padding:10px 12px;background:linear-gradient(180deg,#334863,#263751)}
+.guide-section summary{cursor:pointer;font-weight:950;font-size:18px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.guide-section summary::-webkit-details-marker{display:none}
+.guide-section summary::after{content:"+";font-size:22px;color:#ebb25d}
+.guide-section[open] summary::after{content:"\2212"}
+.guide-body{margin-top:8px;line-height:1.45;font-size:15px}
+.guide-body ol,.guide-body ul{padding-left:22px;margin:6px 0}
+.guide-body li{margin:4px 0}
+.guide-body table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}
+.guide-body th,.guide-body td{border:1px solid #4a5f7d;padding:6px;text-align:left;vertical-align:top}
+.guide-body th{background:#22385a}
+.guide-body a,.guide-intro a{color:#ebb25d;overflow-wrap:anywhere}

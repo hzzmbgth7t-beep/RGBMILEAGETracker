@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f29-rc3",date:"2026-10-13",cacheRevision:"216lwc10f29rc3"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f29-rc4",date:"2026-10-13",cacheRevision:"216lwc10f29rc4"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const CUSTOM_LABEL_MAX_LENGTH=50;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
@@ -1081,6 +1081,7 @@ function render(){
   else if(s==="data")dataScreen(app);
   else if(s==="reports")reportsHome(app);
   else if(s.startsWith("report"))reportDetail(app,s);
+  else if(s==="guide")guideScreen(app);
   else if(s==="settings")settings(app);
   else if(s==="cloud")cloudScreen(app);
   else{home(app);return}
@@ -2223,7 +2224,7 @@ function openOtherList(selectId,listName,label){const sel=$(selectId);if(sel.val
 
 let activeChoiceModal=null;
 function closeChoiceModal(){if(activeChoiceModal){activeChoiceModal.remove();activeChoiceModal=null}return false}
-function showChoiceModal(title,actions){
+function showChoiceModal(title,actions,message){
   closeChoiceModal();
   const overlay=document.createElement("div");
   overlay.className="modal choice-modal";
@@ -2232,6 +2233,7 @@ function showChoiceModal(title,actions){
   const h2=document.createElement("h2");
   h2.textContent=title||"Choose next action";
   box.appendChild(h2);
+  if(message){const p=document.createElement("p");p.className="choice-message";p.textContent=message;box.appendChild(p)}
   const wrap=document.createElement("div");
   wrap.className="choice-buttons";
   (actions||[]).forEach(action=>{
@@ -3284,7 +3286,7 @@ function settings(app){
   const evidenceCard=`<div class="card"><h2>WC-10 Migration Evidence</h2><p><strong>Current check: ${esc(evidence.result)}</strong><br>Migration acceptance: ${esc(evidence.migrationAcceptance)}<br>Legacy source: ${esc(evidence.storage.legacySourceKey||"N/A")}<br>Canonical validation: ${evidence.canonical.validation.valid?"PASS":"FAIL"}</p><p class="muted">The exported JSON contains IDs, counts, order, and record-ID fingerprints. It excludes images, VINs, plates, and record amounts.</p><button class="wide primary" type="button" onclick="downloadMigrationEvidence()">Download Migration Evidence</button><button class="wide ghost" type="button" onclick="copyMigrationEvidenceSummary()">Copy Migration Summary</button></div>`;
   const offlineCard=`<div class="card offline-mode-card"><h2>Offline Mode</h2><p id="offlineModeStatus">${esc(offlineStatusSummary())}</p><p class="muted">Vehicle data remains in local storage. The service worker caches only application files and icons.</p><button class="wide ghost" type="button" onclick="requestOfflineUpdate()">Check for App Update</button><button id="applyOfflineUpdateButton" class="wide primary" type="button" onclick="applyOfflineUpdate()" ${OFFLINE_STATE.updateReady?"":"hidden"}>Apply Offline Update</button></div>`;
   const cacheRepairCard=`<div class="card app-shell-repair-card"><h2>App Cache Reset</h2><p class="muted">Use this if the Home Screen app opens an older version or wrong layout while Safari shows the current version. This clears cached app files and service worker registrations for this app, then reloads the current cache-busting URL. Vehicle data is preserved.</p><button class="wide ghost" type="button" onclick="downloadBackup()">Create JSON Backup First</button><button class="wide primary" type="button" onclick="resetAppShellCache()">Reset App Cache / Reload Current Version</button><pre id="appShellResetStatus" class="small"></pre></div>`;
-  app.innerHTML=header("Settings")+buildCard+cloudSettingsCard()+faceIdSettingsCard()+`<div class="card"><h2>Vehicle Order</h2><p class="muted">Position 1 is the primary portrait position. Landscape order is left to right.</p></div>${orderRows}${offlineCard}${cacheRepairCard}${evidenceCard}<div class="card"><h2>About</h2><p>RGB Mileage ${VERSION}<br>Build Date: ${formatBuildDate(BUILD_DATE)}<br>Schema: ${SCHEMA_VERSION}<br>Migration: ${RGBMDataV3.MIGRATION_VERSION}<br>Evidence: ${RGBMWC10Evidence.EVIDENCE_VERSION}</p><button class="wide danger" onclick="if(confirm('Clear all local data, including retained rollback data?')){clearRGBMStorage(false);state=blankData();saveData();nav('home')}">Clear Local Data</button></div>`+bottomNav()+footer();
+  app.innerHTML=header("Settings")+buildCard+guideSettingsCard()+cloudSettingsCard()+faceIdSettingsCard()+`<div class="card"><h2>Vehicle Order</h2><p class="muted">Position 1 is the primary portrait position. Landscape order is left to right.</p></div>${orderRows}${offlineCard}${cacheRepairCard}${evidenceCard}<div class="card"><h2>About</h2><p>RGB Mileage ${VERSION}<br>Build Date: ${formatBuildDate(BUILD_DATE)}<br>Schema: ${SCHEMA_VERSION}<br>Migration: ${RGBMDataV3.MIGRATION_VERSION}<br>Evidence: ${RGBMWC10Evidence.EVIDENCE_VERSION}</p><button class="wide danger" onclick="if(confirm('Clear all local data, including retained rollback data?')){clearRGBMStorage(false);state=blankData();saveData();nav('home')}">Clear Local Data</button></div>`+bottomNav()+footer();
 }
 function moveVehicleOrder(vid,delta){
   const index=state.vehicleOrder.indexOf(vid);
@@ -3911,13 +3913,15 @@ async function cloudSync(reason="manual"){
   try{
     const s=cloudSession();
     if(!cloudLinked()){
+      const owner=cloudStoreGet(CLOUD_OWNER_KEY);
+      if(owner&&owner!==s.user.id&&cloudHasLocalData()){CLOUD.switchAcct={from:owner};cloudNote("This device has another account's data.","Choose what to do on the Cloud Sync screen.");if(route.screen!=="cloud")nav("cloud");else render();return}
       const rows=await cloudFetchRows();
-      if(cloudRowsEmpty(rows)){await cloudPush({prev:{}});cloudStoreSet(CLOUD_KEYS.linked,s.user.id);cloudNote("Synced — this device's data was uploaded.")}
+      if(cloudRowsEmpty(rows)){await cloudPush({prev:{}});cloudMarkLinked(s.user.id);cloudNote("Synced — this device's data was uploaded.")}
       else{
         const local=cloudFingerprints(cloudRowsFromState(state,s.user.id),false,true);
         const remote=cloudFingerprints(rows,false,true);
         const same=Object.keys(local).length===Object.keys(remote).length&&Object.keys(local).every(k=>local[k]===remote[k]);
-        if(same){await cloudPush({prev:cloudFingerprints(rows)});cloudStoreSet(CLOUD_KEYS.linked,s.user.id);CLOUD.choice=null;cloudNote("Synced — this device matches the cloud.")}
+        if(same){await cloudPush({prev:cloudFingerprints(rows)});cloudMarkLinked(s.user.id);CLOUD.choice=null;cloudNote("Synced — this device matches the cloud.")}
         else{const diff=Object.keys({...local,...remote}).filter(k=>local[k]!==remote[k]).length;CLOUD.choice={rows,diff,cloud:cloudCounts(cloudStateFromRows(rows,state)),device:cloudCounts(state)};cloudNote("Choose which data to keep.","This device and the cloud have different data.");if(route.screen!=="cloud")nav("cloud");else render()}
       }
     }else{
@@ -3934,7 +3938,7 @@ async function cloudSync(reason="manual"){
     }
     if(cloudLinked()&&!CLOUD.blocked&&!CLOUD.choice)await cloudPhotoSyncSafe();
   }catch(e){console.error(e);cloudNote(cloudSignedIn()?"Sync failed — changes are safe on this device.":"Signed out",String(e&&e.message||e))}
-  finally{CLOUD.busy=false;if(CLOUD.again){CLOUD.again=false;setTimeout(()=>cloudSync("again"),300)}}
+  finally{CLOUD.busy=false;if(CLOUD.again){CLOUD.again=false;setTimeout(()=>cloudSync("again"),300)}else setTimeout(cloudMaybeWelcome,50)}
 }
 function cloudSchedulePush(){
   if(!cloudLinked())return;
@@ -3952,11 +3956,11 @@ async function cloudResolveChoice(which){
   const c=CLOUD.choice;if(!c)return;const s=cloudSession();
   if(which==="cloud"){
     if(!confirm("Replace the data on this device with the cloud data?\n\nVehicle photos on this device are kept. Create a JSON backup first if you are unsure."))return;
-    try{cloudAdopt(c.rows);await cloudPush({prev:cloudFingerprints(c.rows)});cloudStoreSet(CLOUD_KEYS.linked,s.user.id);CLOUD.choice=null;cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());cloudNote("Synced — this device now uses the cloud data.");await cloudPhotoSyncSafe();nav("cloud",{},false)}
+    try{cloudAdopt(c.rows);await cloudPush({prev:cloudFingerprints(c.rows)});cloudMarkLinked(s.user.id);CLOUD.choice=null;cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());cloudNote("Synced — this device now uses the cloud data.");await cloudPhotoSyncSafe();nav("cloud",{},false);cloudMaybeWelcome()}
     catch(e){cloudNote("Could not use cloud data.",String(e.message||e))}
   }else{
     if(!confirm("Replace the cloud data with this device's data?\n\nCloud records that are not on this device will be removed from the cloud."))return;
-    try{await cloudPush({prev:cloudFingerprints(c.rows),allowLargeDelete:true});cloudStoreSet(CLOUD_KEYS.linked,s.user.id);CLOUD.choice=null;cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());cloudNote("Synced — the cloud now matches this device.");await cloudPhotoSyncSafe();render()}
+    try{await cloudPush({prev:cloudFingerprints(c.rows),allowLargeDelete:true});cloudMarkLinked(s.user.id);CLOUD.choice=null;cloudStoreSet(CLOUD_KEYS.last,new Date().toISOString());cloudNote("Synced — the cloud now matches this device.");await cloudPhotoSyncSafe();render();cloudMaybeWelcome()}
     catch(e){cloudNote("Could not upload this device's data.",String(e.message||e))}
   }
 }
@@ -3970,7 +3974,7 @@ async function cloudSignIn(){
   const email=($("cloudEmail")||{}).value||"",pw=($("cloudPassword")||{}).value||"";
   if(!email||!pw){cloudNote("Enter your email and password.");return}
   cloudNote("Signing in…");
-  try{const t=await cloudAuthFetch("token?grant_type=password",{email:email.trim(),password:pw});cloudSaveSession(t);cloudStoreDel("RGBM_CLOUD_SKIP_SIGNIN");CLOUD.authNotice="";render();cloudSync("sign-in")}
+  try{const t=await cloudAuthFetch("token?grant_type=password",{email:email.trim(),password:pw});cloudSaveSession(t);cloudStoreDel("RGBM_CLOUD_SKIP_SIGNIN");CLOUD.authNotice="";CLOUD.welcomePending=true;render();cloudSync("sign-in")}
   catch(e){cloudNote("Sign-in failed.",String(e.message||e))}
 }
 async function cloudSendReset(){
@@ -3983,7 +3987,7 @@ async function cloudSetPassword(){
   const a=($("cloudNewPassword")||{}).value||"",b=($("cloudNewPassword2")||{}).value||"";
   if(a.length<8){cloudNote("Use at least 8 characters.");return}
   if(a!==b){cloudNote("The two passwords do not match.");return}
-  try{const tok=await cloudToken();await cloudAuthFetch("user",{password:a},"PUT",tok);CLOUD.passwordMode="";cloudNote("Password saved.");render();cloudSync("password-set")}
+  try{const tok=await cloudToken();await cloudAuthFetch("user",{password:a},"PUT",tok);const changed=CLOUD.passwordMode==="change";if(!changed)CLOUD.welcomePending=true;CLOUD.passwordMode="";cloudNote(changed?"Password changed.":"Password saved.");render();cloudSync("password-set")}
   catch(e){cloudNote("Could not save the password.",String(e.message||e))}
 }
 async function cloudSignOut(){
@@ -3991,7 +3995,7 @@ async function cloudSignOut(){
   const s=cloudSession();
   try{if(s&&s.access_token)await cloudAuthFetch("logout",null,"POST",s.access_token)}catch(e){}
   [CLOUD_KEYS.session,CLOUD_KEYS.synced,CLOUD_KEYS.linked,CLOUD_KEYS.last].forEach(cloudStoreDel);
-  CLOUD.choice=null;CLOUD.blocked=null;cloudNote("Signed out");render();
+  CLOUD.choice=null;CLOUD.blocked=null;CLOUD.switchAcct=null;cloudNote("Signed out");render();
 }
 function cloudCaptureAuthRedirect(){
   try{
@@ -4016,19 +4020,21 @@ function cloudScreen(app){
   let body="";
   const notice=CLOUD.authNotice?`<p class="cloud-notice">${esc(CLOUD.authNotice)}</p>`:"";
   if(CLOUD.passwordMode&&cloudSignedIn()){
-    body=`<div class="card"><h2>Set Your Password</h2><p class="muted">Choose the password you will use to sign in to RGB Mileage cloud sync.</p><label>New password<input id="cloudNewPassword" type="password" autocomplete="new-password"></label><label>Confirm password<input id="cloudNewPassword2" type="password" autocomplete="new-password"></label><button class="wide primary" type="button" onclick="cloudSetPassword()">Save Password</button></div>`;
+    body=`<div class="card"><h2>${CLOUD.passwordMode==="change"?"Change Password":"Set Your Password"}</h2><p class="muted">Choose the password you will use to sign in to RGB Mileage cloud sync.</p><label>New password<input id="cloudNewPassword" type="password" autocomplete="new-password"></label><label>Confirm password<input id="cloudNewPassword2" type="password" autocomplete="new-password"></label><button class="wide primary" type="button" onclick="cloudSetPassword()">Save Password</button>${CLOUD.passwordMode==="change"?'<button class="wide ghost" type="button" onclick="cloudCancelPassword()">Cancel</button>':""}</div>`;
   }else if(!cloudSignedIn()){
-    body=`<div class="card"><h2>Sign In</h2>${notice}<p class="muted">Sign in to keep this device's data in sync with your RGB Mileage cloud database.</p><label>Email<input id="cloudEmail" type="email" autocomplete="username" autocapitalize="none"></label><label>Password<input id="cloudPassword" type="password" autocomplete="current-password"></label><button class="wide primary" type="button" onclick="cloudSignIn()">Sign In</button>${faceIdApiAvailable()?`<button class="wide" type="button" onclick="faceIdSignIn()">Sign In with Face ID</button>`:""}<button class="wide ghost" type="button" onclick="cloudSendReset()">Set or Reset Password by Email</button><button class="wide ghost" type="button" onclick="cloudSkipSignIn()">Not Now — Use This Device Only</button></div>`;
+    body=`<div class="card"><h2>Sign In</h2>${notice}<p class="muted">Sign in to keep this device's data in sync with your RGB Mileage cloud database.</p><label>Email<input id="cloudEmail" type="email" autocomplete="username" autocapitalize="none"></label><label>Password<input id="cloudPassword" type="password" autocomplete="current-password"></label><button class="wide primary" type="button" onclick="cloudSignIn()">Sign In</button>${faceIdApiAvailable()?`<button class="wide" type="button" onclick="faceIdSignIn()">Sign In with Face ID</button>`:""}<button class="wide ghost" type="button" onclick="cloudSendReset()">Set or Reset Password by Email</button><button class="wide ghost" type="button" onclick="cloudSkipSignIn()">Not Now — Use This Device Only</button><button class="wide ghost" type="button" onclick="nav('guide')">Open User Guide</button></div>`;
   }else{
     let extra="";
-    if(CLOUD.choice){const c=CLOUD.choice;extra=`<div class="card cloud-choice-card"><h2>Choose Which Data to Keep</h2><p>This device and the cloud have different data (${c.diff} item(s) differ).</p><p><strong>Cloud:</strong> ${c.cloud.vehicles} vehicles • ${c.cloud.fuel} fuel • ${c.cloud.maintenance} maintenance • ${c.cloud.insurance} insurance<br><strong>This device:</strong> ${c.device.vehicles} vehicles • ${c.device.fuel} fuel • ${c.device.maintenance} maintenance • ${c.device.insurance} insurance</p><button class="wide ghost" type="button" onclick="downloadBackup()">Create JSON Backup First</button><button class="wide primary" type="button" onclick="cloudResolveChoice('cloud')">Use Cloud Data on This Device</button><button class="wide" type="button" onclick="cloudResolveChoice('device')">Upload This Device's Data to Cloud</button></div>`}
+    if(CLOUD.switchAcct){extra=`<div class="card cloud-choice-card cloud-switch-card"><h2>Another Account's Data Is on This Device</h2><p>The vehicles and records on this device belong to a different RGB Mileage account. To use your account here, this device's copy will be replaced with your own data. The other account's data stays safe in its cloud account.</p><button class="wide primary" type="button" onclick="cloudSwitchAccount()">Switch This Device to My Account</button><button class="wide ghost" type="button" onclick="cloudSignOut()">Sign Out</button></div>`}
+    else if(CLOUD.choice){const c=CLOUD.choice;extra=`<div class="card cloud-choice-card"><h2>Choose Which Data to Keep</h2><p>This device and the cloud have different data (${c.diff} item(s) differ).</p><p><strong>Cloud:</strong> ${c.cloud.vehicles} vehicles • ${c.cloud.fuel} fuel • ${c.cloud.maintenance} maintenance • ${c.cloud.insurance} insurance<br><strong>This device:</strong> ${c.device.vehicles} vehicles • ${c.device.fuel} fuel • ${c.device.maintenance} maintenance • ${c.device.insurance} insurance</p><button class="wide ghost" type="button" onclick="downloadBackup()">Create JSON Backup First</button><button class="wide primary" type="button" onclick="cloudResolveChoice('cloud')">Use Cloud Data on This Device</button><button class="wide" type="button" onclick="cloudResolveChoice('device')">Upload This Device's Data to Cloud</button></div>`}
     else if(CLOUD.blocked){extra=`<div class="card cloud-choice-card"><h2>Sync Paused</h2><p>Saving here would remove ${CLOUD.blocked.deletes} item(s) from the cloud. Nothing has been removed yet.</p><button class="wide ghost" type="button" onclick="downloadBackup()">Create JSON Backup First</button><button class="wide primary" type="button" onclick="cloudResolveBlocked('pull')">Restore This Device from Cloud</button><button class="wide danger" type="button" onclick="cloudResolveBlocked('push')">Remove Them from the Cloud Too</button></div>`}
-    body=`${extra}<div class="card"><h2>Status</h2>${notice}<p id="cloudStatusText">${esc(cloudStatusLine())}</p><p id="cloudErrorText" class="small muted">${esc(CLOUD.error||"")}</p><button class="wide primary" type="button" onclick="cloudSync('manual')">Sync Now</button><button class="wide ghost" type="button" onclick="cloudSignOut()">Sign Out</button><p class="muted">Records, vehicles, settings and vehicle photos sync.</p></div>`;
+    body=`${extra}<div class="card"><h2>Status</h2>${notice}<p id="cloudStatusText">${esc(cloudStatusLine())}</p><p id="cloudErrorText" class="small muted">${esc(CLOUD.error||"")}</p><button class="wide primary" type="button" onclick="cloudSync('manual')">Sync Now</button><button class="wide" type="button" onclick="cloudStartChangePassword()">Change Password</button><button class="wide ghost" type="button" onclick="cloudSignOut()">Sign Out</button><p class="muted">Records, vehicles, settings and vehicle photos sync.</p></div>`;
   }
   app.innerHTML=header("Cloud Sync")+body+`<pre id="cloudErrorPre" class="small"></pre>`+bottomNav()+footer();
 }
 function initCloudSync(){
   if(typeof window==="undefined")return;
+  try{const L=cloudStoreGet(CLOUD_KEYS.linked);if(L&&!cloudStoreGet(CLOUD_OWNER_KEY))cloudStoreSet(CLOUD_OWNER_KEY,L);const s0=cloudSession();if(s0&&s0.user&&s0.user.id&&!CLOUD.passwordMode)cloudStoreSet("RGBM_WELCOME_"+s0.user.id,"1")}catch(e){}
   window.addEventListener("online",()=>cloudSync("online"));
   document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")cloudSync("foreground")});
   const go=()=>{if(CLOUD.pendingRoute){CLOUD.pendingRoute=false;nav("cloud")}else if(!cloudSignedIn()&&cloudStoreGet("RGBM_CLOUD_SKIP_SIGNIN")!=="1"){nav("cloud")}setTimeout(()=>cloudSync("launch"),600)};
@@ -4152,7 +4158,7 @@ async function faceIdSignIn(){
     const sess=data&&data.session?{...data.session,user:data.session.user||data.user}:data;
     if(!cloudSaveSession(sess))throw new Error("No session returned.");
     const c=lockConfig();if(!c.credId)lockSave({...c,credId:cred.id});
-    cloudStoreDel("RGBM_CLOUD_SKIP_SIGNIN");CLOUD.authNotice="";render();cloudSync("faceid-sign-in");
+    cloudStoreDel("RGBM_CLOUD_SKIP_SIGNIN");CLOUD.authNotice="";CLOUD.welcomePending=true;render();cloudSync("faceid-sign-in");
   }catch(e){console.error(e);cloudNote("Face ID sign-in failed.",String(e&&e.message||e))}
 }
 async function faceIdRemove(){
@@ -4204,6 +4210,52 @@ function initFaceIdLock(){
     const c=lockConfig();
     if(c.enabled&&LOCK.hiddenAt&&Date.now()-LOCK.hiddenAt>=(+c.after||0)*60000)lockShow();
   });
+}
+
+/* ===== F29 RC4: User Guide, welcome, account ownership, change password ===== */
+/*RGBM_GUIDE_START*/const RGBM_GUIDE={"version": "v2.1.6l-wc10-f29-rc4", "intro": "<p>RGB Mileage tracks fuel, maintenance, and insurance for up to three vehicles. Your data is saved on your device first and copied to your private cloud account when you are signed in. Each person who signs in sees only their own vehicles.</p>", "sections": [{"title": "Install on iPhone or iPad", "html": "<ol>\n<li>Open <strong>Safari</strong> and go to <a href=\"https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/\" target=\"_blank\" rel=\"noopener\">https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/</a></li>\n<li>Tap the <strong>Share</strong> button (the square with an arrow pointing up). On iPhone it is at the bottom of the screen; on iPad it is at the top right.</li>\n<li>Scroll down and tap <strong>Add to Home Screen</strong>. If you don't see it, tap <strong>Edit Actions</strong> and add it.</li>\n<li>Leave the name as <strong>RGB Mileage</strong> and tap <strong>Add</strong>.</li>\n<li>Close Safari and open RGB Mileage from the new Home Screen icon.</li>\n</ol>\n<p>Always open the app from the Home Screen icon. Safari, the GitHub app, and other in-app browsers each keep a separate copy of the data.</p>"}, {"title": "Install on Android", "html": "<ol>\n<li>Open <strong>Chrome</strong> and go to <a href=\"https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/\" target=\"_blank\" rel=\"noopener\">https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/</a></li>\n<li>Tap the <strong>⋮</strong> menu at the top right.</li>\n<li>Tap <strong>Add to Home screen</strong> (on some phones it says <strong>Install app</strong>).</li>\n<li>Tap <strong>Install</strong> or <strong>Add</strong>, then confirm adding the icon to your Home screen.</li>\n<li>Open RGB Mileage from the new icon.</li>\n</ol>\n<p>Samsung Internet works the same way: tap the menu (☰), then <strong>Add page to</strong>, then <strong>Home screen</strong>.</p>"}, {"title": "Getting an account and signing in", "html": "<p>Accounts are by invitation only. Ask the app administrator to create one for you. You will get your email address and a temporary password.</p>\n<ol>\n<li>Open the app. The <strong>Sign In</strong> screen appears when you are not signed in.</li>\n<li>Enter your email and temporary password, then tap <strong>Sign In</strong>.</li>\n<li>Go to Settings → <strong>Open Cloud Sync</strong> → <strong>Change Password</strong> and choose your own password (at least 8 characters).</li>\n</ol>\n<p>The first time you sign in, the app offers to set up Face ID and points you to this guide.</p>\n<p>To use the app without an account, tap <strong>Not Now — Use This Device Only</strong>. Your data then stays on that device only. You can sign in later from Settings.</p>"}, {"title": "Home screen", "html": "<p>Home shows one circle per vehicle, with its photo and last refuel mileage.</p>\n<table>\n<thead>\n<tr>\n<th>Action</th>\n<th>What happens</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Tap a vehicle circle</td>\n<td>Opens a new Fuel entry for that vehicle</td>\n</tr>\n<tr>\n<td>Press and hold a circle</td>\n<td>Opens the vehicle page: details, records, Edit Vehicle, Maintenance Entry, Insurance Entry</td>\n</tr>\n<tr>\n<td>Tap an <strong>Add Vehicle</strong> circle</td>\n<td>Opens the form to add a vehicle</td>\n</tr>\n</tbody>\n</table>\n<p>The bar at the bottom has <strong>Home</strong>, <strong>Reports</strong>, <strong>Data</strong> (backup, restore, CSV import), and <strong>Settings</strong>. <strong>‹ Back</strong> at the top returns to the previous screen.</p>"}, {"title": "Vehicles", "html": "<p>Tap an <strong>Add Vehicle</strong> circle to add a vehicle. To change one, press and hold its circle, then tap <strong>Edit Vehicle</strong>.</p>\n<ul>\n<li><strong>Year, Make, Model, Badge</strong> make up the vehicle's name.</li>\n<li><strong>Custom Label</strong> (up to 50 characters) is shown instead of Year/Make/Model.</li>\n<li><strong>Vehicle Image</strong> is the circle photo. It syncs to your other devices.</li>\n<li><strong>Acquisition Record</strong> holds the purchase date, starting odometer, price, and seller.</li>\n<li><strong>Status</strong> is Active or Archived.</li>\n</ul>\n<p>Tap <strong>Save Vehicle</strong> to keep the changes, or <strong>Clear &amp; Exit</strong> to discard them. To change the order of the circles, go to Settings → <strong>Vehicle Order</strong>. Position 1 is the large circle in portrait view.</p>"}, {"title": "Fuel, maintenance, and insurance records", "html": "<table>\n<thead>\n<tr>\n<th>Record</th>\n<th>How to open it</th>\n<th>Main fields</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Fuel</td>\n<td>Tap the vehicle circle</td>\n<td>Date, odometer, gallons, grade, station, price/gal or total. Miles and MPG fill in automatically.</td>\n</tr>\n<tr>\n<td>Maintenance</td>\n<td>Hold the circle → <strong>Maintenance Entry</strong></td>\n<td>Date, category, odometer, cost, location, provider</td>\n</tr>\n<tr>\n<td>Insurance</td>\n<td>Hold the circle → <strong>Insurance Entry</strong></td>\n<td>Agency, policy number, dates, agreed value, premium, agent</td>\n</tr>\n</tbody>\n</table>\n<p>Tap <strong>Save</strong> to save, or <strong>Cancel</strong> to leave without saving. Earlier records for that vehicle are listed under the form. Tap one to view, edit, archive, or delete it.</p>\n<p>For fuel cost, set <strong>Cost Source</strong> to <strong>Calculated</strong> to work out the total from the price per gallon, or <strong>Entered</strong> to type the total yourself.</p>"}, {"title": "Reports", "html": "<p>Tap <strong>Reports</strong> in the bottom bar. The reports are Fuel History, MPG, Maintenance, Insurance History, and Vehicle Summary. Archived records are left out.</p>"}, {"title": "Cloud Sync", "html": "<p>While you are signed in, every save is copied to your cloud account within a few seconds. Your other devices pick up changes when they open the app or when you tap <strong>Sync Now</strong>. Vehicle photos sync too.</p>\n<ul>\n<li><strong>Offline:</strong> keep using the app. Changes wait on the device and upload when you are back online.</li>\n<li><strong>Status:</strong> Settings → <strong>Open Cloud Sync</strong> shows who is signed in and when the last sync happened.</li>\n<li><strong>New device:</strong> install the app and sign in. If that device already has different data, you'll be asked to <strong>Choose Which Data to Keep</strong>. Pick <strong>Use Cloud Data on This Device</strong> unless you know the device has the newer data.</li>\n<li><strong>Shared device:</strong> if the device holds someone else's data, the app asks before switching it to your account. The other person's data stays in their own cloud account.</li>\n<li><strong>Sync Paused:</strong> if one save would delete more than 10 items from the cloud, sync stops and asks first. <strong>Restore This Device from Cloud</strong> undoes the deletion. <strong>Remove Them from the Cloud Too</strong> confirms it.</li>\n<li><strong>Change Password:</strong> Settings → Open Cloud Sync → <strong>Change Password</strong>.</li>\n<li><strong>Sign Out</strong> stops syncing on that device. The data stays on the device.</li>\n</ul>"}, {"title": "Face ID and fingerprint", "html": "<p>Face ID (or fingerprint or face unlock on Android) can lock the app and sign you in without a password. Set it up on each device after you sign in.</p>\n<ol>\n<li>Settings → Face ID → <strong>Set Up Face ID</strong>, then approve the prompt.</li>\n<li><strong>Require Face ID to open the app</strong> turns the lock on or off.</li>\n<li><strong>Lock again after</strong> sets how long the app can be in the background before it asks again.</li>\n</ol>\n<p>If Face ID fails, tap <strong>Use Cloud Password</strong>. On the Sign In screen, <strong>Sign In with Face ID</strong> signs you in without typing your password. <strong>Turn Off Face ID on This Device</strong> removes it.</p>\n<p>The lock hides the screen. It does not encrypt the data stored on the device.</p>"}, {"title": "Backup and restore", "html": "<p><strong>Back up:</strong> Data → <strong>Create JSON Backup</strong>, then save the file to Files, iCloud, or Google Drive. Do this before a reset or reinstall.</p>\n<p><strong>Restore:</strong> Data → <strong>Restore JSON</strong> → pick the file → choose a Restore Mode → <strong>Restore JSON Backup</strong>.</p>\n<table>\n<thead>\n<tr>\n<th>Restore Mode</th>\n<th>What it does</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Replace</td>\n<td>Replaces all data on the device with the backup</td>\n</tr>\n<tr>\n<td>Update</td>\n<td>Updates matching records and adds missing ones (safest)</td>\n</tr>\n<tr>\n<td>Duplicate</td>\n<td>Adds the backup's records as copies</td>\n</tr>\n<tr>\n<td>Skip</td>\n<td>Adds only records that aren't already there</td>\n</tr>\n</tbody>\n</table>\n<p><strong>CSV Import</strong> (Data screen) brings in fuel and maintenance records from a spreadsheet. Tap <strong>Preview Import</strong> first, then <strong>Save Previewed Rows</strong>.</p>"}, {"title": "Updates", "html": "<p>When an <strong>Update</strong> badge appears on Home, tap it to load the new version. If the app still shows an old version, go to Settings → <strong>Reset App Cache / Reload Current Version</strong>. Your data is kept. The version number is shown under the app name on Home and at the top of Settings.</p>\n<p>This guide is updated with every new version of the app.</p>"}, {"title": "Troubleshooting", "html": "<table>\n<thead>\n<tr>\n<th>Problem</th>\n<th>Fix</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>App shows an old version or old data</td>\n<td>Settings → <strong>Reset App Cache / Reload Current Version</strong>, then sign in</td>\n</tr>\n<tr>\n<td>Vehicles are blank on a new device</td>\n<td>Sign in, then choose <strong>Use Cloud Data on This Device</strong></td>\n</tr>\n<tr>\n<td>Photos missing</td>\n<td>Tap <strong>Sync Now</strong> on the device that has the photos, then on the other device</td>\n</tr>\n<tr>\n<td>Forgot password</td>\n<td>Ask the app administrator to set a new temporary password</td>\n</tr>\n<tr>\n<td>Face ID not offered</td>\n<td>Sign in first and open the app from the Home Screen icon</td>\n</tr>\n<tr>\n<td>Data gone after deleting the app</td>\n<td>Sign in to restore from the cloud, or restore a JSON backup in <strong>Update</strong> mode</td>\n</tr>\n</tbody>\n</table>\n<p><strong>Clear Local Data</strong> (bottom of Settings) erases this device only. It never deletes cloud data.</p>"}]};/*RGBM_GUIDE_END*/
+const CLOUD_OWNER_KEY="RGBM_CLOUD_OWNER";
+function guideSettingsCard(){return `<div class="card guide-card"><h2>User Guide</h2><p class="muted">How to install the app on iPhone or Android and how to use every screen.</p><button class="wide primary" type="button" onclick="nav('guide')">Open User Guide</button></div>`}
+function guideScreen(app){
+  const g=RGBM_GUIDE||{},secs=g.sections||[];
+  const toc=secs.map((x,i)=>`<button class="guide-toc-item" type="button" onclick="guideJump(${i})">${esc(x.title)}</button>`).join("");
+  const body=secs.map((x,i)=>`<details class="card guide-section" id="guideSec${i}"><summary>${esc(x.title)}</summary><div class="guide-body">${x.html}</div></details>`).join("");
+  app.innerHTML=header("User Guide")+`<div class="card guide-intro"><p class="muted guide-version">For version ${esc(g.version||VERSION)}</p>${g.intro||""}<div class="guide-toc">${toc}</div></div>`+body+bottomNav()+footer();
+}
+function guideJump(i){const d=$("guideSec"+i);if(!d)return;d.open=true;setTimeout(()=>{try{d.scrollIntoView({behavior:"smooth",block:"start"})}catch(e){d.scrollIntoView()}},0)}
+function cloudMarkLinked(uid){cloudStoreSet(CLOUD_KEYS.linked,uid);cloudStoreSet(CLOUD_OWNER_KEY,uid)}
+function cloudHasLocalData(){return RGBMDataV3.getConfiguredVehicles(state).length>0||CLOUD_TABLES.some(t=>(state[t.collection]||[]).length>0)}
+async function cloudSwitchAccount(){
+  if(!confirm("Switch this device to your account?\n\nThe vehicles and records now on this device will be removed from this device and replaced with your own data. They stay safe in the other account's cloud."))return;
+  try{
+    ["RGBM_CLOUD_SYNCED","RGBM_CLOUD_PHOTOS","RGBM_CLOUD_LAST"].forEach(cloudStoreDel);
+    lockSave({enabled:false,credId:"",passkeyId:"",after:1});
+    state=saveData(blankData(),{skipCloud:true});
+    cloudStoreDel(CLOUD_OWNER_KEY);CLOUD.switchAcct=null;
+    const rows=await cloudFetchRows();
+    if(!cloudRowsEmpty(rows)){cloudAdopt(rows);cloudMarkLinked(cloudSession().user.id)}
+    render();await cloudSync("switch-account");
+  }catch(e){console.error(e);cloudNote("Could not switch accounts.",String(e&&e.message||e))}
+}
+function cloudStartChangePassword(){CLOUD.passwordMode="change";render()}
+function cloudCancelPassword(){CLOUD.passwordMode="";render()}
+function cloudMaybeWelcome(){
+  if(!CLOUD.welcomePending)return;
+  const s=cloudSession();if(!s||!s.user||!s.user.id)return;
+  if(CLOUD.busy||CLOUD.choice||CLOUD.blocked||CLOUD.switchAcct||CLOUD.passwordMode)return;
+  CLOUD.welcomePending=false;
+  const k="RGBM_WELCOME_"+s.user.id;
+  if(cloudStoreGet(k)==="1")return;
+  cloudStoreSet(k,"1");
+  rgbmShowWelcome();
+}
+function rgbmShowWelcome(){
+  const needFace=faceIdApiAvailable()&&!lockConfig().credId;
+  const acts=[];
+  if(needFace)acts.push({label:"Set Up Face ID",className:"primary",onClick:()=>faceIdSetup()});
+  acts.push({label:"Open User Guide",className:needFace?"ok":"primary",onClick:()=>nav("guide")});
+  acts.push({label:"Later",className:"ghost"});
+  return showChoiceModal("Welcome to RGB Mileage",acts,(needFace?"Set up Face ID so you can open the app and sign in without typing your password. ":"")+"Explore the User Guide for instructions on using the app. You can open it any time from Settings.");
 }
 
 cloudCaptureAuthRedirect();normalizeLaunchUrl();initApplicationShell();initResponsiveViewportHandling();initOfflineMode();
