@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f29-rc4
+# FIXNOTES — v2.1.6l-wc10-f29-rc5
 
-Build: `v2.1.6l-wc10-f29-rc4`  
+Build: `v2.1.6l-wc10-f29-rc5`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc4`  
+Cache: `216lwc10f29rc5`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -29,6 +29,13 @@ TESTS/test_sync.py runs the app in Chromium against TESTS/mock_supabase.py: 33/3
 - Photos: uploaded to Storage at `<user id>/<vehicle id>`; `vehicles.primary_photo_md5` holds the photo fingerprint. RGBM_CLOUD_PHOTOS tracks the last synced local/cloud fingerprints so photos upload once and download only when changed.
 - Face ID: a Supabase passkey is registered while signed in. The same passkey signs in (server-verified) and unlocks the app (checked on the phone). The lock hides the screen; it does not encrypt data on the phone.
 - Test evidence: TESTS/test_rc2.py — 28/28 checks (photo upload/download/change/removal across two devices, no re-sync loops, Face ID setup, lock on launch and after background, password fallback, Face ID sign-in, removal) plus the RC1 suite rerun on RC2: 33/33.
+
+## RC5 additions
+
+- Users screen (route "users") calls POST /functions/v1/admin-users with actions list, create, set_password. The function verifies the caller's token with auth.getUser, requires a row in public.app_admins, and uses the project secret key (SUPABASE_SECRET_KEYS.default, falling back to SUPABASE_SERVICE_ROLE_KEY) for auth.admin calls.
+- The app shows Manage Users only when GET /rest/v1/app_admins returns the caller's row (cached per user as RGBM_IS_ADMIN_<user id>, re-checked after each sync). Missing table or function → no admin UI and no errors.
+- Temporary passwords: 12 random characters from crypto.getRandomValues (no look-alike characters), shown once with Share/Copy.
+- Test evidence: TESTS/test_rc5.py 25/25 (admin detection, list, add, duplicate, invalid email, reset, share/copy, new user sign-in, non-admin blocked in app and in function, missing table); test_rc4.py 36/36; test_rc3.py 12/12; test_rc2.py 28/28; test_sync.py 33/33 — all against RC5.
 
 ## RC4 additions
 

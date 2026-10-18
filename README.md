@@ -1,16 +1,16 @@
-# RGBMileage v2.1.6l-wc10-f29-rc4
+# RGBMileage v2.1.6l-wc10-f29-rc5
 
 ## URLs
 
 Production URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc4
+Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc5
 
 Supabase project URL: https://nlfivcxlzmivjzwlhlot.supabase.co
 
-Build: `v2.1.6l-wc10-f29-rc4`  
+Build: `v2.1.6l-wc10-f29-rc5`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc4`  
+Cache: `216lwc10f29rc5`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`  
 Previous accepted production baseline: `v2.1.6l-wc10-f28`
@@ -44,6 +44,7 @@ F29 connects RGB Mileage to its Supabase database. RC2 adds vehicle photo sync a
 - RC4: User Guide built into the app (Settings → User Guide and the Sign In screen), including Home Screen install steps for iPhone/iPad and Android.
 - RC4: first sign-in shows a welcome popup offering Face ID setup and the User Guide.
 - RC4: multiple users with separate data (invite only); a device holding another account's data asks before switching; Change Password on the Cloud Sync screen.
+- RC5: administrator can add users and reset their passwords from the app (Settings → Manage Users), through the admin-users Supabase Edge Function.
 - Clear Local Data unlinks the device from cloud sync; it never deletes cloud data.
 - Home geometry, circles, descriptions, and mileage labels are unchanged.
 
@@ -53,4 +54,4 @@ Deploy all 17 ZIP-root files to GitHub Pages. Do not deploy only a partial file 
 
 Validation URL:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc4
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc5

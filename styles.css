@@ -1757,3 +1757,10 @@ body.rgbm-locked{overflow:hidden}
 .guide-body th,.guide-body td{border:1px solid #4a5f7d;padding:6px;text-align:left;vertical-align:top}
 .guide-body th{background:#22385a}
 .guide-body a,.guide-intro a{color:#ebb25d;overflow-wrap:anywhere}
+
+/* F29 RC5: user management */
+.admin-user{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #2c4262}
+.admin-user:last-of-type{border-bottom:0}
+.admin-user strong{overflow-wrap:anywhere}
+.admin-user .smallbtn{flex:0 0 auto}
+.admin-share{background:#0f1d33;border:1px solid #4a5f7d;border-radius:12px;padding:10px;font-size:13px;line-height:1.4;user-select:text;-webkit-user-select:text}

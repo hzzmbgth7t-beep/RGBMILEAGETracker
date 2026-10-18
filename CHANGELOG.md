@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc5 — 2026-10-17
+
+- Built from `v2.1.6l-wc10-f29-rc4` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Added Settings → Manage Users (administrator only): list users, add a user with a generated temporary password, reset a user's password, and Share/Copy the sign-in details.
+- Supabase side: `6_Enable_User_Admin.sql` (table `app_admins`) and Edge Function `admin-users`. The secret key stays in the function; the app sends only the signed-in user's token.
+- User Guide: new "Managing users (administrator)" section; account and forgot-password steps updated.
+- No Home geometry, record schema, or calculation changes.
+
 ## v2.1.6l-wc10-f29-rc4 — 2026-10-13
 
 - Built from `v2.1.6l-wc10-f29-rc3` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).

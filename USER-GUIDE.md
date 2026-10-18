@@ -1,8 +1,8 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc4`
-Cache: `216lwc10f29rc4`
-Guide release: `v2.1.6l-wc10-f29-rc4`
+Build: `v2.1.6l-wc10-f29-rc5`
+Cache: `216lwc10f29rc5`
+Guide release: `v2.1.6l-wc10-f29-rc5`
 Source baseline: accepted `v2.1.6l-wc10-f28`
 Current status: `Release candidate — pending user validation`
 
@@ -10,7 +10,7 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc4
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc5
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -38,7 +38,7 @@ Samsung Internet works the same way: tap the menu (☰), then **Add page to**, t
 
 ## Getting an account and signing in
 
-Accounts are by invitation only. Ask the app administrator to create one for you. You will get your email address and a temporary password.
+Accounts are by invitation only. Ask the app administrator to add you. You will get the app link, your email address, and a temporary password.
 
 1. Open the app. The **Sign In** screen appears when you are not signed in.
 2. Enter your email and temporary password, then tap **Sign In**.
@@ -112,6 +112,15 @@ If Face ID fails, tap **Use Cloud Password**. On the Sign In screen, **Sign In w
 
 The lock hides the screen. It does not encrypt the data stored on the device.
 
+## Managing users (administrator)
+
+Only the app administrator sees this. Go to Settings → **Manage Users**.
+
+- **Add a user:** enter their email. A temporary password is filled in for you (tap **New Password** for a different one). Tap **Add User**.
+- **Share the sign-in details:** after adding, tap **Share** to send the app link, their email, and the temporary password by text or email, or **Copy** to paste it yourself. The password is shown only once.
+- **Reset a password:** tap **Reset Password** next to the person, then share the new temporary password.
+- Each person sees only their own vehicles and records. They change the temporary password after signing in.
+
 ## Backup and restore
 
 **Back up:** Data → **Create JSON Backup**, then save the file to Files, iCloud, or Google Drive. Do this before a reset or reinstall.
@@ -140,7 +149,7 @@ This guide is updated with every new version of the app.
 | App shows an old version or old data | Settings → **Reset App Cache / Reload Current Version**, then sign in |
 | Vehicles are blank on a new device | Sign in, then choose **Use Cloud Data on This Device** |
 | Photos missing | Tap **Sync Now** on the device that has the photos, then on the other device |
-| Forgot password | Ask the app administrator to set a new temporary password |
+| Forgot password | Ask the app administrator to tap **Reset Password** for you in Manage Users |
 | Face ID not offered | Sign in first and open the app from the Home Screen icon |
 | Data gone after deleting the app | Sign in to restore from the cloud, or restore a JSON backup in **Update** mode |
 
