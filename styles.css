@@ -1764,3 +1764,12 @@ body.rgbm-locked{overflow:hidden}
 .admin-user strong{overflow-wrap:anywhere}
 .admin-user .smallbtn{flex:0 0 auto}
 .admin-share{background:#0f1d33;border:1px solid #4a5f7d;border-radius:12px;padding:10px;font-size:13px;line-height:1.4;user-select:text;-webkit-user-select:text}
+
+/* F29 RC7: Edit Lists */
+.list-row{padding:10px 0;border-bottom:1px solid #2c4262}
+.list-name{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.list-name strong{overflow-wrap:anywhere}
+.list-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.list-actions .smallbtn{padding:8px 4px}
+.list-actions button:disabled{opacity:.35}
+.list-add{margin-top:12px}

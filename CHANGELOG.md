@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc7 — 2026-10-18
+
+- Built from `v2.1.6l-wc10-f29-rc6` (rc6 was not deployed; rc7 includes it). Accepted baseline remains `v2.1.6l-wc10-f28`.
+- Added Settings → Drop-Down Lists → Edit Lists for Fuel Grade, Station, Maintenance Category, Location, Provider, and Performed By: Edit (spelling, with optional record correction and combine-on-duplicate), Up/Down, Add, Delete, Sort A–Z, and per-entry usage counts.
+- Edited lists are stored in their exact order (`state.customizedLists`); defaults are no longer re-added to a list once it has been edited.
+- Cloud sync: after pushing, the comparison now includes app settings, so list and vehicle-order changes reach other devices without a record change.
+- User Guide: new "Editing drop-down lists" section.
+
+## v2.1.6l-wc10-f29-rc6 — 2026-10-18
+
+- Built from `v2.1.6l-wc10-f29-rc5` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Maintenance Information (new entry and Edit Maintenance Record): Location, Provider, and Performed By are now drop-down lists. Choosing Other opens the same Use Once / Save To List dialog as Fuel Grade and Station.
+- New saved lists `maintenanceLocations`, `maintenanceProviders`, `maintenancePerformers` (seeded once from values already in maintenance records); they sync with app settings and are included in JSON backups.
+- A record's existing value is always shown, even when it is not in the saved list.
+- User Guide: explains the drop-down lists and Save To List.
+- No Home geometry, record schema, or calculation changes.
+
 ## v2.1.6l-wc10-f29-rc5 — 2026-10-17
 
 - Built from `v2.1.6l-wc10-f29-rc4` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).

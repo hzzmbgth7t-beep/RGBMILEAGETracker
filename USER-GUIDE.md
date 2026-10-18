@@ -1,8 +1,8 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc5`
-Cache: `216lwc10f29rc5`
-Guide release: `v2.1.6l-wc10-f29-rc5`
+Build: `v2.1.6l-wc10-f29-rc7`
+Cache: `216lwc10f29rc7`
+Guide release: `v2.1.6l-wc10-f29-rc7`
 Source baseline: accepted `v2.1.6l-wc10-f28`
 Current status: `Release candidate — pending user validation`
 
@@ -10,7 +10,7 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc5
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc7
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -82,7 +82,21 @@ Tap **Save Vehicle** to keep the changes, or **Clear & Exit** to discard them. T
 
 Tap **Save** to save, or **Cancel** to leave without saving. Earlier records for that vehicle are listed under the form. Tap one to view, edit, archive, or delete it.
 
+**Lists you build as you go:** Fuel Grade, Station, Category, Location, Provider, and Performed By are drop-down lists. To use a new name, pick **Other**, type it, then tap **Save To List** to keep it in the list, or **Use Once** for just this record. Location, Provider, and Performed By start with the names already in your maintenance records.
+
 For fuel cost, set **Cost Source** to **Calculated** to work out the total from the price per gallon, or **Entered** to type the total yourself.
+
+## Editing drop-down lists
+
+Go to Settings → **Edit Lists**, then pick the list at the top: Fuel Grade, Station, Maintenance Category, Location, Provider, or Performed By.
+
+- **Edit** fixes a spelling. If records use the old spelling, the app offers to correct them too. If the new name is already in the list, the two are combined.
+- **Up** and **Down** change the order. **Sort A–Z** puts the list in alphabetical order.
+- **Delete** removes a choice from the list. Records that already use it keep it.
+- **Add** puts a new choice at the end of the list.
+- Each entry shows how many records use it. **Other** always stays last on entry screens.
+
+Your lists sync to your other signed-in devices.
 
 ## Reports
 

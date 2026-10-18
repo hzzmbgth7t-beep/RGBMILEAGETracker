@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f29-rc5
+# FIXNOTES — v2.1.6l-wc10-f29-rc7
 
-Build: `v2.1.6l-wc10-f29-rc5`  
+Build: `v2.1.6l-wc10-f29-rc7`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc5`  
+Cache: `216lwc10f29rc7`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -29,6 +29,19 @@ TESTS/test_sync.py runs the app in Chromium against TESTS/mock_supabase.py: 33/3
 - Photos: uploaded to Storage at `<user id>/<vehicle id>`; `vehicles.primary_photo_md5` holds the photo fingerprint. RGBM_CLOUD_PHOTOS tracks the last synced local/cloud fingerprints so photos upload once and download only when changed.
 - Face ID: a Supabase passkey is registered while signed in. The same passkey signs in (server-verified) and unlocks the app (checked on the phone). The lock hides the screen; it does not encrypt data on the phone.
 - Test evidence: TESTS/test_rc2.py — 28/28 checks (photo upload/download/change/removal across two devices, no re-sync loops, Face ID setup, lock on launch and after background, password fallback, Face ID sign-in, removal) plus the RC1 suite rerun on RC2: 33/33.
+
+## RC7 additions
+
+- LIST_DEFS maps each list to its record collection and fields. listMaterialize copies the current displayed order into state[key] and sets state.customizedLists[key]; activeList returns that order exactly (plus Other) for customized lists.
+- Rename updates records whose field equals the old value exactly (Provider updates serviceProvider and provider) and stamps modifiedAt, so they sync.
+- Linked sync compares settings too when the cloud has a settings row.
+- Test evidence: TESTS/test_rc7.py 19/19; test_rc6.py 24/24; test_rc5.py 25/25; test_rc4.py 36/36; test_rc3.py 12/12; test_rc2.py 28/28; test_sync.py 33/33 — all against RC7.
+
+## RC6 additions
+
+- maintPickSelect(id, listName, value) renders a select with a blank first option, the saved list, the record's current value if missing from the list, and Other; onchange uses the existing selectOther/openOtherModal flow. saveOtherValueToState already handled any list name.
+- maintPickList seeds state[listName] once from distinct record values when the list does not exist yet.
+- Test evidence: TESTS/test_rc6.py 24/24; test_rc5.py 25/25; test_rc4.py 36/36; test_rc3.py 12/12; test_rc2.py 28/28; test_sync.py 33/33 — all against RC6.
 
 ## RC5 additions
 
