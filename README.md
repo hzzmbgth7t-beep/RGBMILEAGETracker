@@ -1,16 +1,16 @@
-# RGBMileage v2.1.6l-wc10-f29-rc7
+# RGBMileage v2.1.6l-wc10-f29-rc8
 
 ## URLs
 
 Production URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc7
+Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc8
 
 Supabase project URL: https://nlfivcxlzmivjzwlhlot.supabase.co
 
-Build: `v2.1.6l-wc10-f29-rc7`  
+Build: `v2.1.6l-wc10-f29-rc8`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc7`  
+Cache: `216lwc10f29rc8`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`  
 Previous accepted production baseline: `v2.1.6l-wc10-f28`
@@ -47,6 +47,7 @@ F29 connects RGB Mileage to its Supabase database. RC2 adds vehicle photo sync a
 - RC5: administrator can add users and reset their passwords from the app (Settings → Manage Users), through the admin-users Supabase Edge Function.
 - RC6: Maintenance Location, Provider, and Performed By are drop-down lists with Other → Use Once / Save To List, like Fuel Grade and Station.
 - RC7: Settings → Edit Lists to rename (optionally correcting records), reorder, add, delete, and sort all six drop-down lists. List and vehicle-order changes now sync between devices on their own.
+- RC8: Scan Receipt on new Fuel and Maintenance entries — read on the phone (tesseract.js 5.1.1 from jsDelivr), reviewed before use; the picture is never saved or uploaded.
 - Clear Local Data unlinks the device from cloud sync; it never deletes cloud data.
 - Home geometry, circles, descriptions, and mileage labels are unchanged.
 
@@ -56,4 +57,4 @@ Deploy all 17 ZIP-root files to GitHub Pages. Do not deploy only a partial file 
 
 Validation URL:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc7
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc8

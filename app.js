@@ -1,4 +1,4 @@
-const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f29-rc7",date:"2026-10-18",cacheRevision:"216lwc10f29rc7"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
+const APP_NAME="RGB Mileage", BUILD=Object.freeze({id:"v2.1.6l-wc10-f29-rc8",date:"2026-10-23",cacheRevision:"216lwc10f29rc8"}), VERSION=BUILD.id, BUILD_DATE=BUILD.date, SCHEMA_VERSION=RGBMDataV3.SCHEMA_VERSION, KEY=RGBMDataV3.ACTIVE_KEY;
 const CUSTOM_LABEL_MAX_LENGTH=50;
 const LAUNCH_URL_STATE={observed:"",normalized:"",changed:false,error:""};
 const OFFLINE_STATE={
@@ -2499,7 +2499,7 @@ function quickFuel(app,vid){
     body += `<div class="empty-state"><p class="muted">No record selected. Choose a record below or tap New.</p>${fuelActionButtons()}</div>`;
   }else{
     if(existing) body += meta(existing)+`<div class="readonly-grid">${mileageIssueHtml(vid,recordId,"Fuel")}</div>`;
-    body += `<h3>Fuel Information</h3>`+fuelFormHtml(vid,r,mode==="view")+fuelActionButtons();
+    body += `<h3>Fuel Information</h3>`+(mode==="edit"?receiptButton("fuel"):"")+fuelFormHtml(vid,r,mode==="view")+fuelActionButtons();
   }
   body += `</div>`;
   app.innerHTML=header(vehicleLabel(v)+" - Fuel")+body+previousRecordsHtml("Fuel",vid)+bottomNav()+footer();
@@ -2877,7 +2877,7 @@ function quickMaintenance(app,vid){
   const mode=route.mode||"edit"; const recordId=route.recordId||""; const existing=recordId?findRecord("Maintenance",recordId):null; const r=existing?existing:maintenanceDefaultRecord(vid);
   let body=`<div class="card">`;
   if(mode==="empty") body += `<div class="empty-state"><p class="muted">No record selected. Choose a record below or tap New.</p>${maintenanceActionButtons()}</div>`;
-  else { if(existing) body += meta(existing)+`<div class="readonly-grid">${mileageIssueHtml(vid,recordId,"Maintenance")}</div>`; body += `<h3>Maintenance Information</h3>`+maintenanceFormHtml(vid,r,mode==="view")+maintenanceActionButtons(); }
+  else { if(existing) body += meta(existing)+`<div class="readonly-grid">${mileageIssueHtml(vid,recordId,"Maintenance")}</div>`; body += `<h3>Maintenance Information</h3>`+(mode==="edit"?receiptButton("maintenance"):"")+maintenanceFormHtml(vid,r,mode==="view")+maintenanceActionButtons(); }
   body += `</div>`;
   app.innerHTML=header(vehicleLabel(v)+" - Maintenance")+body+previousRecordsHtml("Maintenance",vid)+bottomNav()+footer();
   if(mode==="edit") setTimeout(setQuickMaintenanceSnapshot,0);
@@ -4218,7 +4218,7 @@ function initFaceIdLock(){
 }
 
 /* ===== F29 RC4: User Guide, welcome, account ownership, change password ===== */
-/*RGBM_GUIDE_START*/const RGBM_GUIDE={"version": "v2.1.6l-wc10-f29-rc7", "intro": "<p>RGB Mileage tracks fuel, maintenance, and insurance for up to three vehicles. Your data is saved on your device first and copied to your private cloud account when you are signed in. Each person who signs in sees only their own vehicles.</p>", "sections": [{"title": "Install on iPhone or iPad", "html": "<ol>\n<li>Open <strong>Safari</strong> and go to <a href=\"https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/\" target=\"_blank\" rel=\"noopener\">https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/</a></li>\n<li>Tap the <strong>Share</strong> button (the square with an arrow pointing up). On iPhone it is at the bottom of the screen; on iPad it is at the top right.</li>\n<li>Scroll down and tap <strong>Add to Home Screen</strong>. If you don't see it, tap <strong>Edit Actions</strong> and add it.</li>\n<li>Leave the name as <strong>RGB Mileage</strong> and tap <strong>Add</strong>.</li>\n<li>Close Safari and open RGB Mileage from the new Home Screen icon.</li>\n</ol>\n<p>Always open the app from the Home Screen icon. Safari, the GitHub app, and other in-app browsers each keep a separate copy of the data.</p>"}, {"title": "Install on Android", "html": "<ol>\n<li>Open <strong>Chrome</strong> and go to <a href=\"https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/\" target=\"_blank\" rel=\"noopener\">https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/</a></li>\n<li>Tap the <strong>⋮</strong> menu at the top right.</li>\n<li>Tap <strong>Add to Home screen</strong> (on some phones it says <strong>Install app</strong>).</li>\n<li>Tap <strong>Install</strong> or <strong>Add</strong>, then confirm adding the icon to your Home screen.</li>\n<li>Open RGB Mileage from the new icon.</li>\n</ol>\n<p>Samsung Internet works the same way: tap the menu (☰), then <strong>Add page to</strong>, then <strong>Home screen</strong>.</p>"}, {"title": "Getting an account and signing in", "html": "<p>Accounts are by invitation only. Ask the app administrator to add you. You will get the app link, your email address, and a temporary password.</p>\n<ol>\n<li>Open the app. The <strong>Sign In</strong> screen appears when you are not signed in.</li>\n<li>Enter your email and temporary password, then tap <strong>Sign In</strong>.</li>\n<li>Go to Settings → <strong>Open Cloud Sync</strong> → <strong>Change Password</strong> and choose your own password (at least 8 characters).</li>\n</ol>\n<p>The first time you sign in, the app offers to set up Face ID and points you to this guide.</p>\n<p>To use the app without an account, tap <strong>Not Now — Use This Device Only</strong>. Your data then stays on that device only. You can sign in later from Settings.</p>"}, {"title": "Home screen", "html": "<p>Home shows one circle per vehicle, with its photo and last refuel mileage.</p>\n<table>\n<thead>\n<tr>\n<th>Action</th>\n<th>What happens</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Tap a vehicle circle</td>\n<td>Opens a new Fuel entry for that vehicle</td>\n</tr>\n<tr>\n<td>Press and hold a circle</td>\n<td>Opens the vehicle page: details, records, Edit Vehicle, Maintenance Entry, Insurance Entry</td>\n</tr>\n<tr>\n<td>Tap an <strong>Add Vehicle</strong> circle</td>\n<td>Opens the form to add a vehicle</td>\n</tr>\n</tbody>\n</table>\n<p>The bar at the bottom has <strong>Home</strong>, <strong>Reports</strong>, <strong>Data</strong> (backup, restore, CSV import), and <strong>Settings</strong>. <strong>‹ Back</strong> at the top returns to the previous screen.</p>"}, {"title": "Vehicles", "html": "<p>Tap an <strong>Add Vehicle</strong> circle to add a vehicle. To change one, press and hold its circle, then tap <strong>Edit Vehicle</strong>.</p>\n<ul>\n<li><strong>Year, Make, Model, Badge</strong> make up the vehicle's name.</li>\n<li><strong>Custom Label</strong> (up to 50 characters) is shown instead of Year/Make/Model.</li>\n<li><strong>Vehicle Image</strong> is the circle photo. It syncs to your other devices.</li>\n<li><strong>Acquisition Record</strong> holds the purchase date, starting odometer, price, and seller.</li>\n<li><strong>Status</strong> is Active or Archived.</li>\n</ul>\n<p>Tap <strong>Save Vehicle</strong> to keep the changes, or <strong>Clear &amp; Exit</strong> to discard them. To change the order of the circles, go to Settings → <strong>Vehicle Order</strong>. Position 1 is the large circle in portrait view.</p>"}, {"title": "Fuel, maintenance, and insurance records", "html": "<table>\n<thead>\n<tr>\n<th>Record</th>\n<th>How to open it</th>\n<th>Main fields</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Fuel</td>\n<td>Tap the vehicle circle</td>\n<td>Date, odometer, gallons, grade, station, price/gal or total. Miles and MPG fill in automatically.</td>\n</tr>\n<tr>\n<td>Maintenance</td>\n<td>Hold the circle → <strong>Maintenance Entry</strong></td>\n<td>Date, category, odometer, cost, location, provider</td>\n</tr>\n<tr>\n<td>Insurance</td>\n<td>Hold the circle → <strong>Insurance Entry</strong></td>\n<td>Agency, policy number, dates, agreed value, premium, agent</td>\n</tr>\n</tbody>\n</table>\n<p>Tap <strong>Save</strong> to save, or <strong>Cancel</strong> to leave without saving. Earlier records for that vehicle are listed under the form. Tap one to view, edit, archive, or delete it.</p>\n<p><strong>Lists you build as you go:</strong> Fuel Grade, Station, Category, Location, Provider, and Performed By are drop-down lists. To use a new name, pick <strong>Other</strong>, type it, then tap <strong>Save To List</strong> to keep it in the list, or <strong>Use Once</strong> for just this record. Location, Provider, and Performed By start with the names already in your maintenance records.</p>\n<p>For fuel cost, set <strong>Cost Source</strong> to <strong>Calculated</strong> to work out the total from the price per gallon, or <strong>Entered</strong> to type the total yourself.</p>"}, {"title": "Editing drop-down lists", "html": "<p>Go to Settings → <strong>Edit Lists</strong>, then pick the list at the top: Fuel Grade, Station, Maintenance Category, Location, Provider, or Performed By.</p>\n<ul>\n<li><strong>Edit</strong> fixes a spelling. If records use the old spelling, the app offers to correct them too. If the new name is already in the list, the two are combined.</li>\n<li><strong>Up</strong> and <strong>Down</strong> change the order. <strong>Sort A–Z</strong> puts the list in alphabetical order.</li>\n<li><strong>Delete</strong> removes a choice from the list. Records that already use it keep it.</li>\n<li><strong>Add</strong> puts a new choice at the end of the list.</li>\n<li>Each entry shows how many records use it. <strong>Other</strong> always stays last on entry screens.</li>\n</ul>\n<p>Your lists sync to your other signed-in devices.</p>"}, {"title": "Reports", "html": "<p>Tap <strong>Reports</strong> in the bottom bar. The reports are Fuel History, MPG, Maintenance, Insurance History, and Vehicle Summary. Archived records are left out.</p>"}, {"title": "Cloud Sync", "html": "<p>While you are signed in, every save is copied to your cloud account within a few seconds. Your other devices pick up changes when they open the app or when you tap <strong>Sync Now</strong>. Vehicle photos sync too.</p>\n<ul>\n<li><strong>Offline:</strong> keep using the app. Changes wait on the device and upload when you are back online.</li>\n<li><strong>Status:</strong> Settings → <strong>Open Cloud Sync</strong> shows who is signed in and when the last sync happened.</li>\n<li><strong>New device:</strong> install the app and sign in. If that device already has different data, you'll be asked to <strong>Choose Which Data to Keep</strong>. Pick <strong>Use Cloud Data on This Device</strong> unless you know the device has the newer data.</li>\n<li><strong>Shared device:</strong> if the device holds someone else's data, the app asks before switching it to your account. The other person's data stays in their own cloud account.</li>\n<li><strong>Sync Paused:</strong> if one save would delete more than 10 items from the cloud, sync stops and asks first. <strong>Restore This Device from Cloud</strong> undoes the deletion. <strong>Remove Them from the Cloud Too</strong> confirms it.</li>\n<li><strong>Change Password:</strong> Settings → Open Cloud Sync → <strong>Change Password</strong>.</li>\n<li><strong>Sign Out</strong> stops syncing on that device. The data stays on the device.</li>\n</ul>"}, {"title": "Face ID and fingerprint", "html": "<p>Face ID (or fingerprint or face unlock on Android) can lock the app and sign you in without a password. Set it up on each device after you sign in.</p>\n<ol>\n<li>Settings → Face ID → <strong>Set Up Face ID</strong>, then approve the prompt.</li>\n<li><strong>Require Face ID to open the app</strong> turns the lock on or off.</li>\n<li><strong>Lock again after</strong> sets how long the app can be in the background before it asks again.</li>\n</ol>\n<p>If Face ID fails, tap <strong>Use Cloud Password</strong>. On the Sign In screen, <strong>Sign In with Face ID</strong> signs you in without typing your password. <strong>Turn Off Face ID on This Device</strong> removes it.</p>\n<p>The lock hides the screen. It does not encrypt the data stored on the device.</p>"}, {"title": "Managing users (administrator)", "html": "<p>Only the app administrator sees this. Go to Settings → <strong>Manage Users</strong>.</p>\n<ul>\n<li><strong>Add a user:</strong> enter their email. A temporary password is filled in for you (tap <strong>New Password</strong> for a different one). Tap <strong>Add User</strong>.</li>\n<li><strong>Share the sign-in details:</strong> after adding, tap <strong>Share</strong> to send the app link, their email, and the temporary password by text or email, or <strong>Copy</strong> to paste it yourself. The password is shown only once.</li>\n<li><strong>Reset a password:</strong> tap <strong>Reset Password</strong> next to the person, then share the new temporary password.</li>\n<li>Each person sees only their own vehicles and records. They change the temporary password after signing in.</li>\n</ul>"}, {"title": "Backup and restore", "html": "<p><strong>Back up:</strong> Data → <strong>Create JSON Backup</strong>, then save the file to Files, iCloud, or Google Drive. Do this before a reset or reinstall.</p>\n<p><strong>Restore:</strong> Data → <strong>Restore JSON</strong> → pick the file → choose a Restore Mode → <strong>Restore JSON Backup</strong>.</p>\n<table>\n<thead>\n<tr>\n<th>Restore Mode</th>\n<th>What it does</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Replace</td>\n<td>Replaces all data on the device with the backup</td>\n</tr>\n<tr>\n<td>Update</td>\n<td>Updates matching records and adds missing ones (safest)</td>\n</tr>\n<tr>\n<td>Duplicate</td>\n<td>Adds the backup's records as copies</td>\n</tr>\n<tr>\n<td>Skip</td>\n<td>Adds only records that aren't already there</td>\n</tr>\n</tbody>\n</table>\n<p><strong>CSV Import</strong> (Data screen) brings in fuel and maintenance records from a spreadsheet. Tap <strong>Preview Import</strong> first, then <strong>Save Previewed Rows</strong>.</p>"}, {"title": "Updates", "html": "<p>When an <strong>Update</strong> badge appears on Home, tap it to load the new version. If the app still shows an old version, go to Settings → <strong>Reset App Cache / Reload Current Version</strong>. Your data is kept. The version number is shown under the app name on Home and at the top of Settings.</p>\n<p>This guide is updated with every new version of the app.</p>"}, {"title": "Troubleshooting", "html": "<table>\n<thead>\n<tr>\n<th>Problem</th>\n<th>Fix</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>App shows an old version or old data</td>\n<td>Settings → <strong>Reset App Cache / Reload Current Version</strong>, then sign in</td>\n</tr>\n<tr>\n<td>Vehicles are blank on a new device</td>\n<td>Sign in, then choose <strong>Use Cloud Data on This Device</strong></td>\n</tr>\n<tr>\n<td>Photos missing</td>\n<td>Tap <strong>Sync Now</strong> on the device that has the photos, then on the other device</td>\n</tr>\n<tr>\n<td>Forgot password</td>\n<td>Ask the app administrator to tap <strong>Reset Password</strong> for you in Manage Users</td>\n</tr>\n<tr>\n<td>Face ID not offered</td>\n<td>Sign in first and open the app from the Home Screen icon</td>\n</tr>\n<tr>\n<td>Data gone after deleting the app</td>\n<td>Sign in to restore from the cloud, or restore a JSON backup in <strong>Update</strong> mode</td>\n</tr>\n</tbody>\n</table>\n<p><strong>Clear Local Data</strong> (bottom of Settings) erases this device only. It never deletes cloud data.</p>"}]};/*RGBM_GUIDE_END*/
+/*RGBM_GUIDE_START*/const RGBM_GUIDE={"version": "v2.1.6l-wc10-f29-rc8", "intro": "<p>RGB Mileage tracks fuel, maintenance, and insurance for up to three vehicles. Your data is saved on your device first and copied to your private cloud account when you are signed in. Each person who signs in sees only their own vehicles.</p>", "sections": [{"title": "Install on iPhone or iPad", "html": "<ol>\n<li>Open <strong>Safari</strong> and go to <a href=\"https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/\" target=\"_blank\" rel=\"noopener\">https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/</a></li>\n<li>Tap the <strong>Share</strong> button (the square with an arrow pointing up). On iPhone it is at the bottom of the screen; on iPad it is at the top right.</li>\n<li>Scroll down and tap <strong>Add to Home Screen</strong>. If you don't see it, tap <strong>Edit Actions</strong> and add it.</li>\n<li>Leave the name as <strong>RGB Mileage</strong> and tap <strong>Add</strong>.</li>\n<li>Close Safari and open RGB Mileage from the new Home Screen icon.</li>\n</ol>\n<p>Always open the app from the Home Screen icon. Safari, the GitHub app, and other in-app browsers each keep a separate copy of the data.</p>"}, {"title": "Install on Android", "html": "<ol>\n<li>Open <strong>Chrome</strong> and go to <a href=\"https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/\" target=\"_blank\" rel=\"noopener\">https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/</a></li>\n<li>Tap the <strong>⋮</strong> menu at the top right.</li>\n<li>Tap <strong>Add to Home screen</strong> (on some phones it says <strong>Install app</strong>).</li>\n<li>Tap <strong>Install</strong> or <strong>Add</strong>, then confirm adding the icon to your Home screen.</li>\n<li>Open RGB Mileage from the new icon.</li>\n</ol>\n<p>Samsung Internet works the same way: tap the menu (☰), then <strong>Add page to</strong>, then <strong>Home screen</strong>.</p>"}, {"title": "Getting an account and signing in", "html": "<p>Accounts are by invitation only. Ask the app administrator to add you. You will get the app link, your email address, and a temporary password.</p>\n<ol>\n<li>Open the app. The <strong>Sign In</strong> screen appears when you are not signed in.</li>\n<li>Enter your email and temporary password, then tap <strong>Sign In</strong>.</li>\n<li>Go to Settings → <strong>Open Cloud Sync</strong> → <strong>Change Password</strong> and choose your own password (at least 8 characters).</li>\n</ol>\n<p>The first time you sign in, the app offers to set up Face ID and points you to this guide.</p>\n<p>To use the app without an account, tap <strong>Not Now — Use This Device Only</strong>. Your data then stays on that device only. You can sign in later from Settings.</p>"}, {"title": "Home screen", "html": "<p>Home shows one circle per vehicle, with its photo and last refuel mileage.</p>\n<table>\n<thead>\n<tr>\n<th>Action</th>\n<th>What happens</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Tap a vehicle circle</td>\n<td>Opens a new Fuel entry for that vehicle</td>\n</tr>\n<tr>\n<td>Press and hold a circle</td>\n<td>Opens the vehicle page: details, records, Edit Vehicle, Maintenance Entry, Insurance Entry</td>\n</tr>\n<tr>\n<td>Tap an <strong>Add Vehicle</strong> circle</td>\n<td>Opens the form to add a vehicle</td>\n</tr>\n</tbody>\n</table>\n<p>The bar at the bottom has <strong>Home</strong>, <strong>Reports</strong>, <strong>Data</strong> (backup, restore, CSV import), and <strong>Settings</strong>. <strong>‹ Back</strong> at the top returns to the previous screen.</p>"}, {"title": "Vehicles", "html": "<p>Tap an <strong>Add Vehicle</strong> circle to add a vehicle. To change one, press and hold its circle, then tap <strong>Edit Vehicle</strong>.</p>\n<ul>\n<li><strong>Year, Make, Model, Badge</strong> make up the vehicle's name.</li>\n<li><strong>Custom Label</strong> (up to 50 characters) is shown instead of Year/Make/Model.</li>\n<li><strong>Vehicle Image</strong> is the circle photo. It syncs to your other devices.</li>\n<li><strong>Acquisition Record</strong> holds the purchase date, starting odometer, price, and seller.</li>\n<li><strong>Status</strong> is Active or Archived.</li>\n</ul>\n<p>Tap <strong>Save Vehicle</strong> to keep the changes, or <strong>Clear &amp; Exit</strong> to discard them. To change the order of the circles, go to Settings → <strong>Vehicle Order</strong>. Position 1 is the large circle in portrait view.</p>"}, {"title": "Fuel, maintenance, and insurance records", "html": "<table>\n<thead>\n<tr>\n<th>Record</th>\n<th>How to open it</th>\n<th>Main fields</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Fuel</td>\n<td>Tap the vehicle circle</td>\n<td>Date, odometer, gallons, grade, station, price/gal or total. Miles and MPG fill in automatically.</td>\n</tr>\n<tr>\n<td>Maintenance</td>\n<td>Hold the circle → <strong>Maintenance Entry</strong></td>\n<td>Date, category, odometer, cost, location, provider</td>\n</tr>\n<tr>\n<td>Insurance</td>\n<td>Hold the circle → <strong>Insurance Entry</strong></td>\n<td>Agency, policy number, dates, agreed value, premium, agent</td>\n</tr>\n</tbody>\n</table>\n<p>Tap <strong>Save</strong> to save, or <strong>Cancel</strong> to leave without saving. Earlier records for that vehicle are listed under the form. Tap one to view, edit, archive, or delete it.</p>\n<p><strong>Lists you build as you go:</strong> Fuel Grade, Station, Category, Location, Provider, and Performed By are drop-down lists. To use a new name, pick <strong>Other</strong>, type it, then tap <strong>Save To List</strong> to keep it in the list, or <strong>Use Once</strong> for just this record. Location, Provider, and Performed By start with the names already in your maintenance records.</p>\n<p>For fuel cost, set <strong>Cost Source</strong> to <strong>Calculated</strong> to work out the total from the price per gallon, or <strong>Entered</strong> to type the total yourself.</p>"}, {"title": "Scanning receipts", "html": "<p>On a new Fuel or Maintenance entry, tap <strong>Scan Receipt</strong>, then take a photo of the receipt or choose one from your photos.</p>\n<ol>\n<li>Lay the receipt flat in good light and fill the screen with it.</li>\n<li>The app reads it on your phone in a few seconds. The first scan downloads the reader (about 5 MB), so it needs internet.</li>\n<li>Check the values. <strong>read</strong> means it was read clearly; <strong>check this</strong> means it was a guess. Fix anything that is wrong.</li>\n<li>Tap <strong>Use These</strong> to fill the entry, then enter the odometer and tap <strong>Save</strong> as usual.</li>\n</ol>\n<p>What gets filled in, and other tips:</p>\n<ul>\n<li><strong>Fuel</strong> fills Date, Time, Station, Fuel Grade, Gallons, Price/Gal, and Total Cost.</li>\n<li><strong>Maintenance</strong> fills Date, Provider, Category, Odometer (when printed), and Cost.</li>\n<li>For a long receipt, tap <strong>Add Another Part</strong> and photograph the rest.</li>\n<li><strong>Text read</strong> shows exactly what the app read. You can correct it and tap <strong>Fill In Again</strong>.</li>\n<li>The picture is never saved or uploaded. Very faded receipts may not read at all; type those.</li>\n</ul>"}, {"title": "Editing drop-down lists", "html": "<p>Go to Settings → <strong>Edit Lists</strong>, then pick the list at the top: Fuel Grade, Station, Maintenance Category, Location, Provider, or Performed By.</p>\n<ul>\n<li><strong>Edit</strong> fixes a spelling. If records use the old spelling, the app offers to correct them too. If the new name is already in the list, the two are combined.</li>\n<li><strong>Up</strong> and <strong>Down</strong> change the order. <strong>Sort A–Z</strong> puts the list in alphabetical order.</li>\n<li><strong>Delete</strong> removes a choice from the list. Records that already use it keep it.</li>\n<li><strong>Add</strong> puts a new choice at the end of the list.</li>\n<li>Each entry shows how many records use it. <strong>Other</strong> always stays last on entry screens.</li>\n</ul>\n<p>Your lists sync to your other signed-in devices.</p>"}, {"title": "Reports", "html": "<p>Tap <strong>Reports</strong> in the bottom bar. The reports are Fuel History, MPG, Maintenance, Insurance History, and Vehicle Summary. Archived records are left out.</p>"}, {"title": "Cloud Sync", "html": "<p>While you are signed in, every save is copied to your cloud account within a few seconds. Your other devices pick up changes when they open the app or when you tap <strong>Sync Now</strong>. Vehicle photos sync too.</p>\n<ul>\n<li><strong>Offline:</strong> keep using the app. Changes wait on the device and upload when you are back online.</li>\n<li><strong>Status:</strong> Settings → <strong>Open Cloud Sync</strong> shows who is signed in and when the last sync happened.</li>\n<li><strong>New device:</strong> install the app and sign in. If that device already has different data, you'll be asked to <strong>Choose Which Data to Keep</strong>. Pick <strong>Use Cloud Data on This Device</strong> unless you know the device has the newer data.</li>\n<li><strong>Shared device:</strong> if the device holds someone else's data, the app asks before switching it to your account. The other person's data stays in their own cloud account.</li>\n<li><strong>Sync Paused:</strong> if one save would delete more than 10 items from the cloud, sync stops and asks first. <strong>Restore This Device from Cloud</strong> undoes the deletion. <strong>Remove Them from the Cloud Too</strong> confirms it.</li>\n<li><strong>Change Password:</strong> Settings → Open Cloud Sync → <strong>Change Password</strong>.</li>\n<li><strong>Sign Out</strong> stops syncing on that device. The data stays on the device.</li>\n</ul>"}, {"title": "Face ID and fingerprint", "html": "<p>Face ID (or fingerprint or face unlock on Android) can lock the app and sign you in without a password. Set it up on each device after you sign in.</p>\n<ol>\n<li>Settings → Face ID → <strong>Set Up Face ID</strong>, then approve the prompt.</li>\n<li><strong>Require Face ID to open the app</strong> turns the lock on or off.</li>\n<li><strong>Lock again after</strong> sets how long the app can be in the background before it asks again.</li>\n</ol>\n<p>If Face ID fails, tap <strong>Use Cloud Password</strong>. On the Sign In screen, <strong>Sign In with Face ID</strong> signs you in without typing your password. <strong>Turn Off Face ID on This Device</strong> removes it.</p>\n<p>The lock hides the screen. It does not encrypt the data stored on the device.</p>"}, {"title": "Managing users (administrator)", "html": "<p>Only the app administrator sees this. Go to Settings → <strong>Manage Users</strong>.</p>\n<ul>\n<li><strong>Add a user:</strong> enter their email. A temporary password is filled in for you (tap <strong>New Password</strong> for a different one). Tap <strong>Add User</strong>.</li>\n<li><strong>Share the sign-in details:</strong> after adding, tap <strong>Share</strong> to send the app link, their email, and the temporary password by text or email, or <strong>Copy</strong> to paste it yourself. The password is shown only once.</li>\n<li><strong>Reset a password:</strong> tap <strong>Reset Password</strong> next to the person, then share the new temporary password.</li>\n<li>Each person sees only their own vehicles and records. They change the temporary password after signing in.</li>\n</ul>"}, {"title": "Backup and restore", "html": "<p><strong>Back up:</strong> Data → <strong>Create JSON Backup</strong>, then save the file to Files, iCloud, or Google Drive. Do this before a reset or reinstall.</p>\n<p><strong>Restore:</strong> Data → <strong>Restore JSON</strong> → pick the file → choose a Restore Mode → <strong>Restore JSON Backup</strong>.</p>\n<table>\n<thead>\n<tr>\n<th>Restore Mode</th>\n<th>What it does</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Replace</td>\n<td>Replaces all data on the device with the backup</td>\n</tr>\n<tr>\n<td>Update</td>\n<td>Updates matching records and adds missing ones (safest)</td>\n</tr>\n<tr>\n<td>Duplicate</td>\n<td>Adds the backup's records as copies</td>\n</tr>\n<tr>\n<td>Skip</td>\n<td>Adds only records that aren't already there</td>\n</tr>\n</tbody>\n</table>\n<p><strong>CSV Import</strong> (Data screen) brings in fuel and maintenance records from a spreadsheet. Tap <strong>Preview Import</strong> first, then <strong>Save Previewed Rows</strong>.</p>"}, {"title": "Updates", "html": "<p>When an <strong>Update</strong> badge appears on Home, tap it to load the new version. If the app still shows an old version, go to Settings → <strong>Reset App Cache / Reload Current Version</strong>. Your data is kept. The version number is shown under the app name on Home and at the top of Settings.</p>\n<p>This guide is updated with every new version of the app.</p>"}, {"title": "Troubleshooting", "html": "<table>\n<thead>\n<tr>\n<th>Problem</th>\n<th>Fix</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>App shows an old version or old data</td>\n<td>Settings → <strong>Reset App Cache / Reload Current Version</strong>, then sign in</td>\n</tr>\n<tr>\n<td>Vehicles are blank on a new device</td>\n<td>Sign in, then choose <strong>Use Cloud Data on This Device</strong></td>\n</tr>\n<tr>\n<td>Photos missing</td>\n<td>Tap <strong>Sync Now</strong> on the device that has the photos, then on the other device</td>\n</tr>\n<tr>\n<td>Forgot password</td>\n<td>Ask the app administrator to tap <strong>Reset Password</strong> for you in Manage Users</td>\n</tr>\n<tr>\n<td>Face ID not offered</td>\n<td>Sign in first and open the app from the Home Screen icon</td>\n</tr>\n<tr>\n<td>Data gone after deleting the app</td>\n<td>Sign in to restore from the cloud, or restore a JSON backup in <strong>Update</strong> mode</td>\n</tr>\n</tbody>\n</table>\n<p><strong>Clear Local Data</strong> (bottom of Settings) erases this device only. It never deletes cloud data.</p>"}]};/*RGBM_GUIDE_END*/
 const CLOUD_OWNER_KEY="RGBM_CLOUD_OWNER";
 function guideSettingsCard(){return `<div class="card guide-card"><h2>User Guide</h2><p class="muted">How to install the app on iPhone or Android and how to use every screen.</p><button class="wide primary" type="button" onclick="nav('guide')">Open User Guide</button></div>`}
 function guideScreen(app){
@@ -4424,6 +4424,343 @@ function listsRename(i){
     (state[d.coll]||[]).forEach(r=>{let hit=false;d.fields.forEach(f=>{if(cleanText(r[f])===old){r[f]=target;hit=true}});if(hit)r.modifiedAt=now});
   }
   listsSave();
+}
+
+/* ===== F29 RC8: Scan Receipt (read on the phone; the picture is never saved or uploaded) ===== */
+/*RGBM_RECEIPT_START*//* RGBM receipt reader core — shared by the app (browser canvas) and the bench (@napi-rs/canvas).
+   Method adapted from the SS Conferences card reader: clean up on the device, read twice at two
+   sizes, keep words with confidence >= 40, split wide gaps, then fill fields with simple rules.
+   The picture is never stored or uploaded. */
+var RGBMReceipt=(function(){
+  "use strict";
+  var MIN_CONF=40;
+
+  /* ---------- image clean-up ---------- */
+  function greyData(ctx,w,h){var d=ctx.getImageData(0,0,w,h),p=d.data,g=new Uint8ClampedArray(w*h);for(var i=0,j=0;j<g.length;i+=4,j++)g[j]=(p[i]*299+p[i+1]*587+p[i+2]*114)/1000;return g}
+  /* bright paper area (receipt on a darker table) */
+  function paperBox(g,w,h){
+    var thr=0,hist=new Array(256).fill(0);for(var i=0;i<g.length;i+=7)hist[g[i]]++;
+    var tot=0;for(i=0;i<256;i++)tot+=hist[i];var acc=0,p70=0;for(i=0;i<256;i++){acc+=hist[i];if(acc>=tot*0.7){p70=i;break}}
+    thr=Math.max(110,p70-45);
+    var colCnt=new Array(w).fill(0),rowCnt=new Array(h).fill(0);
+    for(var y=0;y<h;y+=2)for(var x=0;x<w;x+=2)if(g[y*w+x]>=thr){colCnt[x]++;rowCnt[y]++}
+    function span(cnt,n,other){var need=other*0.25/2,a=0,b=n-1;while(a<n&&cnt[a]<need)a++;while(b>a&&cnt[b]<need)b--;return [a,b]}
+    var xs=span(colCnt,w,h),ys=span(rowCnt,h,w);
+    var bw=xs[1]-xs[0],bh=ys[1]-ys[0];
+    if(bw<w*0.2||bh<h*0.2)return {x:0,y:0,w:w,h:h};
+    var pad=-Math.round(Math.min(w,h)*0.004);
+    var x0=Math.max(0,xs[0]-pad),y0=Math.max(0,ys[0]-pad);
+    return {x:x0,y:y0,w:Math.min(w-x0,bw+2*pad),h:Math.min(h-y0,bh+2*pad)};
+  }
+  /* grey, resize to target width, even out shadows (pixel vs. local paper), stretch contrast */
+  function prepPaper(src,srcW,srcH,box,target,createCanvas,opts){
+    opts=opts||{};
+    var scale=target/box.w,w=Math.round(box.w*scale),h=Math.round(box.h*scale);
+    var c=createCanvas(w,h),ctx=c.getContext("2d");
+    ctx.drawImage(src,box.x,box.y,box.w,box.h,0,0,w,h);
+    var g=greyData(ctx,w,h);
+    var bs=Math.max(8,Math.round(w/40)),bx=Math.ceil(w/bs),by=Math.ceil(h/bs),bg=new Float32Array(bx*by);
+    for(var j=0;j<by;j++)for(var i=0;i<bx;i++){
+      var vals=[];for(var y=j*bs;y<Math.min(h,(j+1)*bs);y+=2)for(var x=i*bs;x<Math.min(w,(i+1)*bs);x+=2)vals.push(g[y*w+x]);
+      vals.sort(function(a,b){return a-b});bg[j*bx+i]=vals.length?vals[Math.floor(vals.length*0.9)]:255;
+    }
+    /* smooth the paper level a little (3x3 max then mean) */
+    var bg2=new Float32Array(bg.length);
+    for(j=0;j<by;j++)for(i=0;i<bx;i++){var s=0,n=0;for(var dj=-1;dj<=1;dj++)for(var di=-1;di<=1;di++){var ii=i+di,jj=j+dj;if(ii>=0&&jj>=0&&ii<bx&&jj<by){s+=bg[jj*bx+ii];n++}}bg2[j*bx+i]=s/n}
+    var out=new Uint8ClampedArray(w*h);
+    for(y=0;y<h;y++){var fy=Math.min(by-1,Math.max(0,y/bs-0.5)),j0=Math.floor(fy),j1=Math.min(by-1,j0+1),ty=fy-j0;
+      for(x=0;x<w;x++){var fx=Math.min(bx-1,Math.max(0,x/bs-0.5)),i0=Math.floor(fx),i1=Math.min(bx-1,i0+1),tx=fx-i0;
+        var b=(bg2[j0*bx+i0]*(1-tx)+bg2[j0*bx+i1]*tx)*(1-ty)+(bg2[j1*bx+i0]*(1-tx)+bg2[j1*bx+i1]*tx)*ty;
+        var v=g[y*w+x];
+        if(b<90){out[y*w+x]=255;continue}            /* table / background around the paper: blank it */
+        out[y*w+x]=Math.min(255,Math.round(255*v/Math.max(30,b)));
+      }}
+    if(opts.stretch!==false){
+      var hist=new Array(256).fill(0);for(i=0;i<out.length;i+=3)hist[out[i]]++;var tot=0;for(i=0;i<256;i++)tot+=hist[i];
+      var lo=0,hi=255,acc=0;for(i=0;i<256;i++){acc+=hist[i];if(acc>=tot*0.02){lo=i;break}}
+      acc=0;for(i=255;i>=0;i--){acc+=hist[i];if(acc>=tot*0.02){hi=i;break}}
+      if(hi-lo>40){var k=255/(hi-lo);for(i=0;i<out.length;i++)out[i]=Math.max(0,Math.min(255,(out[i]-lo)*k))}
+    }
+    var id=ctx.createImageData(w,h),p=id.data;for(i=0,j=0;j<out.length;i+=4,j++){p[i]=p[i+1]=p[i+2]=out[j];p[i+3]=255}
+    ctx.putImageData(id,0,0);return c;
+  }
+  /* ---------- reading ---------- */
+  /* rows of words (conf >= minConf). Receipts put labels and amounts far apart on the same row, so
+     words are grouped into rows by height after correcting the page tilt (median baseline slope). */
+  function readLines(data,minConf){
+    minConf=minConf==null?MIN_CONF:minConf;
+    var words=[],slopes=[];
+    (data.blocks||[]).forEach(function(bl){(bl.paragraphs||[]).forEach(function(pa){(pa.lines||[]).forEach(function(ln){
+      var b=ln.baseline;if(b&&b.x1-b.x0>60)slopes.push((b.y1-b.y0)/(b.x1-b.x0));
+      (ln.words||[]).forEach(function(w){if(w.confidence>=minConf&&String(w.text).trim())words.push(w)});
+    })})});
+    slopes.sort(function(a,b){return a-b});var sl=slopes.length?slopes[Math.floor(slopes.length/2)]:0;if(Math.abs(sl)>0.06)sl=0;
+    words.forEach(function(w){var cx=(w.bbox.x0+w.bbox.x1)/2;w._y=(w.bbox.y0+w.bbox.y1)/2-sl*cx;w._h=w.bbox.y1-w.bbox.y0});
+    words.sort(function(a,b){return a._y-b._y});
+    var rows=[];
+    words.forEach(function(w){var r=rows[rows.length-1];if(r&&Math.abs(w._y-r.y)<Math.max(6,Math.min(r.h,w._h)*0.55)){r.ws.push(w);r.y=(r.y*(r.ws.length-1)+w._y)/r.ws.length;r.h=Math.max(r.h,w._h)}else rows.push({ws:[w],y:w._y,h:w._h})});
+    var out=rows.map(function(r){r.ws.sort(function(a,b){return a.bbox.x0-b.bbox.x0});return {text:r.ws.map(function(w){return w.text}).join(" "),h:r.h,y:r.y,x:r.ws[0].bbox.x0}});
+    var hs=out.map(function(l){return l.h}).sort(function(a,b){return a-b});var med=hs.length?hs[Math.floor(hs.length/2)]:0;
+    return {text:out.map(function(l){return l.text}).join("\n"),big:out.filter(function(l){return l.h>=med*1.35}).map(function(l){return l.text}),lines:out};
+  }
+
+  /* ---------- field rules ---------- */
+  var MONTHS={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12};
+  function numFix(s){return String(s).replace(/[0-9OolI|SB$.,:\/\-]{2,}/g,function(t){return /\d/.test(t)?t.replace(/[Oo]/g,"0").replace(/[lI|]/g,"1").replace(/S/g,"5").replace(/B/g,"8"):t})}
+  function clean(t){return String(t||"").replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/ /g," ")}
+  function pad2(n){return String(n).padStart(2,"0")}
+  function iso(y,m,d){if(y<100)y+=2000;if(m<1||m>12||d<1||d>31||y<2000||y>2100)return "";return y+"-"+pad2(m)+"-"+pad2(d)}
+  function findDates(line){
+    var s=numFix(line),out=[],m,re=/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})(?!\d)/g;
+    while((m=re.exec(s)))out.push(iso(+m[3],+m[1],+m[2]));
+    re=/(20\d{2})[\/\-.](\d{1,2})[\/\-.](\d{1,2})(?!\d)/g;while((m=re.exec(s)))out.push(iso(+m[1],+m[2],+m[3]));
+    re=/\b(jan|feb|mar|apr|may|jun|jul|aug|sept?|oct|nov|dec)[a-z]*\.?\s+(\d{1,2}),?\s+(\d{2,4})/ig;while((m=re.exec(s)))out.push(iso(+m[3],MONTHS[m[1].toLowerCase()],+m[2]));
+    re=/\b(\d{1,2})[\s\-]?(jan|feb|mar|apr|may|jun|jul|aug|sept?|oct|nov|dec)[a-z]*[\s\-]?(\d{2,4})/ig;while((m=re.exec(s)))out.push(iso(+m[3],MONTHS[m[2].toLowerCase()],+m[1]));
+    return out.filter(Boolean);
+  }
+  function findTime(line){var m=numFix(line).match(/\b(\d{1,2}):(\d{2})(?::\d{2})?\s*([AaPp])?\.?[Mm]?\b/);if(!m)return "";var h=+m[1],mi=+m[2];if(h>23||mi>59)return "";if(m[3]){var pm=/p/i.test(m[3]);if(h===12)h=pm?12:0;else if(pm)h+=12}return pad2(h)+":"+pad2(mi)}
+  var AMT=/(-?)\$?\s?(\d{1,4}(?:,\d{3})*)[.,](\d{2})(?![\d.,]*\d)/g;
+  function amounts(line){var s=numFix(line).replace(/(\d)\s+([.,])\s*(\d{2})\b/g,"$1$2$3"),out=[],m;AMT.lastIndex=0;
+    if(/\d{3}[\-.\s]\d{3}[\-.\s]\d{4}/.test(s))return out;           /* phone */
+    s=s.replace(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/g," ").replace(/\b\d{1,2}:\d{2}(:\d{2})?/g," ");
+    while((m=AMT.exec(s))){var v=+(m[2].replace(/,/g,"")+"."+m[3]);if(m[1])v=-v;out.push(v)}return out}
+  function threeDec(line){var s=numFix(line),out=[],m,re=/(\d{1,3})[.,](\d{3})(?!\d)/g;while((m=re.exec(s)))out.push(+(m[1]+"."+m[2]));return out}
+  function titleCase(s){return s.toLowerCase().replace(/\b([a-z])/g,function(c){return c.toUpperCase()}).replace(/\b(Bp|Qt|Usa|Llc|Inc)\b/g,function(x){return x.toUpperCase()}).replace(/'S\b/g,"'s")}
+  var BRANDS=["Murphy USA","Murphy Express","Circle K","Shell","Exxon","Mobil","BP","Amoco","Chevron","Texaco","Sheetz","Wawa","QuikTrip","Speedway","Marathon","Sunoco","Citgo","Valero","Phillips 66","Conoco","76","Buc-ee's","Costco","Sam's Club","Kroger","Pilot","Flying J","Love's","Casey's","RaceTrac","Kangaroo","Arco","Gulf","Hess","Sinclair","Holiday","Kwik Trip","Maverik","Royal Farms","Food Lion","Harris Teeter","Walmart","Refuel","GoMart","Mapco","Thorntons","Getty"];
+  function norm(s){return String(s).toLowerCase().replace(/[^a-z0-9]/g,"")}
+  function lev(a,b){var m=a.length,n=b.length;if(!m)return n;if(!n)return m;var d=[];for(var i=0;i<=m;i++){d[i]=[i]}for(var j=1;j<=n;j++)d[0][j]=j;for(i=1;i<=m;i++)for(j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
+  function matchName(line,names){var L=norm(line);if(!L)return "";var best="",bs=0;
+    names.forEach(function(n){var N=norm(n);if(!N||N==="other")return;var sc=0;
+      if(N.length>=3&&L.indexOf(N)>=0)sc=N.length*2;
+      else if(N.length<3&&String(line).toLowerCase().split(/[^a-z0-9]+/).indexOf(N)>=0&&String(line).trim().split(/\s+/).length<=3)sc=N.length*2;
+      else if(N.length>=4){var words=String(line).toLowerCase().split(/[^a-z0-9']+/).filter(Boolean);for(var k=0;k<words.length;k++){var w=norm(words.slice(k,k+N.length>6?2:1).join(""));if(w.length>=4&&lev(w,N)<=Math.max(1,Math.floor(N.length/5)))sc=Math.max(sc,N.length)}}
+      if(sc>bs){bs=sc;best=n}});return best}
+  var NOT_MERCHANT=/(\d{3}[\-.\s]\d{3}[\-.\s]\d{4})|(\b\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\b)|(\$|\d+[.,]\d{2}\b)|\b(receipt|welcome|store|station|tel|phone|www|http|thank|customer|copy|invoice|order|date|time|pump|terminal|tran|auth)\b/i;
+  var STREET=/\b\d{1,6}\s+\w+.*\b(st|street|rd|road|ave|avenue|blvd|hwy|highway|dr|drive|ln|lane|pkwy|parkway|ct|way|pl|place|cir|circle|us|nc|sc|va)\b/i;
+  var CITYST=/^([A-Za-z .'-]{2,30}),?\s+([A-Z]{2})\s+(\d{5})(?:-\d{4})?$/;
+  function merchantFrom(lines,big){
+    var cands=lines.slice(0,6).filter(function(l){var t=l.trim();return t.length>=3&&/[A-Za-z]{3}/.test(t)&&!NOT_MERCHANT.test(t)&&!STREET.test(t)&&!CITYST.test(t.toUpperCase())});
+    var bigSet={};(big||[]).forEach(function(b){bigSet[b]=1});
+    var pick=cands.find(function(c){return bigSet[c]})||cands[0]||"";
+    pick=pick.replace(/[^A-Za-z0-9&'.\- ]/g," ").replace(/\s+/g," ").trim();
+    if(pick&&pick===pick.toUpperCase())pick=titleCase(pick);
+    return pick;
+  }
+  var TOTAL_LABELS=[[/\b(grand\s*total|amount\s*due|balance\s*due|total\s*due|total\s*sale|fuel\s*total|fuel\s*sale|sale\s*total|purchase|total\s*amount)\b/i,5],[/\btotal\b/i,4],[/\b(amount|sale|amt)\b/i,2]];
+  var NOT_TOTAL=/\b(sub\s*-?\s*total|subtotal|tax|tip|gratuity|change|cash\s*tend|tendered|savings|discount|you\s*saved|points|balance\s*remaining|reward)\b/i;
+  function labelled(lines,re,pick){for(var i=0;i<lines.length;i++){if(re.test(lines[i])){var a=amounts(lines[i]);if(!a.length&&i+1<lines.length&&!/[A-Za-z]{3}/.test(lines[i+1]))a=amounts(lines[i+1]);if(a.length)return pick==="first"?a[0]:a[a.length-1]}}return null}
+  function findTotal(lines){
+    var best=null,bestScore=0;
+    lines.forEach(function(l,i){if(NOT_TOTAL.test(l))return;for(var k=0;k<TOTAL_LABELS.length;k++){if(TOTAL_LABELS[k][0].test(l)){var a=amounts(l);if(!a.length&&i+1<lines.length&&!/[A-Za-z]{3}/.test(lines[i+1]))a=amounts(lines[i+1]);if(a.length){var sc=TOTAL_LABELS[k][1];if(sc>bestScore||(sc===bestScore&&a[a.length-1]>best)){best=a[a.length-1];bestScore=sc}}break}}});
+    if(best!=null)return {v:best,labelled:true};
+    var all=[];lines.forEach(function(l){if(/\b(cash|tender|change)\b/i.test(l))return;all=all.concat(amounts(l))});
+    if(!all.length)return null;return {v:Math.max.apply(null,all),labelled:false};
+  }
+  var GAL_LABEL=/\b(gal(lon)?s?|volume|vol|qty|quantity)\b|\bG\b/i, PPG_LABEL=/(price\s*\/?\s*(gal|g)\b|\$\s*\/\s*g|\/\s*gal|\bppg\b|per\s*gal|unit\s*price|\bprice\b|@)/i;
+  function findGallons(lines){
+    for(var i=0;i<lines.length;i++){var s=numFix(lines[i]);
+      var m=s.match(/(\d{1,3}[.,]\d{3})\s*(?:gal(?:lon)?s?\b|g\b)/i);if(m)return +m[1].replace(",",".");
+      if(/\b(gal(lon)?s?|volume|vol)\b/i.test(s)&&!/price|\/\s*gal|per/i.test(s)){var t=threeDec(s);if(t.length)return t[0];var m2=s.match(/(\d{1,3}[.,]\d{1,2})\b/);if(m2)return +m2[1].replace(",",".")}
+    }return null}
+  function findPPG(lines){
+    for(var i=0;i<lines.length;i++){var s=numFix(lines[i]);
+      var m=s.match(/\$?\s?(\d[.,]\d{2,3})\s*\/\s*(?:gal|g)\b/i);if(m)return +m[1].replace(",",".");
+      if(PPG_LABEL.test(s)){var t=threeDec(s).filter(function(v){return v>0.5&&v<15});if(t.length)return t[0];var a=amounts(s).filter(function(v){return v>0.5&&v<15});if(a.length)return a[0]}
+    }return null}
+  var GRADES=[[/\b(e-?0|ethanol\s*free|non\s*-?\s*ethanol|rec(reational)?\s*90|pure\s*gas|clear)\b/i,"90",true],[/\b(diesel|dsl)\b/i,"Diesel",false],[/\b(premium|super|prem|supreme|v-?power|ultimate|synergy\s*supreme)\b/i,"93",false],[/\b(plus|mid\s*-?\s*grade|midgrade|special|silver)\b/i,"89",false],[/\b(unleaded|unl|regular|reg|unld)\b/i,"87",false]];
+  function findGrade(lines){
+    for(var li=0;li<lines.length;li++){var ln=lines[li];if(/\b(thank|have a|welcome|stopping)\b/i.test(ln))continue;
+      for(var k=0;k<GRADES.length;k++){if(GRADES[k][0].test(ln)){var g=GRADES[k][1];var o=ln.match(/\b(8[5-9]|9[0-4])\b/);if(o&&g!=="Diesel")g=o[1];return {grade:g,ethanolFree:GRADES[k][2]}}}
+      var oc=ln.match(/\b(8[5-9]|9[0-4])\s*(octane|oct)\b/i);if(oc)return {grade:oc[1],ethanolFree:false};
+    }
+    return null;
+  }
+  function findGradeOld(lines){
+    var all=lines.join("\n");
+    var oct=all.match(/\b(8[5-9]|9[0-4])\s*(octane|oct\b)/i)||all.match(/\b(octane|oct)\s*:?\s*(8[5-9]|9[0-4])\b/i);
+    for(var k=0;k<GRADES.length;k++){if(GRADES[k][0].test(all)){var g=GRADES[k][1];var o=all.match(new RegExp(GRADES[k][0].source+"\\D{0,6}(8[5-9]|9[0-4])\\b","i"));if(o&&g!=="Diesel")g=o[o.length-1];else if(oct)g=oct[1].length===2&&/\d/.test(oct[1])?oct[1]:oct[2];return {grade:g,ethanolFree:GRADES[k][2]}}}
+    if(oct)return {grade:/\d/.test(oct[1])?oct[1]:oct[2],ethanolFree:false};return null}
+  function findOdometer(lines){for(var i=0;i<lines.length;i++){var s=numFix(lines[i]);if(/\b(odometer|odom|mileage|miles\s*in|mi\s*in|odo)\b/i.test(s)){var m=s.match(/\b(\d{1,3}(?:[,. ]\d{3})+|\d{3,7})(?![\d])/);if(m)return +m[1].replace(/[,. ]/g,"")}}return null}
+  var MAINT_CATS=[[/\b(oil\s*change|lube|lof|oil\s*&?\s*filter|synthetic\s*oil)\b/i,"Oil Change"],[/\b(tire\s*rotation|rotate\s*tires?)\b/i,"Tire Rotation"],[/\b(brake|pads?|rotors?)\b/i,"Brakes"],[/\b(inspection|emissions|safety\s*insp)\b/i,"Inspection"],[/\b(coolant|radiator|thermostat|water\s*pump)\b/i,"Cooling System"],[/\b(battery|alternator|starter)\b/i,"Electrical"],[/\b(transmission|trans\s*fluid)\b/i,"Transmission"],[/\b(detail|car\s*wash|wash)\b/i,"Detailing"]];
+
+  /* amount variants: a "$" read as 3/5/8/S adds a leading digit ("$34.29" -> "534.29") */
+  function variants(v){var out=[v],s=v.toFixed(2);if(/^[3589]\d{2,}\./.test(s))out.push(+s.slice(1));return out}
+  function allNums(lines,re,lo,hi){var out=[];lines.forEach(function(l){var s=numFix(l),m;re.lastIndex=0;while((m=re.exec(s))){var v=+(m[1]+"."+m[2]);if(v>=lo&&v<=hi)out.push(v)}});return out}
+  /* fuel: find gallons x price/gal = total among everything read */
+  function fuelTriple(lines,total){
+    var G=allNums(lines,/(\d{1,2})[.,](\d{3})(?!\d)/g,0.5,60),P=allNums(lines,/(\d)[.,](\d{3})(?!\d)/g,1.2,9.99).concat(allNums(lines,/(\d)[.,](\d{2})(?:\d)?\s*\/\s*g/gi,1.2,9.99));
+    var T=[];lines.forEach(function(l){amounts(l).forEach(function(a){variants(a).forEach(function(v){if(v>0.5&&v<500)T.push(v)})})});
+    var best=null;
+    G.forEach(function(g){P.forEach(function(p){if(g===p)return;var t=Math.round(g*p*100)/100;
+      T.forEach(function(x){if(Math.abs(x-t)<=0.011){var n=T.filter(function(y){return Math.abs(y-x)<0.005}).length;if(!best||n>best.n)best={g:g,p:p,t:x,n:n}}})})});
+    return best;
+  }
+  /* total by vote: labelled total lines and card-payment lines, with $-misread variants */
+  function totalVote(lines){
+    var votes={};function add(v,w){var k=v.toFixed(2);votes[k]=(votes[k]||0)+w}
+    lines.forEach(function(l,i){if(NOT_TOTAL.test(l))return;var w=0;
+      if(TOTAL_LABELS[0][0].test(l))w=3;else if(TOTAL_LABELS[1][0].test(l))w=2.5;else if(/\b(visa|master\s*card|mastercard|mc|amex|american\s*express|discover|debit|credit|card)\b/i.test(l))w=1.5;else if(TOTAL_LABELS[2][0].test(l))w=1;
+      if(!w)return;var a=amounts(l);if(!a.length&&i+1<lines.length&&!/[A-Za-z]{3}/.test(lines[i+1]))a=amounts(lines[i+1]);if(!a.length)return;
+      var v=a[a.length-1];var vs=variants(v);add(vs[0],w);if(vs[1]!=null)add(vs[1],w*0.6)});
+    var keys=Object.keys(votes);if(!keys.length)return null;
+    keys.sort(function(a,b){return votes[b]-votes[a]||(+a)-(+b)});
+    return {v:+keys[0],score:votes[keys[0]],runner:keys[1]?votes[keys[1]]:0};
+  }
+  function pickDate(lines,now){
+    var today=(now||new Date());var max=new Date(today.getTime()+36e5*24).toISOString().slice(0,10);
+    var lab=null,first=null;
+    lines.forEach(function(l){var ds=findDates(l).filter(function(d){return d<=max});if(!ds.length)return;if(!first)first=ds[0];if(!lab&&/\bdate\b/i.test(l))lab=ds[0]});
+    return lab?{v:lab,c:"High"}:first?{v:first,c:"Check"}:null;
+  }
+  function vote(a,b){return a!=null&&b!=null&&Math.abs(a-b)<0.0005}
+  function parse(texts,bigs,kind,ctx){
+    ctx=ctx||{};
+    var passes=texts.map(function(t){return clean(t).split(/\n+/).map(function(l){return l.trim()}).filter(Boolean)});
+    var all=[].concat.apply([],passes),big=[].concat.apply([],bigs||[]);
+    var F={},C={};
+    function each(fn){return passes.map(function(p){return fn(p)})}
+    function agree(vals){var v=vals.filter(function(x){return x!=null});if(!v.length)return null;for(var i=0;i<v.length;i++)for(var j=i+1;j<v.length;j++)if(vote(v[i],v[j]))return {v:v[i],agree:true};return {v:v[0],agree:false}}
+    var d=null;passes.some(function(p){d=pickDate(p,ctx.now);return d&&d.c==="High"});if(!d)d=pickDate(all,ctx.now);
+    if(d){F.date=d.v;C.date=d.c}
+    var tm="";all.some(function(l){tm=findTime(l);return !!tm});if(tm){F.time=tm;C.time="Check"}
+    var tv=totalVote(all);
+    if(tv){F.total=tv.v;C.total=tv.score>=4&&tv.score>=tv.runner*2?"High":"Check"}
+    else{var ft=findTotal(all);if(ft){F.total=ft.v;C.total="Check"}}
+    var names=(ctx.names||[]).concat(kind==="fuel"?BRANDS:[]);
+    var brand="";for(var i=0;i<Math.min(all.length,40)&&!brand;i++)brand=matchName(all[i],names);
+    var merch=merchantFrom(passes[0]||[],big);
+    if(kind==="fuel"){
+      if(brand){F.station=brand;C.station="Check"}else if(merch){F.station=merch;C.station="Check"}
+      var tri=fuelTriple(all,F.total);
+      if(tri){F.gallons=tri.g;F.pricePerGallon=tri.p;F.total=tri.t;C.gallons=C.pricePerGallon=C.total="High"}
+      var ga=tri?null:agree(each(findGallons)),pa=tri?null:agree(each(findPPG));
+      if(ga){F.gallons=ga.v;C.gallons=ga.agree?"High":"Check"}
+      if(pa){F.pricePerGallon=pa.v;C.pricePerGallon=pa.agree?"High":"Check"}
+      var g=findGrade(all);if(g){F.fuelGrade=g.grade;C.fuelGrade="Check";if(g.ethanolFree){F.ethanolFree="Yes";C.ethanolFree="Check"}}
+      if(tri){}
+      else if(F.gallons!=null&&F.pricePerGallon!=null&&F.total!=null){
+        if(Math.abs(F.gallons*F.pricePerGallon-F.total)<=0.02+F.total*0.002){C.gallons=C.pricePerGallon=C.total="High"}
+        else{C.total=C.total==="High"?"High":"Check";C.gallons="Check";C.pricePerGallon="Check"}
+      }else if(F.gallons!=null&&F.total!=null&&F.pricePerGallon==null){F.pricePerGallon=Math.round(F.total/F.gallons*1000)/1000;C.pricePerGallon="Check"}
+      else if(F.pricePerGallon!=null&&F.total!=null&&F.gallons==null){F.gallons=Math.round(F.total/F.pricePerGallon*1000)/1000;C.gallons="Check"}
+    }else{
+      if(brand){F.provider=brand;C.provider="Check"}else if(merch){F.provider=merch;C.provider="Check"}
+      var sub=labelled(all,/\b(sub\s*-?\s*total)\b/i),tax=labelled(all,/\b(sales\s*tax|tax)\b/i);
+      if(sub!=null&&tax!=null){var st=Math.round((sub+tax)*100)/100;
+        if(F.total!=null&&Math.abs(st-F.total)<0.011)C.total="High";
+        else{var hit=null;all.forEach(function(l){amounts(l).forEach(function(a){variants(a).forEach(function(v){if(Math.abs(v-st)<0.011)hit=v})})});if(hit!=null){F.total=hit;C.total="High"}}}
+      var od=findOdometer(all);if(od!=null){F.odometer=od;C.odometer="Check"}
+      var body=[].concat.apply([],passes.map(function(p){return p.slice(3)})).filter(function(l){return !/\b(thank|invoice|mileage|subtotal|tax|total|visa)\b/i.test(l)});
+      outer:for(var bi=0;bi<body.length;bi++)for(var k=0;k<MAINT_CATS.length;k++)if(MAINT_CATS[k][0].test(body[bi])){F.category=MAINT_CATS[k][1];C.category="Check";break outer}
+      var cs=all.map(function(l){return l.toUpperCase().match(CITYST)}).filter(Boolean)[0];if(cs){F.city=titleCase(cs[1].trim())+", "+cs[2];C.city="Check"}
+    }
+    return {fields:F,conf:C};
+  }
+  return {MIN_CONF:MIN_CONF,greyData:greyData,paperBox:paperBox,prepPaper:prepPaper,readLines:readLines,parse:parse,_amounts:amounts,_findDates:findDates,_matchName:matchName,BRANDS:BRANDS};
+})();
+if(typeof module!=="undefined")module.exports=RGBMReceipt;
+/*RGBM_RECEIPT_END*/
+const RECEIPT_TESS={js:"https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js",worker:"https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js",core:"https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1",lang:"https://cdn.jsdelivr.net/npm/@tesseract.js-data/eng@1.0.0/4.0.0_best_int"};
+const RECEIPT_WIDTHS=[1000,700];
+const RECEIPT_FIELDS={
+  fuel:[["date","Date"],["time","Time"],["station","Station"],["fuelGrade","Fuel Grade"],["ethanolFree","Ethanol Free"],["gallons","Gallons"],["pricePerGallon","Price/Gal"],["total","Total Cost"]],
+  maintenance:[["date","Date"],["provider","Provider"],["category","Category"],["odometer","Odometer"],["total","Cost"]]
+};
+let receiptWorkerP=null;
+const RECEIPT={kind:"",vid:"",texts:[],bigs:[],result:null,showAll:false};
+function receiptButton(kind){return `<button class="wide receipt-btn" type="button" onclick="receiptStart('${kind}',false)">Scan Receipt</button>`}
+function receiptLoadScript(src){return new Promise((res,rej)=>{if(window.Tesseract)return res();const el=document.createElement("script");el.src=src;el.async=true;el.onload=()=>res();el.onerror=()=>rej(new Error("The receipt reader could not be downloaded. Check your internet connection and try again."));document.head.appendChild(el)})}
+function receiptWorker(){
+  if(!receiptWorkerP)receiptWorkerP=(async()=>{
+    await receiptLoadScript(RECEIPT_TESS.js);
+    const w=await Tesseract.createWorker("eng",1,{workerPath:RECEIPT_TESS.worker,corePath:RECEIPT_TESS.core,langPath:RECEIPT_TESS.lang});
+    await w.setParameters({tessedit_pageseg_mode:"6",preserve_interword_spaces:"1"});
+    return w;
+  })().catch(e=>{receiptWorkerP=null;throw e});
+  return receiptWorkerP;
+}
+function receiptStart(kind,append){
+  RECEIPT.kind=kind;RECEIPT.vid=route.vehicleId||"";
+  if(!append){RECEIPT.texts=[];RECEIPT.bigs=[];RECEIPT.result=null;RECEIPT.showAll=false}
+  let inp=$("receiptFile");
+  if(!inp){inp=document.createElement("input");inp.type="file";inp.accept="image/*";inp.id="receiptFile";inp.style.display="none";document.body.appendChild(inp)}
+  inp.value="";inp.onchange=()=>{const f=inp.files&&inp.files[0];inp.onchange=null;if(f)receiptRead(f)};
+  inp.click();
+}
+function receiptCanvas(w,h){const c=document.createElement("canvas");c.width=w;c.height=h;return c}
+async function receiptImage(file){
+  if(window.createImageBitmap){try{return await createImageBitmap(file)}catch(e){}}
+  const url=URL.createObjectURL(file);
+  try{return await new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(new Error("That picture could not be opened."));im.src=url})}
+  finally{setTimeout(()=>URL.revokeObjectURL(url),1000)}
+}
+async function receiptRead(file){
+  receiptSheet(`<h2>Reading Receipt…</h2><p class="muted">This takes a few seconds. The first time, the reader (about 5 MB) is downloaded.</p><p id="receiptProgress" class="small muted"></p><button class="wide ghost" type="button" onclick="receiptClose()">Cancel</button>`);
+  try{
+    const prog=t=>{const el=$("receiptProgress");if(el)el.textContent=t};
+    prog("Getting the reader ready…");
+    const worker=await receiptWorker();
+    prog("Cleaning up the picture…");
+    const img=await receiptImage(file);
+    const iw=img.width||img.naturalWidth,ih=img.height||img.naturalHeight;
+    const k=Math.min(1,2400/Math.max(iw,ih));
+    const c0=receiptCanvas(Math.round(iw*k),Math.round(ih*k));c0.getContext("2d").drawImage(img,0,0,c0.width,c0.height);
+    if(img.close)try{img.close()}catch(e){}
+    const g=RGBMReceipt.greyData(c0.getContext("2d"),c0.width,c0.height),box=RGBMReceipt.paperBox(g,c0.width,c0.height);
+    let n=0;
+    for(const W of RECEIPT_WIDTHS){
+      n++;prog(`Reading (${n} of ${RECEIPT_WIDTHS.length})…`);
+      const c=RGBMReceipt.prepPaper(c0,c0.width,c0.height,box,W,receiptCanvas,{});
+      const r=await worker.recognize(c,{},{blocks:true});
+      const rl=RGBMReceipt.readLines(r.data);RECEIPT.texts.push(rl.text);RECEIPT.bigs.push(rl.big);
+      c.width=c.height=0;
+    }
+    c0.width=c0.height=0;
+    if(!$("receiptSheet"))return;   /* cancelled */
+    receiptParse();receiptReview();
+  }catch(e){console.error(e);receiptSheet(`<h2>Receipt Not Read</h2><p>${esc(String(e&&e.message||e))}</p><button class="wide primary" type="button" onclick="receiptStart(RECEIPT.kind,false)">Try Again</button><button class="wide ghost" type="button" onclick="receiptClose()">Close</button>`)}
+}
+function receiptNames(kind){try{return kind==="fuel"?activeList("stations"):maintPickList("maintenanceProviders")}catch(e){return []}}
+function receiptParse(){RECEIPT.result=RGBMReceipt.parse(RECEIPT.texts,RECEIPT.bigs,RECEIPT.kind,{names:receiptNames(RECEIPT.kind)})}
+function receiptFmt(key,v){if(v==null||v==="")return "";if(key==="gallons"||key==="pricePerGallon")return (+v).toFixed(3);if(key==="total")return (+v).toFixed(2);return String(v)}
+function receiptReview(){
+  const res=RECEIPT.result||{fields:{},conf:{}},defs=RECEIPT_FIELDS[RECEIPT.kind];
+  const filled=defs.filter(d=>res.fields[d[0]]!=null&&res.fields[d[0]]!=="");
+  const shown=RECEIPT.showAll?defs:filled,hidden=defs.length-filled.length;
+  const rows=shown.map(d=>{const v=receiptFmt(d[0],res.fields[d[0]]),c=res.conf[d[0]];const mark=v?(c==="High"?`<span class="rc-mark rc-read">read</span>`:`<span class="rc-mark rc-check">check this</span>`):"";
+    const type=d[0]==="date"?"date":d[0]==="time"?"time":"text";
+    return `<label class="rc-field">${esc(d[1])} ${mark}<input id="rc_${d[0]}" type="${type}" value="${esc(v)}" ${["gallons","pricePerGallon","total","odometer"].includes(d[0])?'inputmode="decimal"':""}></label>`}).join("");
+  const none=!filled.length?`<p class="cloud-notice">Nothing could be filled in from this picture. Try again with the receipt flat, well lit, and filling the screen, or type the values.</p>`:"";
+  receiptSheet(`<h2>Receipt Read</h2><p class="muted small">Check each value. Nothing is saved until you tap Save on the entry screen. The picture was not kept.</p>${none}${rows}${hidden&&!RECEIPT.showAll?`<button class="wide ghost" type="button" onclick="RECEIPT.showAll=true;receiptReview()">Show All Fields (${hidden} hidden)</button>`:""}<details class="rc-text"><summary>Text read</summary><textarea id="rcText" rows="8">${esc(RECEIPT.texts.join("\n"))}</textarea><button class="wide ghost" type="button" onclick="receiptRefill()">Fill In Again</button></details><button class="wide primary" type="button" onclick="receiptUse()">Use These</button><button class="wide" type="button" onclick="receiptStart(RECEIPT.kind,true)">Add Another Part</button><button class="wide ghost" type="button" onclick="receiptClose()">Cancel</button>`);
+}
+function receiptRefill(){const t=($("rcText")||{}).value||"";RECEIPT.texts=[t];RECEIPT.bigs=[[]];receiptParse();receiptReview()}
+function receiptSheet(html){let o=$("receiptSheet");if(!o){o=document.createElement("div");o.id="receiptSheet";o.className="receipt-modal";document.body.appendChild(o)}o.innerHTML=`<div class="receipt-box">${html}</div>`}
+function receiptClose(){const o=$("receiptSheet");if(o)o.remove()}
+function receiptSetSelect(id,val){const sel=$(id);if(!sel||!val)return false;const o=[...sel.options].find(x=>x.value.toLowerCase()===String(val).toLowerCase()||x.text.toLowerCase()===String(val).toLowerCase());if(o){sel.value=o.value;sel.setAttribute("data-prev",o.value)}else selectValueWithOption(sel,val);return true}
+function receiptMark(id,check){const el=$(id);if(!el)return;const lab=el.closest("label");if(lab){lab.classList.toggle("rc-check-field",!!check);el.addEventListener("input",()=>lab.classList.remove("rc-check-field"),{once:true});el.addEventListener("change",()=>lab.classList.remove("rc-check-field"),{once:true})}}
+function receiptUse(){
+  const res=RECEIPT.result||{conf:{}},defs=RECEIPT_FIELDS[RECEIPT.kind],v={};
+  defs.forEach(d=>{const el=$("rc_"+d[0]);v[d[0]]=el?cleanText(el.value):receiptFmt(d[0],(res.fields||{})[d[0]])});
+  const chk=k=>res.conf[k]!=="High";
+  const setv=(id,val,key)=>{const el=$(id);if(el&&val!==""&&val!=null){el.value=val;receiptMark(id,chk(key))}};
+  if(RECEIPT.kind==="fuel"){
+    setv("fdate",v.date,"date");setv("ftime",v.time,"time");
+    const g=numVal(v.gallons),p=numVal(v.pricePerGallon),t=numVal(v.total);
+    if(g!=="")setv("fgal",(+g).toFixed(3),"gallons");
+    if(p!==""){setv("fprice",(+p).toFixed(3),"pricePerGallon");const el=$("fprice");if(el){el.dataset.source="Entered";el.dataset.originalValue=el.value}}
+    if(t!==""){setv("fcost",(+t).toFixed(2),"total");const el=$("fcost");if(el){el.dataset.source="Entered";el.dataset.originalValue=el.value}const cs=$("fcostsource");if(cs)cs.value="Entered"}
+    if(v.fuelGrade&&receiptSetSelect("fgrade",v.fuelGrade))receiptMark("fgrade",chk("fuelGrade"));
+    if(v.ethanolFree&&receiptSetSelect("fef",v.ethanolFree))receiptMark("fef",chk("ethanolFree"));
+    if(v.station&&receiptSetSelect("fstation",v.station))receiptMark("fstation",chk("station"));
+    const m=numVal($("fmiles")?.value),gg=numVal($("fgal")?.value);if($("fmpg"))$("fmpg").value=(m!==""&&gg>0)?(m/gg).toFixed(3):"";
+  }else{
+    setv("mdrop",v.date,"date");
+    if(numVal(v.odometer)!=="")setv("modo",String(numVal(v.odometer)),"odometer");
+    if(numVal(v.total)!=="")setv("mcost",(+numVal(v.total)).toFixed(2),"total");
+    if(v.provider&&receiptSetSelect("mprov",v.provider))receiptMark("mprov",chk("provider"));
+    if(v.category){const sel=$("mcat");if(sel&&[...sel.options].some(o=>o.value.toLowerCase()===v.category.toLowerCase())){receiptSetSelect("mcat",v.category);receiptMark("mcat",chk("category"))}}
+  }
+  receiptClose();RECEIPT.texts=[];RECEIPT.bigs=[];
 }
 
 cloudCaptureAuthRedirect();normalizeLaunchUrl();initApplicationShell();initResponsiveViewportHandling();initOfflineMode();

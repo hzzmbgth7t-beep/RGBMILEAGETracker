@@ -1,8 +1,8 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc7`
-Cache: `216lwc10f29rc7`
-Guide release: `v2.1.6l-wc10-f29-rc7`
+Build: `v2.1.6l-wc10-f29-rc8`
+Cache: `216lwc10f29rc8`
+Guide release: `v2.1.6l-wc10-f29-rc8`
 Source baseline: accepted `v2.1.6l-wc10-f28`
 Current status: `Release candidate — pending user validation`
 
@@ -10,7 +10,7 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc7
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc8
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -85,6 +85,23 @@ Tap **Save** to save, or **Cancel** to leave without saving. Earlier records for
 **Lists you build as you go:** Fuel Grade, Station, Category, Location, Provider, and Performed By are drop-down lists. To use a new name, pick **Other**, type it, then tap **Save To List** to keep it in the list, or **Use Once** for just this record. Location, Provider, and Performed By start with the names already in your maintenance records.
 
 For fuel cost, set **Cost Source** to **Calculated** to work out the total from the price per gallon, or **Entered** to type the total yourself.
+
+## Scanning receipts
+
+On a new Fuel or Maintenance entry, tap **Scan Receipt**, then take a photo of the receipt or choose one from your photos.
+
+1. Lay the receipt flat in good light and fill the screen with it.
+2. The app reads it on your phone in a few seconds. The first scan downloads the reader (about 5 MB), so it needs internet.
+3. Check the values. **read** means it was read clearly; **check this** means it was a guess. Fix anything that is wrong.
+4. Tap **Use These** to fill the entry, then enter the odometer and tap **Save** as usual.
+
+What gets filled in, and other tips:
+
+- **Fuel** fills Date, Time, Station, Fuel Grade, Gallons, Price/Gal, and Total Cost.
+- **Maintenance** fills Date, Provider, Category, Odometer (when printed), and Cost.
+- For a long receipt, tap **Add Another Part** and photograph the rest.
+- **Text read** shows exactly what the app read. You can correct it and tap **Fill In Again**.
+- The picture is never saved or uploaded. Very faded receipts may not read at all; type those.
 
 ## Editing drop-down lists
 

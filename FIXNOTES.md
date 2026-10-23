@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f29-rc7
+# FIXNOTES — v2.1.6l-wc10-f29-rc8
 
-Build: `v2.1.6l-wc10-f29-rc7`  
+Build: `v2.1.6l-wc10-f29-rc8`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc7`  
+Cache: `216lwc10f29rc8`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -29,6 +29,13 @@ TESTS/test_sync.py runs the app in Chromium against TESTS/mock_supabase.py: 33/3
 - Photos: uploaded to Storage at `<user id>/<vehicle id>`; `vehicles.primary_photo_md5` holds the photo fingerprint. RGBM_CLOUD_PHOTOS tracks the last synced local/cloud fingerprints so photos upload once and download only when changed.
 - Face ID: a Supabase passkey is registered while signed in. The same passkey signs in (server-verified) and unlocks the app (checked on the phone). The lock hides the screen; it does not encrypt data on the phone.
 - Test evidence: TESTS/test_rc2.py — 28/28 checks (photo upload/download/change/removal across two devices, no re-sync loops, Face ID setup, lock on launch and after background, password fallback, Face ID sign-in, removal) plus the RC1 suite rerun on RC2: 33/33.
+
+## RC8 additions
+
+- Reader core lives between /*RGBM_RECEIPT_START*/ and /*RGBM_RECEIPT_END*/ in app.js; source and bench in TESTS/receipt_bench (receipt_core.js, gen.py, bench.mjs). The bench runs the same core in Node with tesseract.js 5.1.1 and @napi-rs/canvas.
+- Tesseract page mode 6 (one block) with row grouping; default mode 3/4 dropped right-aligned amounts. Background outside the paper is blanked rather than inverted.
+- Reader assets are fetched only when Scan Receipt is used: tesseract.js@5.1.1 dist, tesseract.js-core@5.1.1, @tesseract.js-data/eng@1.0.0 4.0.0_best_int. Offline first use shows a clear message.
+- Test evidence: TESTS/test_rc8.py 25/25 (real reader in Chromium on bench receipts, fill-in, corrections, Fill In Again, maintenance, offline failure, no picture stored); test_rc7.py 19/19; test_rc6.py 24/24; test_rc5.py 25/25; test_rc4.py 36/36; test_rc3.py 12/12; test_rc2.py 28/28; test_sync.py 33/33 — all against RC8. Bench: tune 309/324 (95%), held-back 235/252 (93%).
 
 ## RC7 additions
 

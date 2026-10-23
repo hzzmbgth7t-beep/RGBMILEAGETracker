@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc8 — 2026-10-23
+
+- Built from `v2.1.6l-wc10-f29-rc7` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Added Scan Receipt on new Fuel and Maintenance entries. Reading happens on the phone (tesseract.js 5.1.1, English data, loaded from jsDelivr on first use). Method adapted from the SS Conferences card reader hand-off: paper crop, shadow clean-up, two passes (1000 and 700 px), word confidence ≥ 40, rows grouped with tilt correction.
+- Fuel fills Date, Time, Station, Fuel Grade (and Ethanol Free for E0/REC 90), Gallons, Price/Gal, Total Cost; gallons × price/gal is checked against the total. Maintenance fills Date, Provider, Category, Odometer, Cost; subtotal + tax is checked against the total.
+- Review sheet marks each value "read" or "check this", hides empty fields behind Show All Fields, shows the text read with Fill In Again, and supports Add Another Part for long receipts. Guessed values stay highlighted on the entry form until edited.
+- The picture is never saved or uploaded; card numbers are not kept.
+- Synthetic receipt bench: 95% of fields right on the tuning set, 93% on the held-back set (real receipts expected lower).
+- User Guide: new "Scanning receipts" section.
+
 ## v2.1.6l-wc10-f29-rc7 — 2026-10-18
 
 - Built from `v2.1.6l-wc10-f29-rc6` (rc6 was not deployed; rc7 includes it). Accepted baseline remains `v2.1.6l-wc10-f28`.
