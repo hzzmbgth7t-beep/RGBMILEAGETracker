@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc9 — 2026-10-23
+
+- Built from `v2.1.6l-wc10-f29-rc8` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Scan Receipt now has two buttons: **Take Photo** opens the camera; **Choose Photo** opens the camera roll / photo library. Same choice for Add Another Part and after a failed read.
+- User Guide updated.
+
 ## v2.1.6l-wc10-f29-rc8 — 2026-10-23
 
 - Built from `v2.1.6l-wc10-f29-rc7` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).

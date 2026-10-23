@@ -1787,3 +1787,8 @@ body.rgbm-locked{overflow:hidden}
 .rc-text summary{cursor:pointer;font-weight:900}
 .rc-text textarea{width:100%;font-family:ui-monospace,Menlo,monospace;font-size:12px}
 .rc-check-field input,.rc-check-field select{outline:3px solid #d08a31;outline-offset:1px}
+
+/* F29 RC9: Take Photo / Choose Photo */
+.receipt-row{display:flex;align-items:center;gap:8px;margin:4px 0 10px;flex-wrap:wrap}
+.receipt-row .receipt-label{flex:1 0 100%;font-weight:900;font-size:14px}
+.receipt-row .receipt-btn{flex:1 1 0;margin:0}

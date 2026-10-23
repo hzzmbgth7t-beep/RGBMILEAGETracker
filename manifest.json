@@ -1,7 +1,7 @@
 {
   "name": "RGB Mileage",
   "short_name": "RGB Mileage",
-  "start_url": "./?v=216lwc10f29rc8",
+  "start_url": "./?v=216lwc10f29rc9",
   "display": "standalone",
   "background_color": "#0a1324",
   "theme_color": "#0a1324",
@@ -23,9 +23,9 @@
     }
   ],
   "orientation": "any",
-  "version": "v2.1.6l-wc10-f29-rc8",
+  "version": "v2.1.6l-wc10-f29-rc9",
   "build_date": "2026-10-23",
-  "cache_revision": "216lwc10f29rc8",
+  "cache_revision": "216lwc10f29rc9",
   "build_date_display": "10/23/2026",
   "date_display_format": "MM/DD/YYYY",
   "home_standalone_height_strategy": "100vh",

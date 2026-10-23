@@ -1,8 +1,8 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc8`
-Cache: `216lwc10f29rc8`
-Guide release: `v2.1.6l-wc10-f29-rc8`
+Build: `v2.1.6l-wc10-f29-rc9`
+Cache: `216lwc10f29rc9`
+Guide release: `v2.1.6l-wc10-f29-rc9`
 Source baseline: accepted `v2.1.6l-wc10-f28`
 Current status: `Release candidate — pending user validation`
 
@@ -10,7 +10,7 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc8
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc9
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -88,7 +88,7 @@ For fuel cost, set **Cost Source** to **Calculated** to work out the total from 
 
 ## Scanning receipts
 
-On a new Fuel or Maintenance entry, tap **Scan Receipt**, then take a photo of the receipt or choose one from your photos.
+On a new Fuel or Maintenance entry, under **Scan Receipt**, tap **Take Photo** to use the camera, or **Choose Photo** to pick a receipt picture already in your camera roll or photo library.
 
 1. Lay the receipt flat in good light and fill the screen with it.
 2. The app reads it on your phone in a few seconds. The first scan downloads the reader (about 5 MB), so it needs internet.
@@ -99,7 +99,7 @@ What gets filled in, and other tips:
 
 - **Fuel** fills Date, Time, Station, Fuel Grade, Gallons, Price/Gal, and Total Cost.
 - **Maintenance** fills Date, Provider, Category, Odometer (when printed), and Cost.
-- For a long receipt, tap **Add Another Part** and photograph the rest.
+- For a long receipt, use **Add Another Part** (Take Photo or Choose Photo) for the rest.
 - **Text read** shows exactly what the app read. You can correct it and tap **Fill In Again**.
 - The picture is never saved or uploaded. Very faded receipts may not read at all; type those.
 
