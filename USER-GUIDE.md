@@ -1,8 +1,8 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc12`
-Cache: `216lwc10f29rc12`
-Guide release: `v2.1.6l-wc10-f29-rc12`
+Build: `v2.1.6l-wc10-f29-rc13`
+Cache: `216lwc10f29rc13`
+Guide release: `v2.1.6l-wc10-f29-rc13`
 Source baseline: accepted `v2.1.6l-wc10-f28`
 Current status: `Release candidate — pending user validation`
 
@@ -10,7 +10,7 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc12
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc13
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -91,9 +91,10 @@ For fuel cost, set **Cost Source** to **Calculated** to work out the total from 
 On a new Fuel or Maintenance entry, use the green **Read Receipt** button beside the form title. **Tap** it to take a photo with the camera. **Press and hold** it until it says **Release for Photos**, then let go, to pick a receipt picture from your camera roll or photo library.
 
 1. Lay the receipt flat in good light and fill the screen with it.
-2. The app reads it on your phone in a few seconds. The first scan downloads the reader (about 5 MB), so it needs internet.
-3. Check the values. **read** means it was read clearly; **check this** means it was a guess. Fix anything that is wrong.
-4. Tap **Use These** to fill the entry, then enter the odometer and tap **Save** as usual.
+2. A **Crop Receipt** screen opens. Drag the corners or edges so only the receipt is inside the frame; crop out other papers or anything confusing. **Rotate ↻**, **Auto Frame** and **Whole Picture** are there too. Tap **Read Receipt**.
+3. The app reads it on your phone in a few seconds. The first scan downloads the reader (about 5 MB), so it needs internet.
+4. Check the values. **read** means it was read clearly; **check this** means it was a guess. Fix anything that is wrong.
+5. Tap **Use These** to fill the entry, then enter the odometer and tap **Save** as usual.
 
 What gets filled in, and other tips:
 

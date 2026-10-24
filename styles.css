@@ -1817,3 +1817,6 @@ body.rgbm-locked{overflow:hidden}
 .crop-wrap{display:flex;justify-content:center;margin:8px 0;background:#0b1626;border-radius:12px;padding:6px}
 #cropView{touch-action:none;display:block;max-width:100%}
 .crop-tools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0}
+
+/* F29 RC13: press-and-hold safe on phones */
+.receipt-btn{-webkit-tap-highlight-color:transparent}

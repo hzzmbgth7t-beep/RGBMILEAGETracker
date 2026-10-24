@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc13 — 2026-10-24
+
+- Built from `v2.1.6l-wc10-f29-rc12` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Fuel and Maintenance **Read Receipt** now open a **Crop Receipt** screen first (same tools as Crop Document: drag corners/edges, move, Rotate, Auto Frame, Whole Picture). Only the framed part is read, so other papers or background can be cropped out.
+- Fixed: press and hold on Read Receipt, Add Another Part, Try Again and Scan Document did nothing on phones. The buttons now use touch events (the phone's own long-press is blocked) and open the photo picker when the finger is lifted after the button says "Release for Photos".
+- User Guide updated.
+
 ## v2.1.6l-wc10-f29-rc12 — 2026-10-24
 
 - Built from `v2.1.6l-wc10-f29-rc11` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).

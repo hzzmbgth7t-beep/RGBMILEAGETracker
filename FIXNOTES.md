@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f29-rc12
+# FIXNOTES — v2.1.6l-wc10-f29-rc13
 
-Build: `v2.1.6l-wc10-f29-rc12`  
+Build: `v2.1.6l-wc10-f29-rc13`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc12`  
+Cache: `216lwc10f29rc13`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -29,6 +29,12 @@ TESTS/test_sync.py runs the app in Chromium against TESTS/mock_supabase.py: 33/3
 - Photos: uploaded to Storage at `<user id>/<vehicle id>`; `vehicles.primary_photo_md5` holds the photo fingerprint. RGBM_CLOUD_PHOTOS tracks the last synced local/cloud fingerprints so photos upload once and download only when changed.
 - Face ID: a Supabase passkey is registered while signed in. The same passkey signs in (server-verified) and unlocks the app (checked on the phone). The lock hides the screen; it does not encrypt data on the phone.
 - Test evidence: TESTS/test_rc2.py — 28/28 checks (photo upload/download/change/removal across two devices, no re-sync loops, Face ID setup, lock on launch and after background, password fallback, Face ID sign-in, removal) plus the RC1 suite rerun on RC2: 33/33.
+
+## RC13 additions
+
+- pressButton(label, act, extra): touchstart (preventDefault — stops iOS/Android long-press callout, selection and pointercancel), touchmove (>24 px cancels), touchend (preventDefault, decides tap vs hold ≥ 500 ms and opens the picker; touchend is a user-activation event), mousedown/mouseup for mouse, click for keyboard (ignored for 1.5 s after a handled press). RC10–RC12 used pointer events; on phones the system long-press fired pointercancel, so release did nothing.
+- cropOpen(file, {title, hint, save, onSave(canvas)}) shared by Scan Document (onSave → JPEG → docSend) and Read Receipt (onSave → receiptReadCanvas, the former receiptRead after image loading).
+- Test evidence: TESTS/test_rc13r.py 31/31 (receipts with crop), TESTS/test_rc13d.py 39/39 (documents), TESTS/touch_press.py 8/8 (real touch events: tap → camera, 0.8 s hold → photos, for Read Receipt and Scan Document; crop screen before reading), plus test_rc12.py, test_rc7.py, test_rc6.py against RC13.
 
 ## RC12 additions
 
