@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f29-rc9
+# FIXNOTES — v2.1.6l-wc10-f29-rc11
 
-Build: `v2.1.6l-wc10-f29-rc9`  
+Build: `v2.1.6l-wc10-f29-rc11`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc9`  
+Cache: `216lwc10f29rc11`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -29,6 +29,21 @@ TESTS/test_sync.py runs the app in Chromium against TESTS/mock_supabase.py: 33/3
 - Photos: uploaded to Storage at `<user id>/<vehicle id>`; `vehicles.primary_photo_md5` holds the photo fingerprint. RGBM_CLOUD_PHOTOS tracks the last synced local/cloud fingerprints so photos upload once and download only when changed.
 - Face ID: a Supabase passkey is registered while signed in. The same passkey signs in (server-verified) and unlocks the app (checked on the phone). The lock hides the screen; it does not encrypt data on the phone.
 - Test evidence: TESTS/test_rc2.py — 28/28 checks (photo upload/download/change/removal across two devices, no re-sync loops, Face ID setup, lock on launch and after background, password fallback, Face ID sign-in, removal) plus the RC1 suite rerun on RC2: 33/33.
+
+## RC11 additions
+
+- Google Cloud project "RGB Mileage" (rgb-mileage, number 174154543708) owned by the administrator's personal Gmail: Drive API + Picker API enabled; OAuth consent External / Testing (only listed test users can connect — add each user's Gmail under Google Auth Platform → Audience → Test users); Web client "RGB Mileage web" with JS origin https://hzzmbgth7t-beep.github.io; API key "RGB Mileage Picker" limited to the Picker API and https://hzzmbgth7t-beep.github.io/*.
+- Google Identity Services token client (accounts.google.com/gsi/client) + Google Picker (apis.google.com/js/api.js), scope drive.file. DRIVE_CONFIG {clientId, apiKey, appId} in app.js; until filled, the feature shows "not set up".
+- Access token kept per RGBM user (localStorage RGBM_DRIVE_TOKEN_<uid>, ~1 hour); when expired, the next tap reconnects (Google window), then asks again how to add the document.
+- state.driveDocs {mode: subfolders|perVehicle, parent, vehicles{vid:folder}, sub{vid:folder}, account} syncs with the user's settings row.
+- Test evidence: TESTS/test_rc11.py 34/34 (simulated Google: connect, picker, subfolder creation and reuse, per-vehicle folders, tap/hold, link-only storage, remove link, expired/revoked sign-in, per-user settings), test_rc10.py 30/30, test_rc7.py 19/19, test_rc6.py 24/24.
+- Upload: Drive v3 multipart, JPEG (max 2400 px, quality 0.85). Link stored on the insurance record as attachments[] {attachmentId, kind:"Google Drive", name, url, driveFileId, mimeType, addedAt}. Existing record: saved at once. New record: held until Save (leaving prompts as unsaved changes).
+
+## RC10 additions
+
+- receiptButton(kind, append, label) renders one button with pointer handlers. The picker opens on pointerup (a user-activation event on touch), so iOS and Android allow it; hold ≥ 500 ms → library (no capture attribute), shorter → camera (capture="environment"). Click fallback (keyboard/mouse) → camera. Long-press callout and text selection are disabled on the button.
+- Review sheet fields sit in a two-column grid (.rc-grid).
+- Test evidence: TESTS/test_rc10.py 30/30, TESTS/touch_check.py (real touch events: tap → camera, 0.8 s hold → photos), test_rc7.py 19/19, test_rc6.py 24/24, all against RC10.
 
 ## RC9 additions
 

@@ -1,16 +1,16 @@
-# RGBMileage v2.1.6l-wc10-f29-rc9
+# RGBMileage v2.1.6l-wc10-f29-rc11
 
 ## URLs
 
 Production URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc9
+Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc11
 
 Supabase project URL: https://nlfivcxlzmivjzwlhlot.supabase.co
 
-Build: `v2.1.6l-wc10-f29-rc9`  
+Build: `v2.1.6l-wc10-f29-rc11`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc9`  
+Cache: `216lwc10f29rc11`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`  
 Previous accepted production baseline: `v2.1.6l-wc10-f28`
@@ -49,6 +49,8 @@ F29 connects RGB Mileage to its Supabase database. RC2 adds vehicle photo sync a
 - RC7: Settings → Edit Lists to rename (optionally correcting records), reorder, add, delete, and sort all six drop-down lists. List and vehicle-order changes now sync between devices on their own.
 - RC8: Scan Receipt on new Fuel and Maintenance entries — read on the phone (tesseract.js 5.1.1 from jsDelivr), reviewed before use; the picture is never saved or uploaded.
 - RC9: Scan Receipt offers Take Photo (camera) or Choose Photo (camera roll / photo library).
+- RC10: one green Read Receipt button beside the Fuel/Maintenance Information title — tap for the camera, press and hold for the camera roll. Receipt review shows two fields per row.
+- RC11: Scan Document on the Insurance screen saves the picture (JPEG) to the user's own Google Drive and keeps only a link on the record. Settings → Insurance Documents sets the folder once (one folder with a subfolder per vehicle, or a folder per vehicle); folders are per user.
 - Clear Local Data unlinks the device from cloud sync; it never deletes cloud data.
 - Home geometry, circles, descriptions, and mileage labels are unchanged.
 
@@ -58,4 +60,4 @@ Deploy all 17 ZIP-root files to GitHub Pages. Do not deploy only a partial file 
 
 Validation URL:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc9
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc11

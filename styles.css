@@ -1792,3 +1792,23 @@ body.rgbm-locked{overflow:hidden}
 .receipt-row{display:flex;align-items:center;gap:8px;margin:4px 0 10px;flex-wrap:wrap}
 .receipt-row .receipt-label{flex:1 0 100%;font-weight:900;font-size:14px}
 .receipt-row .receipt-btn{flex:1 1 0;margin:0}
+
+/* F29 RC10: one Read Receipt button beside the form title (tap = camera, hold = photos); review fields two per row */
+.rc-title-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.rc-title-row h3{margin-top:0;margin-bottom:0}
+.receipt-btn{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation;white-space:nowrap}
+.rc-title-row .receipt-btn{margin:0;flex:0 0 auto}
+.receipt-box .receipt-btn{width:100%;margin-top:8px}
+.receipt-btn.rc-hold{background:linear-gradient(180deg,#5a9c76,#3d7a58)}
+.rc-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px}
+.rc-grid .rc-field{margin:4px 0;min-width:0}
+.rc-grid .rc-field input{width:100%;box-sizing:border-box;min-width:0}
+
+/* F29 RC11: Insurance documents (Google Drive links) */
+.doc-list{margin:10px 0;padding:10px;border:1px solid var(--line);border-radius:14px;background:#15263e}
+.doc-list ul{list-style:none;margin:6px 0 0;padding:0}
+.doc-link{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid rgba(255,255,255,.08)}
+.doc-link a{color:#ffd791;word-break:break-word}
+.drive-mode{display:flex!important;flex-direction:row!important;align-items:center;justify-content:flex-start;gap:10px;margin:10px 0;font-weight:800;color:inherit;text-align:left}
+.drive-mode input[type=radio]{width:22px!important;height:22px!important;min-width:22px;flex:0 0 22px;margin:0;padding:0;box-shadow:none;accent-color:#3d7a58}
+.drive-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0;padding:8px;border-radius:12px;background:#15263e}

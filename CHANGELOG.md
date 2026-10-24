@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc11 — 2026-10-24
+
+- Built from `v2.1.6l-wc10-f29-rc10` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Insurance: green **Scan Document** button beside the Insurance Information title (tap = camera, press and hold = photos/files). The picture is saved as a JPEG to the user's Google Drive; the record keeps only the link (Documents list, opens in Drive). Remove Link removes it from the app only.
+- Settings → **Insurance Documents**: connect Google Drive (each user's own Google account), choose one folder with a subfolder per vehicle (created automatically) or a separate folder per vehicle. Set once; Change any time. Stored with the signed-in user's data, so each user has their own folders.
+- Google access uses the drive.file permission: the app can only see folders the user picks and files it creates.
+- User Guide updated.
+
+## v2.1.6l-wc10-f29-rc10 — 2026-10-24
+
+- Built from `v2.1.6l-wc10-f29-rc9` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Take Photo / Choose Photo replaced by one green **Read Receipt** button on the same row as the Fuel Information (and Maintenance Information) title. Tap opens the camera; press and hold (0.5 s, label changes to "Release for Photos") opens the camera roll.
+- Same tap / hold button for Add Another Part and Try Again.
+- Receipt review shows two fields per row.
+- User Guide updated.
+
 ## v2.1.6l-wc10-f29-rc9 — 2026-10-23
 
 - Built from `v2.1.6l-wc10-f29-rc8` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
