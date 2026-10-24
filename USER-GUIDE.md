@@ -1,8 +1,8 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc11`
-Cache: `216lwc10f29rc11`
-Guide release: `v2.1.6l-wc10-f29-rc11`
+Build: `v2.1.6l-wc10-f29-rc12`
+Cache: `216lwc10f29rc12`
+Guide release: `v2.1.6l-wc10-f29-rc12`
 Source baseline: accepted `v2.1.6l-wc10-f28`
 Current status: `Release candidate — pending user validation`
 
@@ -10,7 +10,7 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc11
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc12
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -117,7 +117,8 @@ Scanned insurance documents (cards, declarations pages, bills) are saved to **yo
 
 Then:
 
-- The picture is uploaded to the folder, and its link appears under **Documents**. Tap a link to open it in Google Drive.
+- A **Crop Document** screen opens. Drag the corners or edges to frame the document (drag inside to move the frame). **Rotate ↻** turns it, **Auto Frame** finds the paper, **Whole Picture** keeps everything. Tap **Save to Drive**.
+- Only the cropped part is uploaded to the folder, and its link appears under **Documents**. Tap a link to open it in Google Drive.
 - On a new entry, tap **Save** to keep the links.
 - **Remove Link** takes the link out of the app. The file stays in Drive.
 - Folder choices belong to the signed-in user; each person sets their own.

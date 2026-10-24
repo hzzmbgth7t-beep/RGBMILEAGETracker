@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc12 — 2026-10-24
+
+- Built from `v2.1.6l-wc10-f29-rc11` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Scan Document: after taking or choosing the picture, a **Crop Document** screen opens. Drag the corners or edges to frame the document, drag inside to move the frame, **Rotate ↻**, **Auto Frame** (finds the paper), or **Whole Picture**. **Save to Drive** saves only the cropped part. Cancel saves nothing.
+- User Guide updated.
+
 ## v2.1.6l-wc10-f29-rc11 — 2026-10-24
 
 - Built from `v2.1.6l-wc10-f29-rc10` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
