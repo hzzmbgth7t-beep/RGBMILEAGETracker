@@ -1,20 +1,20 @@
 "use strict";
 
-const BUILD_ID = "v2.1.6l-wc10-f29-rc16";
-const CACHE_REVISION = "216lwc10f29rc16";
+const BUILD_ID = "v2.1.6l-wc10-f29-rc17";
+const CACHE_REVISION = "216lwc10f29rc17";
 const CACHE_PREFIX = "rgbm-app-shell-";
 const CACHE_NAME = `${CACHE_PREFIX}${CACHE_REVISION}`;
 const NAVIGATION_TIMEOUT_MS = 4000;
 
 const APP_SHELL = Object.freeze([
   "./",
-  "./?v=216lwc10f29rc16",
+  "./?v=216lwc10f29rc17",
   "./index.html",
-  "./styles.css?v=216lwc10f29rc16",
-  "./rgbm-home-layout.js?v=216lwc10f29rc16",
-  "./rgbm-data-v3.js?v=216lwc10f29rc16",
-  "./rgbm-wc10-evidence.js?v=216lwc10f29rc16",
-  "./app.js?v=216lwc10f29rc16",
+  "./styles.css?v=216lwc10f29rc17",
+  "./rgbm-home-layout.js?v=216lwc10f29rc17",
+  "./rgbm-data-v3.js?v=216lwc10f29rc17",
+  "./rgbm-wc10-evidence.js?v=216lwc10f29rc17",
+  "./app.js?v=216lwc10f29rc17",
   "./manifest.json",
   "./apple-touch-icon.png",
   "./favicon.png",
@@ -23,7 +23,7 @@ const APP_SHELL = Object.freeze([
 ]);
 
 const NAVIGATION_FALLBACKS = Object.freeze([
-  "./?v=216lwc10f29rc16",
+  "./?v=216lwc10f29rc17",
   "./index.html",
   "./",
 ]);

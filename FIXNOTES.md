@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f29-rc16
+# FIXNOTES — v2.1.6l-wc10-f29-rc17
 
-Build: `v2.1.6l-wc10-f29-rc16`  
+Build: `v2.1.6l-wc10-f29-rc17`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc16`  
+Cache: `216lwc10f29rc17`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -29,6 +29,11 @@ TESTS/test_sync.py runs the app in Chromium against TESTS/mock_supabase.py: 33/3
 - Photos: uploaded to Storage at `<user id>/<vehicle id>`; `vehicles.primary_photo_md5` holds the photo fingerprint. RGBM_CLOUD_PHOTOS tracks the last synced local/cloud fingerprints so photos upload once and download only when changed.
 - Face ID: a Supabase passkey is registered while signed in. The same passkey signs in (server-verified) and unlocks the app (checked on the phone). The lock hides the screen; it does not encrypt data on the phone.
 - Test evidence: TESTS/test_rc2.py — 28/28 checks (photo upload/download/change/removal across two devices, no re-sync loops, Face ID setup, lock on launch and after background, password fallback, Face ID sign-in, removal) plus the RC1 suite rerun on RC2: 33/33.
+
+## RC17 additions
+
+- Global focusin handler (capture): for text-like inputs, textareas and selects, focusPlace() moves the field's label to visualViewport.offsetTop + max(56 px, 22% of visualViewport.height) by scrolling the nearest scrollable ancestor (.non-home-scroll, .receipt-modal, or the page). Runs at 60/320/650/1000 ms and on visualViewport resize for 1.5 s after focus (keyboard animation), then stops so it never fights the user's own scrolling. body.kb-open adds 60vh bottom padding to the scroller while a field is focused.
+- Test evidence: TESTS/test_rc17.py 9/9 (simulated keyboard: Edit Vehicle Seller and VIN, Fuel Notes, Maintenance Notes, Insurance Email, receipt review Total; padding removed after; no fighting the user later); against RC17: test_rc16 15/15, test_rc15 16/16, test_rc14r 31/31, touch_press14 9/9, rc7 19/19, rc4 36/36. A real iPhone keyboard could not be simulated exactly.
 
 ## RC16 additions
 

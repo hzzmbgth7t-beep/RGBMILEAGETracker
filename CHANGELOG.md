@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc17 — 2026-10-25
+
+- Built from `v2.1.6l-wc10-f29-rc16` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Typing: when a text box, number box, date or drop-down is tapped anywhere in the app (entry forms, Edit Vehicle, Settings, sign-in, review and pop-up sheets), the screen scrolls so that field sits near the top of the visible area, above the keyboard. Extra space is added at the bottom while the keyboard is up so the last fields can move up too.
+
 ## v2.1.6l-wc10-f29-rc16 — 2026-10-25
 
 - Built from `v2.1.6l-wc10-f29-rc15` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).

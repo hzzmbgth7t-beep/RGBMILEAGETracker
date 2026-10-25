@@ -1,16 +1,16 @@
-# RGBMileage v2.1.6l-wc10-f29-rc16
+# RGBMileage v2.1.6l-wc10-f29-rc17
 
 ## URLs
 
 Production URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc16
+Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc17
 
 Supabase project URL: https://nlfivcxlzmivjzwlhlot.supabase.co
 
-Build: `v2.1.6l-wc10-f29-rc16`  
+Build: `v2.1.6l-wc10-f29-rc17`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc16`  
+Cache: `216lwc10f29rc17`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`  
 Previous accepted production baseline: `v2.1.6l-wc10-f28`
@@ -56,6 +56,7 @@ F29 connects RGB Mileage to its Supabase database. RC2 adds vehicle photo sync a
 - RC14: press and hold now opens a small sheet (Choose From Photos / Take Photo) — iPhone will not open the photo picker straight from a long press.
 - RC15: Home circles — tap opens the vehicle page, press and hold opens a new Fuel entry. Vehicle page buttons at the top, two per row, smaller photo. Receipt review uses the drop-down lists (with Other → Use Once / Save To List).
 - RC16: VIN on the vehicle page and edit form. Scanned Fuel and Maintenance receipts can be saved to Google Drive (link kept on the record), like Insurance documents. Settings card renamed Google Drive Documents.
+- RC17: the field being typed in is moved near the top of the visible screen, above the keyboard, on every screen.
 - Clear Local Data unlinks the device from cloud sync; it never deletes cloud data.
 - Home geometry, circles, descriptions, and mileage labels are unchanged.
 
@@ -65,4 +66,4 @@ Deploy all 17 ZIP-root files to GitHub Pages. Do not deploy only a partial file 
 
 Validation URL:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc16
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc17

@@ -1842,3 +1842,7 @@ body.rgbm-locked{overflow:hidden}
 /* F29 RC16: save receipt picture option */
 .rc-save{display:flex!important;flex-direction:row!important;align-items:center;gap:10px;margin:10px 0 4px;font-weight:800}
 .rc-save input[type=checkbox]{width:22px!important;height:22px!important;min-width:22px;flex:0 0 22px;margin:0;accent-color:#3d7a58}
+
+/* F29 RC17: room to bring the last fields up above the keyboard */
+body.kb-open .non-home-scroll{padding-bottom:60vh!important}
+body.kb-open .receipt-modal{padding-bottom:60vh!important}
