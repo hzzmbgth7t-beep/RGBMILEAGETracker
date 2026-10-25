@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f29-rc13
+# FIXNOTES — v2.1.6l-wc10-f29-rc14
 
-Build: `v2.1.6l-wc10-f29-rc13`  
+Build: `v2.1.6l-wc10-f29-rc14`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc13`  
+Cache: `216lwc10f29rc14`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -29,6 +29,11 @@ TESTS/test_sync.py runs the app in Chromium against TESTS/mock_supabase.py: 33/3
 - Photos: uploaded to Storage at `<user id>/<vehicle id>`; `vehicles.primary_photo_md5` holds the photo fingerprint. RGBM_CLOUD_PHOTOS tracks the last synced local/cloud fingerprints so photos upload once and download only when changed.
 - Face ID: a Supabase passkey is registered while signed in. The same passkey signs in (server-verified) and unlocks the app (checked on the phone). The lock hides the screen; it does not encrypt data on the phone.
 - Test evidence: TESTS/test_rc2.py — 28/28 checks (photo upload/download/change/removal across two devices, no re-sync loops, Face ID setup, lock on launch and after background, password fallback, Face ID sign-in, removal) plus the RC1 suite rerun on RC2: 33/33.
+
+## RC14 additions
+
+- iOS Safari (confirmed on Ronnie's iPhone) ignores input.click() made at touchend after a hold, so RC10–RC13 holds did nothing. Hold now calls pbChooser(): a sheet whose buttons are <label>s wrapping real <input type=file> (opacity 0, full size), so the picker opens from the user's own tap with no script click. receiptStart/docStart with src "library" route there; camera tap path unchanged.
+- Test evidence: TESTS/test_rc14r.py 31/31, TESTS/test_rc14d.py 40/40, TESTS/touch_press14.py 9/9 (touch: hold shows the sheet, no script-opened picker; tapping Choose From Photos opens the picker) against RC14.
 
 ## RC13 additions
 

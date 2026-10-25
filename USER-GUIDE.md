@@ -1,8 +1,8 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc13`
-Cache: `216lwc10f29rc13`
-Guide release: `v2.1.6l-wc10-f29-rc13`
+Build: `v2.1.6l-wc10-f29-rc14`
+Cache: `216lwc10f29rc14`
+Guide release: `v2.1.6l-wc10-f29-rc14`
 Source baseline: accepted `v2.1.6l-wc10-f28`
 Current status: `Release candidate — pending user validation`
 
@@ -10,7 +10,7 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc13
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc14
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -88,7 +88,7 @@ For fuel cost, set **Cost Source** to **Calculated** to work out the total from 
 
 ## Scanning receipts
 
-On a new Fuel or Maintenance entry, use the green **Read Receipt** button beside the form title. **Tap** it to take a photo with the camera. **Press and hold** it until it says **Release for Photos**, then let go, to pick a receipt picture from your camera roll or photo library.
+On a new Fuel or Maintenance entry, use the green **Read Receipt** button beside the form title. **Tap** it to take a photo with the camera. **Press and hold** it until it says **Release for Photos**, let go, then tap **Choose From Photos** to pick a receipt picture from your camera roll.
 
 1. Lay the receipt flat in good light and fill the screen with it.
 2. A **Crop Receipt** screen opens. Drag the corners or edges so only the receipt is inside the frame; crop out other papers or anything confusing. **Rotate ↻**, **Auto Frame** and **Whole Picture** are there too. Tap **Read Receipt**.
@@ -114,7 +114,7 @@ Scanned insurance documents (cards, declarations pages, bills) are saved to **yo
 2. Pick how to organize: **One folder, with a subfolder for each vehicle** (the app makes the vehicle folders), or **A separate folder for each vehicle**.
 3. Tap **Choose Folder** and pick the Drive folder(s). Tap **Change** later to use a different one.
 
-**Add a document:** open an Insurance entry and use the green **Scan Document** button beside the title. **Tap** it for the camera, or **press and hold** until it says **Release for Photos** to choose a picture on your phone.
+**Add a document:** open an Insurance entry and use the green **Scan Document** button beside the title. **Tap** it for the camera, or **press and hold** until it says **Release for Photos**, let go, then tap **Choose From Photos** to pick a picture on your phone.
 
 Then:
 

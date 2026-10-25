@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc14 — 2026-10-24
+
+- Built from `v2.1.6l-wc10-f29-rc13` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Fixed on iPhone: press and hold on Read Receipt, Add Another Part, Try Again and Scan Document still did nothing. iPhone only opens the photo picker from a normal tap, not after a long press. Holding now opens a small sheet with **Choose From Photos** and **Take Photo**; one tap there opens the picker. A quick tap on the green button still opens the camera directly.
+- User Guide updated.
+
 ## v2.1.6l-wc10-f29-rc13 — 2026-10-24
 
 - Built from `v2.1.6l-wc10-f29-rc12` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
