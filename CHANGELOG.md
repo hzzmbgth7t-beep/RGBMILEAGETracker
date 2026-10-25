@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc16 — 2026-10-25
+
+- Built from `v2.1.6l-wc10-f29-rc15` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Vehicles: **VIN** field on Edit Vehicle (up to 17 characters, saved in capitals) and shown on the vehicle page.
+- Fuel and Maintenance: after a receipt is read, **Save the receipt picture to Google Drive** (on by default once a Drive folder is set; the choice is remembered). On **Use These** the cropped picture is uploaded to the vehicle's Drive folder as "<vehicle> Fuel Receipt …jpg" / "Maintenance Receipt …jpg" and the link appears under **Documents** on the entry (kept on Save; saved at once for an existing record). Unchecked: the picture is not kept.
+- Settings card renamed **Google Drive Documents** (same folders for Insurance documents and receipt pictures).
+- User Guide updated.
+
+## v2.1.6l-wc10-f29-rc15 — 2026-10-25
+
+- Built from `v2.1.6l-wc10-f29-rc14` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Home: tapping a vehicle circle now opens the vehicle page; press and hold opens a new Fuel entry (swapped). Empty circles still open Add Vehicle.
+- Vehicle page: Edit Vehicle, Fuel Entry, Maintenance Entry and Insurance Entry moved to the top, smaller, two per row. Vehicle photo is half the size.
+- Receipt review: Station, Fuel Grade, Provider and Category are drop-down lists (same lists as the entry forms). **Other** asks for a name with **Use Once** or **Save To List**. A value read from the receipt that isn't in the list is shown as "(read)". Ethanol Free is Yes/No.
+- User Guide updated.
+
 ## v2.1.6l-wc10-f29-rc14 — 2026-10-24
 
 - Built from `v2.1.6l-wc10-f29-rc13` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).

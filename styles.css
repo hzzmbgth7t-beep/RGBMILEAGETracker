@@ -1825,3 +1825,20 @@ body.rgbm-locked{overflow:hidden}
 .pb-pick{display:block;text-align:center;border-radius:14px;padding:12px 14px;font-weight:950;font-size:15px;color:#fff;background:linear-gradient(180deg,#4a6687,#2f4563);margin-top:8px;position:relative;overflow:hidden;cursor:pointer}
 .pb-pick.primary{background:linear-gradient(180deg,#ebb25d,#c87922);color:#111827}
 .pb-file{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
+
+/* F29 RC15: vehicle info — buttons first, two per row, smaller photo */
+#app.screen-vehicleView .vehicle-detail-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin:0 0 12px!important}
+#app.screen-vehicleView .vehicle-detail-actions button{padding:9px 8px!important;font-size:14px!important;min-height:0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#app.screen-vehicleView .vehicle-detail-photo-frame{width:min(50%,210px)!important}
+#app.screen-vehicleView .vehicle-view-photo{margin-bottom:10px}
+@media (orientation: landscape){
+  #app.screen-vehicleView .vehicle-detail-actions{grid-row:1!important}
+  #app.screen-vehicleView .view-grid{grid-row:2!important}
+  #app.screen-vehicleView .vehicle-detail-photo-frame{width:min(26dvh,16vw,150px)!important}
+}
+/* receipt review drop-downs */
+.rc-grid .rc-field select{width:100%;box-sizing:border-box;min-width:0}
+
+/* F29 RC16: save receipt picture option */
+.rc-save{display:flex!important;flex-direction:row!important;align-items:center;gap:10px;margin:10px 0 4px;font-weight:800}
+.rc-save input[type=checkbox]{width:22px!important;height:22px!important;min-width:22px;flex:0 0 22px;margin:0;accent-color:#3d7a58}

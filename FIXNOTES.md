@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f29-rc14
+# FIXNOTES — v2.1.6l-wc10-f29-rc16
 
-Build: `v2.1.6l-wc10-f29-rc14`  
+Build: `v2.1.6l-wc10-f29-rc16`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc14`  
+Cache: `216lwc10f29rc16`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -29,6 +29,19 @@ TESTS/test_sync.py runs the app in Chromium against TESTS/mock_supabase.py: 33/3
 - Photos: uploaded to Storage at `<user id>/<vehicle id>`; `vehicles.primary_photo_md5` holds the photo fingerprint. RGBM_CLOUD_PHOTOS tracks the last synced local/cloud fingerprints so photos upload once and download only when changed.
 - Face ID: a Supabase passkey is registered while signed in. The same passkey signs in (server-verified) and unlocks the app (checked on the phone). The lock hides the screen; it does not encrypt data on the phone.
 - Test evidence: TESTS/test_rc2.py — 28/28 checks (photo upload/download/change/removal across two devices, no re-sync loops, Face ID setup, lock on launch and after background, password fallback, Face ID sign-in, removal) plus the RC1 suite rerun on RC2: 33/33.
+
+## RC16 additions
+
+- Vehicle vin field (already in the data model) is edited (#vehVin, spaces removed, upper case) and shown (viewField "VIN").
+- Receipt crop onSave keeps a JPEG (0.85) of each cropped part in RECEIPT.blobs (memory only). Review sheet: #rcSaveDrive checkbox (localStorage RGBM_RC_SAVE_DRIVE remembers the choice; disabled until a folder is set). receiptUse → docSaveBlobs(blobs, vid) after filling the form: reconnects Google if needed (GIS preloaded when the sheet opens), then docSend() per part. docSend/docRefreshList/docRemove use docRecType() (Fuel / Maintenance / Insurance from the current screen). Fuel and Maintenance saves take DOC.pending; DOC.pending is reset when those forms open. Docs list on Fuel/Maintenance shows only when links exist.
+- Test evidence: TESTS/test_rc16.py 15/15 (VIN; receipt picture to Drive for Fuel new entry, Maintenance existing record, unchecked = no upload, no folder = disabled); against RC16: test_rc15 16/16, test_rc14r 31/31, test_rc14d 39/40 (only the old guide-title check: section renamed "Documents and receipt pictures (Google Drive)"), touch_press14 9/9, rc7 19/19, rc6 24/24, rc5 25/25, rc4 36/36, rc3 12/12, rc2 28/28.
+
+## RC15 additions
+
+- vehicleTap → vehicleView, vehicleLong → openFuelFromHome (configured vehicles only).
+- vehicleView: .vehicle-detail-actions rendered first in the card; CSS two columns, 9px padding / 14px text; photo frame min(50%, 210px). Landscape: actions grid-row 1, details row 2, photo spans.
+- receiptPickHtml(key, value): selects for station (stations), fuelGrade (fuelGrades), provider (maintenanceProviders), category (maintenanceCategories), ethanolFree (Yes/No). Uses selectOther → the existing Other modal (Use Once / Save To List), z-index above the receipt sheet. Read value matched to the list case-insensitively; unmatched value kept as an extra option. receiptUse sets the form's Category from any chosen value.
+- Test evidence: TESTS/test_rc15.py 16/16 (touch tap/hold on circles, vehicle page layout, review drop-downs with Use Once / Save To List); regressions against RC15: test_rc14r 31/31, test_rc14d 40/40, touch_press14 9/9, rc7 19/19, rc6 24/24, rc5 25/25, rc4 36/36, rc3 12/12, rc2 28/28.
 
 ## RC14 additions
 

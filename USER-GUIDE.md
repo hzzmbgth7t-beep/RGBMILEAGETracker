@@ -1,8 +1,8 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc14`
-Cache: `216lwc10f29rc14`
-Guide release: `v2.1.6l-wc10-f29-rc14`
+Build: `v2.1.6l-wc10-f29-rc16`
+Cache: `216lwc10f29rc16`
+Guide release: `v2.1.6l-wc10-f29-rc16`
 Source baseline: accepted `v2.1.6l-wc10-f28`
 Current status: `Release candidate — pending user validation`
 
@@ -10,7 +10,7 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc14
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc16
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -54,18 +54,19 @@ Home shows one circle per vehicle, with its photo and last refuel mileage.
 
 | Action | What happens |
 | --- | --- |
-| Tap a vehicle circle | Opens a new Fuel entry for that vehicle |
-| Press and hold a circle | Opens the vehicle page: details, records, Edit Vehicle, Maintenance Entry, Insurance Entry |
+| Tap a vehicle circle | Opens the vehicle page: buttons for Edit Vehicle, Fuel Entry, Maintenance Entry and Insurance Entry at the top, then details and records |
+| Press and hold a circle | Opens a new Fuel entry for that vehicle |
 | Tap an **Add Vehicle** circle | Opens the form to add a vehicle |
 
 The bar at the bottom has **Home**, **Reports**, **Data** (backup, restore, CSV import), and **Settings**. **‹ Back** at the top returns to the previous screen.
 
 ## Vehicles
 
-Tap an **Add Vehicle** circle to add a vehicle. To change one, press and hold its circle, then tap **Edit Vehicle**.
+Tap an **Add Vehicle** circle to add a vehicle. To change one, tap its circle, then tap **Edit Vehicle**.
 
 - **Year, Make, Model, Badge** make up the vehicle's name.
 - **Custom Label** (up to 50 characters) is shown instead of Year/Make/Model.
+- **VIN** (17 characters) is shown on the vehicle page.
 - **Vehicle Image** is the circle photo. It syncs to your other devices.
 - **Acquisition Record** holds the purchase date, starting odometer, price, and seller.
 - **Status** is Active or Archived.
@@ -76,9 +77,9 @@ Tap **Save Vehicle** to keep the changes, or **Clear & Exit** to discard them. T
 
 | Record | How to open it | Main fields |
 | --- | --- | --- |
-| Fuel | Tap the vehicle circle | Date, odometer, gallons, grade, station, price/gal or total. Miles and MPG fill in automatically. |
-| Maintenance | Hold the circle → **Maintenance Entry** | Date, category, odometer, cost, location, provider |
-| Insurance | Hold the circle → **Insurance Entry** | Agency, policy number, dates, agreed value, premium, agent |
+| Fuel | Press and hold the vehicle circle (or tap it → **Fuel Entry**) | Date, odometer, gallons, grade, station, price/gal or total. Miles and MPG fill in automatically. |
+| Maintenance | Tap the circle → **Maintenance Entry** | Date, category, odometer, cost, location, provider |
+| Insurance | Tap the circle → **Insurance Entry** | Agency, policy number, dates, agreed value, premium, agent |
 
 Tap **Save** to save, or **Cancel** to leave without saving. Earlier records for that vehicle are listed under the form. Tap one to view, edit, archive, or delete it.
 
@@ -93,7 +94,7 @@ On a new Fuel or Maintenance entry, use the green **Read Receipt** button beside
 1. Lay the receipt flat in good light and fill the screen with it.
 2. A **Crop Receipt** screen opens. Drag the corners or edges so only the receipt is inside the frame; crop out other papers or anything confusing. **Rotate ↻**, **Auto Frame** and **Whole Picture** are there too. Tap **Read Receipt**.
 3. The app reads it on your phone in a few seconds. The first scan downloads the reader (about 5 MB), so it needs internet.
-4. Check the values. **read** means it was read clearly; **check this** means it was a guess. Fix anything that is wrong.
+4. Check the values. **read** means it was read clearly; **check this** means it was a guess. Fix anything that is wrong. Station, Fuel Grade, Provider and Category are drop-down lists; pick **Other** to type a new name, then **Use Once** or **Save To List**.
 5. Tap **Use These** to fill the entry, then enter the odometer and tap **Save** as usual.
 
 What gets filled in, and other tips:
@@ -102,13 +103,14 @@ What gets filled in, and other tips:
 - **Maintenance** fills Date, Provider, Category, Odometer (when printed), and Cost.
 - For a long receipt, use **Add Another Part** for the rest (tap for the camera, hold for your photos).
 - **Text read** shows exactly what the app read. You can correct it and tap **Fill In Again**.
-- The picture is never saved or uploaded. Very faded receipts may not read at all; type those.
+- **Save the receipt picture to Google Drive** (under the fields) uploads the cropped picture to the vehicle's Drive folder when you tap **Use These**. Its link appears under **Documents** on the entry; tap **Save** to keep it. Untick it and the picture is not kept. Set up the folders once in Settings → **Google Drive Documents**.
+- Very faded receipts may not read at all; type those.
 
-## Insurance documents (Google Drive)
+## Documents and receipt pictures (Google Drive)
 
 Scanned insurance documents (cards, declarations pages, bills) are saved to **your own Google Drive**. The app keeps only a link.
 
-**Set up once:** go to Settings → **Insurance Documents**.
+**Set up once:** go to Settings → **Google Drive Documents**. The same folders hold insurance documents and Fuel and Maintenance receipt pictures.
 
 1. Tap **Connect Google Drive** and sign in to your Google account.
 2. Pick how to organize: **One folder, with a subfolder for each vehicle** (the app makes the vehicle folders), or **A separate folder for each vehicle**.
