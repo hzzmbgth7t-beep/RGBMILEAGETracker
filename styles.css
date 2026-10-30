@@ -1846,3 +1846,8 @@ body.rgbm-locked{overflow:hidden}
 /* F29 RC17: room to bring the last fields up above the keyboard */
 body.kb-open .non-home-scroll{padding-bottom:60vh!important}
 body.kb-open .receipt-modal{padding-bottom:60vh!important}
+
+/* F29 RC18: stored pictures */
+.doc-open{background:none!important;border:0!important;box-shadow:none!important;padding:4px 0!important;color:#ffd791!important;text-decoration:underline;font-weight:700;text-align:left;font-size:15px;white-space:normal}
+.doc-view{margin:8px 0;max-height:60vh;overflow:auto;border-radius:12px;background:#fff}
+.doc-view img{display:block;width:100%;height:auto}

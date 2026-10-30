@@ -1,8 +1,8 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc17`
-Cache: `216lwc10f29rc17`
-Guide release: `v2.1.6l-wc10-f29-rc17`
+Build: `v2.1.6l-wc10-f29-rc18`
+Cache: `216lwc10f29rc18`
+Guide release: `v2.1.6l-wc10-f29-rc18`
 Source baseline: accepted `v2.1.6l-wc10-f28`
 Current status: `Release candidate — pending user validation`
 
@@ -10,7 +10,7 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc17
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc18
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -103,29 +103,23 @@ What gets filled in, and other tips:
 - **Maintenance** fills Date, Provider, Category, Odometer (when printed), and Cost.
 - For a long receipt, use **Add Another Part** for the rest (tap for the camera, hold for your photos).
 - **Text read** shows exactly what the app read. You can correct it and tap **Fill In Again**.
-- **Save the receipt picture to Google Drive** (under the fields) uploads the cropped picture to the vehicle's Drive folder when you tap **Use These**. Its link appears under **Documents** on the entry; tap **Save** to keep it. Untick it and the picture is not kept. Set up the folders once in Settings → **Google Drive Documents**.
+- **Save the receipt picture with this entry** (under the fields) keeps a small black-and-white copy of the cropped receipt. It appears under **Documents** on the entry; tap **Save** to keep it. Untick it and the picture is not kept.
 - Very faded receipts may not read at all; type those.
 
-## Documents and receipt pictures (Google Drive)
+## Documents and receipt pictures
 
-Scanned insurance documents (cards, declarations pages, bills) are saved to **your own Google Drive**. The app keeps only a link.
+Pictures are stored with your data: on your phone, and in your private cloud account when you are signed in (just like vehicle photos). Nothing else to set up.
 
-**Set up once:** go to Settings → **Google Drive Documents**. The same folders hold insurance documents and Fuel and Maintenance receipt pictures.
-
-1. Tap **Connect Google Drive** and sign in to your Google account.
-2. Pick how to organize: **One folder, with a subfolder for each vehicle** (the app makes the vehicle folders), or **A separate folder for each vehicle**.
-3. Tap **Choose Folder** and pick the Drive folder(s). Tap **Change** later to use a different one.
-
-**Add a document:** open an Insurance entry and use the green **Scan Document** button beside the title. **Tap** it for the camera, or **press and hold** until it says **Release for Photos**, let go, then tap **Choose From Photos** to pick a picture on your phone.
+**Add an insurance document:** open an Insurance entry and use the green **Scan Document** button beside the title. **Tap** it for the camera, or **press and hold** until it says **Release for Photos**, let go, then tap **Choose From Photos** to pick a picture on your phone.
 
 Then:
 
-- A **Crop Document** screen opens. Drag the corners or edges to frame the document (drag inside to move the frame). **Rotate ↻** turns it, **Auto Frame** finds the paper, **Whole Picture** keeps everything. Tap **Save to Drive**.
-- Only the cropped part is uploaded to the folder, and its link appears under **Documents**. Tap a link to open it in Google Drive.
-- On a new entry, tap **Save** to keep the links.
-- **Remove Link** takes the link out of the app. The file stays in Drive.
-- Folder choices belong to the signed-in user; each person sets their own.
-- Google asks you to reconnect about once an hour of use; just approve and try again.
+- A **Crop Document** screen opens. Drag the corners or edges to frame the document (drag inside to move the frame). **Rotate ↻** turns it, **Auto Frame** finds the paper, **Whole Picture** keeps everything. Tap **Save Picture**.
+- The picture appears under **Documents**. On a new entry, tap **Save** to keep it.
+- Tap a picture under **Documents** to see it full size. From there you can **Share / Save to Phone**, or (while editing) **Delete Picture**.
+- Receipt pictures are saved in black and white and documents in colour, both made smaller so they take little space.
+- Pictures taken while offline or signed out are uploaded at the next sync. Each person sees only their own pictures.
+- Older pictures that were saved to Google Drive still open from their links.
 
 ## Editing drop-down lists
 

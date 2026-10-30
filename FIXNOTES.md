@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f29-rc17
+# FIXNOTES — v2.1.6l-wc10-f29-rc18
 
-Build: `v2.1.6l-wc10-f29-rc17`  
+Build: `v2.1.6l-wc10-f29-rc18`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc17`  
+Cache: `216lwc10f29rc18`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -29,6 +29,14 @@ TESTS/test_sync.py runs the app in Chromium against TESTS/mock_supabase.py: 33/3
 - Photos: uploaded to Storage at `<user id>/<vehicle id>`; `vehicles.primary_photo_md5` holds the photo fingerprint. RGBM_CLOUD_PHOTOS tracks the last synced local/cloud fingerprints so photos upload once and download only when changed.
 - Face ID: a Supabase passkey is registered while signed in. The same passkey signs in (server-verified) and unlocks the app (checked on the phone). The lock hides the screen; it does not encrypt data on the phone.
 - Test evidence: TESTS/test_rc2.py — 28/28 checks (photo upload/download/change/removal across two devices, no re-sync loops, Face ID setup, lock on launch and after background, password fallback, Face ID sign-in, removal) plus the RC1 suite rerun on RC2: 33/33.
+
+## RC18 additions
+
+- Stored pictures: IndexedDB "rgbm-docs" / "pics" {id, blob, uploaded, uid}; attachment entry {attachmentId, kind:"Stored", name, mimeType, size, addedAt} on the record (syncs with raw_json). docUploadPending() uploads blobs not yet uploaded to storage "documents/<uid>/<id>.jpg" (x-upsert) right after saving and at every sync (after vehicle photos). docBlob(id) reads the phone copy, else downloads (authenticated) and caches it. docRemove deletes the phone copy and the cloud object.
+- docCompress(canvas, gray): ≤1600 px; gray = luminance + 2–98 % contrast stretch, JPEG 0.6; colour JPEG 0.72.
+- Google Drive code kept only for old links (kind "Google Drive"); Drive settings card no longer shown; Scan Document no longer needs Google.
+- DOCUMENTATION/SUPABASE/7_Enable_Document_Storage.sql: private bucket "documents" (10 MB, image/jpeg) + select/insert/update/delete policies limited to the user's own folder.
+- Test evidence: TESTS/test_rc18.py 16/16 (signed-in receipt picture black-and-white ≤1600 px uploaded to documents/<uid>/; small record entry; full-size viewer; insurance document saved offline and uploaded at next sync; second device downloads it; delete removes phone + cloud copy; old Drive links still open); against RC18: test_rc17 9/9, test_rc15 16/16, test_rc14r 31/31, touch_press14 9/9, rc7 19/19, rc6 24/24, rc5 25/25, rc4 36/36, rc3 12/12, rc2 28/28. test_rc16 / test_rc14d (Google Drive) retired.
 
 ## RC17 additions
 

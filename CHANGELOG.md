@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc18 — 2026-10-30
+
+- Built from `v2.1.6l-wc10-f29-rc17` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Pictures are now stored with the app's data instead of Google Drive: kept on the phone and copied to the user's private cloud storage (Supabase bucket "documents") when signed in, like vehicle photos. No Google sign-in or folders needed. Pictures taken while offline or signed out upload at the next sync.
+- Smaller pictures: receipts are saved black-and-white (contrast evened), insurance documents in colour, both at most 1600 px (receipts typically 50–150 KB).
+- Under **Documents**, tap a picture to view it full size, **Share / Save to Phone**, or (when editing) **Delete Picture** (removes it from the phone and the cloud).
+- Receipt review: **Save the receipt picture with this entry** (shows the size).
+- Settings: the Google Drive card is removed. Links to pictures already saved in Drive still open.
+- Supabase: run DOCUMENTATION/SUPABASE/7_Enable_Document_Storage.sql once (creates the private bucket and per-user rules).
+
 ## v2.1.6l-wc10-f29-rc17 — 2026-10-25
 
 - Built from `v2.1.6l-wc10-f29-rc16` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
