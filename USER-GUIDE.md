@@ -1,8 +1,8 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc18`
-Cache: `216lwc10f29rc18`
-Guide release: `v2.1.6l-wc10-f29-rc18`
+Build: `v2.1.6l-wc10-f29-rc20`
+Cache: `216lwc10f29rc20`
+Guide release: `v2.1.6l-wc10-f29-rc20`
 Source baseline: accepted `v2.1.6l-wc10-f28`
 Current status: `Release candidate — pending user validation`
 
@@ -10,7 +10,7 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc18
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc20
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -67,11 +67,15 @@ Tap an **Add Vehicle** circle to add a vehicle. To change one, tap its circle, t
 - **Year, Make, Model, Badge** make up the vehicle's name.
 - **Custom Label** (up to 50 characters) is shown instead of Year/Make/Model.
 - **VIN** (17 characters) is shown on the vehicle page.
+- **Notes** shows as one row. Tap it to open it full size while you type; on the vehicle page, tap the notes to read them all and tap again to close.
+- Web addresses and email addresses typed in any **Notes** show as links when you view the vehicle or a record. Tap one to open it.
 - **Vehicle Image** is the circle photo. It syncs to your other devices.
 - **Acquisition Record** holds the purchase date, starting odometer, price, and seller.
 - **Status** is Active or Archived.
 
 Tap **Save Vehicle** to keep the changes, or **Clear & Exit** to discard them. To change the order of the circles, go to Settings → **Vehicle Order**. Position 1 is the large circle in portrait view.
+
+On the vehicle page, the **Previous Fuel / Maintenance / Insurance Records** sections start closed. Tap a heading to open it.
 
 ## Fuel, maintenance, and insurance records
 

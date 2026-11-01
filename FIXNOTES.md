@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f29-rc18
+# FIXNOTES — v2.1.6l-wc10-f29-rc20
 
-Build: `v2.1.6l-wc10-f29-rc18`  
+Build: `v2.1.6l-wc10-f29-rc20`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc18`  
+Cache: `216lwc10f29rc20`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -29,6 +29,17 @@ TESTS/test_sync.py runs the app in Chromium against TESTS/mock_supabase.py: 33/3
 - Photos: uploaded to Storage at `<user id>/<vehicle id>`; `vehicles.primary_photo_md5` holds the photo fingerprint. RGBM_CLOUD_PHOTOS tracks the last synced local/cloud fingerprints so photos upload once and download only when changed.
 - Face ID: a Supabase passkey is registered while signed in. The same passkey signs in (server-verified) and unlocks the app (checked on the phone). The lock hides the screen; it does not encrypt data on the phone.
 - Test evidence: TESTS/test_rc2.py — 28/28 checks (photo upload/download/change/removal across two devices, no re-sync loops, Face ID setup, lock on launch and after background, password fallback, Face ID sign-in, removal) plus the RC1 suite rerun on RC2: 33/33.
+
+## RC20 additions
+
+- linkNotes(text): escapes text and wraps URLs (http/https/www.) and email addresses in <a class="notes-link" target="_blank" rel="noopener"> (www. → https://, email → mailto:); trailing punctuation left outside the link; link taps stopPropagation so the vehicle Notes row doesn't toggle. Used by notesViewHtml, roNotesBox (replaces roBox("Notes")) and the Fuel/Maintenance/Insurance view Notes boxes. .notes-text keeps line breaks.
+- Test evidence: TESTS/test_rc20.py against RC20, plus earlier suites.
+
+## RC19 additions
+
+- Vehicle field `notes` (string) saved by saveVehicle from #vehNotes (textarea.grow-notes, rows=1). Global focusin/input/focusout handlers grow it to scrollHeight (max 60 % of the visible height) while focused and return it to one row on blur. View: notesViewHtml() one-line ellipsis that toggles .open on tap.
+- VIN view field and edit label are full width. previousRecordsHtml() renders <details> without `open`.
+- Test evidence: TESTS/test_rc19.py against RC19, plus earlier suites.
 
 ## RC18 additions
 

@@ -1851,3 +1851,13 @@ body.kb-open .receipt-modal{padding-bottom:60vh!important}
 .doc-open{background:none!important;border:0!important;box-shadow:none!important;padding:4px 0!important;color:#ffd791!important;text-decoration:underline;font-weight:700;text-align:left;font-size:15px;white-space:normal}
 .doc-view{margin:8px 0;max-height:60vh;overflow:auto;border-radius:12px;background:#fff}
 .doc-view img{display:block;width:100%;height:auto}
+
+/* F29 RC19: vehicle Notes (one row, grows when tapped) */
+textarea.grow-notes{min-height:44px!important;height:44px;resize:none;overflow:hidden;line-height:1.35;transition:height .15s}
+textarea.grow-notes.open{overflow:auto;min-height:96px!important}
+.notes-view{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;padding:2px 0;font-weight:700}
+.notes-view.open{white-space:pre-wrap;overflow:visible;word-break:break-word}
+
+/* F29 RC20: links in Notes */
+.notes-text{white-space:pre-wrap;overflow-wrap:anywhere}
+a.notes-link{color:#ffd791;text-decoration:underline;overflow-wrap:anywhere}

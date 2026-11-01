@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc20 — 2026-11-01
+
+- Built from `v2.1.6l-wc10-f29-rc19` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Notes: web addresses (https://…, www.…) and email addresses show as tappable links when viewing a vehicle or a Fuel, Maintenance or Insurance record. Web links open in the browser; email links open a new email. Line breaks in notes are kept.
+- Home screen and screen titles unchanged.
+
+## v2.1.6l-wc10-f29-rc19 — 2026-11-01
+
+- Built from `v2.1.6l-wc10-f29-rc18` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Vehicle page and Edit Vehicle: **VIN** uses a full row.
+- New vehicle **Notes**: shown as one row; tap it to open it full size while typing (Edit Vehicle) or reading (vehicle page). Syncs with the vehicle.
+- Vehicle page: the **Previous Fuel / Maintenance / Insurance Records** sections start collapsed; tap a heading to open it.
+
 ## v2.1.6l-wc10-f29-rc18 — 2026-10-30
 
 - Built from `v2.1.6l-wc10-f29-rc17` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
