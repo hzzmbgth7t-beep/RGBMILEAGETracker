@@ -1,16 +1,16 @@
-# RGBMileage v2.1.6l-wc10-f29-rc20
+# RGBMileage v2.1.6l-wc10-f29-rc21
 
 ## URLs
 
 Production URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc20
+Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc21
 
 Supabase project URL: https://nlfivcxlzmivjzwlhlot.supabase.co
 
-Build: `v2.1.6l-wc10-f29-rc20`  
+Build: `v2.1.6l-wc10-f29-rc21`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc20`  
+Cache: `216lwc10f29rc21`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`  
 Previous accepted production baseline: `v2.1.6l-wc10-f28`
@@ -60,6 +60,7 @@ F29 connects RGB Mileage to its Supabase database. RC2 adds vehicle photo sync a
 - RC18: receipt and document pictures are stored with the app's data (phone + private Supabase "documents" bucket) instead of Google Drive. Receipts black-and-white, everything at most 1600 px. Run DOCUMENTATION/SUPABASE/7_Enable_Document_Storage.sql once.
 - RC19: VIN on its own full row; vehicle Notes (one row that grows when tapped, on the edit and vehicle screens); Previous Records sections start collapsed.
 - RC20: web and email addresses in Notes show as tappable links on the view screens (vehicle, Fuel, Maintenance, Insurance).
+- RC21: receipt reader picks up the fuel grade from pump product codes such as "B89", "U87" or "P93".
 - Clear Local Data unlinks the device from cloud sync; it never deletes cloud data.
 - Home geometry, circles, descriptions, and mileage labels are unchanged.
 
@@ -69,4 +70,4 @@ Deploy all 17 ZIP-root files to GitHub Pages. Do not deploy only a partial file 
 
 Validation URL:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc20
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc21

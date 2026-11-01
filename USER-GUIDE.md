@@ -1,8 +1,8 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc20`
-Cache: `216lwc10f29rc20`
-Guide release: `v2.1.6l-wc10-f29-rc20`
+Build: `v2.1.6l-wc10-f29-rc21`
+Cache: `216lwc10f29rc21`
+Guide release: `v2.1.6l-wc10-f29-rc21`
 Source baseline: accepted `v2.1.6l-wc10-f28`
 Current status: `Release candidate — pending user validation`
 
@@ -10,7 +10,7 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc20
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc21
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -103,7 +103,7 @@ On a new Fuel or Maintenance entry, use the green **Read Receipt** button beside
 
 What gets filled in, and other tips:
 
-- **Fuel** fills Date, Time, Station, Fuel Grade, Gallons, Price/Gal, and Total Cost.
+- **Fuel** fills Date, Time, Station, Fuel Grade, Gallons, Price/Gal, and Total Cost. The grade is read from words like Regular, Plus or Premium, or a pump code like B89. **Ethanol Free** is only ticked when the receipt says so (for example E0 or Non-Ethanol); most receipts don't.
 - **Maintenance** fills Date, Provider, Category, Odometer (when printed), and Cost.
 - For a long receipt, use **Add Another Part** for the rest (tap for the camera, hold for your photos).
 - **Text read** shows exactly what the app read. You can correct it and tap **Fill In Again**.

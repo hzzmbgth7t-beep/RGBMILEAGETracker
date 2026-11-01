@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc21 — 2026-11-01
+
+- Built from `v2.1.6l-wc10-f29-rc20` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Read Receipt: the fuel grade is now read from pump product codes on the pump or gallons line, e.g. Circle K "Pump # 1  B89 [70/30]" → 89 (also U87, P93, a bare 89 next to the pump). Ethanol Free is only set when the receipt says so (E0, Ethanol Free, Non-Ethanol, REC 90).
+
 ## v2.1.6l-wc10-f29-rc20 — 2026-11-01
 
 - Built from `v2.1.6l-wc10-f29-rc19` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
