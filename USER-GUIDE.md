@@ -1,8 +1,8 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc21`
-Cache: `216lwc10f29rc21`
-Guide release: `v2.1.6l-wc10-f29-rc21`
+Build: `v2.1.6l-wc10-f29-rc22`
+Cache: `216lwc10f29rc22`
+Guide release: `v2.1.6l-wc10-f29-rc22`
 Source baseline: accepted `v2.1.6l-wc10-f28`
 Current status: `Release candidate — pending user validation`
 
@@ -10,7 +10,7 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc21
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc22
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -42,11 +42,11 @@ Accounts are by invitation only. Ask the app administrator to add you. You will 
 
 1. Open the app. The **Sign In** screen appears when you are not signed in.
 2. Enter your email and temporary password, then tap **Sign In**.
-3. Go to Settings → **Open Cloud Sync** → **Change Password** and choose your own password (at least 8 characters).
+3. Go to Data → **Cloud Sync** → **Open Cloud Sync** → **Change Password** and choose your own password (at least 8 characters).
 
 The first time you sign in, the app offers to set up Face ID and points you to this guide.
 
-To use the app without an account, tap **Not Now — Use This Device Only**. Your data then stays on that device only. You can sign in later from Settings.
+To use the app without an account, tap **Not Now — Use This Device Only**. Your data then stays on that device only. You can sign in later from Data → **Cloud Sync**.
 
 ## Home screen
 
@@ -58,7 +58,7 @@ Home shows one circle per vehicle, with its photo and last refuel mileage.
 | Press and hold a circle | Opens a new Fuel entry for that vehicle |
 | Tap an **Add Vehicle** circle | Opens the form to add a vehicle |
 
-The bar at the bottom has **Home**, **Reports**, **Data** (backup, restore, CSV import), and **Settings**. **‹ Back** at the top returns to the previous screen.
+The bar at the bottom has **Home**, **Reports**, **Data** (app cache reset, backup, restore, CSV import, Cloud Sync, offline mode), and **Settings**. On the Data and Settings pages each section starts closed; tap its heading to open it. **‹ Back** at the top returns to the previous screen.
 
 ## Vehicles
 
@@ -127,7 +127,7 @@ Then:
 
 ## Editing drop-down lists
 
-Go to Settings → **Edit Lists**, then pick the list at the top: Fuel Grade, Station, Maintenance Category, Location, Provider, or Performed By.
+Go to Settings → Drop-Down Lists → **Edit Lists**, then pick the list at the top: Fuel Grade, Station, Maintenance Category, Location, Provider, or Performed By.
 
 - **Edit** fixes a spelling. If records use the old spelling, the app offers to correct them too. If the new name is already in the list, the two are combined.
 - **Up** and **Down** change the order. **Sort A–Z** puts the list in alphabetical order.
@@ -146,11 +146,11 @@ Tap **Reports** in the bottom bar. The reports are Fuel History, MPG, Maintenanc
 While you are signed in, every save is copied to your cloud account within a few seconds. Your other devices pick up changes when they open the app or when you tap **Sync Now**. Vehicle photos sync too.
 
 - **Offline:** keep using the app. Changes wait on the device and upload when you are back online.
-- **Status:** Settings → **Open Cloud Sync** shows who is signed in and when the last sync happened.
+- **Status:** Data → Cloud Sync → **Open Cloud Sync** shows who is signed in and when the last sync happened.
 - **New device:** install the app and sign in. If that device already has different data, you'll be asked to **Choose Which Data to Keep**. Pick **Use Cloud Data on This Device** unless you know the device has the newer data.
 - **Shared device:** if the device holds someone else's data, the app asks before switching it to your account. The other person's data stays in their own cloud account.
 - **Sync Paused:** if one save would delete more than 10 items from the cloud, sync stops and asks first. **Restore This Device from Cloud** undoes the deletion. **Remove Them from the Cloud Too** confirms it.
-- **Change Password:** Settings → Open Cloud Sync → **Change Password**.
+- **Change Password:** Data → Cloud Sync → Open Cloud Sync → **Change Password**.
 - **Sign Out** stops syncing on that device. The data stays on the device.
 
 ## Face ID and fingerprint
@@ -167,7 +167,7 @@ The lock hides the screen. It does not encrypt the data stored on the device.
 
 ## Managing users (administrator)
 
-Only the app administrator sees this. Go to Settings → **Manage Users**.
+Only the app administrator sees this. Go to Settings → Users → **Manage Users**.
 
 - **Add a user:** enter their email. A temporary password is filled in for you (tap **New Password** for a different one). Tap **Add User**.
 - **Share the sign-in details:** after adding, tap **Share** to send the app link, their email, and the temporary password by text or email, or **Copy** to paste it yourself. The password is shown only once.
@@ -176,9 +176,9 @@ Only the app administrator sees this. Go to Settings → **Manage Users**.
 
 ## Backup and restore
 
-**Back up:** Data → **Create JSON Backup**, then save the file to Files, iCloud, or Google Drive. Do this before a reset or reinstall.
+**Back up:** Data → Backup & Restore → **Create JSON Backup**, then save the file to Files, iCloud, or Google Drive. Do this before a reset or reinstall.
 
-**Restore:** Data → **Restore JSON** → pick the file → choose a Restore Mode → **Restore JSON Backup**.
+**Restore:** Data → Backup & Restore → **Restore JSON** → pick the file → choose a Restore Mode → **Restore JSON Backup**.
 
 | Restore Mode | What it does |
 | --- | --- |
@@ -191,7 +191,7 @@ Only the app administrator sees this. Go to Settings → **Manage Users**.
 
 ## Updates
 
-When an **Update** badge appears on Home, tap it to load the new version. If the app still shows an old version, go to Settings → **Reset App Cache / Reload Current Version**. Your data is kept. The version number is shown under the app name on Home and at the top of Settings.
+When an **Update** badge appears on Home, tap it to load the new version. If the app still shows an old version, go to Data → **App Cache Reset** → **Reset App Cache / Reload Current Version**. Your data is kept. The version number is shown under the app name on Home and at the top of Settings.
 
 This guide is updated with every new version of the app.
 
@@ -199,11 +199,11 @@ This guide is updated with every new version of the app.
 
 | Problem | Fix |
 | --- | --- |
-| App shows an old version or old data | Settings → **Reset App Cache / Reload Current Version**, then sign in |
+| App shows an old version or old data | Data → App Cache Reset → **Reset App Cache / Reload Current Version**, then sign in |
 | Vehicles are blank on a new device | Sign in, then choose **Use Cloud Data on This Device** |
 | Photos missing | Tap **Sync Now** on the device that has the photos, then on the other device |
 | Forgot password | Ask the app administrator to tap **Reset Password** for you in Manage Users |
 | Face ID not offered | Sign in first and open the app from the Home Screen icon |
 | Data gone after deleting the app | Sign in to restore from the cloud, or restore a JSON backup in **Update** mode |
 
-**Clear Local Data** (bottom of Settings) erases this device only. It never deletes cloud data.
+**Clear Local Data** (Settings → About) erases this device only. It never deletes cloud data.

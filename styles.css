@@ -1861,3 +1861,12 @@ textarea.grow-notes.open{overflow:auto;min-height:96px!important}
 /* F29 RC20: links in Notes */
 .notes-text{white-space:pre-wrap;overflow-wrap:anywhere}
 a.notes-link{color:#ffd791;text-decoration:underline;overflow-wrap:anywhere}
+
+/* F29 RC22: collapsible Settings / Data sections */
+details.sec-card>summary.sec-head{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px}
+details.sec-card>summary.sec-head::-webkit-details-marker{display:none}
+details.sec-card>summary.sec-head h2{margin:0}
+details.sec-card>summary.sec-head::after{content:"\25B8";font-size:18px;color:#c9c0ae;transition:transform .15s}
+details.sec-card[open]>summary.sec-head::after{transform:rotate(90deg)}
+details.sec-card[open]>.sec-body{margin-top:9px}
+.vehicle-order-card .order-row{background:#15263e;border:1px solid var(--line);border-radius:14px;padding:10px;margin:8px 0}

@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc22 — 2026-11-02
+
+- Built from `v2.1.6l-wc10-f29-rc21` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Settings: sections start collapsed — tap a heading to open it. The version box at the top stays open. New order: User Guide, Drop-Down Lists, Vehicle Order, Face ID, Users (admin), About.
+- Data page: sections start collapsed. Order: App Cache Reset, Backup & Restore, CSV Import, Cloud Sync, Offline Mode, WC-10 Migration Evidence. Cloud Sync, Offline Mode, App Cache Reset and WC-10 Migration Evidence moved here from Settings.
+- Vehicle Order positions are now inside the Vehicle Order section.
+- An open section stays open while you work in it and starts closed again the next time you open the page.
+
 ## v2.1.6l-wc10-f29-rc21 — 2026-11-01
 
 - Built from `v2.1.6l-wc10-f29-rc20` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).

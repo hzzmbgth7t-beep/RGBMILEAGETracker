@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f29-rc21
+# FIXNOTES — v2.1.6l-wc10-f29-rc22
 
-Build: `v2.1.6l-wc10-f29-rc21`  
+Build: `v2.1.6l-wc10-f29-rc22`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc21`  
+Cache: `216lwc10f29rc22`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -29,6 +29,12 @@ TESTS/test_sync.py runs the app in Chromium against TESTS/mock_supabase.py: 33/3
 - Photos: uploaded to Storage at `<user id>/<vehicle id>`; `vehicles.primary_photo_md5` holds the photo fingerprint. RGBM_CLOUD_PHOTOS tracks the last synced local/cloud fingerprints so photos upload once and download only when changed.
 - Face ID: a Supabase passkey is registered while signed in. The same passkey signs in (server-verified) and unlocks the app (checked on the phone). The lock hides the screen; it does not encrypt data on the phone.
 - Test evidence: TESTS/test_rc2.py — 28/28 checks (photo upload/download/change/removal across two devices, no re-sync loops, Face ID setup, lock on launch and after background, password fallback, Face ID sign-in, removal) plus the RC1 suite rerun on RC2: 33/33.
+
+## RC22 additions
+
+- secCard(html,key) turns a single `<div class="card…"><h2>Title</h2>…</div>` into `<details class="card sec-card…" data-sec=key>` with the h2 in the summary; open state kept in SEC_OPEN while route.screen stays the same (render() clears it on a screen change).
+- maintenanceCards() builds the Offline Mode, App Cache Reset and WC-10 Evidence cards (moved out of settings()); dataScreen() renders them with cloudSettingsCard(). Vehicle Order rows are .order-row boxes inside one card.
+- Test evidence: TESTS/test_rc22.py against RC22, plus earlier suites.
 
 ## RC21 additions
 
