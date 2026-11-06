@@ -1870,3 +1870,6 @@ details.sec-card>summary.sec-head::after{content:"\25B8";font-size:18px;color:#c
 details.sec-card[open]>summary.sec-head::after{transform:rotate(90deg)}
 details.sec-card[open]>.sec-body{margin-top:9px}
 .vehicle-order-card .order-row{background:#15263e;border:1px solid var(--line);border-radius:14px;padding:10px;margin:8px 0}
+
+/* F29 RC23: Delete beside each saved picture */
+.doc-link .doc-del{flex:0 0 auto;margin:0}

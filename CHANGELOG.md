@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc24 — 2026-11-06
+
+- Built from `v2.1.6l-wc10-f29-rc23` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Pictures can only be deleted while editing an entry: the **Delete** button beside a picture and **Delete Picture** in the viewer appear on the edit screen only. Viewing an entry still lets you open, share and save pictures.
+
+## v2.1.6l-wc10-f29-rc23 — 2026-11-05
+
+- Built from `v2.1.6l-wc10-f29-rc22` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- Read Receipt: when the camera blurs a digit in the gallons or price (e.g. 11.809 for 11.609, 4.889 for 4.809), the reader now tries one-digit fixes that make gallons × price equal the total and fills them in marked "check this".
+- Read Receipt: "UNL-NO-ETH", "NON-ETH", "ETH FREE", "E0" now tick Ethanol Free. The grade is only filled in when an octane number (or REC 90) is printed.
+- Documents: every saved picture has a **Delete** button beside it, on both the view and edit screens; the picture viewer always shows **Delete Picture**. The picture is removed from the phone and the cloud; the rest of the entry is unchanged.
+
 ## v2.1.6l-wc10-f29-rc22 — 2026-11-02
 
 - Built from `v2.1.6l-wc10-f29-rc21` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).

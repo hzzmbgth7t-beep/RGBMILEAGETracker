@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f29-rc22
+# FIXNOTES — v2.1.6l-wc10-f29-rc24
 
-Build: `v2.1.6l-wc10-f29-rc22`  
+Build: `v2.1.6l-wc10-f29-rc24`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc22`  
+Cache: `216lwc10f29rc24`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -29,6 +29,18 @@ TESTS/test_sync.py runs the app in Chromium against TESTS/mock_supabase.py: 33/3
 - Photos: uploaded to Storage at `<user id>/<vehicle id>`; `vehicles.primary_photo_md5` holds the photo fingerprint. RGBM_CLOUD_PHOTOS tracks the last synced local/cloud fingerprints so photos upload once and download only when changed.
 - Face ID: a Supabase passkey is registered while signed in. The same passkey signs in (server-verified) and unlocks the app (checked on the phone). The lock hides the screen; it does not encrypt data on the phone.
 - Test evidence: TESTS/test_rc2.py — 28/28 checks (photo upload/download/change/removal across two devices, no re-sync loops, Face ID setup, lock on launch and after background, password fallback, Face ID sign-in, removal) plus the RC1 suite rerun on RC2: 33/33.
+
+## RC24 additions
+
+- docListHtml: Delete beside stored pictures only when editable (edit mode); docOpen: Delete Picture only when route.mode is edit; docRemove returns unless route.mode is edit.
+- Test evidence: TESTS/test_rc24.py, plus earlier suites.
+
+## RC23 additions
+
+- RGBMReceipt.fuelRepair(lines,total): candidates = 3-decimal numbers (gallons 0.5–60, price 1.2–9.99) plus one-digit OCR swaps (0/6/8/9, 3/8, 5/6/8, 1/7); the pair whose product rounds to the total with the fewest changes wins (confidence Check). Runs only when the exact triple match fails.
+- GRADES: REC 90 → 90 + EF; other ethanol-free words (E0, ETH FREE, NON-ETH, NO-ETH, PURE GAS, CLEAR) → EF with grade only from a printed octane.
+- docListHtml: Delete button beside stored pictures (view and edit); docOpen always offers Delete Picture; docRemove stamps modifiedAt so the change syncs.
+- Test evidence: TESTS/test_rc23.py (Ronnie's QuikTrip receipt 11/5/2026 read through the app; phone misread 11.809 / 4.889 repaired; picture deleted from a saved entry in view mode, phone copy and cloud object removed), plus earlier suites.
 
 ## RC22 additions
 

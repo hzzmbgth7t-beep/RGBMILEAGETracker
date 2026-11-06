@@ -1,8 +1,8 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc22`
-Cache: `216lwc10f29rc22`
-Guide release: `v2.1.6l-wc10-f29-rc22`
+Build: `v2.1.6l-wc10-f29-rc24`
+Cache: `216lwc10f29rc24`
+Guide release: `v2.1.6l-wc10-f29-rc24`
 Source baseline: accepted `v2.1.6l-wc10-f28`
 Current status: `Release candidate — pending user validation`
 
@@ -10,7 +10,7 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc22
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc24
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -103,7 +103,7 @@ On a new Fuel or Maintenance entry, use the green **Read Receipt** button beside
 
 What gets filled in, and other tips:
 
-- **Fuel** fills Date, Time, Station, Fuel Grade, Gallons, Price/Gal, and Total Cost. The grade is read from words like Regular, Plus or Premium, or a pump code like B89. **Ethanol Free** is only ticked when the receipt says so (for example E0 or Non-Ethanol); most receipts don't.
+- **Fuel** fills Date, Time, Station, Fuel Grade, Gallons, Price/Gal, and Total Cost. The grade is read from words like Regular, Plus or Premium, or a pump code like B89. **Ethanol Free** is ticked when the receipt says so (for example E0, No-Eth or Non-Ethanol); the grade is only filled in when an octane number is printed. If a gallons or price digit is blurred, the reader tries to fix it so gallons × price matches the total and marks it **check this**.
 - **Maintenance** fills Date, Provider, Category, Odometer (when printed), and Cost.
 - For a long receipt, use **Add Another Part** for the rest (tap for the camera, hold for your photos).
 - **Text read** shows exactly what the app read. You can correct it and tap **Fill In Again**.
@@ -121,6 +121,7 @@ Then:
 - A **Crop Document** screen opens. Drag the corners or edges to frame the document (drag inside to move the frame). **Rotate ↻** turns it, **Auto Frame** finds the paper, **Whole Picture** keeps everything. Tap **Save Picture**.
 - The picture appears under **Documents**. On a new entry, tap **Save** to keep it.
 - Tap a picture under **Documents** to see it full size. From there you can **Share / Save to Phone**, or (while editing) **Delete Picture**.
+- To remove a picture from an entry, open the entry for editing and tap **Delete** beside the picture. It is removed from the phone and the cloud; the rest of the entry stays as it is.
 - Receipt pictures are saved in black and white and documents in colour, both made smaller so they take little space.
 - Pictures taken while offline or signed out are uploaded at the next sync. Each person sees only their own pictures.
 - Older pictures that were saved to Google Drive still open from their links.

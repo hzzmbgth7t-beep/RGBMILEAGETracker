@@ -1,16 +1,16 @@
-# RGBMileage v2.1.6l-wc10-f29-rc22
+# RGBMileage v2.1.6l-wc10-f29-rc24
 
 ## URLs
 
 Production URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
-Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc22
+Cache-busting URL: https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc24
 
 Supabase project URL: https://nlfivcxlzmivjzwlhlot.supabase.co
 
-Build: `v2.1.6l-wc10-f29-rc22`  
+Build: `v2.1.6l-wc10-f29-rc24`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc22`  
+Cache: `216lwc10f29rc24`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`  
 Previous accepted production baseline: `v2.1.6l-wc10-f28`
@@ -62,6 +62,8 @@ F29 connects RGB Mileage to its Supabase database. RC2 adds vehicle photo sync a
 - RC20: web and email addresses in Notes show as tappable links on the view screens (vehicle, Fuel, Maintenance, Insurance).
 - RC21: receipt reader picks up the fuel grade from pump product codes such as "B89", "U87" or "P93".
 - RC22: Settings and Data sections start collapsed (tap a heading to open). Settings order: User Guide, Drop-Down Lists, Vehicle Order, Face ID, Users, About. Cloud Sync, Offline Mode, App Cache Reset and WC-10 Migration Evidence moved to the Data page (order: App Cache Reset, Backup & Restore, CSV Import, Cloud Sync, Offline Mode, WC-10 Migration Evidence).
+- RC23: receipt reader repairs one-digit misreads in gallons/price so they match the total, and recognises NO-ETH / NON-ETH / ETH FREE as ethanol free. Saved pictures can be deleted from any entry (Delete beside the picture, or Delete Picture in the viewer).
+- RC24: picture Delete only while editing an entry.
 - Clear Local Data unlinks the device from cloud sync; it never deletes cloud data.
 - Home geometry, circles, descriptions, and mileage labels are unchanged.
 
@@ -71,4 +73,4 @@ Deploy all 17 ZIP-root files to GitHub Pages. Do not deploy only a partial file 
 
 Validation URL:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc22
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc24
