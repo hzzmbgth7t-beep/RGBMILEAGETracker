@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc25 — 2026-11-07
+
+- Built from `v2.1.6l-wc10-f29-rc24` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- iPhone keyboard: when a field is tapped (e.g. Custom Label on Edit Vehicle), the screen now moves with the visible area, so the form stays above the keyboard. Before, iOS slid the view down and the menu bar ended up mid-screen with a blank area under it.
+- The bottom menu bar hides while the keyboard is open and comes back when you're done typing.
+- Home screen unchanged.
+
 ## v2.1.6l-wc10-f29-rc24 — 2026-11-06
 
 - Built from `v2.1.6l-wc10-f29-rc23` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).

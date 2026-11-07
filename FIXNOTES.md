@@ -1,8 +1,8 @@
-# FIXNOTES — v2.1.6l-wc10-f29-rc24
+# FIXNOTES — v2.1.6l-wc10-f29-rc25
 
-Build: `v2.1.6l-wc10-f29-rc24`  
+Build: `v2.1.6l-wc10-f29-rc25`  
 Status: `Release candidate — pending user validation`  
-Cache: `216lwc10f29rc24`  
+Cache: `216lwc10f29rc25`  
 Source baseline: accepted `v2.1.6l-wc10-f28`  
 Source SHA-256: `801f8b0f1993a0d09c9d18f0860c84414af7b857217978f40cfc3669f2600104`
 
@@ -29,6 +29,13 @@ TESTS/test_sync.py runs the app in Chromium against TESTS/mock_supabase.py: 33/3
 - Photos: uploaded to Storage at `<user id>/<vehicle id>`; `vehicles.primary_photo_md5` holds the photo fingerprint. RGBM_CLOUD_PHOTOS tracks the last synced local/cloud fingerprints so photos upload once and download only when changed.
 - Face ID: a Supabase passkey is registered while signed in. The same passkey signs in (server-verified) and unlocks the app (checked on the phone). The lock hides the screen; it does not encrypt data on the phone.
 - Test evidence: TESTS/test_rc2.py — 28/28 checks (photo upload/download/change/removal across two devices, no re-sync loops, Face ID setup, lock on launch and after background, password fallback, Face ID sign-in, removal) plus the RC1 suite rerun on RC2: 33/33.
+
+## RC25 additions
+
+- applyNonHomeViewport(): also sets #app top to visualViewport.offsetTop (inline !important, bottom auto). The non-home shell is position:fixed sized to visualViewport.height; iOS offsets the visual viewport when the keyboard opens, which left the fixed shell above the visible area. Runs on visualViewport resize/scroll (existing listeners). Home screen code path untouched.
+- body.kb-open hides the non-home .bottom-nav.
+- body.kb-open extra bottom space on .non-home-scroll is now 60 % of the visible height (was 60vh of the whole screen, which pushed the scroll area past the keyboard).
+- Test evidence: TESTS/test_rc25.py (simulated visualViewport offset), plus earlier suites.
 
 ## RC24 additions
 

@@ -1,8 +1,8 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc24`
-Cache: `216lwc10f29rc24`
-Guide release: `v2.1.6l-wc10-f29-rc24`
+Build: `v2.1.6l-wc10-f29-rc25`
+Cache: `216lwc10f29rc25`
+Guide release: `v2.1.6l-wc10-f29-rc25`
 Source baseline: accepted `v2.1.6l-wc10-f28`
 Current status: `Release candidate — pending user validation`
 
@@ -10,7 +10,7 @@ Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc24
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc25
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -58,7 +58,7 @@ Home shows one circle per vehicle, with its photo and last refuel mileage.
 | Press and hold a circle | Opens a new Fuel entry for that vehicle |
 | Tap an **Add Vehicle** circle | Opens the form to add a vehicle |
 
-The bar at the bottom has **Home**, **Reports**, **Data** (app cache reset, backup, restore, CSV import, Cloud Sync, offline mode), and **Settings**. On the Data and Settings pages each section starts closed; tap its heading to open it. **‹ Back** at the top returns to the previous screen.
+The bar at the bottom has **Home**, **Reports**, **Data** (app cache reset, backup, restore, CSV import, Cloud Sync, offline mode), and **Settings**. On the Data and Settings pages each section starts closed; tap its heading to open it. While you type, the bar hides to make room above the keyboard and comes back when you're done. **‹ Back** at the top returns to the previous screen.
 
 ## Vehicles
 
