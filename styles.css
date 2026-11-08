@@ -1876,3 +1876,6 @@ details.sec-card[open]>.sec-body{margin-top:9px}
 
 /* F29 RC25: while typing, hide the bottom menu so the form gets the space above the keyboard */
 body.kb-open #app.app-screen:not(.screen-home) > .bottom-nav{display:none!important}
+
+/* F29 RC26: Add Link button under Notes */
+.note-link-btn{margin:6px 0 0!important;width:auto!important;min-height:36px;padding:6px 14px!important}

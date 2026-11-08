@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29-rc26 — 2026-11-08
+
+- Built from `v2.1.6l-wc10-f29-rc25` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
+- iPhone keyboard: fields near the bottom of a form (e.g. Purchase Price, Seller, Notes on Edit Vehicle) were left half behind the keyboard because iOS scrolled the whole page after the app placed the field. The app now measures from its own position on screen, puts the page back if iOS scrolled it, and moves only the form, also while iOS is still adjusting the view. Scrolling the form yourself stops the automatic positioning.
+- Notes: **Add Link** button under every Notes box, and pasting a web address into Notes opens the same pop-up. Enter the address and a short name to show (e.g. "Parts order"); the note then shows only the name, and tapping it opens the page. **Keep Full Address** inserts the address as before.
+- In the Notes box itself the link is stored as [Name](address) so it can be edited or removed like any other text.
+
 ## v2.1.6l-wc10-f29-rc25 — 2026-11-07
 
 - Built from `v2.1.6l-wc10-f29-rc24` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
