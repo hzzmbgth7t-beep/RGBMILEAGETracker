@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f30-rc1 — 2026-11-08
+
+- Built from `v2.1.6l-wc10-f29` (release candidate; accepted baseline remains `v2.1.6l-wc10-f29`).
+- Read Receipt grade: a product code printed on a line of its own (Circle K's second receipt layout: "B89 [70/30]" above "PUMP No.") now gives 89. "UNL-NO-ETH" (QuikTrip) now gives grade 87 and ticks Ethanol Free — "UNL" is the unleaded/regular grade.
+- Read Receipt station: names must match as whole words, so the card line "ARC: 00" is no longer read as Arco; city/ZIP, terminal and card-data lines are never used as a station. When the station name can't be read, Station is left for you to pick instead of filling in a wrong guess.
+
 ## v2.1.6l-wc10-f29 — 2026-11-08 (release)
 
 - Full release of `v2.1.6l-wc10-f29-rc26`, validated by the owner on iPhone on 2026-11-08. Becomes the accepted baseline (replaces `v2.1.6l-wc10-f28`).

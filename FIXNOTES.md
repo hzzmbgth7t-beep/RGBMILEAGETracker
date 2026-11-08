@@ -1,9 +1,9 @@
-# FIXNOTES — v2.1.6l-wc10-f29
+# FIXNOTES — v2.1.6l-wc10-f30-rc1
 
-Build: `v2.1.6l-wc10-f29`  
-Status: `Release — accepted baseline (validated on iPhone 2026-11-08)`  
-Cache: `216lwc10f29`  
-Source: `v2.1.6l-wc10-f29-rc26` (validated release candidate, no code changes)  
+Build: `v2.1.6l-wc10-f30-rc1`  
+Status: `Release candidate — pending user validation`  
+Cache: `216lwc10f30rc1`  
+Source baseline: accepted `v2.1.6l-wc10-f29`  
 
 ## Scope
 
@@ -28,6 +28,12 @@ TESTS/test_sync.py runs the app in Chromium against TESTS/mock_supabase.py: 33/3
 - Photos: uploaded to Storage at `<user id>/<vehicle id>`; `vehicles.primary_photo_md5` holds the photo fingerprint. RGBM_CLOUD_PHOTOS tracks the last synced local/cloud fingerprints so photos upload once and download only when changed.
 - Face ID: a Supabase passkey is registered while signed in. The same passkey signs in (server-verified) and unlocks the app (checked on the phone). The lock hides the screen; it does not encrypt data on the phone.
 - Test evidence: TESTS/test_rc2.py — 28/28 checks (photo upload/download/change/removal across two devices, no re-sync loops, Face ID setup, lock on launch and after background, password fallback, Face ID sign-in, removal) plus the RC1 suite rerun on RC2: 33/33.
+
+## F30-RC1 additions
+
+- findGrade(): stand-alone code line /^[A-Z]{1,3}[- ]?(85–94)( [n/n])?$/ → grade; ethanol-free words without an octane take the grade word on the same line (UNL → 87).
+- matchName(): brand must match on word boundaries (letters may be split by spaces/punctuation); lines starting ARC/ARQC/AID/TVR/TSI/IAD/TC are skipped. merchantFrom(): skips lines ending in a ZIP and Term/Appr/card-data lines. Fuel: without a matched brand, a guessed merchant is used only if it was printed in large type.
+- Test evidence: TESTS/test_f30rc1.py (Ronnie's Circle K 11/8/2026 receipt, Circle K 11/1/2026, QuikTrip 11/5/2026 read through the app), plus earlier suites.
 
 ## F29 release
 

@@ -1,16 +1,16 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29`
-Cache: `216lwc10f29`
-Guide release: `v2.1.6l-wc10-f29`
+Build: `v2.1.6l-wc10-f30-rc1`
+Cache: `216lwc10f30rc1`
+Guide release: `v2.1.6l-wc10-f30-rc1`
 Source baseline: accepted `v2.1.6l-wc10-f29`
-Current status: `Release — accepted baseline`
+Current status: `Release candidate — pending user validation`
 
 Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f30rc1
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 
@@ -104,11 +104,12 @@ On a new Fuel or Maintenance entry, use the green **Read Receipt** button beside
 
 What gets filled in, and other tips:
 
-- **Fuel** fills Date, Time, Station, Fuel Grade, Gallons, Price/Gal, and Total Cost. The grade is read from words like Regular, Plus or Premium, or a pump code like B89. **Ethanol Free** is ticked when the receipt says so (for example E0, No-Eth or Non-Ethanol); the grade is only filled in when an octane number is printed. If a gallons or price digit is blurred, the reader tries to fix it so gallons × price matches the total and marks it **check this**.
+- **Fuel** fills Date, Time, Station, Fuel Grade, Gallons, Price/Gal, and Total Cost. The grade is read from words like Regular, Plus or Premium (Unleaded counts as 87), or a pump code like B89. **Ethanol Free** is ticked when the receipt says so (for example E0, No-Eth or Non-Ethanol). If a gallons or price digit is blurred, the reader tries to fix it so gallons × price matches the total and marks it **check this**.
 - **Maintenance** fills Date, Provider, Category, Odometer (when printed), and Cost.
 - For a long receipt, use **Add Another Part** for the rest (tap for the camera, hold for your photos).
 - **Text read** shows exactly what the app read. You can correct it and tap **Fill In Again**.
 - **Save the receipt picture with this entry** (under the fields) keeps a small black-and-white copy of the cropped receipt. It appears under **Documents** on the entry; tap **Save** to keep it. Untick it and the picture is not kept.
+- If the station name can't be read, Station is left for you to pick.
 - Very faded receipts may not read at all; type those.
 
 ## Documents and receipt pictures

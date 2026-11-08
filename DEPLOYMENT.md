@@ -1,9 +1,9 @@
-# DEPLOYMENT — v2.1.6l-wc10-f29
+# DEPLOYMENT — v2.1.6l-wc10-f30-rc1
 
-Build: `v2.1.6l-wc10-f29`  
-Status: `Release — accepted baseline (validated on iPhone 2026-11-08)`  
-Cache: `216lwc10f29`  
-Source: `v2.1.6l-wc10-f29-rc26` (validated release candidate, no code changes)  
+Build: `v2.1.6l-wc10-f30-rc1`  
+Status: `Release candidate — pending user validation`  
+Cache: `216lwc10f30rc1`  
+Source baseline: accepted `v2.1.6l-wc10-f29`  
 
 ## Locked package and README rules
 
@@ -39,9 +39,9 @@ Deploy only the 17 ZIP-root files to GitHub Pages. Do not deploy the eight suppo
 
 Open the cache-busting URL after deployment:
 
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f30rc1
 
-Confirm displayed identity is `v2.1.6l-wc10-f29` and cache identity is `216lwc10f29`.
+Confirm displayed identity is `v2.1.6l-wc10-f30-rc1` and cache identity is `216lwc10f30rc1`.
 
 ## First sign-in
 
