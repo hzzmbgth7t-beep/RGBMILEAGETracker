@@ -1,16 +1,16 @@
 # RGB Mileage User Guide
 
-Build: `v2.1.6l-wc10-f29-rc26`
-Cache: `216lwc10f29rc26`
-Guide release: `v2.1.6l-wc10-f29-rc26`
-Source baseline: accepted `v2.1.6l-wc10-f28`
-Current status: `Release candidate — pending user validation`
+Build: `v2.1.6l-wc10-f29`
+Cache: `216lwc10f29`
+Guide release: `v2.1.6l-wc10-f29`
+Source baseline: accepted `v2.1.6l-wc10-f29`
+Current status: `Release — accepted baseline`
 
 Production URL:
 https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/
 
 Cache-busted URL for this build:
-https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29rc26
+https://hzzmbgth7t-beep.github.io/RGBMILEAGETracker/?v=216lwc10f29
 
 The same guide is built into the app (Settings → User Guide). Both are generated from one source for every release.
 

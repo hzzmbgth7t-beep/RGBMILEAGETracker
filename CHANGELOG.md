@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v2.1.6l-wc10-f29 — 2026-11-08 (release)
+
+- Full release of `v2.1.6l-wc10-f29-rc26`, validated by the owner on iPhone on 2026-11-08. Becomes the accepted baseline (replaces `v2.1.6l-wc10-f28`).
+- No code changes from rc26; only the version name, cache revision and status change.
+- Includes everything from rc1–rc26: cloud sync and multi-user accounts, Face ID, receipt reading with crop, stored receipt and document pictures, VIN and vehicle Notes with named links, collapsible Settings and Data pages, and the iPhone keyboard fixes.
+
 ## v2.1.6l-wc10-f29-rc26 — 2026-11-08
 
 - Built from `v2.1.6l-wc10-f29-rc25` (release candidate; accepted baseline remains `v2.1.6l-wc10-f28`).
